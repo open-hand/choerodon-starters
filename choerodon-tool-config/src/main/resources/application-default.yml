@@ -1,0 +1,6 @@
+mybatis:
+  mapperLocations: classpath*:/mapper/*.xml
+  configuration:
+    mapUnderscoreToCamelCase: true
+gateway:
+    names: api-gateway, gateway-helper

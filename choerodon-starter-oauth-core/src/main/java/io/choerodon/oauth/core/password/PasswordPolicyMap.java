@@ -1,0 +1,93 @@
+package io.choerodon.oauth.core.password;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
+
+/**
+ * @author wuguokai
+ */
+public class PasswordPolicyMap {
+    private Map<String, Object> passwordConfig;
+    private Map<String, Object> loginConfig;
+
+    private Boolean enablePassword;
+    private Boolean enableSecurity;
+
+    public PasswordPolicyMap(Map<String, Object> passwordConfig, Map<String, Object> loginConfig, Boolean enablePassword, Boolean enableSecurity) {
+        this.passwordConfig = passwordConfig;
+        this.loginConfig = loginConfig;
+        this.enablePassword = enablePassword;
+        this.enableSecurity = enableSecurity;
+    }
+
+    public Map<String, Object> getPasswordConfig() {
+        return passwordConfig;
+    }
+
+    public Map<String, Object> getLoginConfig() {
+        return loginConfig;
+    }
+
+    public Set<String> getPasswordPolicies() {
+        return passwordConfig.keySet();
+    }
+
+    public Set<String> getLoginPolicies() {
+        return loginConfig.keySet();
+    }
+
+    public Boolean isEnablePassword() {
+        return enablePassword;
+    }
+
+    public Boolean isEnableSecurity() {
+        return enableSecurity;
+    }
+
+    public static PasswordPolicyMap parse(PasswordStrategyStore store, BasePasswordPolicyDO policy) {
+        boolean enablePassword = policy.getEnablePassword();
+        boolean enableSecurity = policy.getEnableSecurity();
+        Map<String, Object> passwordMap = new LinkedHashMap<>();
+        Map<String, Object> loginMap = new LinkedHashMap<>();
+        passwordMap.put(PasswordPolicyType.MIN_LENGTH.getValue(), policy.getMinLength());
+        passwordMap.put(PasswordPolicyType.MAX_LENGTH.getValue(), policy.getMaxLength());
+        passwordMap.put(PasswordPolicyType.DIGITS_COUNT.getValue(), policy.getDigitsCount());
+        passwordMap.put(PasswordPolicyType.LOWERCASE_COUNT.getValue(), policy.getLowercaseCount());
+        passwordMap.put(PasswordPolicyType.UPPERCASE_COUNT.getValue(), policy.getUppercaseCount());
+        passwordMap.put(PasswordPolicyType.SPECIALCHAR_COUNT.getValue(), policy.getSpecialCharCount());
+        passwordMap.put(PasswordPolicyType.NOT_USERNAME.getValue(), policy.getNotUsername());
+        passwordMap.put(PasswordPolicyType.NOT_RECENT.getValue(), policy.getNotRecentCount());
+        passwordMap.put(PasswordPolicyType.REGULAR.getValue(), policy.getRegularExpression());
+
+        loginMap.put(PasswordPolicyType.MAX_ERROR_TIME.getValue(), policy.getMaxErrorTime());
+        loginMap.put(PasswordPolicyType.ENABLE_CAPTCHA.getValue(), policy.getEnableCaptcha());
+        loginMap.put(PasswordPolicyType.MAX_CHECK_CAPTCHA.getValue(), policy.getMaxCheckCaptcha());
+        loginMap.put(PasswordPolicyType.ENABLE_LOCK.getValue(), policy.getEnableLock());
+        loginMap.put(PasswordPolicyType.LOCK_EXPIRE_TIME.getValue(), policy.getLockedExpireTime());
+
+        Map<String, Object> passwordConfig = new LinkedHashMap<>();
+        Map<String, Object> loginConfig = new LinkedHashMap<>();
+        for (Map.Entry<String, Object> e : passwordMap.entrySet()) {
+            if (e.getValue() == null) {
+                continue;
+            }
+            Object o = e.getValue();
+            if (o != null) {
+                passwordConfig.put(e.getKey(), o);
+            }
+        }
+        for (Map.Entry<String, Object> e : loginMap.entrySet()) {
+            if (e.getValue() == null) {
+                continue;
+            }
+            Object o = e.getValue();
+            if (o != null) {
+                loginConfig.put(e.getKey(), o);
+            }
+        }
+        return new PasswordPolicyMap(passwordConfig, loginConfig, enablePassword, enableSecurity);
+    }
+}
