@@ -1,10 +1,10 @@
-# choerodon-starter-core
+# Choerodon Starter Core
 
 The is the core toolkit developed by Choerodon and provides some basic classes for use in the development process. Contains entity classes, exception classes, object conversion tools, custom validation tools, etc. that are commonly used in the development of microservices using the choerodon framework.
 
 ## Feature
 
-The follow-up will continue to be refactored, moving some basic and generic classes to the choerodon-starter-core package.
+The follow-up will continue to be refactored, moving some basic and generic classes to the`` choerodon-starter-core`` package.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ git clone https://github.com/choerodon/choerodon-starters.git
 
 ## Installation and Getting Started
 
-If the project uses the toolkit, it only needs to introduce the following the dependencies of  maven.
+If the project uses the toolkit, it only needs to introduce the following the dependencies of maven.
 
 ```xml
 <dependency>
@@ -37,7 +37,7 @@ Inherited from the controller of this class, using the get method to request par
 
 ### Object Conversion Tools
 
-Used for mutual conversion of entity, dataobject, and dto. The parameter types of `ConvertorI` are ordered, followed by entity, dataobject, and dto. If you only customize the conversion of two types, the other type writes `Object`.
+Used for mutual conversion of entity, datao bject, and dto. The parameter types of `ConvertorI` are ordered, followed by entity, data object, and dto. If you only customize the conversion of two types, the other type writes `Object`.
 Specific conversion implementation requires rewriting method：
 
 ```java
@@ -152,14 +152,14 @@ public ResponseEntity<List<OrganizationDTO>> create(@RequestBody @Valid ValidLis
 
 ## Dependencies
 
-- org.springframework.security.oauth: Oauth module reference dependencies
-- com.fasterxml.jackson.core: Date serialization and deserialization of oauth module
-- javax.validation: Class of verification tools: verify relation
+- ``org.springframework.security.oauth``: Oauth module reference dependencies
+- ``com.fasterxml.jackson.core``: Date serialization and deserialization of oauth module
+- ``javax.validation``: Class of verification tools of verifying relation
 
 ## Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
 
 ## How to Contribute
 
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.

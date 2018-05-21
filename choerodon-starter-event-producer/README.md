@@ -1,11 +1,9 @@
-# choerodon-starter-event-producer
+# Choerodon Starter Event Producer
 
-**The sender of the message about data consistency**，Data consistency needs to be achieved with choerodon-starter-event-consumer and event-store-service.
-
-![Flow chart](srceenshot/flow_chart.png)
+**The sender of the message about data consistency**，Data consistency needs to be achieved with ``choerodon-starter-event-consumer`` and ``event-store-service``.
 
 ## Feature
-- The toolkit of the data consistency sender uses the execute method of **EventExeProducerTemplate** or **EventProducerTemplate** to complete the event sending. If an event is not sent to confirm or cancel the event after the event is created due to a crash or the like, the event-store-service will call back to the interface to confirm the event status, so the service used needs to add a **Back to the interface**.
+- The toolkit of the data consistency sender uses the execute method of ``EventExeProducerTemplate`` or ``EventProducerTemplate`` to complete the event sending. If an event is not sent to confirm or cancel the event after the event is created due to a crash or the like, the ``event-store-service`` will call back to the interface to confirm the event status, so the service used needs to add a **Back to the interface**.
 
 ## Requirements
 - This toolkit is spring boot starter project, only for the project of spring boot.
@@ -21,7 +19,7 @@
       <version>0.5.0.RELEASE</version>
     </dependency>
   ```
-- Add the back check interface (implement **EventBackCheckControllerInter** interface)
+- Add the back check interface (implement ``EventBackCheckControllerInter`` interface)
 
   ```java
   @RestController
@@ -42,7 +40,7 @@
       }
   }
   ```
-- Use **EventExeProducerTemplate** to complete the call of the event, such as creating an order requires the inventory service to reduce the inventory synchronously.
+- Use ``EventExeProducerTemplate`` to complete the call of the event, such as creating an order requires the inventory service to reduce the inventory synchronously.
 
   ```java
   private void createOrderOne(Order order) {
@@ -130,15 +128,15 @@
      ```
 
 ## Dependencies
-- choerodon-starter-core: Rely on the package of core defined EventPayoad etc.
-- spring-cloud-starter-feign：Complete the call to event-store-service with feign.
+- ``choerodon-starter-core``: Rely on the package of core defined ``EventPayoad`` etc.
+- ``spring-cloud-starter-feign``：Complete the call to ``event-store-service`` with feign.
 
 ## Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
     
 ## How to Contribute
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
 
 ## Note
-- A check-back interface must be implemented for event-store-service callbacks when the event state is indeterminate, and the callback logic should match the business logic.
+- A check-back interface must be implemented for ``event-store-service`` callbacks when the event state is indeterminate, and the callback logic should match the business logic.
