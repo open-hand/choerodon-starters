@@ -1,5 +1,6 @@
-# choerodon-starter-config-monitor
- > Modify the spring cloud config monitor 1.3.x, the message sent to the bus adds the instance information of configured version and service.
+# Choerodon Starter Config Monitor
+
+``choerodon-starter-config-monitor`` comes from the ``spring cloud config monitor 1.3.x``, the message sent to the bus adds the instance information of configured version and service.
 
 ```java
 @RequestMapping(method = RequestMethod.POST)
@@ -38,10 +39,10 @@
 ```
 
 ## Feature
-- In the future, the package may be removed and modified into a config-server custom interface.
+- In the future, the package may be removed and modified into a ``config-server`` custom interface.
 
 ## Requirements
-- Used only for the service of config-server.
+- Used only for the service of ``config-server``.
 
 ## To get the code
 
@@ -50,7 +51,7 @@ git clone https://github.com/choerodon/choerodon-starters.git
 ```
 
 ## Usage
-- Used in config server (replaces the original spring-cloud-config-monitor)
+- Used in config server (replaces the original      ``spring-cloud-config-monitor``)
 
  ```xml
  <dependency>
@@ -62,8 +63,8 @@ git clone https://github.com/choerodon/choerodon-starters.git
  
 ## Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
     
 ## How to Contribute
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
 
