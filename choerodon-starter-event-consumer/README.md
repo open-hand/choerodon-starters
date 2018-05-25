@@ -60,7 +60,7 @@ The consumer side of the event used to implement data consistency.
    <dependency>
      	<groupId>io.choerodon</groupId>
      	<artifactId>choerodon-starter-event-consumer</artifactId>
-  <version>0.5.0.RELEASE</version>
+  <version>0.6.0-SNAPSHOT</version>
   </dependency>
   <dependency>
       <groupId>org.apache.kafka</groupId>
