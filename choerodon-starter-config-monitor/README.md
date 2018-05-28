@@ -57,7 +57,7 @@ git clone https://github.com/choerodon/choerodon-starters.git
  <dependency>
      <groupId>io.choerodon</groupId>
      <artifactId>choerodon-starter-config-monitor</artifactId>
-    <version>0.6.0-SNAPSHOT</version>
+    <version>0.5.1.RELEASE</version>
  </dependency>
  ```
  

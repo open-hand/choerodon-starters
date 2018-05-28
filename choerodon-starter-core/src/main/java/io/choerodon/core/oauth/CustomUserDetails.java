@@ -23,6 +23,8 @@ public class CustomUserDetails extends User {
 
     private Long organizationId;
 
+    private Boolean isAdmin;
+
     private transient Map<String, Object> additionInfo;
 
     public CustomUserDetails(String username, String password,
@@ -78,6 +80,14 @@ public class CustomUserDetails extends User {
         this.email = email;
     }
 
+    public Boolean getAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -104,6 +114,9 @@ public class CustomUserDetails extends User {
         if (!language.equals(that.language)) {
             return false;
         }
+        if (!isAdmin.equals(that.isAdmin)) {
+            return false;
+        }
         if (!organizationId.equals(that.organizationId)) {
             return false;
         }
@@ -119,6 +132,7 @@ public class CustomUserDetails extends User {
         result = 31 * result + language.hashCode();
         result = 31 * result + organizationId.hashCode();
         result = 31 * result + additionInfo.hashCode();
+        result = 31 * result + isAdmin.hashCode();
         return result;
     }
 }
