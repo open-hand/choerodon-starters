@@ -29,18 +29,6 @@ public class Sort implements Iterable<Sort.Order>, Serializable {
 
     private static final long serialVersionUID = 5737186511678863905L;
     public static final Direction DEFAULT_DIRECTION = Direction.ASC;
-    /**
-     * 是否开启防止sql注入,不提供set方法，只针对多表拼接order by使用
-     */
-    private Boolean multiTableQueryFlag;
-
-    public Boolean getMultiTableQueryFlag() {
-        return multiTableQueryFlag;
-    }
-
-    public void setMultiTableQueryFlag(Boolean multiTableQueryFlag) {
-        this.multiTableQueryFlag = multiTableQueryFlag;
-    }
 
     private final List<Order> orders;
 
