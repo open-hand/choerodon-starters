@@ -32,7 +32,7 @@ maven-deploy-choerodon:
 maven-deploy-ossrh:
   stage: maven-deploy
   script:
-    - mvn clean source:jar-no-fork javadoc:jar install -DskipTests=true deploy  -DaltDeploymentRepository=${OSS_REPOSITORY_ID}::default::${OSS_REPOSITORY_URL} -DpomFile=pom.xml
+    - mvn clean source:jar-no-fork javadoc:jar install -DskipTests=true gpg:sign deploy -DaltDeploymentRepository=${OSS_REPOSITORY_ID}::default::${OSS_REPOSITORY_URL} -DpomFile=pom.xml
   only:
     - tags
 
