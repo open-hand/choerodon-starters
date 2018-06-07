@@ -66,6 +66,8 @@
         <module>choerodon-starter-bus</module>
         <module>choerodon-starter-config-monitor</module>
         <module>choerodon-starter-oauth-core</module>
+        <module>choerodon-websocket-helper</module>
+        <module>choerodon-gitlab4j-api</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
