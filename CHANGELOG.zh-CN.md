@@ -13,7 +13,5 @@
 
 - `choerodon-starter-tool`初始化路由信息时设置`is_built_in`为`true`，表示内置服务。
 - `choerodon-starter-core`的`CustomUserDetails`添加`is_admin`字段。
-- `choerodon-starter-mybatis-mapper`单表排序支持从`@Column`注解里拿到数据库列名
-
-### 修复
+- `choerodon-starter-mybatis-mapper`单表排序支持从`@Column`注解里拿到数据库列名。
 - `choerodon-starter-mybatis-mapper`修复`selectOne`查询条件匹配到多条数据时会出现的异常。
