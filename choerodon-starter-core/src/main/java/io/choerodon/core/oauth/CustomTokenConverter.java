@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 
-
 /**
  * 定制的access token转换
  *
@@ -65,6 +64,7 @@ public class CustomTokenConverter extends DefaultAccessTokenConverter {
             map.put("timeZone", user.getTimeZone());
             map.put("email", user.getEmail());
             map.put(ORGANIZATION_ID, user.getOrganizationId().toString());
+            map.put("admin", user.getAdmin());
             if (user.getAdditionInfo() != null) {
                 map.put(ADDITION_INFO, user.getAdditionInfo());
             }
@@ -101,6 +101,7 @@ public class CustomTokenConverter extends DefaultAccessTokenConverter {
             user.setLanguage((String) map.get("language"));
             user.setTimeZone((String) map.get("timeZone"));
             user.setEmail((String) map.get("email"));
+            user.setAdmin((Boolean) map.get("admin"));
             user.setOrganizationId((long) ((Integer) map.get(ORGANIZATION_ID)));
             try {
                 if (map.get(ADDITION_INFO) != null) {

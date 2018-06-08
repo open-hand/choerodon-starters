@@ -4,6 +4,7 @@ package io.choerodon.core.swagger;
  * @author wuguokai
  */
 public class ChoerodonRouteData {
+
     private Long id;
 
     private String name;
@@ -23,6 +24,8 @@ public class ChoerodonRouteData {
     private Boolean customSensitiveHeaders = false;
 
     private String helperService;
+
+    private Boolean builtIn;
 
     public Long getId() {
         return id;
@@ -104,19 +107,28 @@ public class ChoerodonRouteData {
         this.helperService = helperService;
     }
 
+    public Boolean getBuiltIn() {
+        return builtIn;
+    }
+
+    public void setBuiltIn(Boolean builtIn) {
+        this.builtIn = builtIn;
+    }
+
     @Override
     public String toString() {
-        return "ChoerodonRouteData{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", path='" + path + '\'' +
-                ", serviceId='" + serviceId + '\'' +
-                ", url='" + url + '\'' +
-                ", stripPrefix=" + stripPrefix +
-                ", retryable=" + retryable +
-                ", sensitiveHeaders='" + sensitiveHeaders + '\'' +
-                ", customSensitiveHeaders=" + customSensitiveHeaders +
-                ", helperService='" + helperService + '\'' +
-                '}';
+        return "ChoerodonRouteData{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", path='" + path + '\''
+                + ", serviceId='" + serviceId + '\''
+                + ", url='" + url + '\''
+                + ", stripPrefix=" + stripPrefix
+                + ", retryable=" + retryable
+                + ", sensitiveHeaders='" + sensitiveHeaders + '\''
+                + ", customSensitiveHeaders=" + customSensitiveHeaders
+                + ", helperService='" + helperService + '\''
+                + ", builtIn=" + builtIn
+                + '}';
     }
 }

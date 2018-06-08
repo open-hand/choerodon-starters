@@ -3,11 +3,14 @@ package io.choerodon.mybatis.pagehelper;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
+import java.util.Set;
 
+import io.choerodon.mybatis.MapperException;
+import io.choerodon.mybatis.domain.EntityColumn;
+import io.choerodon.mybatis.helper.EntityHelper;
 import org.apache.ibatis.mapping.MappedStatement;
 
 import io.choerodon.mybatis.helper.MapperTemplate;
-import io.choerodon.mybatis.helper.SqlHelper;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.mybatis.util.StringUtil;
 
@@ -24,47 +27,61 @@ public class OrderByParser {
      *
      * @param sort sort
      * @param ms   MappedStatement
-     * @return Sort对象转的sql
+     * @return Sort对象转sql
      */
     public String sortToString(Sort sort, MappedStatement ms) {
         Iterator<Sort.Order> iterator = sort.iterator();
         StringBuilder stringBuilder = new StringBuilder();
         while (iterator.hasNext()) {
             Sort.Order order = iterator.next();
-            //前端request字段为驼峰，转为下划线
-            String column = null;
+            //前端url传入的排序列名
+            String property = order.getProperty();
+            String direction = order.getDirection().toString();
             if (!order.isPropertyChanged()) {
-                sort.setMultiTableQueryFlag(false);
-                //没有做pageHelper.restOrder操作，isPropertyChanged为false
-                //单表列名会和数据库列名对比，若数据库中不存在的列，则抛异常，所以不进行sql注入校验
-                Class<?> mapperClass = MapperTemplate.getMapperClass(ms.getId());
-                Type[] types = mapperClass.getGenericInterfaces();
-                ParameterizedType t = (ParameterizedType) types[0];
-                //获得实体类
-                Class<?> entityClass = (Class<?>) t.getActualTypeArguments()[0];
-                //获得实体类所有的列
-                String columns = SqlHelper.getAllColumns(entityClass);
-                //单表校验传参是否合法
-                column = StringUtil.camelhumpToUnderline(order.getProperty());
-                if (!columns.contains(column)) {
-                    //传参不是domain类的字段，抛异常
-                    throw new IllegalArgumentException("error.Sort.Order.property["
-                            + order.getProperty() + "].illegal");
-                }
-                stringBuilder.append(column);
-                stringBuilder.append(" ");
-                stringBuilder.append(order.getDirection());
-                stringBuilder.append(",");
+                //根据ms获取entityClass,反射获取所有字段和注解
+                Class<?> entityClass = getEntityClass(ms);
+                String column = getColumn(entityClass, property);
+                splicingSql(stringBuilder, direction, column);
             } else {
-                sort.setMultiTableQueryFlag(true);
                 //多表联查，拼接order by暂未做校验，可能会报sql语句错误或sql注入
-                stringBuilder.append(order.getProperty());
-                stringBuilder.append(" ");
-                stringBuilder.append(order.getDirection());
-                stringBuilder.append(",");
+                splicingSql(stringBuilder, direction, property);
             }
         }
         stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(","));
         return stringBuilder.toString();
+    }
+
+    private void splicingSql(StringBuilder stringBuilder, String direction, String column) {
+        stringBuilder.append(column);
+        stringBuilder.append(" ");
+        stringBuilder.append(direction);
+        stringBuilder.append(",");
+    }
+
+    private String getColumn(Class<?> entityClass, String property) {
+        //支持前端传入字段为下划线格式
+        String camelHumpProperty = StringUtil.underlineToCamelhump(property);
+        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
+        //前端传入字段与do对象字段对比，不匹配抛非法参数异常
+        for (EntityColumn entityColumn : columnList) {
+            if (entityColumn.getProperty().toLowerCase().equals(camelHumpProperty.toLowerCase())) {
+                return entityColumn.getColumn();
+            }
+        }
+        throw new IllegalArgumentException("Illegal sort argument: " + property);
+    }
+
+    private Class<?> getEntityClass(MappedStatement ms) {
+        String msId = ms.getId();
+        Class<?> newMapperClass = MapperTemplate.getMapperClass(msId);
+        Type[] types = newMapperClass.getGenericInterfaces();
+        for (Type type : types) {
+            if (type instanceof ParameterizedType) {
+                ParameterizedType t = (ParameterizedType) type;
+                Class<?> returnType = (Class<?>) t.getActualTypeArguments()[0];
+                return returnType;
+            }
+        }
+        throw new MapperException("无法获取Mapper<T>泛型类型:" + msId);
     }
 }

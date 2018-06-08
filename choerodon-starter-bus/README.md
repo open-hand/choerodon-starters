@@ -45,7 +45,7 @@ git clone https://github.com/choerodon/choerodon-starters.git
   <dependency>
 	    <groupId>io.choerodon</groupId>
 	    <artifactId>choerodon-starter-bus</artifactId>
-	    <version>0.5.0.RELEASE</version>
+	    <version>0.5.1.RELEASE</version>
   </dependency>
  ```
 

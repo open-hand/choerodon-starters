@@ -22,6 +22,9 @@ This is the toolkit developed by Choerodon and provides some basic dependencies 
 ```
 git clone https://github.com/choerodon/choerodon-starters.git
 ```
+## Links
+
+* [Change Log](./CHANGELOG.zh-CN.md)
 
 ## Reporting Issues
 

@@ -67,26 +67,19 @@ public class ApiGatewayExecutor extends AbstractExector {
             ));
             Builder builder = BuilderFactory.getBuilder(ConfigFileFormat.YML);
             String yml = builder.build(normalMap);
-
-
             List<ZuulRoute> existZuulRoutes = zuulRouteMapper.selectAll();
             Set<String> existRouteIds = existZuulRoutes.stream()
                     .map(ZuulRoute::getName).collect(Collectors.toSet());
             LinkedHashMap<String, LinkedHashMap> routeMap = mapper.readValue(yml, LinkedHashMap.class);
-            List<ZuulRoute> addZuulRoutes = routeMapToZuulRoute(routeMap).stream()
+            List<ZuulRoute> addOrUpdateZuulRoutes = routeMapToZuulRoute(routeMap).stream()
                     .filter(i -> !existRouteIds.contains(i.getName())).collect(Collectors.toList());
-            addZuulRoutes.forEach(i -> {
-                ZuulRoute zuulRoute1 = new ZuulRoute();
-                zuulRoute1.setName(i.getName());
-                ZuulRoute zuulRoute2 = new ZuulRoute();
-                zuulRoute2.setPath(i.getPath());
-                List<ZuulRoute> zuulRouteList1 = zuulRouteMapper.select(zuulRoute1);
-                List<ZuulRoute> zuulRouteList2 = zuulRouteMapper.select(zuulRoute2);
-                if (!zuulRouteList1.isEmpty()) {
-                    i.setId(zuulRouteList1.get(0).getId());
-                    zuulRouteMapper.updateByPrimaryKeySelective(i);
-                } else if (!zuulRouteList2.isEmpty()) {
-                    i.setId(zuulRouteList2.get(0).getId());
+            addOrUpdateZuulRoutes.forEach(i -> {
+                i.setBuiltIn(true);
+                ZuulRoute pathRoute = new ZuulRoute();
+                pathRoute.setPath(i.getPath());
+                ZuulRoute zuulRoute = zuulRouteMapper.selectOne(pathRoute);
+                if (zuulRoute != null) {
+                    i.setId(zuulRoute.getId());
                     zuulRouteMapper.updateByPrimaryKeySelective(i);
                 } else {
                     zuulRouteMapper.insert(i);

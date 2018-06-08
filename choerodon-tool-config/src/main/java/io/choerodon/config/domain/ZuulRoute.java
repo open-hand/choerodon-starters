@@ -1,5 +1,6 @@
 package io.choerodon.config.domain;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -38,6 +39,9 @@ public class ZuulRoute extends AuditDomain {
     private Boolean customSensitiveHeaders ;
 
     private String helperService;
+
+    @Column(name = "is_built_in")
+    private Boolean builtIn;
 
     public Long getId() {
         return id;
@@ -117,5 +121,13 @@ public class ZuulRoute extends AuditDomain {
 
     public void setHelperService(String helperService) {
         this.helperService = helperService;
+    }
+
+    public Boolean getBuiltIn() {
+        return builtIn;
+    }
+
+    public void setBuiltIn(Boolean builtIn) {
+        this.builtIn = builtIn;
     }
 }
