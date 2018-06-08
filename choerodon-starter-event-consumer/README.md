@@ -1,10 +1,8 @@
-# choerodon-starter-event-consumer
+# Choerodon Starter Event Consumer
 
-**The consumption side of the message about data consistency**，At present, support for consumption queues**kafka** requires cooperating with choerodon-starter-event-producer (data consistency message elimination sender) and event-store-service (data consistency event middleware service) to achieve data consistency. Compared to clients such as spring-kafka, the "**exactly-once**" message consumes semantics at once. That is, a message will be consumed and consumed only once. Use the method of manually submitting the displacement to ensure that the message is was consumed  correctly. the use of memory and database tables to duplicate the way to ensure that the message will not be repeated consumption, and built-in ** retry ** function.
+**The consumption side of the message about data consistency**，At present, support for consumption queues**kafka** requires cooperating with ``choerodon-starter-event-producer`` (data consistency message elimination sender) and ``event-store-service`` (data consistency event middleware service) to achieve data consistency. Compared to clients such as ``spring-kafka``, the "**exactly-once**" message consumes semantics at once. That is, a message will be consumed and consumed only once. Use the method of manually submitting the displacement to ensure that the message is was consumed correctly. the use of memory and database tables to duplicate the way to ensure that the message will not be repeated consumption, and built-in **retry** function.
 
 The consumer side of the event used to implement data consistency.
-
-![Flow chart](screenshot/flow_chart.png)
 
 ## Feature
 
@@ -15,7 +13,7 @@ The consumer side of the event used to implement data consistency.
 ## Requirements
 
 - This toolkit is spring boot's starter project, only for the project of spring boot.
-- If you enable deduplication, that is, choerodon.event.consumer.enable-duplicate-remove=true, need to add the mybatis dependency:
+- If you enable deduplication, that is, ``choerodon.event.consumer.enable-duplicate-remove=true``, need to add the mybatis dependency:
 
   ```xml
    <dependency>
@@ -62,7 +60,7 @@ The consumer side of the event used to implement data consistency.
    <dependency>
      	<groupId>io.choerodon</groupId>
      	<artifactId>choerodon-starter-event-consumer</artifactId>
-  <version>0.5.0.RELEASE</version>
+  <version>0.5.1.RELEASE</version>
   </dependency>
   <dependency>
       <groupId>org.apache.kafka</groupId>
@@ -127,21 +125,21 @@ The consumer side of the event used to implement data consistency.
 
 ## Dependencies
 
-- quartz：Used for message retrying
-- reflections：Used to scan the annotations of @EventListener 
-- kafka-clients： Kafkad: Native client
-- choerodon-starter-mybatis-mapper：Mybatis's package (joined when start up to heavy)
-- mysql-connector-java: The JDBC driver of Mysql  (joined when enabled to remove deduplication)
-- spring-cloud-netflix-core：The basic package of spring cloud  (joined when the message failure policy is set to send_back_event_store)
+- ``quartz``：Used for message retrying
+- ``reflections``：Used to scan the annotations of @EventListener 
+- ``kafka-clients``： Kafkad: Native client
+- ``choerodon-starter-mybatis-mapper``：Mybatis's package (joined when start up to heavy)
+- ``mysql-connector-java``: The JDBC driver of Mysql  (joined when enabled to remove deduplication)
+- ``spring-cloud-netflix-core``：The basic package of spring cloud  (joined when the message failure policy is set to send_back_event_store)
 
 ## Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
     
 ## How to Contribute
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
 
 ## Note
-- In order to ensure that the message will not be re-used, please turn on the *Remove deduplication* function, which is choerodon.event.consumer.enable-duplicate-remove=true.
+- In order to ensure that the message will not be re-used, please turn on the *Remove deduplication* function, which is ``choerodon.event.consumer.enable-duplicate-remove=true``.
 - If manual retrying on the page has not been completed yet, after completion, set the message failure policy** to send_back_event_store to ensure that the message is consumed.
 - The retry function of the message is only used for non-code exceptions such as temporarily connecting to the database. If there is no the retry of non-code exceptions, there is no effect.

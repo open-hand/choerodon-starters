@@ -1,9 +1,8 @@
-# choerodon-starter-oauth-core
+# Choerodon Starter Oauth Core
 
-This project is a java jar package. Its main function is to provide password management and login policy management for users of the Choerodon Microservices Framework, including password verification, login verification, passwords, and login records.
+This project is a jar package. Its main function is to provide password management and login policy management for users of the **Choerodon Microservices Framework**, including password verification, login verification, passwords, and login records.
 
-
-Projects that use the jar package for password and login policy's management need to be consistent with the table structure of users, organizations, and password policies of the choerodon microservices framework.
+Projects that use the jar package for password and login policy's management need to be consistent with the table structure of users, organizations, and password policies of the **Choerodon Microservices Framework**.
 
 ## Usage
 
@@ -11,13 +10,13 @@ Projects that use the jar package for password and login policy's management nee
 <dependency>
 	<groupId>io.choerodon</groupId>
 	<artifactId>choerodon-starter-oauth-core</artifactId>
-	<version>0.5.0.RELEASE</version>
+	<version>0.5.1.RELEASE</version>
 </dependency>
 ```
 
 * Maintenance of the information of password policy and login policy：
 
-1. In iam-service, use the password policy to modify the interface, update the password policy information.
+1. In ``iam-service``, use the password policy to modify the interface, update the password policy information.
 
 1. At the business logic that has the password changed, add the following check code：
 
@@ -33,7 +32,7 @@ Projects that use the jar package for password and login policy's management nee
     passwordRecord.updatePassword(userE.getId(),userE.getPassword());
 
     ```
-1. Add the following login security check in the oauth-server:
+1. Add the following login security check in the ``oauth-server``:
 
     ```java
     //Get the password policy of the current organization
@@ -59,10 +58,10 @@ Projects that use the jar package for password and login policy's management nee
 
 ## Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
     
 ## How to Contribute
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
 
 ## Note
-This jar package is a project that applies to the choerodon microservices framework's password and login policy and does not currently support inconsistencies with other database table structures.
+This jar package is a project that applies to the ``Choerodon Microservices Framework``'s password and login policy and does not currently support inconsistencies with other database table structures.

@@ -1,12 +1,12 @@
-# choerodon-starter-mybatis-mapper
+# Choerodon Starter Mybatis Mapper
 
-The mybatis basic toolkit integrates two open source projects [Generic Mapper](https://github.com/abel533/Mapper) and [PageHelper](https://github.com/pagehelper/Mybatis-PageHelper). based on the requirements of business logical , streamlining and modification of source code, extending audit fields, multilingual functions, and modifying paging plugins, adding functionality such as inserting or updating specified columns.
+The mybatis basic toolkit integrates two open source projects [Generic Mapper](https://github.com/abel533/Mapper) and [PageHelper](https://github.com/pagehelper/Mybatis-PageHelper). Based on the requirements of business logical, streamlining and modification of source code, extending audit fields, multilingual functions, and modifying paging plugins, adding functionality such as inserting or updating specified columns.
 
 The toolkit is used if there is a database operation in the Choerodon microservice.
 
 ## Feature
 
-PageHelper nested result query is paged. Abstracting the general methods of paging queries.
+``PageHelper`` nested result query is paged. Abstracting the general methods of paging queries.
 
 ## Installation and Getting Started
 
@@ -14,7 +14,7 @@ PageHelper nested result query is paged. Abstracting the general methods of pagi
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-mybatis-mapper</artifactId>
-    <version>0.5.0.RELEASE</version>
+    <version>0.5.1.RELEASE</version>
 </dependency>
 ```
 
@@ -48,7 +48,7 @@ CREATE TABLE `user`  (
 INSERT INTO `user` VALUES (1, 'Daenerys Targaryen', 1, 0, '2018-04-11 03:09:38', 0, '2018-04-11 03:09:38');
 ```
 
-The corresponding dataobject is as follows：
+The corresponding data object is as follows：
 
 ```java
 //The  name of corresponding database table
@@ -110,7 +110,7 @@ If have complex business logic, write sql by hand. That is, create an xml file w
 </mapper>
 ```
 
-So far, call userMapper in the repository to do addition, deletion, and modification.
+So far, call ``userMapper`` in the repository to do addition, deletion, and modification.
 
 ```java
 @Component
@@ -129,7 +129,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 At the same time, we have created a new BaseService classwith the way of encapsulating the BaseMapper methods in a combined fashion. Note the `insertOptional` and `updateOptional` methods, both of which have a mutable parameter. For example, the corresponding column of the database only inserts or updates the data of the specified column.
 
-If do not use the `insertOptional` and `updateOptional` methods of BaseService, while call `userMapper.insertOptional(userDO)`, as follows:
+If do not use the `insertOptional` and `updateOptional` methods of `BaseService`, while call `userMapper.insertOptional(userDO)`, as follows:
 
 ```java
 String columns = "id,name,object_version_number";
@@ -137,19 +137,18 @@ OptionalHelper.optional(Arrays.asList(columns));
 userMapper.insertOptional(userDO);
 ```
 
-PageHelper usage：
+`PageHelper` usage：
 
 If have the following request.
 
 `http://localhost:8030/v1/organization/1/users?page=0&size=10&sort=id,desc&sort=organizationId,phone,asc`
 
-Page is the start page, the default value is 0, size is the current page number of records, the default value is 20. Sort is the sort field, and the weight decreases from left to right. The above example shows that the query is first sorted in descending order of id. If the ids are the same, they are sorted in ascending order by organizationId. If the organizationId is the same, they are sorted in ascending order by phone.
+Page is the start page, the default value is 0, size is the current page number of records, the default value is 20. Sort is the sort field, and the weight decreases from left to right. The above example shows that the query is first sorted in descending order of id. If the ids are the same, they are sorted in ascending order by `organizationId`. If the `organizationId` is the same, they are sorted in ascending order by phone.
 
-controller：
+Controller：
 
 ```java
 @ApiOperation(value = "Paging query")
-//自定义swagger中pageRequest对象的显示
 @CustomPageRequest
 @GetMapping
 public ResponseEntity<Page<UserDTO>> list(@PathVariable(name = "organization_id") Long organizationId,
@@ -162,7 +161,7 @@ public ResponseEntity<Page<UserDTO>> list(@PathVariable(name = "organization_id"
 }
 ```
 
-The PageRequest object encapsulates the incoming page, size, and sort parameters. Paging queries use the `PageHelper` object to call paging methods.
+The `PageRequest` object encapsulates the incoming page, size, and sort parameters. Paging queries use the `PageHelper` object to call paging methods.
 
 ```java
     //page
@@ -192,7 +191,7 @@ Single-table query operations do not involve aliases and are simple to use. Writ
 public ResponseEntity<Page<IconDTO>> pagingQuery(@SortDefault(value = "lastUpdateDate", direction = Sort.Direction.ASC) PageRequest pageRequest)
 ```
 
-In the controller parameter, use the pageRequest object to receive the page, size, and sort fields in the url. The `@SortDefault` annotation value is the default sort field. If it is a hump, splicing sql will be underlined; directions are ascending (`Sort.Direction.ASC`) and descending (`Sort.Direction.DESC`). Page and size do not import allocation defaults. For sort, if the controller is configured with the `@SortDefault` annotation, the default value is generated with the annotation, and sort is null if no annotation is configured.
+In the controller parameter, use the ``pageRequest`` object to receive the page, size, and sort fields in the url. The `@SortDefault` annotation value is the default sort field. If it is a hump, splicing sql will be underlined; directions are ascending (`Sort.Direction.ASC`) and descending (`Sort.Direction.DESC`). Page and size do not import allocation defaults. For sort, if the controller is configured with the `@SortDefault` annotation, the default value is generated with the annotation, and sort is null if no annotation is configured.
 
 The method called is as follows:
 
@@ -248,42 +247,41 @@ Note：
 
 Single-table dynamic sorting has field validation. If the incoming field is not a database field, throw exception.
 
-Multi-table dynamic sorting does not have illegal field validation. If the fields are illegal, throw SqlGrammarException when sql is executed, but sql injection is prevented.
+Multi-table dynamic sorting does not have illegal field validation. If the fields are illegal, throw ``SqlGrammarException`` when sql is executed, but sql injection is prevented.
 
 In sql, the splicing of order by can only be spliced at the end of the sql statement, if there is a paging parameter, at the end of the sql statement, paging parameters before splicing. Does not support nested result queries, splicing order by in the middle of sql. If customize the order by position, currently only manually write SQL, the sort field passed in the form of parameters.
 
 ## Dependencies
 
-- choerodon-starter-core: Page对象和PageInfo对象
-- mybatis-spring-boot-starter
-- com.github.jsqlparse
-- com.fasterxml.jackson.core
-- javax.persistence
-- mysql-connector-java
-- swagger-annotations
-
+- `choerodon-starter-core`: `Page` object and `PageInfo` object
+- `mybatis-spring-boot-starter`
+- `com.github.jsqlparse`
+- `com.fasterxml.jackson.core`
+- `javax.persistence`
+- `mysql-connector-java`
+- `swagger-annotations`
 
 ## Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
 
 ## How to Contribute
 
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
 
 ## Note
 
 * If the property is not a property of a field which in the table, the `@Transient` annotation must be added so that dynamic sql will not get the column.
 
-* In the entity class, add the @MultiLanguage annotation to the class. Multi-language support enabled, multi-language fields need to add `@MultiLanguageField` annotation.
+* In the entity class, add the `@MultiLanguage` annotation to the class. Multi-language support enabled, multi-language fields need to add `@MultiLanguageField` annotation.
 
-* Universal Mapper does not support devtools hot loading, devtools excludes entity package, configuration method reference: [sing-boot-devtools-customizing-classload] (https://docs.spring.io/spring-boot/docs/current/ Reference/html/using-boot-devtools.html#using-boot-devtools-customizing-classload)
+* Universal Mapper does not support devtools hot loading, devtools excludes entity package, configuration method reference: [spring-boot-devtools-customizing-classload](https://docs.spring.io/spring-boot/docs/current/Reference/html/using-boot-devtools.html#using-boot-devtools-customizing-classload)
 
 * Only the first method of Mybatis Select that follows the PageHelper.startPage method will be paged.
 
 * Please do not configure multiple paging plugins.
 
-* Please do not configure multiple paging plugins in the system (When using Spring, mybatis-serviceConfig.xml and Spring<bean> configuration methods, please select one, do not configure multiple paging plugins at the same time)!
+* Please do not configure multiple paging plugins in the system (When using Spring, `mybatis-serviceConfig.xml` and Spring `<bean>` configuration methods, please select one, do not configure multiple paging plugins at the same time)!
 
 * Pagination plugin does not support pagination with the statement of for update.
 * For SQL with for update, it will throw a runtime exception, for such SQL suggested manual paging, after all, such sql need to pay attention.

@@ -1,6 +1,6 @@
-# choerodon-starter-parent
+# Choerodon Starter Parent
 
-The is the toolkit developed by Choerodon and provides some basic dependency for use in the development process. 
+This is the toolkit developed by Choerodon and provides some basic dependencies for use in the development process. 
 
 * [choerodon-starter-bus](choerodon-starter-bus/README.md)
 * [choerodon-starter-config-client](choerodon-starter-config-client/README.md)
@@ -22,10 +22,13 @@ The is the toolkit developed by Choerodon and provides some basic dependency for
 ```
 git clone https://github.com/choerodon/choerodon-starters.git
 ```
+## Links
+
+* [Change Log](./CHANGELOG.zh-CN.md)
 
 ## Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
     
 ## How to Contribute
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.

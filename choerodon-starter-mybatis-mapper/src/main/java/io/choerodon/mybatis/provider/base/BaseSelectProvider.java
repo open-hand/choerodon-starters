@@ -52,12 +52,13 @@ public class BaseSelectProvider extends MapperTemplate {
         //修改返回值类型为实体类型
         setResultType(ms, entityClass);
         StringBuilder sql = new StringBuilder();
-        if(EntityHelper.getTableByEntity(entityClass).isMultiLanguage()) {
+        if (EntityHelper.getTableByEntity(entityClass).isMultiLanguage()) {
             sql.append(SqlHelper.getLangBind());
         }
         sql.append(SqlHelper.selectAllColumns(entityClass));
         sql.append(SqlHelper.selectFromTableTl(entityClass, tableName(entityClass)));
         sql.append(SqlHelper.whereAllIfColumnsTl(entityClass, isNotEmpty()));
+        sql.append(" limit 1");
         return sql.toString();
     }
 
@@ -86,7 +87,7 @@ public class BaseSelectProvider extends MapperTemplate {
      * 根据主键进行查询
      *
      * @param ms MappedStatement
-     * @return  String String
+     * @return String String
      */
     public String selectByPrimaryKey(MappedStatement ms) {
         final Class<?> entityClass = getEntityClass(ms);

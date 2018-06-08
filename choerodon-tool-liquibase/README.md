@@ -6,10 +6,10 @@ According to the groovy files and xlsx files in the project, it automatically pe
 
 ## Usage
 
-* Get the package of jar：
+* Get the jar：
 
 ```
-curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.5.0.RELEASE/choerodon-tool-liquibase-0.5.0.RELEASE.jar -o choerodon-tool-liquibase.jar
+curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.5.1.RELEASE/choerodon-tool-liquibase-0.5.1.RELEASE.jar -o choerodon-tool-liquibase.jar
 ```
 * Example:
 
@@ -56,11 +56,11 @@ Explanation：
 
 ## Dependencies
 
-* mysql
+* MySQL
 
-## Reporting Issues
+##  Reporting Issues
 
-If you find any shortcomings or bugs, please describe them in the Issue.
+If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
     
 ## How to Contribute
-Pull requests are welcome! Follow this link for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
