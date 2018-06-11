@@ -15,3 +15,10 @@
 - `choerodon-starter-core`的`CustomUserDetails`添加`is_admin`字段。
 - `choerodon-starter-mybatis-mapper`单表排序支持从`@Column`注解里拿到数据库列名。
 - `choerodon-starter-mybatis-mapper`修复`selectOne`查询条件匹配到多条数据时会出现的异常。
+
+
+## [0.5.2]
+
+### 修改
+
+- `choerodon-starter-tool`修改为每次初始化只更新is_default的配置，而不是每次产生新配置。

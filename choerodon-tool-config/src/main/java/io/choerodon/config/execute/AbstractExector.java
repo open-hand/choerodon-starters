@@ -1,28 +1,26 @@
 package io.choerodon.config.execute;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Date;
-
-import java.io.File;
-import java.io.IOException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.choerodon.config.domain.ServiceConfig;
 import io.choerodon.config.domain.Service;
+import io.choerodon.config.domain.ServiceConfig;
 import io.choerodon.config.mapper.ServiceConfigMapper;
 import io.choerodon.config.mapper.ServiceMapper;
 import io.choerodon.config.parser.Parser;
 import io.choerodon.config.parser.ParserFactory;
 import io.choerodon.config.utils.ConfigFileFormat;
 import io.choerodon.config.utils.FileUtil;
-
+import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 存储配置文件执行器
@@ -30,11 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @author wuguokai
  */
 public abstract class AbstractExector implements Executor {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExector.class);
+
     private FileUtil fileUtil = new FileUtil();
     private ObjectMapper objectMapper = new ObjectMapper();
     private ServiceMapper serviceMapper;
     private ServiceConfigMapper serviceConfigMapper;
+    private static final String CONFIG_BY_TOOL = "工具生成";
 
     AbstractExector(ApplicationContext applicationContext) {
         this.serviceMapper = applicationContext.getBean(ServiceMapper.class);
@@ -44,14 +45,14 @@ public abstract class AbstractExector implements Executor {
     /**
      * 存储配置文件解析成Config对象，存储到数据库
      *
-     * @param serviceName    服务名称
-     * @param serviceVersion 服务版本
-     * @param configFile     配置文件路径
+     * @param serviceName 服务名称
+     * @param configFile  配置文件路径
      * @throws IOException 文件读写异常
      */
+    @SuppressWarnings("unchecked")
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void execute(String serviceName, String serviceVersion, String configFile) throws IOException {
+    public void execute(String serviceName, String configFile) throws IOException {
         File file = new File(configFile);
         ConfigFileFormat fileFormat = ConfigFileFormat.fromString(fileUtil.getFileExt(file));
         Parser parser = ParserFactory.getParser(fileFormat);
@@ -65,31 +66,23 @@ public abstract class AbstractExector implements Executor {
 
         ServiceConfig queryServiceConfig = new ServiceConfig();
         queryServiceConfig.setServiceId(service.getId());
-        queryServiceConfig.setConfigVersion(serviceVersion);
+        queryServiceConfig.setDefault(true);
         ServiceConfig serviceConfig = serviceConfigMapper.selectOne(queryServiceConfig);
-        if (serviceConfig == null) {
-            serviceConfig = serviceConfigMapper.selectOneByServiceDefault(serviceName);
 
-            Map<String, Object> baseMap = serviceConfig != null ? objectMapper.readValue(serviceConfig.getValue(), Map.class) :
-                    new LinkedHashMap<>();
+        if (serviceConfig == null) {
+            serviceConfig = new ServiceConfig(serviceName + "." + System.currentTimeMillis(), true, service.getId(),
+                    objectMapper.writeValueAsString(map), CONFIG_BY_TOOL, new Date(System.currentTimeMillis()));
+            if (serviceConfigMapper.insert(serviceConfig) != 1) {
+                throw new CommonException("error.serviceConfig.insert");
+            }
+        } else {
+            Map<String, Object> baseMap = objectMapper.readValue(serviceConfig.getValue(), Map.class);
             Map<String, Object> mergeMap = mergeMap(baseMap, map);
             String newJson = objectMapper.writeValueAsString(mergeMap);
-            ServiceConfig newServiceConfig = new ServiceConfig();
-            newServiceConfig.setName(serviceName+"."+System.currentTimeMillis());
-            newServiceConfig.setConfigVersion(serviceVersion);
-            newServiceConfig.setServiceId(service.getId());
-            newServiceConfig.setDefault(true);
-            newServiceConfig.setPublicTime(new Date(System.currentTimeMillis()));
-            newServiceConfig.setValue(newJson);
-            newServiceConfig.setSource("工具生成");
-            if (serviceConfig != null) {
-                serviceConfig.setDefault(false);
-                serviceConfigMapper.updateByPrimaryKey(serviceConfig);
+            serviceConfig.setValue(newJson);
+            if (serviceConfigMapper.updateByPrimaryKeySelective(serviceConfig) != 1) {
+                throw new CommonException("error.serviceConfig.update");
             }
-            serviceConfigMapper.insert(newServiceConfig);
-            LOGGER.warn("{} - {} 配置初始化完成", serviceName, serviceVersion);
-        } else {
-            LOGGER.warn("{} - {} 已有配置载入", serviceName, serviceVersion);
         }
     }
 

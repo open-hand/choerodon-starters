@@ -35,9 +35,6 @@ public class ConfigToolExecute implements CommandLineRunner {
     @Value("${service.name:#{null}}")
     private String serviceName;
 
-    @Value("${service.version:#{null}}")
-    private String serviceVersion;
-
     @Value("${config.jar:#{null}}")
     private String jar;
 
@@ -70,7 +67,7 @@ public class ConfigToolExecute implements CommandLineRunner {
     @Override
     public void run(String... strings) {
         try {
-            if (StringUtil.isEmpty(serviceName) || StringUtil.isEmpty(serviceVersion)) {
+            if (StringUtil.isEmpty(serviceName)) {
                 throw new IllegalStateException("请传入应用名service.name和service.version");
             }
             String dir = ".";
@@ -79,12 +76,12 @@ public class ConfigToolExecute implements CommandLineRunner {
                 fileUtil.extra(jar, TEMP_DIR_NAME);
                 dir = TEMP_DIR_NAME;
             }
-            LOGGER.info("根据指定文件进行配置初始化: {} - {}", serviceName, serviceVersion);
+            LOGGER.info("根据指定文件进行配置初始化: {}", serviceName);
             List<File> fileList = fileUtil.getDirRecursive(new File(dir));
             String absConfigFilePath = fileUtil.getDirInJar(fileList, configFileName);
             ServiceType type = judgeType(serviceName);
             Executor executor = executorFactory.getExecutor(type);
-            executor.execute(serviceName, serviceVersion, absConfigFilePath);
+            executor.execute(serviceName, absConfigFilePath);
             System.exit(0);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());

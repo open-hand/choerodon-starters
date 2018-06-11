@@ -100,4 +100,16 @@ public class ServiceConfig extends AuditDomain {
     public void setPublicTime(Date publicTime) {
         this.publicTime = publicTime;
     }
+
+    public ServiceConfig() {
+    }
+
+    public ServiceConfig(String name, Boolean isDefault, Long serviceId, String value, String source, Date publicTime) {
+        this.name = name;
+        this.isDefault = isDefault;
+        this.serviceId = serviceId;
+        this.value = value;
+        this.source = source;
+        this.publicTime = publicTime;
+    }
 }
