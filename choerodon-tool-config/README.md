@@ -29,7 +29,6 @@ java -Dspring.datasource.url="jdbc:mysql://localhost/manager_service?useUnicode=
  -Dspring.datasource.username=choerodon \
  -Dspring.datasource.password=123456 \
  -Dservice.name=serviceName \ # Service name
- -Dservice.version=serviceVersion \ # Service version
  -Dconfig.file=src/main/resources/application-default.yml \
  -jar target/choerodon-tool-config.jar 
 ```
@@ -41,7 +40,6 @@ java -Dspring.datasource.url="jdbc:mysql://localhost/manager_service?useUnicode=
  -Dspring.datasource.username=choerodon \
  -Dspring.datasource.password=123456 \
  -Dservice.name=serviceName \ # Service name
- -Dservice.version=serviceVersion \ #Service version
  -Dconfig.jar=app.jar \ # To import the rack package to which the configuration belongs, take the actual path as the standard
  -Dconfig.file=application-default.yml \ # To import the configuration file, please follow the path of the file in the rack package
  -jar /home/data/choerodon-tool-config.jar # The path of the rack package is subject to the actual.
@@ -52,7 +50,6 @@ Explanation：
 1. `spring.datasource.username`: Username, required.
 1. `spring.datasource.password`: Password, required.
 1. `service.name`: Servicename, required.
-1. `service.version`: Serviceversio, required.
 1. `config.file`: Search for a configuration file name, if there are multiple configuration files with the same name in the project, the current matching policy will use the first file with the same name. The user can also increase the precision of matching by adding a prefix path, such as `src/main/resources/application-default.yml`. Make sure to use `/` instead of `\` as the path separator. The default is `Application-default.yml`.
 
 1. `config.jar`: If the application has been used as a package of rack, you can enter the name of package of rack here, and the package of rack will be disassembled to search for the configuration file. The default value is null.
