@@ -34,8 +34,6 @@ public class RefreshListener
 
     private static final String CONFIG_LABEL = "spring.cloud.config.label";
 
-    private static final String DEFAULT_VERSION = "default";
-
     private static Log log = LogFactory.getLog(RefreshListener.class);
 
     private EnvironmentManager environmentManager;
@@ -49,9 +47,7 @@ public class RefreshListener
 
     @Override
     public void onApplicationEvent(RefreshRemoteApplicationEvent event) {
-        if (StringUtils.isEmpty(event.getConfigVersion())) {
-            environmentManager.setProperty(CONFIG_LABEL, DEFAULT_VERSION);
-        } else {
+        if (!StringUtils.isEmpty(event.getConfigVersion())) {
             environmentManager.setProperty(CONFIG_LABEL, event.getConfigVersion());
         }
         Set<String> keys = contextRefresher.refresh();
