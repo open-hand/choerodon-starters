@@ -201,7 +201,7 @@ public class DbAdaptor {
      * @return update count
      * @throws SQLException SQL异常
      */
-    protected int doUpdate(TableData.TableRow tableRow) throws SQLException {
+    protected int doUpdate(TableData.TableRow tableRow, Set<String> excludedColumns, Set<String> logInfo) throws SQLException {
         int updateCount = 0;
         TableCellValue genTableCellValue = null;
         List<TableCellValue> uniques = new ArrayList<>();
@@ -213,9 +213,17 @@ public class DbAdaptor {
             if (tableCellValue.getColumn().isGen()) {
                 genTableCellValue = tableCellValue;
             } else if (tableCellValue.getColumn().isUnique()) {
-                uniques.add(tableCellValue);
+                if (!excluded(tableCellValue.getColumn().getName(), excludedColumns)) {
+                    uniques.add(tableCellValue);
+                } else {
+                    logInfo.add(processLog(tableRow, tableCellValue));
+                }
             } else {
-                normals.add(tableCellValue);
+                if (!excluded(tableCellValue.getColumn().getName(), excludedColumns)) {
+                    normals.add(tableCellValue);
+                } else {
+                    logInfo.add(processLog(tableRow, tableCellValue));
+                }
             }
         }
         if (genTableCellValue != null) {
@@ -225,7 +233,7 @@ public class DbAdaptor {
         if (normals.isEmpty()) {
             return updateCount;
         }
-
+        //更新表的sql
         String sql = prepareTableUpdateSql(tableRow, uniques, normals);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int index = 1;
@@ -249,7 +257,7 @@ public class DbAdaptor {
         if (genTableCellValue == null || tableRow.getTable().getLangs().isEmpty()) {
             return updateCount;
         }
-
+        //更新多语言表的sql
         sql = prepareTableUpdateTlSql(tableRow, genTableCellValue, normals);
 
         for (String lang : tableRow.getTable().getLangs()) {
@@ -271,6 +279,26 @@ public class DbAdaptor {
         }
         return updateCount;
 
+    }
+
+    private String processLog(TableData.TableRow tableRow, TableCellValue tableCellValue) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("skip update table : ");
+        sb.append(tableRow.getTable().getName());
+        sb.append(" column: ");
+        sb.append(tableCellValue.getColumn().getName());
+        return sb.toString();
+    }
+
+    private boolean excluded(String column, Set<String> excludedColumns) {
+        if (excludedColumns != null) {
+            for (String excludedColumn : excludedColumns) {
+                if (excludedColumn != null && excludedColumn.equals(column)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private String prepareTableUpdateSql(TableData.TableRow tableRow,
