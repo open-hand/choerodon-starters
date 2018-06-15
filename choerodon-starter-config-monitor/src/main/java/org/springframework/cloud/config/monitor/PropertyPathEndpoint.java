@@ -75,12 +75,12 @@ public class PropertyPathEndpoint
         if (notification != null) {
             String destinationInstance = null;
             Object instance = request.get(KEY_INSTANCE);
-            if (instance != null && instance instanceof String) {
+            if (instance instanceof String) {
                 destinationInstance = (String) instance;
             }
             String configVersion = null;
             Object config = request.get(KEY_CONFIG_VERSION);
-            if (config != null && config instanceof String) {
+            if (config instanceof String) {
                 configVersion = (String) config;
             }
             LOGGER.info("spring.cloud.config.monitor get refresh config request {}", request);
@@ -117,7 +117,6 @@ public class PropertyPathEndpoint
         if (path != null) {
             String stem = StringUtils
                     .stripFilenameExtension(StringUtils.getFilename(StringUtils.cleanPath(path)));
-            // TODO: correlate with service registry
             int index = stem.indexOf('-');
             while (index >= 0) {
                 String name = stem.substring(0, index);

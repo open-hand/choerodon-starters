@@ -23,3 +23,4 @@
 
 - `choerodon-starter-tool`修改为每次初始化只更新is_default的配置，而不是每次产生新配置。
 - `choerodon-starter-bus`修改为服务拉取配置时，当bus消息的版本字段为空时拉取实例正在应用的配置，而不是拉取默认配置。
+- `choerodon-starter-swagger`扫描到的controller去除了BasicErrorController
