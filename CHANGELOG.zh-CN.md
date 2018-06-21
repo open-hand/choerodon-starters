@@ -19,8 +19,10 @@
 
 ## [0.5.2]
 
-### 修改
+### 修改 - 2018-06-22
 
-- `choerodon-starter-tool`修改为每次初始化只更新is_default的配置，而不是每次产生新配置。
+- `choerodon-tool-config`修改为每次初始化只更新is_default的配置，而不是每次产生新配置。
 - `choerodon-starter-bus`修改为服务拉取配置时，当bus消息的版本字段为空时拉取实例正在应用的配置，而不是拉取默认配置。
-- `choerodon-starter-swagger`扫描到的controller去除了BasicErrorController
+- `choerodon-starter-swagger`扫描到的controller去除了BasicErrorController。
+- `choerodon-starter-core`添加了InitRoleCode常量类；删除了@Permission注解的roles字段默认值。
+- `choerodon-tool-liquibase`数据库迁移添加了忽略指定表或者列的功能。
