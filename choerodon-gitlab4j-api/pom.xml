@@ -4,7 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>choerodon-gitlab4j-api</artifactId>
 	<packaging>jar</packaging>
-	<name>GitLab API Java Client</name>
+	<name>choerodon-gitlab4j-api</name>
+	<description>GitLab API Java Client</description>
 
 	<properties>
 		<jdk.version>1.7</jdk.version>
