@@ -153,7 +153,7 @@ public ResponseEntity<List<OrganizationDTO>> create(@RequestBody @Valid ValidLis
 ## Dependencies
 
 - ``org.springframework.security.oauth``: Oauth module reference dependencies
-- ``com.fasterxml.jackson.core``: Date serialization and deserialization of oauth module
+- ``com.fasterxml.jackson.core``: Data serialization and deserialization of oauth module
 - ``javax.validation``: Class of verification tools of verifying relation
 
 ## Reporting Issues
