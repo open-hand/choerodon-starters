@@ -9,7 +9,7 @@ According to the groovy files and xlsx files in the project, it automatically pe
 * Get the jar：
 
 ```
-curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.5.1.RELEASE/choerodon-tool-liquibase-0.5.1.RELEASE.jar -o choerodon-tool-liquibase.jar
+curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.5.2.RELEASE/choerodon-tool-liquibase-0.5.2.RELEASE.jar -o choerodon-tool-liquibase.jar
 ```
 * Example:
 
@@ -18,6 +18,9 @@ java \
  -Dspring.datasource.url='jdbc:mysql://localhost/choeroson_database?useUnicode=true&characterEncoding=utf-8&useSSL=false' \
  -Dspring.datasource.username=choerodon \
  -Dspring.datasource.password=123456 \
+ -Ddata.drop=false -Ddata.init=true \
+ -Ddata.dir=src/main/resources \
+ -Ddata.update.exclusion=iam_user.password, iam_role.code, iam_role.description
  -Ddata.jar=app.jar \
  -jar choerodon-tool-liquibase.jar
 ```
@@ -47,11 +50,12 @@ java \
 Explanation：
 
 1. spring.datasource.url: Data source, required.
-1. spring.datasource.username: Username，required.
-1. spring.datasource.password: password，required.
-1. data.jar: The address of the data jar, it can start with http, https,file. At the end of '.jar'.
-1. data.dir: File directory, applicable to the development phase, it can automatically find groovy or xlsx.
-1. data.drop: Rebuild the database. default is false
+2. spring.datasource.username: Username，required.
+3. spring.datasource.password: password，required.
+4. data.jar: The address of the data jar, it can start with http, https,file. At the end of '.jar'.
+5. data.dir: File directory, applicable to the development phase, it can automatically find groovy or xlsx.
+6. data.drop: Rebuild the database. default is false.
+7. data.update.exclusion: Exclude the whole table or column when update the db data by excel. Use the `,` to split the table and use `.` to express the column of table  
 
 
 ## Dependencies

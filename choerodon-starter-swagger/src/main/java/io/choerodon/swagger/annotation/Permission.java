@@ -19,7 +19,7 @@ public @interface Permission {
      * 角色
      * @return 角色数组
      */
-    String[] roles() default {"admin"};
+    String[] roles() default {};
 
     /**
      * 级别

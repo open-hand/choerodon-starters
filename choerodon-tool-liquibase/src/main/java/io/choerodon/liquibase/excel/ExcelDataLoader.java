@@ -2,10 +2,7 @@ package io.choerodon.liquibase.excel;
 
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.sql.DataSource;
 
 import io.choerodon.core.exception.CommonException;
@@ -28,7 +25,7 @@ public class ExcelDataLoader {
 
     private String filePath;
 
-    private Set<String> updateSkipTableNames = new HashSet<>();
+    private Map<String, Set<String>> updateExclusionMap = new HashMap<>();
 
     /**
      * A=1,Z=26,AA=27,AB=28
@@ -55,12 +52,12 @@ public class ExcelDataLoader {
         this.filePath = filePath;
     }
 
-    public Set<String> getUpdateSkipTableNames() {
-        return updateSkipTableNames;
+    public Map<String, Set<String>> getUpdateExclusionMap() {
+        return updateExclusionMap;
     }
 
-    public void setUpdateSkipTableNames(Set<String> updateSkipTableNames) {
-        this.updateSkipTableNames = updateSkipTableNames;
+    public void setUpdateExclusionMap(Map<String, Set<String>> updateExclusionMap) {
+        this.updateExclusionMap = updateExclusionMap;
     }
 
     /**
@@ -124,14 +121,33 @@ public class ExcelDataLoader {
         logger.info("begin update exists datas...");
         int uc = 0;
         for (TableData tableData : tables) {
-            if (updateSkipTableNames.contains(tableData.getName())) {
-                logger.info("skip update table : {}", tableData.getName());
+            boolean skipWholeTable = false;
+            for (Map.Entry<String, Set<String>> entry : updateExclusionMap.entrySet()) {
+                String tableName = entry.getKey();
+                Set<String> columnSet = entry.getValue();
+                //如果只有表名没有列集合，跳过整张表
+                if (columnSet == null || columnSet.isEmpty()) {
+                    if (tableName.equals(tableData.getName())) {
+                        updateExclusionMap.remove(tableName);
+                        logger.info("skip update table : {}", tableData.getName());
+                        skipWholeTable = true;
+                        break;
+                    }
+                }
+            }
+            if (skipWholeTable) {
                 continue;
             }
+            Set<String> exclusionColumns = updateExclusionMap.get(tableData.getName());
+            Set<String> logInfo = new HashSet<>();
             for (TableData.TableRow tableRow : tableData.getTableRows()) {
                 if (tableRow.isExistsFlag()) {
-                    uc += dbAdaptor.doUpdate(tableRow);
+                    uc += dbAdaptor.doUpdate(tableRow, exclusionColumns, logInfo);
                 }
+            }
+            //输出跳过列的log
+            for (String log : logInfo) {
+                logger.info(log);
             }
         }
         logger.info("update complete, update row:{} (include tl)", uc);

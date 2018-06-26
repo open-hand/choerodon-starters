@@ -8,15 +8,12 @@ This service comes from ``spring cloud bus 1.3.x``, and add version and the info
   
   ```java
   public void onApplicationEvent(RefreshRemoteApplicationEvent event) {
-        if (StringUtils.isEmpty(event.getConfigVersion())) {
-            environmentManager.setProperty(CONFIG_LABEL, DEFAULT_VERSION);
-        } else {
-            environmentManager.setProperty(CONFIG_LABEL, event.getConfigVersion());
-        }
-        Set<String> keys = contextRefresher.refresh();
-        log.info("Received remote refresh request. Keys refreshed " + keys);
-    }
-
+      if (!StringUtils.isEmpty(event.getConfigVersion())) {
+          environmentManager.setProperty(CONFIG_LABEL, event.getConfigVersion());
+      }
+      Set<String> keys = contextRefresher.refresh();
+      log.info("Received remote refresh request. Keys refreshed " + keys);  
+  }
   ```
   
 ## Requirements
@@ -45,7 +42,7 @@ git clone https://github.com/choerodon/choerodon-starters.git
   <dependency>
 	    <groupId>io.choerodon</groupId>
 	    <artifactId>choerodon-starter-bus</artifactId>
-	    <version>0.5.1.RELEASE</version>
+	    <version>0.5.2.RELEASE</version>
   </dependency>
  ```
 

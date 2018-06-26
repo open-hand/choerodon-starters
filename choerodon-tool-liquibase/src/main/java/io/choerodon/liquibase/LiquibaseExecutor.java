@@ -51,6 +51,9 @@ public class LiquibaseExecutor implements CommandLineRunner {
     @Value("${data.drop:false}")
     private boolean defaultDrop;
 
+    @Value("${data.update.exclusion:#{null}}")
+    private String updateExclusion;
+
     // 额外源
     @Value("${addition.datasource.names:#{null}}")
     private String additionDataSourceNameProfile;
@@ -217,6 +220,7 @@ public class LiquibaseExecutor implements CommandLineRunner {
 
     private void load(String dir, DataSource dataSource, boolean drop)
             throws IOException, CustomChangeException, SQLException, LiquibaseException {
+        Map<String, Set<String>> updateExclusionMap = processExclusion();
         ResourceAccessor accessor = new CusFileSystemResourceAccessor(dir);
         Set<String> fileNameSet = accessor.list(null, File.separator, true, false, true);
         List<String> fileNameList = new ArrayList<>();
@@ -236,8 +240,45 @@ public class LiquibaseExecutor implements CommandLineRunner {
             if (file.endsWith(SUFFIX_XLSX)) {
                 ExcelDataLoader loader = new ExcelDataLoader();
                 Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
+                loader.setUpdateExclusionMap(updateExclusionMap);
                 loader.execute(inputStream.iterator().next(), dataSource);
             }
         }
+    }
+
+    /**
+     *
+     * exclusion参数的格式是table1.column1, table1.column2, table2.column, table3
+     * 此方法把string转为maps
+     * @return
+     */
+    private Map<String,Set<String>> processExclusion() {
+        Map<String, Set<String>> map = new HashMap<>();
+        if (updateExclusion != null) {
+            String[] array = updateExclusion.split(",");
+            for (String str : array) {
+                if (str != null && str.contains(".")) {
+                    String[] strArray =  str.split("\\.");
+                    String tableName = strArray[0];
+                    String columnName = strArray[1];
+                    Set<String> columns = map.get(tableName);
+                    if (columns == null) {
+                        Set<String> set = new HashSet<>();
+                        set.add(columnName);
+                        map.put(tableName, set);
+                    } else {
+                        columns.add(columnName);
+                    }
+                } else {
+                    //排除整张表的情况
+                    String tableName = str;
+                    if (map.get(tableName) == null) {
+                        map.put(tableName, null);
+                    }
+                }
+            }
+        }
+        return map;
+
     }
 }
