@@ -40,9 +40,13 @@ public class AgentSecurityInterceptor implements SecurityInterceptor {
             }
         }else {
             String envId = request.getServletRequest().getParameter("envId");
-            String  token = request.getServletRequest().getParameter("token");
-            if ((envId == null || envId.trim().isEmpty()) ||(token == null || token.trim().isEmpty()) ){
-                throw new RuntimeException("envId or token null");
+            String token = request.getServletRequest().getParameter("token");
+            String version = request.getServletRequest().getParameter("version");
+            if ((envId == null ||
+                    envId.trim().isEmpty()) ||
+                    (token == null || token.trim().isEmpty()) ||
+                    version == null || version.trim().isEmpty()){
+                throw new RuntimeException("envId or token or version null!");
             }
             boolean success = agentTokenInterceptor.checkToken(request.getServletRequest().getParameter("envId"),
                     request.getServletRequest().getParameter("token"));
