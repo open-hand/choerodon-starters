@@ -60,7 +60,6 @@
     </dependencies>
 
     <build>
-        <finalName>choerodon-starter-liquibase</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
