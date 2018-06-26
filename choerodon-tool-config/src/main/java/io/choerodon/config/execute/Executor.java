@@ -8,5 +8,7 @@ import java.io.IOException;
  * @author wuguokai
  */
 public interface Executor {
-    void execute(String serviceName, String serviceVersion, String configFile) throws IOException;
+
+    void execute(String serviceName, String configFile) throws IOException;
+
 }

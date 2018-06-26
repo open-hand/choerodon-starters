@@ -5,7 +5,7 @@
     <parent>
         <artifactId>choerodon-starter-parent</artifactId>
         <groupId>io.choerodon</groupId>
-        <version>0.5.1.RELEASE</version>
+        <version>0.5.2.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -60,7 +60,6 @@
     </dependencies>
 
     <build>
-        <finalName>choerodon-starter-liquibase</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -27,7 +27,7 @@ Add the following dependencies of maven to the project
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-feign-replay</artifactId>
-    <version>0.5.1.RELEASE</version>
+    <version>0.5.2.RELEASE</version>
 </dependency>
 ```
 ## Dependencies
