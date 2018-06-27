@@ -20,7 +20,7 @@ java \
  -Dspring.datasource.password=123456 \
  -Ddata.drop=false -Ddata.init=true \
  -Ddata.dir=src/main/resources \
- -Ddata.update.exclusion=iam_user.password, iam_role.code, iam_role.description
+ -Ddata.update.exclusion=iam_user.password, iam_role.code, iam_role.description \
  -Ddata.jar=app.jar \
  -jar choerodon-tool-liquibase.jar
 ```
