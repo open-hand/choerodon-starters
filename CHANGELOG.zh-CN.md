@@ -4,6 +4,12 @@
 
 ## [0.5.2] - 2018-06-22
 
+### 修复
+
+- `choerodon-starter-bus`修复没有@EnableEurekaClient注解时会出现的缺少`eurekaRegistration`bean的异常。
+
+## [0.5.2] - 2018-06-22
+
 ### 修改
 
 - `choerodon-tool-config`修改为每次初始化只更新is_default的配置，而不是每次产生新配置。

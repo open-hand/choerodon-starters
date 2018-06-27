@@ -26,6 +26,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 /**
  * @author Spencer Gibb
  */
@@ -33,12 +35,12 @@ public class ServiceMatcher implements ApplicationContextAware {
 
     private PathMatcher matcher;
 
-    private EurekaRegistration eurekaRegistration;
+    private Optional<EurekaRegistration> eurekaRegistration;
 
     private ApplicationContext context;
 
 
-    public ServiceMatcher(EurekaRegistration eurekaRegistration) {
+    public ServiceMatcher(Optional<EurekaRegistration> eurekaRegistration) {
         this.eurekaRegistration = eurekaRegistration;
     }
 
@@ -65,12 +67,14 @@ public class ServiceMatcher implements ApplicationContextAware {
         if (!serviceMatch) {
             return false;
         }
-        boolean instanceMatch = true;
-        CloudEurekaInstanceConfig cloudEurekaInstanceConfig = eurekaRegistration.getInstanceConfig();
-        if (cloudEurekaInstanceConfig instanceof EurekaInstanceConfigBean) {
-            EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
-            instanceMatch = (StringUtils.isEmpty(destinationInstanceId)
-                    || destinationInstanceId.equals(eurekaInstanceConfigBean.getInstanceId()));
+        Boolean instanceMatch = true;
+        if (eurekaRegistration.isPresent()) {
+            CloudEurekaInstanceConfig cloudEurekaInstanceConfig = eurekaRegistration.get().getInstanceConfig();
+            if (cloudEurekaInstanceConfig instanceof EurekaInstanceConfigBean) {
+                EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
+                instanceMatch = (StringUtils.isEmpty(destinationInstanceId)
+                        || destinationInstanceId.equals(eurekaInstanceConfigBean.getInstanceId()));
+            }
         }
         return instanceMatch;
     }
