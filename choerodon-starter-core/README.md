@@ -24,7 +24,7 @@ If the project uses the toolkit, it only needs to introduce the following the de
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-core</artifactId>
-    <version>0.5.2.RELEASE</version>
+    <version>0.5.3.RELEASE</version>
 </dependency>
 ```
 
@@ -153,7 +153,7 @@ public ResponseEntity<List<OrganizationDTO>> create(@RequestBody @Valid ValidLis
 ## Dependencies
 
 - ``org.springframework.security.oauth``: Oauth module reference dependencies
-- ``com.fasterxml.jackson.core``: Date serialization and deserialization of oauth module
+- ``com.fasterxml.jackson.core``: Data serialization and deserialization of oauth module
 - ``javax.validation``: Class of verification tools of verifying relation
 
 ## Reporting Issues
