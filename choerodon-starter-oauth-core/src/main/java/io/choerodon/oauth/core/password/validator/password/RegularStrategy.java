@@ -1,13 +1,13 @@
 package io.choerodon.oauth.core.password.validator.password;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.core.password.PasswordPolicyMap;
 import io.choerodon.oauth.core.password.PasswordPolicyType;
 import io.choerodon.oauth.core.password.PasswordStrategy;
 import io.choerodon.oauth.core.password.domain.BaseUserDO;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author wuguokai
@@ -18,10 +18,13 @@ public class RegularStrategy implements PasswordStrategy {
 
     @Override
     public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
-        Pattern pattern = (Pattern) policyMap.getPasswordConfig().get(TYPE);
-        Matcher matcher = pattern.matcher(password);
-        if (!matcher.matches()) {
-            throw new CommonException(ERROR_MESSAGE);
+        Object reg = policyMap.getPasswordConfig().get(TYPE);
+        if (reg instanceof String) {
+            Pattern pattern = Pattern.compile((String) reg);
+            Matcher matcher = pattern.matcher(password);
+            if (!matcher.matches()) {
+                throw new CommonException(ERROR_MESSAGE);
+            }
         }
         return null;
     }

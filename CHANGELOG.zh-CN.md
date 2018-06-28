@@ -2,11 +2,12 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
-## [0.5.2] - 2018-06-22
+## [0.5.3] - 2018-06-22
 
 ### 修复
 
 - `choerodon-starter-bus`修复没有@EnableEurekaClient注解时会出现的缺少`eurekaRegistration`bean的异常。
+- `choerodon-starter-oauth-core`修复密码策略中正则策略异常。
 
 ## [0.5.2] - 2018-06-22
 
