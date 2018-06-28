@@ -8,6 +8,7 @@
 
 - `choerodon-starter-bus`修复没有@EnableEurekaClient注解时会出现的缺少`eurekaRegistration`bean的异常。
 - `choerodon-starter-oauth-core`修复密码策略中正则策略异常。
+- 完善`agent websocket`连接参数条件判断
 
 ## [0.5.2] - 2018-06-22
 
