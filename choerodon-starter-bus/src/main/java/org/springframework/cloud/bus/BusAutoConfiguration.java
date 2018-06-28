@@ -50,6 +50,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 /**
  * @author Spencer Gibb
@@ -165,7 +166,8 @@ public class BusAutoConfiguration implements ApplicationEventPublisherAware {
         }
 
         @Bean
-        public ServiceMatcher serviceMatcher(@BusPathMatcher PathMatcher pathMatcher, EurekaRegistration eurekaRegistration) {
+        public ServiceMatcher serviceMatcher(@BusPathMatcher PathMatcher pathMatcher,
+                                             Optional<EurekaRegistration> eurekaRegistration) {
             ServiceMatcher serviceMatcher = new ServiceMatcher(eurekaRegistration);
             serviceMatcher.setMatcher(pathMatcher);
             return serviceMatcher;

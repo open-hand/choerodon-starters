@@ -14,7 +14,7 @@ The toolkit is used if there is a database operation in the Choerodon microservi
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-mybatis-mapper</artifactId>
-    <version>0.5.2.RELEASE</version>
+    <version>0.5.3.RELEASE</version>
 </dependency>
 ```
 
@@ -41,8 +41,8 @@ CREATE TABLE `user`  (
   `creation_date` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP,
   `last_updated_by` bigint(20) UNSIGNED NULL DEFAULT 0,
   `last_update_date` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `name`(`name`) USING BTREE
+  PRIMARY KEY (`pk_id`) USING BTREE,
+  UNIQUE INDEX `name`(`uk_name`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 867 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 INSERT INTO `user` VALUES (1, 'Daenerys Targaryen', 1, 0, '2018-04-11 03:09:38', 0, '2018-04-11 03:09:38');

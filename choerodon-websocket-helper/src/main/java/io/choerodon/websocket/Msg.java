@@ -17,7 +17,7 @@ public class Msg implements Serializable{
 
     //dispatch 到对应socket所在实例之后进行 发送而是找到对应
     // socket session执行相应逻辑
-    public static final int INTER =4;
+    public static final int INTER =5;
     private String id;
     private String key;
     private Map<String,Set<String>> brokersTO;

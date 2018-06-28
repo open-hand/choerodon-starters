@@ -9,7 +9,7 @@ According to the groovy files and xlsx files in the project, it automatically pe
 * Get the jar：
 
 ```
-curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.5.2.RELEASE/choerodon-tool-liquibase-0.5.2.RELEASE.jar -o choerodon-tool-liquibase.jar
+curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.5.3.RELEASE/choerodon-tool-liquibase-0.5.3.RELEASE.jar -o choerodon-tool-liquibase.jar
 ```
 * Example:
 
@@ -20,7 +20,7 @@ java \
  -Dspring.datasource.password=123456 \
  -Ddata.drop=false -Ddata.init=true \
  -Ddata.dir=src/main/resources \
- -Ddata.update.exclusion=iam_user.password, iam_role.code, iam_role.description
+ -Ddata.update.exclusion=iam_user.password, iam_role.code, iam_role.description \
  -Ddata.jar=app.jar \
  -jar choerodon-tool-liquibase.jar
 ```
