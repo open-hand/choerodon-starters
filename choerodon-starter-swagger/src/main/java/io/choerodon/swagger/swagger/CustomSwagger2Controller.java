@@ -1,9 +1,9 @@
-package io.choerodon.swagger.custom.swagger;
+package io.choerodon.swagger.swagger;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import io.choerodon.swagger.custom.extra.ExtraData;
-import io.choerodon.swagger.custom.extra.ExtraDataProcessor;
+import io.choerodon.swagger.swagger.extra.ExtraData;
+import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import io.swagger.models.Swagger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

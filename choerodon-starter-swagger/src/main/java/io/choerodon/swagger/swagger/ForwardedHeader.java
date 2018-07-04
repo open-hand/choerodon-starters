@@ -17,7 +17,7 @@
  *
  */
 //ATTRIBUTION: Lifted from spring-hateoas in order to not have a dependency on the library
-package io.choerodon.swagger.custom.swagger;
+package io.choerodon.swagger.swagger;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;

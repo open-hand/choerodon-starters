@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>0.5.3.RELEASE</version>
+    <version>0.5.4.RELEASE</version>
     <packaging>pom</packaging>
     <url>https://github.com/choerodon/choerodon-starters</url>
     <developers>
@@ -68,6 +68,7 @@
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-websocket-helper</module>
         <module>choerodon-gitlab4j-api</module>
+        <module>choerodon-starter-saga</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

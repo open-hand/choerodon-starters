@@ -1,8 +1,11 @@
 package io.choerodon.swagger;
 
-import io.choerodon.swagger.custom.extra.ExtraDataProcessor;
-import io.choerodon.swagger.custom.swagger.CustomSwagger2Controller;
 import io.choerodon.swagger.exclude.EnableHandSwagger2;
+import io.choerodon.swagger.property.PropertyController;
+import io.choerodon.swagger.property.PropertyData;
+import io.choerodon.swagger.property.PropertyDataProcessor;
+import io.choerodon.swagger.swagger.CustomSwagger2Controller;
+import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +31,7 @@ public class SwaggerConfig {
     /**
      * 配置swagger-ui
      * 因为包依赖没有BasicErrorController，所以没有使用instanceOf
+     *
      * @return swagger-ui Docket
      */
     @Bean
@@ -58,4 +62,21 @@ public class SwaggerConfig {
     public CustomSwagger2Controller customSwagger2Controller() {
         return new CustomSwagger2Controller();
     }
+
+    @Bean
+    public PropertyData propertyData() {
+        return new PropertyData();
+    }
+
+    @Bean
+    public PropertyDataProcessor propertyDataProcessor() {
+        return new PropertyDataProcessor(propertyData());
+    }
+
+
+    @Bean
+    public PropertyController propertyController() {
+        return new PropertyController(propertyData());
+    }
+
 }

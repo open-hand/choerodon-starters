@@ -1,4 +1,4 @@
-package io.choerodon.swagger.custom.extra;
+package io.choerodon.swagger.swagger.extra;
 
 import java.util.HashMap;
 import java.util.Map;

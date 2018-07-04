@@ -1,4 +1,4 @@
-package io.choerodon.swagger.custom.extra;
+package io.choerodon.swagger.swagger.extra;
 
 import io.choerodon.swagger.annotation.ChoerodonExtraData;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -10,6 +10,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 public class ExtraDataProcessor implements BeanPostProcessor {
 
     private ExtraData extraData = null;
+
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {

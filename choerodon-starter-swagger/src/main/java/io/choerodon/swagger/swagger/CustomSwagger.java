@@ -1,8 +1,8 @@
-package io.choerodon.swagger.custom.swagger;
+package io.choerodon.swagger.swagger;
 
 import io.swagger.models.Swagger;
 
-import io.choerodon.swagger.custom.extra.ExtraData;
+import io.choerodon.swagger.swagger.extra.ExtraData;
 
 import java.util.Objects;
 
