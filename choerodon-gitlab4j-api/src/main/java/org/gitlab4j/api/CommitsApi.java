@@ -2,19 +2,19 @@ package org.gitlab4j.api;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -23,17 +23,17 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-
 import org.gitlab4j.api.models.Comment;
 import org.gitlab4j.api.models.Commit;
+import org.gitlab4j.api.models.CommitStatuse;
 import org.gitlab4j.api.models.Diff;
 import org.gitlab4j.api.utils.ISO8601;
 
@@ -48,7 +48,7 @@ public class CommitsApi extends AbstractApi {
 
     /**
      * Get a list of repository commits in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits
      *
      * @param projectId the project ID to get the list of commits for
@@ -61,12 +61,12 @@ public class CommitsApi extends AbstractApi {
 
     /**
      * Get a list of repository commits in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits
      *
      * @param projectId the project ID to get the list of commits for
-     * @param page the page to get
-     * @param perPage the number of commits per page
+     * @param page      the page to get
+     * @param perPage   the number of commits per page
      * @return a list containing the commits for the specified project ID
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -76,10 +76,10 @@ public class CommitsApi extends AbstractApi {
 
     /**
      * Get a Pager of repository commits in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits
      *
-     * @param projectId the project ID to get the list of commits for
+     * @param projectId    the project ID to get the list of commits for
      * @param itemsPerPage the number of Commit instances that will be fetched per page
      * @return a Pager containing the commits for the specified project ID
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
@@ -90,13 +90,13 @@ public class CommitsApi extends AbstractApi {
 
     /**
      * Get a list of repository commits in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits
      *
      * @param projectId the project ID to get the list of commits for
-     * @param ref the name of a repository branch or tag or if not given the default branch
-     * @param since only commits after or on this date will be returned
-     * @param until only commits before or on this date will be returned
+     * @param ref       the name of a repository branch or tag or if not given the default branch
+     * @param since     only commits after or on this date will be returned
+     * @param until     only commits before or on this date will be returned
      * @return a list containing the commits for the specified project ID
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -107,19 +107,20 @@ public class CommitsApi extends AbstractApi {
                 .withParam("until", ISO8601.toString(until, false))
                 .withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "repository", "commits");
-        return (response.readEntity(new GenericType<List<Commit>>() {}));
+        return (response.readEntity(new GenericType<List<Commit>>() {
+        }));
     }
 
     /**
      * Get a list of repository commits in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits
      *
      * @param projectId the project ID to get the list of commits for
-     * @param ref the name of a repository branch or tag or if not given the default branch
-     * @param since only commits after or on this date will be returned
-     * @param until only commits before or on this date will be returned
-     * @param path the path to file of a project
+     * @param ref       the name of a repository branch or tag or if not given the default branch
+     * @param since     only commits after or on this date will be returned
+     * @param until     only commits before or on this date will be returned
+     * @param path      the path to file of a project
      * @return a list containing the commits for the specified project ID
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -131,17 +132,18 @@ public class CommitsApi extends AbstractApi {
                 .withParam("until", ISO8601.toString(until, false))
                 .withParam("path", (path == null ? null : urlEncode(path)));
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "repository", "commits");
-        return (response.readEntity(new GenericType<List<Commit>>() {}));
+        return (response.readEntity(new GenericType<List<Commit>>() {
+        }));
     }
 
     /**
      * Get a list of file commits in a project
-     *
+     * <p>
      * GET /projects/:id/repository/commits?path=:file_path
      *
      * @param projectId the project ID to get the list of commits for
-     * @param ref the name of a repository branch or tag or if not given the default branch
-     * @param path the path to file of a project
+     * @param ref       the name of a repository branch or tag or if not given the default branch
+     * @param path      the path to file of a project
      * @return a list containing the commits for the specified project ID and file
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -151,20 +153,21 @@ public class CommitsApi extends AbstractApi {
                 .withParam("ref_name", ref)
                 .withParam("path", (path == null ? null : urlEncode(path)));
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "repository", "commits");
-        return (response.readEntity(new GenericType<List<Commit>>() {}));
+        return (response.readEntity(new GenericType<List<Commit>>() {
+        }));
     }
 
     /**
      * Get a list of repository commits in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits
      *
      * @param projectId the project ID to get the list of commits for
-     * @param ref the name of a repository branch or tag or if not given the default branch
-     * @param since only commits after or on this date will be returned
-     * @param until only commits before or on this date will be returned
-     * @param page the page to get
-     * @param perPage the number of commits per page
+     * @param ref       the name of a repository branch or tag or if not given the default branch
+     * @param since     only commits after or on this date will be returned
+     * @param until     only commits before or on this date will be returned
+     * @param page      the page to get
+     * @param perPage   the number of commits per page
      * @return a list containing the commits for the specified project ID
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -173,21 +176,22 @@ public class CommitsApi extends AbstractApi {
                 .withParam("ref_name", ref)
                 .withParam("since", ISO8601.toString(since, false))
                 .withParam("until", ISO8601.toString(until, false))
-                .withParam(PAGE_PARAM,  page)
+                .withParam(PAGE_PARAM, page)
                 .withParam(PER_PAGE_PARAM, perPage);
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "repository", "commits");
-        return (response.readEntity(new GenericType<List<Commit>>() {}));
+        return (response.readEntity(new GenericType<List<Commit>>() {
+        }));
     }
 
     /**
      * Get a Pager of repository commits in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits
      *
-     * @param projectId the project ID to get the list of commits for
-     * @param ref the name of a repository branch or tag or if not given the default branch
-     * @param since only commits after or on this date will be returned
-     * @param until only commits before or on this date will be returned
+     * @param projectId    the project ID to get the list of commits for
+     * @param ref          the name of a repository branch or tag or if not given the default branch
+     * @param since        only commits after or on this date will be returned
+     * @param until        only commits before or on this date will be returned
      * @param itemsPerPage the number of Commit instances that will be fetched per page
      * @return a Pager containing the commits for the specified project ID
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
@@ -197,16 +201,16 @@ public class CommitsApi extends AbstractApi {
                 .withParam("ref_name", ref)
                 .withParam("since", ISO8601.toString(since, false))
                 .withParam("until", ISO8601.toString(until, false));
-        return (new Pager<Commit>(this, Commit.class, itemsPerPage, formData.asMap(),  "projects", projectId, "repository", "commits"));
+        return (new Pager<Commit>(this, Commit.class, itemsPerPage, formData.asMap(), "projects", projectId, "repository", "commits"));
     }
 
     /**
      * Get a specific commit identified by the commit hash or name of a branch or tag.
-     *
+     * <p>
      * GET /projects/:id/repository/commits/:sha
      *
      * @param projectId the project ID that the commit belongs to
-     * @param sha a commit hash or name of a branch or tag
+     * @param sha       a commit hash or name of a branch or tag
      * @return the Commit instance for the specified project ID/sha pair
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -216,27 +220,45 @@ public class CommitsApi extends AbstractApi {
     }
 
     /**
-     * Get the list of diffs of a commit in a project.
+     * Get a specific commit identified by the commit hash or name of a branch or tag statuses.
+     * <p>
+     * GET /projects/:id/repository/commits/:sha/statuses
      *
+     * @param projectId the project ID that the commit belongs to
+     * @param sha       a commit hash or name of a branch or tag
+     * @return the Commit statuse instance for the specified project ID/sha pair
+     * @throws GitLabApiException GitLabApiException if any exception occurs during execution
+     */
+    public List<CommitStatuse> getCommitStatus(int projectId, String sha) throws GitLabApiException {
+        Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "repository", "commits", sha, "statuses");
+        return (response.readEntity(new GenericType<List<CommitStatuse>>() {
+        }));
+    }
+
+
+    /**
+     * Get the list of diffs of a commit in a project.
+     * <p>
      * GET /projects/:id/repository/commits/:sha/diff
      *
      * @param projectId the project ID that the commit belongs to
-     * @param sha a commit hash or name of a branch or tag
+     * @param sha       a commit hash or name of a branch or tag
      * @return a List of Diff instances for the specified project ID/sha pair
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
     public List<Diff> getDiff(int projectId, String sha) throws GitLabApiException {
         Response response = get(Response.Status.OK, null, "projects", projectId, "repository", "commits", sha, "diff");
-        return (response.readEntity(new GenericType<List<Diff>>() {}));
+        return (response.readEntity(new GenericType<List<Diff>>() {
+        }));
     }
 
     /**
      * Get the list of diffs of a commit in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits/:sha/diff
      *
      * @param projectPath the project path that the commit belongs to
-     * @param sha a commit hash or name of a branch or tag
+     * @param sha         a commit hash or name of a branch or tag
      * @return a List of Diff instances for the specified project ID/sha pair
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -249,36 +271,38 @@ public class CommitsApi extends AbstractApi {
         }
 
         Response response = get(Response.Status.OK, null, "projects", projectPath, "repository", "commits", sha, "diff");
-        return (response.readEntity(new GenericType<List<Diff>>() {}));
+        return (response.readEntity(new GenericType<List<Diff>>() {
+        }));
     }
 
     /**
      * Get the comments of a commit in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/commits/:sha/comments
      *
      * @param projectId the project ID that the commit belongs to
-     * @param sha a commit hash or name of a branch or tag
+     * @param sha       a commit hash or name of a branch or tag
      * @return a List of Comment instances for the specified project ID/sha pair
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
     public List<Comment> getComments(int projectId, String sha) throws GitLabApiException {
         Response response = get(Response.Status.OK, null, "projects", projectId, "repository", "commits", sha, "comments");
-        return (response.readEntity(new GenericType<List<Comment>>() {}));
+        return (response.readEntity(new GenericType<List<Comment>>() {
+        }));
     }
 
     /**
      * Add a comment to a commit.  In order to post a comment in a particular line of a particular file,
      * you must specify the full commit SHA, the path, the line and lineType should be NEW.
-     *
+     * <p>
      * POST /projects/:id/repository/commits/:sha/comments
      *
      * @param projectId the project ID that the commit belongs to
-     * @param sha a commit hash or name of a branch or tag
-     * @param note the text of the comment, required
-     * @param path the file path relative to the repository, optional
-     * @param line the line number where the comment should be placed, optional
-     * @param lineType the line type, optional
+     * @param sha       a commit hash or name of a branch or tag
+     * @param note      the text of the comment, required
+     * @param path      the file path relative to the repository, optional
+     * @param line      the line number where the comment should be placed, optional
+     * @param lineType  the line type, optional
      * @return a Comment instance for the posted comment
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
@@ -294,12 +318,12 @@ public class CommitsApi extends AbstractApi {
 
     /**
      * Add a comment to a commit.
-     *
+     * <p>
      * POST /projects/:id/repository/commits/:sha/comments
      *
      * @param projectId the project ID that the commit belongs to
-     * @param sha a commit hash or name of a branch or tag
-     * @param note the text of the comment, required
+     * @param sha       a commit hash or name of a branch or tag
+     * @param note      the text of the comment, required
      * @return a Comment instance for the posted comment
      * @throws GitLabApiException GitLabApiException if any exception occurs during execution
      */
