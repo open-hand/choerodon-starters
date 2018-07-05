@@ -2,19 +2,19 @@ package org.gitlab4j.api;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -23,6 +23,10 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,11 +35,6 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.gitlab4j.api.GitLabApi.ApiVersion;
 import org.gitlab4j.api.models.Branch;
@@ -55,7 +54,7 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a list of repository branches from a project, sorted by name alphabetically.
-     *
+     * <p>
      * GET /projects/:id/repository/branches
      *
      * @param projectId the project to get the list of branches for
@@ -64,34 +63,35 @@ public class RepositoryApi extends AbstractApi {
      */
     public List<Branch> getBranches(Integer projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "repository", "branches");
-        return (response.readEntity(new GenericType<List<Branch>>() {}));
+        return (response.readEntity(new GenericType<List<Branch>>() {
+        }));
     }
 
     /**
      * Get a list of repository branches from a project, sorted by name alphabetically.
-     *
+     * <p>
      * GET /projects/:id/repository/branches
      *
      * @param projectId the project to get the list of branches for
+     * @param page      the page to get
+     * @param perPage   the number of Branch instances per page
      * @return the list of repository branches for the specified project ID
-     * @param page the page to get
-     * @param perPage the number of Branch instances per page
      * @throws GitLabApiException if any exception occurs
      */
     public List<Branch> getBranches(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "repository", "branches");
-        return (response.readEntity(new GenericType<List<Branch>>() {}));
+        return (response.readEntity(new GenericType<List<Branch>>() {
+        }));
     }
 
     /**
      * Get a Pager of repository branches from a project, sorted by name alphabetically.
-     *
+     * <p>
      * GET /projects/:id/repository/branches
      *
-     * @param projectId the project to get the list of branches for
+     * @param projectId    the project to get the list of branches for
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return the list of repository branches for the specified project ID
-     *
      * @throws GitLabApiException if any exception occurs
      */
     public Pager<Branch> getBranches(Integer projectId, int itemsPerPage) throws GitLabApiException {
@@ -100,10 +100,10 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a single project repository branch.
-     *
+     * <p>
      * GET /projects/:id/repository/branches/:branch
      *
-     * @param projectId the project to get the branch for
+     * @param projectId  the project to get the branch for
      * @param branchName the name of the branch to get
      * @return the branch info for the specified project ID/branch name pair
      * @throws GitLabApiException if any exception occurs
@@ -115,12 +115,12 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Creates a branch for the project. Support as of version 6.8.x
-     *
+     * <p>
      * POST /projects/:id/repository/branches
      *
-     * @param projectId the project to create the branch for
+     * @param projectId  the project to create the branch for
      * @param branchName the name of the branch to create
-     * @param ref Source to create the branch from, can be an existing branch, tag or commit SHA
+     * @param ref        Source to create the branch from, can be an existing branch, tag or commit SHA
      * @return the branch info for the created branch
      * @throws GitLabApiException if any exception occurs
      */
@@ -137,10 +137,10 @@ public class RepositoryApi extends AbstractApi {
     /**
      * Delete a single project repository branch. This is an idempotent function,
      * protecting an already protected repository branch will not produce an error.
-     *
+     * <p>
      * DELETE /projects/:id/repository/branches/:branch
      *
-     * @param projectId the project that the branch belongs to
+     * @param projectId  the project that the branch belongs to
      * @param branchName the name of the branch to delete
      * @throws GitLabApiException if any exception occurs
      */
@@ -152,10 +152,10 @@ public class RepositoryApi extends AbstractApi {
     /**
      * Protects a single project repository branch. This is an idempotent function,
      * protecting an already protected repository branch will not produce an error.
-     *
+     * <p>
      * PUT /projects/:id/repository/branches/:branch/protect
      *
-     * @param projectId the ID of the project to protect
+     * @param projectId  the ID of the project to protect
      * @param branchName the name of the branch to protect
      * @return the branch info for the protected branch
      * @throws GitLabApiException if any exception occurs
@@ -168,10 +168,10 @@ public class RepositoryApi extends AbstractApi {
     /**
      * Unprotects a single project repository branch. This is an idempotent function, unprotecting an
      * already unprotected repository branch will not produce an error.
-     *
+     * <p>
      * PUT /projects/:id/repository/branches/:branch/unprotect
      *
-     * @param projectId the ID of the project to un-protect
+     * @param projectId  the ID of the project to un-protect
      * @param branchName the name of the branch to un-protect
      * @return the branch info for the unprotected branch
      * @throws GitLabApiException if any exception occurs
@@ -183,7 +183,7 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a list of repository tags from a project, sorted by name in reverse alphabetical order.
-     *
+     * <p>
      * GET /projects/:id/repository/tags
      *
      * @param projectId the ID of the project to get the tags for
@@ -192,31 +192,33 @@ public class RepositoryApi extends AbstractApi {
      */
     public List<Tag> getTags(Integer projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "repository", "tags");
-        return (response.readEntity(new GenericType<List<Tag>>() {}));
+        return (response.readEntity(new GenericType<List<Tag>>() {
+        }));
     }
 
     /**
      * Get a list of repository tags from a project, sorted by name in reverse alphabetical order and in the specified page range.
-     *
+     * <p>
      * GET /projects/:id/repository/tags
      *
      * @param projectId the ID of the project to get the tags for
-     * @param page the page to get
-     * @param perPage the number of Tag instances per page
+     * @param page      the page to get
+     * @param perPage   the number of Tag instances per page
      * @return the list of tags for the specified project ID
      * @throws GitLabApiException if any exception occurs
      */
     public List<Tag> getTags(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "repository", "tags");
-        return (response.readEntity(new GenericType<List<Tag>>() {}));
+        return (response.readEntity(new GenericType<List<Tag>>() {
+        }));
     }
 
     /**
      * Get a list of repository tags from a project, sorted by name in reverse alphabetical order.
-     *
+     * <p>
      * GET /projects/:id/repository/tags
      *
-     * @param projectId the ID of the project to get the tags for
+     * @param projectId    the ID of the project to get the tags for
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return the list of tags for the specified project ID
      * @throws GitLabApiException if any exception occurs
@@ -227,13 +229,13 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Creates a tag on a particular ref of the given project. A message and release notes are optional.
-     *
+     * <p>
      * POST /projects/:id/repository/tags
      *
-     * @param projectId the ID of the project
-     * @param tagName The name of the tag Must be unique for the project
-     * @param ref the git ref to place the tag on
-     * @param message the message to included with the tag (optional)
+     * @param projectId    the ID of the project
+     * @param tagName      The name of the tag Must be unique for the project
+     * @param ref          the git ref to place the tag on
+     * @param message      the message to included with the tag (optional)
      * @param releaseNotes the release notes for the tag (optional)
      * @return a Tag instance containing info on the newly created tag
      * @throws GitLabApiException if any exception occurs
@@ -253,13 +255,13 @@ public class RepositoryApi extends AbstractApi {
      * Creates a tag on a particular ref of a given project. A message and a File instance containing the
      * release notes are optional.  This method is the same as {@link #createTag(Integer, String, String, String, String)},
      * but instead allows the release notes to be supplied in a file.
-     *
+     * <p>
      * POST /projects/:id/repository/tags
      *
-     * @param projectId the ID of the project
-     * @param tagName the name of the tag, must be unique for the project
-     * @param ref the git ref to place the tag on
-     * @param message the message to included with the tag (optional)
+     * @param projectId        the ID of the project
+     * @param tagName          the name of the tag, must be unique for the project
+     * @param ref              the git ref to place the tag on
+     * @param message          the message to included with the tag (optional)
      * @param releaseNotesFile a whose contents are the release notes (optional)
      * @return a Tag instance containing info on the newly created tag
      * @throws GitLabApiException if any exception occurs
@@ -282,11 +284,11 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Deletes the tag from a project with the specified tag name.
-     *
+     * <p>
      * DELETE /projects/:id/repository/tags/:tag_name
      *
      * @param projectId the ID of the project
-     * @param tagName The name of the tag to delete
+     * @param tagName   The name of the tag to delete
      * @throws GitLabApiException if any exception occurs
      */
     public void deleteTag(Integer projectId, String tagName) throws GitLabApiException {
@@ -296,7 +298,7 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a list of repository files and directories in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/tree
      *
      * @param projectId the ID of the project to get the files for
@@ -309,10 +311,10 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a Pager of repository files and directories in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/tree
      *
-     * @param projectId the ID of the project to get the files for
+     * @param projectId    the ID of the project to get the files for
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return a Pager containing a tree with the root directories and files of a project
      * @throws GitLabApiException if any exception occurs
@@ -323,16 +325,16 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a list of repository files and directories in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/tree
-     *
+     * <p>
      * id (required) - The ID of a project
      * path (optional) - The path inside repository. Used to get content of subdirectories
      * ref_name (optional) - The name of a repository branch or tag or if not given the default branch
      *
      * @param projectId the ID of the project to get the files for
-     * @param filePath the path inside repository, used to get content of subdirectories
-     * @param refName the name of a repository branch or tag or if not given the default branch
+     * @param filePath  the path inside repository, used to get content of subdirectories
+     * @param refName   the name of a repository branch or tag or if not given the default branch
      * @return a tree with the directories and files of a project
      * @throws GitLabApiException if any exception occurs
      */
@@ -342,16 +344,16 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a Pager of repository files and directories in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/tree
-     *
+     * <p>
      * id (required) - The ID of a project
      * path (optional) - The path inside repository. Used to get content of subdirectories
      * ref_name (optional) - The name of a repository branch or tag or if not given the default branch
      *
-     * @param projectId the ID of the project to get the files for
-     * @param filePath the path inside repository, used to get content of subdirectories
-     * @param refName the name of a repository branch or tag or if not given the default branch
+     * @param projectId    the ID of the project to get the files for
+     * @param filePath     the path inside repository, used to get content of subdirectories
+     * @param refName      the name of a repository branch or tag or if not given the default branch
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return a Pager containing a tree with the directories and files of a project
      * @throws GitLabApiException if any exception occurs
@@ -362,17 +364,17 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get a list of repository files and directories in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/tree
-     *
+     * <p>
      * id (required) - The ID of a project
      * path (optional) - The path inside repository. Used to get contend of subdirectories
      * ref_name (optional) - The name of a repository branch or tag or if not given the default branch
      * recursive (optional) - Boolean value used to get a recursive tree (false by default)
      *
      * @param projectId the ID of the project to get the files for
-     * @param filePath the path inside repository, used to get content of subdirectories
-     * @param refName the name of a repository branch or tag or if not given the default branch
+     * @param filePath  the path inside repository, used to get content of subdirectories
+     * @param refName   the name of a repository branch or tag or if not given the default branch
      * @param recursive flag to get a recursive tree or not
      * @return a tree with the directories and files of a project
      * @throws GitLabApiException if any exception occurs
@@ -385,23 +387,24 @@ public class RepositoryApi extends AbstractApi {
                 .withParam("recursive", recursive, false)
                 .withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "repository", "tree");
-        return (response.readEntity(new GenericType<List<TreeItem>>() {}));
+        return (response.readEntity(new GenericType<List<TreeItem>>() {
+        }));
     }
 
     /**
      * Get a Pager of repository files and directories in a project.
-     *
+     * <p>
      * GET /projects/:id/repository/tree
-     *
+     * <p>
      * id (required) - The ID of a project
      * path (optional) - The path inside repository. Used to get contend of subdirectories
      * ref_name (optional) - The name of a repository branch or tag or if not given the default branch
      * recursive (optional) - Boolean value used to get a recursive tree (false by default)
      *
-     * @param projectId the ID of the project to get the files for
-     * @param filePath the path inside repository, used to get content of subdirectories
-     * @param refName the name of a repository branch or tag or if not given the default branch
-     * @param recursive flag to get a recursive tree or not
+     * @param projectId    the ID of the project to get the files for
+     * @param filePath     the path inside repository, used to get content of subdirectories
+     * @param refName      the name of a repository branch or tag or if not given the default branch
+     * @param recursive    flag to get a recursive tree or not
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return a tree with the directories and files of a project
      * @throws GitLabApiException if any exception occurs
@@ -417,11 +420,11 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get the raw file contents for a blob by blob SHA.
-     *
+     * <p>
      * GET /projects/:id/repository/raw_blobs/:sha
      *
      * @param projectId the ID of the project
-     * @param sha the SHA of the file to get the contents for
+     * @param sha       the SHA of the file to get the contents for
      * @return the raw file contents for the blob on an InputStream
      * @throws GitLabApiException if any exception occurs
      */
@@ -433,11 +436,11 @@ public class RepositoryApi extends AbstractApi {
 
     /**
      * Get an archive of the complete repository by SHA (optional).
-     *
+     * <p>
      * GET /projects/:id/repository/archive
      *
      * @param projectId the ID of the project
-     * @param sha the SHA of the archive to get
+     * @param sha       the SHA of the archive to get
      * @return an input stream that can be used to save as a file
      * or to read the content of the archive
      * @throws GitLabApiException if any exception occurs
@@ -452,11 +455,11 @@ public class RepositoryApi extends AbstractApi {
     /**
      * Get an archive of the complete repository by SHA (optional) and saves to the specified directory.
      * If the archive already exists in the directory it will be overwritten.
-     *
+     * <p>
      * GET /projects/:id/repository/archive
      *
      * @param projectId the ID of the project
-     * @param sha the SHA of the archive to get
+     * @param sha       the SHA of the archive to get
      * @param directory the File instance of the directory to save the archive to, if null will use "java.io.tmpdir"
      * @return a File instance pointing to the downloaded instance
      * @throws GitLabApiException if any exception occurs
@@ -487,10 +490,10 @@ public class RepositoryApi extends AbstractApi {
     /**
      * Compare branches, tags or commits. This can be accessed without authentication
      * if the repository is publicly accessible.
-     * 
+     *
      * @param projectId the ID of the project owned by the authenticated user
-     * @param from the commit SHA or branch name
-     * @param to the commit SHA or branch name
+     * @param from      the commit SHA or branch name
+     * @param to        the commit SHA or branch name
      * @return a CompareResults containing the results of the comparison
      * @throws GitLabApiException if any exception occurs
      */
@@ -503,10 +506,10 @@ public class RepositoryApi extends AbstractApi {
     /**
      * Compare branches, tags or commits. This can be accessed without authentication
      * if the repository is publicly accessible.
-     * 
+     *
      * @param projectPath the path of the project owned by the authenticated user
-     * @param from the commit SHA or branch name
-     * @param to the commit SHA or branch name
+     * @param from        the commit SHA or branch name
+     * @param to          the commit SHA or branch name
      * @return a CompareResults containing the results of the comparison
      * @throws GitLabApiException if any exception occurs
      */
