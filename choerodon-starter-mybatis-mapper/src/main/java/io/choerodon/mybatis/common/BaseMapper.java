@@ -39,6 +39,7 @@ public interface BaseMapper<T> extends
         CrudMapper<T>,
         OptionalInsertMapper<T>,
         OptionalUpdateMapper<T>,
+        MySqlMapper<T>,
         Marker {
 
 }
