@@ -60,6 +60,28 @@ public class SpecialProvider extends MapperTemplate {
         if (column.isId()) {
             return;
         }
+        if (processModifyAuditFields(modifyAudit, sql, columnName)) return;
+        if (processVersionAuditFields(versionAudit, sql, columnName)) return;
+        if (column.isInsertable()
+                && !SqlHelper.MODIFY_AUDIT_FIELDS.contains(columnName)
+                && !SqlHelper.VERSION_AUDIT_FIELDS.contains(columnName)) {
+            sql.append(column.getColumnHolder("record") + ",");
+        }
+    }
+
+    private boolean processVersionAuditFields(boolean versionAudit, StringBuilder sql, String columnName) {
+        if (versionAudit && SqlHelper.VERSION_AUDIT_FIELDS.contains(columnName)) {
+            if (InsertOrUpdateConstant.OBJECT_VERSION_NUMBER.equals(columnName)) {
+                sql.append("1,");
+            } else {
+                throw new MapperException(InsertOrUpdateConstant.VERSION_EXCEPTION + columnName);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean processModifyAuditFields(boolean modifyAudit, StringBuilder sql, String columnName) {
         if (modifyAudit && SqlHelper.MODIFY_AUDIT_FIELDS.contains(columnName)) {
             if (InsertOrUpdateConstant.CREATION_DATE.equals(columnName)) {
                 sql.append(InsertOrUpdateConstant.AUDIT_NOW);
@@ -72,21 +94,9 @@ public class SpecialProvider extends MapperTemplate {
             } else {
                 throw new MapperException(InsertOrUpdateConstant.MODIFY_EXCEPTION + columnName);
             }
-            return;
+            return true;
         }
-        if (versionAudit && SqlHelper.VERSION_AUDIT_FIELDS.contains(columnName)) {
-            if (InsertOrUpdateConstant.OBJECT_VERSION_NUMBER.equals(columnName)) {
-                sql.append("1,");
-            } else {
-                throw new MapperException(InsertOrUpdateConstant.VERSION_EXCEPTION + columnName);
-            }
-            return;
-        }
-        if (column.isInsertable()
-                && !SqlHelper.MODIFY_AUDIT_FIELDS.contains(columnName)
-                && !SqlHelper.VERSION_AUDIT_FIELDS.contains(columnName)) {
-            sql.append(column.getColumnHolder("record") + ",");
-        }
+        return false;
     }
 
     private void insertColumns(boolean modifyAudit, boolean versionAudit, StringBuilder sql, Set<EntityColumn> columnList) {
@@ -97,34 +107,44 @@ public class SpecialProvider extends MapperTemplate {
                 continue;
             }
             String columnName = column.getProperty();
-            if (modifyAudit && SqlHelper.MODIFY_AUDIT_FIELDS.contains(columnName)) {
-                if (InsertOrUpdateConstant.CREATION_DATE.equals(columnName)) {
-                    sql.append("creation_date,");
-                } else if (InsertOrUpdateConstant.CREATED_BY.equals(columnName)) {
-                    sql.append("created_by,");
-                } else if (InsertOrUpdateConstant.LAST_UPDATE_DATE.equals(columnName)) {
-                    sql.append("last_update_date,");
-                } else if (InsertOrUpdateConstant.LAST_UPDATE_BY.equals(columnName)) {
-                    sql.append("last_updated_by,");
-                } else {
-                    throw new MapperException(InsertOrUpdateConstant.MODIFY_EXCEPTION + columnName);
-                }
-                continue;
-            }
-            if (versionAudit && SqlHelper.VERSION_AUDIT_FIELDS.contains(columnName)) {
-                if (InsertOrUpdateConstant.OBJECT_VERSION_NUMBER.equals(columnName)) {
-                    sql.append("object_version_number,");
-                } else {
-                    throw new MapperException(InsertOrUpdateConstant.VERSION_EXCEPTION + columnName);
-                }
-                continue;
-            }
+            if (processModifyAuditValues(modifyAudit, sql, columnName)) continue;
+            if (processVersionAuditValues(versionAudit, sql, columnName)) continue;
             if (!SqlHelper.MODIFY_AUDIT_FIELDS.contains(columnName)
                     && !SqlHelper.VERSION_AUDIT_FIELDS.contains(columnName)) {
                 sql.append(column.getColumn() + ",");
             }
         }
         sql.append("</trim>");
+    }
+
+    private boolean processVersionAuditValues(boolean versionAudit, StringBuilder sql, String columnName) {
+        if (versionAudit && SqlHelper.VERSION_AUDIT_FIELDS.contains(columnName)) {
+            if (InsertOrUpdateConstant.OBJECT_VERSION_NUMBER.equals(columnName)) {
+                sql.append("object_version_number,");
+            } else {
+                throw new MapperException(InsertOrUpdateConstant.VERSION_EXCEPTION + columnName);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean processModifyAuditValues(boolean modifyAudit, StringBuilder sql, String columnName) {
+        if (modifyAudit && SqlHelper.MODIFY_AUDIT_FIELDS.contains(columnName)) {
+            if (InsertOrUpdateConstant.CREATION_DATE.equals(columnName)) {
+                sql.append("creation_date,");
+            } else if (InsertOrUpdateConstant.CREATED_BY.equals(columnName)) {
+                sql.append("created_by,");
+            } else if (InsertOrUpdateConstant.LAST_UPDATE_DATE.equals(columnName)) {
+                sql.append("last_update_date,");
+            } else if (InsertOrUpdateConstant.LAST_UPDATE_BY.equals(columnName)) {
+                sql.append("last_updated_by,");
+            } else {
+                throw new MapperException(InsertOrUpdateConstant.MODIFY_EXCEPTION + columnName);
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
