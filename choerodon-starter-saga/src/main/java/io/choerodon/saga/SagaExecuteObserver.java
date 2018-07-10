@@ -60,7 +60,7 @@ public class SagaExecuteObserver extends Subscriber<DataObject.SagaTaskInstanceD
                     SagaDef.InstanceStatus.STATUS_COMPLETED.name(), resultData));
             transactionManager.commit(status);
         } catch (Exception e) {
-            LOGGER.warn("message consume exception, msg : {}, cause {}", data, e.toString());
+            LOGGER.warn("message consume exception, msg : {}, cause {}", data, e);
             if (LOGGER.isDebugEnabled()) {
                 e.printStackTrace();
             }

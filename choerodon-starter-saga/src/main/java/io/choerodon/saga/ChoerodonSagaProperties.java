@@ -7,8 +7,18 @@ public class ChoerodonSagaProperties {
 
     private Integer pollInterval = 60;
 
+    private Integer maxExecuteThread = 5;
+
     public Integer getPollInterval() {
         return pollInterval;
+    }
+
+    public Integer getMaxExecuteThread() {
+        return maxExecuteThread;
+    }
+
+    public void setMaxExecuteThread(Integer maxExecuteThread) {
+        this.maxExecuteThread = maxExecuteThread;
     }
 
     public void setPollInterval(Integer pollInterval) {

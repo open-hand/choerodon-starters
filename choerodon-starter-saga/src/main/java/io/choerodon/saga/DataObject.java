@@ -1,6 +1,11 @@
 package io.choerodon.saga;
 
-public class DataObject {
+import java.util.Objects;
+
+class DataObject {
+
+    private DataObject() {
+    }
 
     public static class SagaTaskInstanceDTO {
 
@@ -112,6 +117,19 @@ public class DataObject {
 
         public void setRetriedCount(Integer retriedCount) {
             this.retriedCount = retriedCount;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SagaTaskInstanceDTO that = (SagaTaskInstanceDTO) o;
+            return Objects.equals(id, that.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id);
         }
 
         @Override
