@@ -1,4 +1,4 @@
-package io.choerodon.saga;
+package io.choerodon.asgard.saga;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;

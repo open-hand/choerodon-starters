@@ -1,4 +1,4 @@
-package io.choerodon.saga;
+package io.choerodon.asgard.saga;
 
 import org.springframework.cloud.netflix.eureka.CloudEurekaInstanceConfig;
 import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
@@ -10,8 +10,6 @@ import javax.annotation.PostConstruct;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
-
-import static io.choerodon.saga.SagaExecuteObserver.invokeBeanMap;
 
 public class SagaMonitor {
 
@@ -26,7 +24,7 @@ public class SagaMonitor {
     private SagaExecuteObserver observer;
 
 
-    SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
+    public SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
                        SagaClient sagaClient,
                        Executor executor,
                        SagaExecuteObserver observer,
@@ -45,8 +43,8 @@ public class SagaMonitor {
             if (cloudEurekaInstanceConfig instanceof EurekaInstanceConfigBean) {
                 EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
                 String instance = eurekaInstanceConfigBean.getInstanceId();
-                invokeBeanMap.entrySet().forEach(i ->
-                        Observable.interval(choerodonSagaProperties.getPollInterval(), TimeUnit.MILLISECONDS)
+                SagaExecuteObserver.invokeBeanMap.entrySet().forEach(i ->
+                        Observable.interval(choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS)
                                 .flatMap((Long aLong) -> Observable.from(sagaClient.pollBatch(i.getValue().sagaTask.code(), instance, null)))
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(Schedulers.from(executor))

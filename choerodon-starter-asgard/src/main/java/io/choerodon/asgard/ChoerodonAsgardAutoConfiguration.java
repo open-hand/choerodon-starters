@@ -1,5 +1,6 @@
-package io.choerodon.saga;
+package io.choerodon.asgard;
 
+import io.choerodon.asgard.saga.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 @ConditionalOnProperty(prefix = "choerodon.saga", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(ChoerodonSagaProperties.class)
-public class ChoerodonSagaAutoConfiguration {
+public class ChoerodonAsgardAutoConfiguration {
 
     @Autowired
     private ChoerodonSagaProperties choerodonSagaProperties;

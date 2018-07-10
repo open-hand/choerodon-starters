@@ -1,4 +1,4 @@
-package io.choerodon.saga;
+package io.choerodon.asgard.saga;
 
 import io.choerodon.core.convertor.ApplicationContextHelper;
 import io.choerodon.core.saga.SagaTask;
@@ -7,8 +7,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-
-import static io.choerodon.saga.SagaExecuteObserver.invokeBeanMap;
 
 public class SagaTaskProcessor implements BeanPostProcessor {
 
@@ -24,9 +22,9 @@ public class SagaTaskProcessor implements BeanPostProcessor {
                 SagaTask sagaTask = AnnotationUtils.findAnnotation(method, SagaTask.class);
                 if (sagaTask != null) {
                     String key = sagaTask.sagaCode() + sagaTask.code();
-                    if (invokeBeanMap.entrySet().stream().noneMatch(t -> t.getValue().key.equals(key))) {
+                    if (SagaExecuteObserver.invokeBeanMap.entrySet().stream().noneMatch(t -> t.getValue().key.equals(key))) {
                         Object object = ApplicationContextHelper.getSpringFactory().getBean(method.getDeclaringClass());
-                        invokeBeanMap.put(key, new SagaTaskInvokeBean(method, object, sagaTask, key));
+                        SagaExecuteObserver.invokeBeanMap.put(key, new SagaTaskInvokeBean(method, object, sagaTask, key));
                         }
                 }
             }

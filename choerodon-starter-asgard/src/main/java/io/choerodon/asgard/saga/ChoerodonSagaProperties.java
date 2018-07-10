@@ -1,4 +1,4 @@
-package io.choerodon.saga;
+package io.choerodon.asgard.saga;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

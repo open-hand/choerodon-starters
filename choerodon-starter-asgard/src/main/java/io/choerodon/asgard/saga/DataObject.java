@@ -1,4 +1,4 @@
-package io.choerodon.saga;
+package io.choerodon.asgard.saga;
 
 import java.util.Objects;
 
@@ -117,6 +117,19 @@ class DataObject {
 
         public void setRetriedCount(Integer retriedCount) {
             this.retriedCount = retriedCount;
+        }
+
+        public SagaTaskInstanceDTO() {
+        }
+
+        public SagaTaskInstanceDTO(Long id) {
+            this.id = id;
+        }
+
+        public SagaTaskInstanceDTO(Long id, String sagaCode, String taskCode) {
+            this.id = id;
+            this.sagaCode = sagaCode;
+            this.taskCode = taskCode;
         }
 
         @Override

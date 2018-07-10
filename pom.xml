@@ -68,7 +68,7 @@
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-websocket-helper</module>
         <module>choerodon-gitlab4j-api</module>
-        <module>choerodon-starter-saga</module>
+        <module>choerodon-starter-asgard</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

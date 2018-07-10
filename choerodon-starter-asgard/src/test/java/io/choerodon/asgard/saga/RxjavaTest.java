@@ -1,0 +1,51 @@
+package io.choerodon.asgard.saga;
+
+import org.junit.Test;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import rx.Observable;
+import rx.schedulers.Schedulers;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public class RxjavaTest {
+
+
+    @Test
+    public void flatMapTest() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(99999);
+        executor.setThreadNamePrefix("saga-service-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
+        Arrays.asList(1, 2, 3, 4, 5).forEach(t -> {
+            Observable.interval(3, TimeUnit.SECONDS)
+                    .flatMap((Long aLong) -> Observable.from(pollBatch()))
+                    .observeOn(Schedulers.from(executor))
+                    .distinct()
+                    .subscribe((DataObject.SagaTaskInstanceDTO taskInstanceDTO) -> {
+                        System.out.println(taskInstanceDTO.getId() + " thread: "
+                                + Thread.currentThread().getId() + " name " + Thread.currentThread().getName());
+                    });
+        });
+
+
+        try {
+            Thread.sleep(1000000000000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    List<DataObject.SagaTaskInstanceDTO> pollBatch() {
+        System.out.println(Thread.currentThread().getId() + " name " + Thread.currentThread().getName());
+        System.out.println();
+        return Arrays.asList(new DataObject.SagaTaskInstanceDTO((long) (Math.random() * 10) + 1L),
+                new DataObject.SagaTaskInstanceDTO((long) (Math.random() * 10) + 1L));
+    }
+}

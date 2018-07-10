@@ -1,4 +1,4 @@
-package io.choerodon.saga;
+package io.choerodon.asgard.saga;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.core.saga.SagaDef;
