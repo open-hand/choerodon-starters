@@ -28,6 +28,9 @@ public class SwaggerConfig {
     @Value("${swagger.oauthUrl:http://localhost:8080/oauth/oauth/authorize}")
     private String oauthUrl;
 
+    @Value("${spring.application.name}")
+    private String service;
+
     /**
      * 配置swagger-ui
      * 因为包依赖没有BasicErrorController，所以没有使用instanceOf
@@ -65,7 +68,9 @@ public class SwaggerConfig {
 
     @Bean
     public PropertyData propertyData() {
-        return new PropertyData();
+        PropertyData propertyData = new PropertyData();
+        propertyData.setService(service);
+        return propertyData;
     }
 
     @Bean

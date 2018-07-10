@@ -109,7 +109,7 @@ public class KafkaMessageConsumerFactory implements MessageConsumerFactory {
                         bean.setKafkaOffset(t.offset());
                         msgHandler.execute(bean);
                     } catch (IOException e) {
-                        LOGGER.warn("message deserialize error, {}", e.toString());
+                        LOGGER.warn("message deserialize error, {}", e);
                     }
                 }
             });
@@ -119,7 +119,7 @@ public class KafkaMessageConsumerFactory implements MessageConsumerFactory {
         } catch (Exception e) {
             long reConsumeOffset = partitionRecords.get(0).offset();
             LOGGER.warn("consume message failed, seek partition {} offset to {} error {}",
-                    partition, reConsumeOffset, e.toString());
+                    partition, reConsumeOffset, e);
             kafkaConsumer.seek(partition, reConsumeOffset);
         }
     }

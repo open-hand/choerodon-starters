@@ -6,6 +6,8 @@ import java.util.List;
 
 public class PropertyData {
 
+    private String service;
+
     private List<Saga> sagas = new ArrayList<>();
 
     private List<SagaTask> sagaTasks = new ArrayList<>();
@@ -22,12 +24,19 @@ public class PropertyData {
         return sagaTasks;
     }
 
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
 
     public void addSagaTask(SagaTask sagaTask) {
         this.sagaTasks.add(sagaTask);
     }
 
-    static class Saga {
+    public static class Saga {
 
         private String code;
 
@@ -78,9 +87,19 @@ public class PropertyData {
         public void setOutputKeys(List<String> outputKeys) {
             this.outputKeys = outputKeys;
         }
+
+        @Override
+        public String toString() {
+            return "Saga{" +
+                    "code='" + code + '\'' +
+                    ", description='" + description + '\'' +
+                    ", inputKeys=" + inputKeys +
+                    ", outputKeys=" + outputKeys +
+                    '}';
+        }
     }
 
-    static class SagaTask {
+    public static class SagaTask {
 
         private String code;
 
@@ -90,20 +109,22 @@ public class PropertyData {
 
         private Integer seq;
 
-        private Integer concurrentExecLimit;
-
         private Integer maxRetryCount;
+
+        private Integer timeoutSeconds;
+
+        private String timeoutPolicy;
+
+        private Integer concurrentExecLimit;
 
         public SagaTask() {
         }
 
-        public SagaTask(String code, String description, String sagaCode, Integer seq,
-                        Integer concurrentExecLimit, Integer maxRetryCount) {
+        public SagaTask(String code, String description, String sagaCode, Integer seq, Integer maxRetryCount) {
             this.code = code;
             this.description = description;
             this.sagaCode = sagaCode;
             this.seq = seq;
-            this.concurrentExecLimit = concurrentExecLimit;
             this.maxRetryCount = maxRetryCount;
         }
 
@@ -139,6 +160,30 @@ public class PropertyData {
             this.seq = seq;
         }
 
+        public Integer getMaxRetryCount() {
+            return maxRetryCount;
+        }
+
+        public void setMaxRetryCount(Integer maxRetryCount) {
+            this.maxRetryCount = maxRetryCount;
+        }
+
+        public Integer getTimeoutSeconds() {
+            return timeoutSeconds;
+        }
+
+        public void setTimeoutSeconds(Integer timeoutSeconds) {
+            this.timeoutSeconds = timeoutSeconds;
+        }
+
+        public String getTimeoutPolicy() {
+            return timeoutPolicy;
+        }
+
+        public void setTimeoutPolicy(String timeoutPolicy) {
+            this.timeoutPolicy = timeoutPolicy;
+        }
+
         public Integer getConcurrentExecLimit() {
             return concurrentExecLimit;
         }
@@ -147,13 +192,26 @@ public class PropertyData {
             this.concurrentExecLimit = concurrentExecLimit;
         }
 
-        public Integer getMaxRetryCount() {
-            return maxRetryCount;
-        }
-
-        public void setMaxRetryCount(Integer maxRetryCount) {
-            this.maxRetryCount = maxRetryCount;
+        @Override
+        public String toString() {
+            return "SagaTask{" +
+                    "code='" + code + '\'' +
+                    ", description='" + description + '\'' +
+                    ", sagaCode='" + sagaCode + '\'' +
+                    ", seq=" + seq +
+                    ", maxRetryCount=" + maxRetryCount +
+                    ", timeoutSeconds=" + timeoutSeconds +
+                    ", timeoutPolicy='" + timeoutPolicy + '\'' +
+                    ", concurrentExecLimit=" + concurrentExecLimit +
+                    '}';
         }
     }
 
+    @Override
+    public String toString() {
+        return "PropertyData{" +
+                "sagas=" + sagas +
+                ", sagaTasks=" + sagaTasks +
+                '}';
+    }
 }

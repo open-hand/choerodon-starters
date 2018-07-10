@@ -35,8 +35,12 @@ public class PropertyDataProcessor implements BeanPostProcessor {
                 }
                 SagaTask sagaTask = AnnotationUtils.findAnnotation(method, SagaTask.class);
                 if (sagaTask != null) {
-                    propertyData.addSagaTask(new PropertyData.SagaTask(sagaTask.code(), sagaTask.description(), sagaTask.sagaCode(),
-                            sagaTask.seq(), sagaTask.concurrentExecLimit(), sagaTask.maxRetryCount()));
+                    PropertyData.SagaTask task = new PropertyData.SagaTask(sagaTask.code(), sagaTask.description(),
+                            sagaTask.sagaCode(), sagaTask.seq(), sagaTask.maxRetryCount());
+                    task.setConcurrentExecLimit(sagaTask.concurrentExecLimit());
+                    task.setTimeoutPolicy(sagaTask.timeoutPolicy().name());
+                    task.setTimeoutSeconds(sagaTask.timeoutSeconds());
+                    propertyData.addSagaTask(task);
                 }
             }
         }
