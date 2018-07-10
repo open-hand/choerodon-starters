@@ -230,12 +230,14 @@ public class LiquibaseExecutor implements CommandLineRunner {
             Liquibase liquibase = new Liquibase("drop", accessor, new JdbcConnection(dataSource.getConnection()));
             liquibase.dropAll();
         }
+        //执行groovy脚本
         for (String file : fileNameList) {
             if (file.endsWith(SUFFIX_GROOVY)) {
                 Liquibase liquibase = new Liquibase(file, accessor, new JdbcConnection(dataSource.getConnection()));
                 liquibase.update(new Contexts());
             }
         }
+        //初始化数据
         for (String file : fileNameList) {
             if (file.endsWith(SUFFIX_XLSX)) {
                 ExcelDataLoader loader = new ExcelDataLoader();

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Excel 子数据读取器
@@ -26,7 +27,13 @@ public class ExcelSeedDataReader {
         this.inputStream = inputStream;
     }
 
+    /**
+     * excel前6行跳过
+     */
     private static final int SKIP_LINE = 6;
+    /**
+     * excel左侧3列跳过
+     */
     private static final int SKIP_COL = 3;
 
     /**
@@ -176,11 +183,10 @@ public class ExcelSeedDataReader {
         TableData.TableRow tableRow = new TableData.TableRow();
         tableRow.setTable(currentTable);
         tableRow.setLineNumber(row.getRowNum() + 1);
-        boolean allBlank = true;
         for (int j = SKIP_COL + 1; j < row.getLastCellNum(); j++) {
             Cell cell = row.getCell(j);
             if (currentTable != null) {
-                allBlank = addTableCellValue(cell, tableRow, currentTable);
+                addTableCellValue(cell, tableRow, currentTable);
             }
             if ((currentTable != null)
                     && tableRow.getTableCellValues().size() == currentTable.getColumns().size()) {
@@ -188,6 +194,8 @@ public class ExcelSeedDataReader {
                 break;
             }
         }
+        //判断tableRow是不是全是空
+        boolean allBlank = tableRowIsEmpty(tableRow);
         if (!allBlank) {
             int delt = currentTable.getColumns().size() - tableRow.getTableCellValues().size();
             // 不够的数据,补 null
@@ -199,17 +207,27 @@ public class ExcelSeedDataReader {
         return currentTable;
     }
 
-    private boolean addTableCellValue(Cell cell, TableData.TableRow tableRow, TableData currentTable) {
-        boolean allBlank = true;
+    private boolean tableRowIsEmpty(TableData.TableRow tableRow) {
+        return
+                Optional.ofNullable(tableRow).map(row -> {
+                    List<TableData.TableCellValue> tableCellValues = row.getTableCellValues();
+                    boolean allBlank = true;
+                    for (TableData.TableCellValue cell : tableCellValues) {
+                        if (StringUtils.isNotEmpty(cell.getValue())) {
+                            allBlank = false;
+                            break;
+                        }
+                    }
+                    return allBlank;
+                }).orElse(true);
+    }
+
+    private void addTableCellValue(Cell cell, TableData.TableRow tableRow, TableData currentTable) {
         TableData.TableCellValue tableCellValue = new TableData.TableCellValue(cell, tableRow,
                 currentTable.getColumns()
                         .get(tableRow.getTableCellValues().size()));
         tableCellValue.setValue(getCellValue(cell));
         tableRow.getTableCellValues().add(tableCellValue);
-        if (!StringUtils.isEmpty(tableCellValue.getValue())) {
-            allBlank = false;
-        }
-        return allBlank;
     }
 
     private boolean isAllEmpty(Row row, int startCol) {
