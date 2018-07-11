@@ -55,7 +55,7 @@ public @interface SagaTask {
     /**
      * 最大重试次数。超时策略为SagaDef.TimeoutPolicy.RETRY时生效
      */
-    int maxRetryCount() default 0;
+    int maxRetryCount() default 3;
 
     /**
      * 事务传播行为，默认0，范围-1 ～ 7

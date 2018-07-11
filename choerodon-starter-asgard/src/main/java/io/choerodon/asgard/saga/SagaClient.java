@@ -15,7 +15,7 @@ public interface SagaClient {
                                                    @RequestParam(name = "filter_ids", required = false) Set<Long> filterIds);
 
 
-    @PostMapping("/v1/saga/tasks/instances/{id}/status")
+    @PutMapping("/v1/saga/tasks/instances/{id}/status")
     List<DataObject.SagaTaskInstanceDTO> updateStatus(@PathVariable("id") Long id,
                                                       @RequestBody DataObject.SagaTaskInstanceStatusDTO statusDTO);
 

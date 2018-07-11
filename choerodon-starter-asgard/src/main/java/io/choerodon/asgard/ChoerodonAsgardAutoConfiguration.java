@@ -40,10 +40,6 @@ public class ChoerodonAsgardAutoConfiguration {
         return new SagaTaskProcessor(sagaApplicationContextHelper());
     }
 
-    @Bean
-    public SagaExecuteObserver observer(DataSourceTransactionManager transactionManager, SagaClient sagaClient) {
-        return new SagaExecuteObserver(transactionManager, sagaClient);
-    }
 
     @Bean
     public Executor asyncServiceExecutor() {
@@ -59,9 +55,9 @@ public class ChoerodonAsgardAutoConfiguration {
 
     @Bean
     public SagaMonitor sagaMonitor(SagaClient sagaClient,
-                                   SagaExecuteObserver observer,
+                                   DataSourceTransactionManager transactionManager,
                                    Optional<EurekaRegistration> eurekaRegistration) {
-        return new SagaMonitor(choerodonSagaProperties, sagaClient, asyncServiceExecutor(), observer, eurekaRegistration);
+        return new SagaMonitor(choerodonSagaProperties, sagaClient, asyncServiceExecutor(),transactionManager, eurekaRegistration);
     }
 
 }

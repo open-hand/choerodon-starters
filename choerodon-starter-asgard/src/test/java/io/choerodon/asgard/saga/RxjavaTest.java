@@ -9,6 +9,7 @@ import rx.schedulers.Schedulers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -26,19 +27,27 @@ public class RxjavaTest {
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.initialize();
         Arrays.asList(1, 2, 3, 4, 5).forEach(t -> {
-            Observable.interval(3, TimeUnit.SECONDS)
-                    .flatMap((Long aLong) -> Observable.from(pollBatch()))
-                    .observeOn(Schedulers.from(executor))
-                    .distinct()
-                    .subscribe((DataObject.SagaTaskInstanceDTO taskInstanceDTO) -> {
-                        LOGGER.info(taskInstanceDTO.getId() + " thread: "
-                                + Thread.currentThread().getId() + " name " + Thread.currentThread().getName());
-                    });
+            executor.execute(() -> {
+                try {
+                    CountDownLatch latch = new CountDownLatch(1);
+                    Observable.interval(3, TimeUnit.SECONDS)
+                            .flatMap((Long aLong) -> Observable.from(pollBatch()))
+                            .observeOn(Schedulers.from(executor))
+                            .distinct()
+                            .subscribe((DataObject.SagaTaskInstanceDTO taskInstanceDTO) -> {
+                                LOGGER.info(taskInstanceDTO.getId() + " thread: "
+                                        + Thread.currentThread().getId() + " name " + Thread.currentThread().getName());
+                            });
+                    latch.await();
+                } catch (InterruptedException e) {
+                    LOGGER.error("error.sagaPollThread.stop {}", e.getMessage());
+                    Thread.currentThread().interrupt();
+                }
+            });
         });
 
-
         try {
-            Thread.sleep(1000L);
+            Thread.sleep(1L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
