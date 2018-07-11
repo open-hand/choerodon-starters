@@ -1,6 +1,8 @@
 package io.choerodon.asgard.saga;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -12,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RxjavaTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RxjavaTest.class);
 
     @Test
     public void flatMapTest() {
@@ -28,14 +31,14 @@ public class RxjavaTest {
                     .observeOn(Schedulers.from(executor))
                     .distinct()
                     .subscribe((DataObject.SagaTaskInstanceDTO taskInstanceDTO) -> {
-                        System.out.println(taskInstanceDTO.getId() + " thread: "
+                        LOGGER.info(taskInstanceDTO.getId() + " thread: "
                                 + Thread.currentThread().getId() + " name " + Thread.currentThread().getName());
                     });
         });
 
 
         try {
-            Thread.sleep(1000000000000L);
+            Thread.sleep(1000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -9,6 +9,8 @@ public class ChoerodonSagaProperties {
 
     private Integer maxExecuteThread = 5;
 
+    private Boolean enabled = false;
+
     public Integer getPollInterval() {
         return pollInterval;
     }
@@ -23,5 +25,13 @@ public class ChoerodonSagaProperties {
 
     public void setPollInterval(Integer pollInterval) {
         this.pollInterval = pollInterval;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

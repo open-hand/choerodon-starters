@@ -1,8 +1,9 @@
 package io.choerodon.asgard.saga;
 
+import java.util.Date;
 import java.util.Objects;
 
-class DataObject {
+public class DataObject {
 
     private DataObject() {
     }
@@ -219,9 +220,205 @@ class DataObject {
             return "SagaTaskInstanceStatusDTO{" +
                     "id=" + id +
                     ", status='" + status + '\'' +
-                    ", outputData='" + outputData + '\'' +
-                    ", exceptionMessage='" + exceptionMessage + '\'' +
                     '}';
+        }
+    }
+
+    public static class StartInstanceDTO {
+        private String sagaCode;
+        private String input;
+        private String refType;
+        private Long refId;
+
+        public String getSagaCode() {
+            return sagaCode;
+        }
+
+        public void setSagaCode(String sagaCode) {
+            this.sagaCode = sagaCode;
+        }
+
+        public String getInput() {
+            return input;
+        }
+
+        public void setInput(String input) {
+            this.input = input;
+        }
+
+        public String getRefType() {
+            return refType;
+        }
+
+        public void setRefType(String refType) {
+            this.refType = refType;
+        }
+
+        public Long getRefId() {
+            return refId;
+        }
+
+        public void setRefId(Long refId) {
+            this.refId = refId;
+        }
+
+        public StartInstanceDTO() {
+        }
+
+        public StartInstanceDTO(String input, String refType, Long refId) {
+            this.input = input;
+            this.refType = refType;
+            this.refId = refId;
+        }
+
+        @Override
+        public String toString() {
+            return "StartInstanceDTO{" +
+                    "sagaCode='" + sagaCode + '\'' +
+                    ", refType='" + refType + '\'' +
+                    ", refId=" + refId +
+                    '}';
+        }
+    }
+
+    public static class SagaInstance {
+        private Long id;
+
+        private String sagaCode;
+
+        private String status;
+
+        private Date startTime;
+
+        private Date endTime;
+
+        private Long inputDataId;
+
+        private Long outputDataId;
+
+        private String refType;
+
+        private Long refId;
+        private Date creationDate;
+
+        private Long createdBy;
+
+        private Date lastUpdateDate;
+
+        private Long lastUpdatedBy;
+
+        private Long objectVersionNumber;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getSagaCode() {
+            return sagaCode;
+        }
+
+        public void setSagaCode(String sagaCode) {
+            this.sagaCode = sagaCode;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public Date getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(Date startTime) {
+            this.startTime = startTime;
+        }
+
+        public Date getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(Date endTime) {
+            this.endTime = endTime;
+        }
+
+        public Long getInputDataId() {
+            return inputDataId;
+        }
+
+        public void setInputDataId(Long inputDataId) {
+            this.inputDataId = inputDataId;
+        }
+
+        public Long getOutputDataId() {
+            return outputDataId;
+        }
+
+        public void setOutputDataId(Long outputDataId) {
+            this.outputDataId = outputDataId;
+        }
+
+        public String getRefType() {
+            return refType;
+        }
+
+        public void setRefType(String refType) {
+            this.refType = refType;
+        }
+
+        public Long getRefId() {
+            return refId;
+        }
+
+        public void setRefId(Long refId) {
+            this.refId = refId;
+        }
+
+        public Date getCreationDate() {
+            return creationDate;
+        }
+
+        public void setCreationDate(Date creationDate) {
+            this.creationDate = creationDate;
+        }
+
+        public Long getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(Long createdBy) {
+            this.createdBy = createdBy;
+        }
+
+        public Date getLastUpdateDate() {
+            return lastUpdateDate;
+        }
+
+        public void setLastUpdateDate(Date lastUpdateDate) {
+            this.lastUpdateDate = lastUpdateDate;
+        }
+
+        public Long getLastUpdatedBy() {
+            return lastUpdatedBy;
+        }
+
+        public void setLastUpdatedBy(Long lastUpdatedBy) {
+            this.lastUpdatedBy = lastUpdatedBy;
+        }
+
+        public Long getObjectVersionNumber() {
+            return objectVersionNumber;
+        }
+
+        public void setObjectVersionNumber(Long objectVersionNumber) {
+            this.objectVersionNumber = objectVersionNumber;
         }
     }
 

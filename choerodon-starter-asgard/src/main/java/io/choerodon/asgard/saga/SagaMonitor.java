@@ -1,5 +1,7 @@
 package io.choerodon.asgard.saga;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.netflix.eureka.CloudEurekaInstanceConfig;
 import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
 import org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration;
@@ -13,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SagaMonitor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SagaMonitor.class);
+
     private ChoerodonSagaProperties choerodonSagaProperties;
 
     private Optional<EurekaRegistration> eurekaRegistration;
@@ -23,7 +27,7 @@ public class SagaMonitor {
 
     private SagaExecuteObserver observer;
 
-    public static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
+    static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
 
 
     public SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
@@ -58,6 +62,7 @@ public class SagaMonitor {
 
     private List<DataObject.SagaTaskInstanceDTO> sagaTaskInstanceDTOS (final String code, final String instance) {
         List<DataObject.SagaTaskInstanceDTO> instanceDTOS =  sagaClient.pollBatch(code, instance, processingIds);
+        LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, instanceDTOS.size());
         instanceDTOS.forEach(t -> processingIds.add(t.getId()));
         return instanceDTOS;
     }
