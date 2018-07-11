@@ -7,7 +7,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import javax.annotation.PostConstruct;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +22,8 @@ public class SagaMonitor {
     private Executor executor;
 
     private SagaExecuteObserver observer;
+
+    public static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
 
 
     public SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
@@ -45,13 +47,18 @@ public class SagaMonitor {
                 String instance = eurekaInstanceConfigBean.getInstanceId();
                 SagaExecuteObserver.invokeBeanMap.entrySet().forEach(i ->
                         Observable.interval(choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS)
-                                .flatMap((Long aLong) -> Observable.from(sagaClient.pollBatch(i.getValue().sagaTask.code(), instance, null)))
+                                .flatMap((Long aLong) -> Observable.from(sagaTaskInstanceDTOS(i.getValue().sagaTask.code(), instance)))
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(Schedulers.from(executor))
-                                .distinct()
                                 .subscribe(observer)
                 );
             }
         }
+    }
+
+    private List<DataObject.SagaTaskInstanceDTO> sagaTaskInstanceDTOS (final String code, final String instance) {
+        List<DataObject.SagaTaskInstanceDTO> instanceDTOS =  sagaClient.pollBatch(code, instance, processingIds);
+        instanceDTOS.forEach(t -> processingIds.add(t.getId()));
+        return instanceDTOS;
     }
 }

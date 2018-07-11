@@ -12,6 +12,8 @@ import rx.Subscriber;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.choerodon.asgard.saga.SagaMonitor.processingIds;
+
 public class SagaExecuteObserver extends Subscriber<DataObject.SagaTaskInstanceDTO> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaExecuteObserver.class);
@@ -59,12 +61,14 @@ public class SagaExecuteObserver extends Subscriber<DataObject.SagaTaskInstanceD
             sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
                     SagaDef.InstanceStatus.STATUS_COMPLETED.name(), resultData));
             transactionManager.commit(status);
+            processingIds.remove(data.getId());
         } catch (Exception e) {
+            processingIds.remove(data.getId());
+            transactionManager.rollback(status);
             LOGGER.warn("message consume exception, msg : {}, cause {}", data, e);
             if (LOGGER.isDebugEnabled()) {
                 e.printStackTrace();
             }
-            transactionManager.rollback(status);
         }
     }
 

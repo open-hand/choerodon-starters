@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Set;
 
 @FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
 public interface SagaClient {
@@ -14,7 +15,7 @@ public interface SagaClient {
     @PostMapping("/v1/saga/tasks/instances/{code:.*}/batch")
     List<DataObject.SagaTaskInstanceDTO> pollBatch(@PathVariable String code,
                                                    @RequestParam("instance") String instance,
-                                                   @RequestParam(name = "filter_ids", required = false) List<Long> filterIds);
+                                                   @RequestParam(name = "filter_ids", required = false) Set<Long> filterIds);
 
 
 
