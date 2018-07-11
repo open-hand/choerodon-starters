@@ -1,5 +1,6 @@
 package io.choerodon.asgard.saga;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.core.saga.SagaDef;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class SagaMonitor {
 
     private DataSourceTransactionManager transactionManager;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
 
@@ -54,6 +55,7 @@ public class SagaMonitor {
         this.executor = executor;
         this.eurekaRegistration = eurekaRegistration;
         this.transactionManager = transactionManager;
+        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
     }
 
     @PostConstruct
@@ -66,7 +68,6 @@ public class SagaMonitor {
                     EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
                     String instance = eurekaInstanceConfigBean.getIpAddress() + ":" + eurekaInstanceConfigBean.getNonSecurePort();
                     Observable.from(getSagaTasks(instance))
-                            .subscribeOn(Schedulers.newThread())
                             .observeOn(Schedulers.from(executor))
                             .subscribe(new Observer<DataObject.SagaTaskInstanceDTO>() {
                                 @Override
