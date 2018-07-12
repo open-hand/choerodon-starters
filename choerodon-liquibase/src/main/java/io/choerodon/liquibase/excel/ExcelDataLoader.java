@@ -1,12 +1,10 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.addition.AdditionDataSource;
-import io.choerodon.liquibase.helper.LiquibaseHelper;
 import liquibase.exception.CustomChangeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.*;
@@ -288,7 +286,7 @@ public class ExcelDataLoader {
         try {
             ExcelSeedDataReader dataReader = new ExcelSeedDataReader(inputStream);
             tables = dataReader.load();
-            dbAdaptor = new DbAdaptor(this,ad);
+            dbAdaptor = new DbAdaptor(this, ad);
             dbAdaptor.setDataSource(ad.getDataSource());
             processData();
             dbAdaptor.closeConnection(true);

@@ -17,15 +17,6 @@ import java.util.Optional;
  * @author dongfan117@gmail.com
  */
 public class ExcelSeedDataReader {
-    private InputStream inputStream;
-    private Workbook workBook;
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    public ExcelSeedDataReader(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
     /**
      * excel前6行跳过
      */
@@ -34,6 +25,13 @@ public class ExcelSeedDataReader {
      * excel左侧3列跳过
      */
     private static final int SKIP_COL = 3;
+    private InputStream inputStream;
+    private Workbook workBook;
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    public ExcelSeedDataReader(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
     /**
      * 加载xlsx数据。

@@ -1,7 +1,6 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.addition.AdditionDataSource;
-import io.choerodon.liquibase.helper.LiquibaseHelper;
 import liquibase.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,6 @@ import static io.choerodon.liquibase.excel.TableData.TableCellValue;
  */
 public class DbAdaptor {
 
-    private SimpleDateFormat sdfL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private SimpleDateFormat sdfS = new SimpleDateFormat("yyyy-MM-dd");
     static final Map<String, Integer> SQL_TYPE_MAP = new HashMap<>();
     private static final String ZH_CN = "zh_CN";
     private static final String SQL_UPDATE = "update ";
@@ -43,6 +40,8 @@ public class DbAdaptor {
     Map<String, String> tableInsertSqlMap = new HashMap<>();
     Map<String, String> tableUpdateSqlMap = new HashMap<>();
     Map<String, String> tableUpdateTlSqlMap = new HashMap<>();
+    private SimpleDateFormat sdfL = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private SimpleDateFormat sdfS = new SimpleDateFormat("yyyy-MM-dd");
     private Logger logger = LoggerFactory.getLogger(getClass());
     private DataSource dataSource;
     private Connection connection;

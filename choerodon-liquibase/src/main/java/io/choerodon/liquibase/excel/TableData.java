@@ -60,6 +60,10 @@ public class TableData {
         return uniqueColumns;
     }
 
+    public void setUniqueColumns(List<Column> uniqueColumns) {
+        this.uniqueColumns = uniqueColumns;
+    }
+
     public List<Column> getColumns() {
         return columns;
     }
@@ -72,24 +76,16 @@ public class TableData {
         return insert;
     }
 
-    public Set<String> getLangs() {
-        return langs;
-    }
-
-    public void setSheet(Sheet sheet) {
-        this.sheet = sheet;
-    }
-
     public void setInsert(int insert) {
         this.insert = insert;
     }
 
-    public void setLangs(Set<String> langs) {
-        this.langs = langs;
+    public Set<String> getLangs() {
+        return langs;
     }
 
-    public void setUniqueColumns(List<Column> uniqueColumns) {
-        this.uniqueColumns = uniqueColumns;
+    public void setLangs(Set<String> langs) {
+        this.langs = langs;
     }
 
     /**
@@ -128,6 +124,10 @@ public class TableData {
 
     public Sheet getSheet() {
         return sheet;
+    }
+
+    public void setSheet(Sheet sheet) {
+        this.sheet = sheet;
     }
 
     /**
@@ -186,6 +186,18 @@ public class TableData {
             setName(name);
         }
 
+        public boolean isGen() {
+            return gen;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
         private void setName(String originName) {
             this.name = originName;
             if (originName.startsWith("*")) {
@@ -210,18 +222,6 @@ public class TableData {
                 type = name.substring(lb + 1, name.indexOf(')')).trim();
                 name = name.substring(0, lb).trim();
             }
-        }
-
-        public boolean isGen() {
-            return gen;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public boolean isUnique() {
@@ -301,52 +301,52 @@ public class TableData {
             return table;
         }
 
-        public int getLineNumber() {
-            return lineNumber;
-        }
-
-        public List<TableCellValue> getTableCellValues() {
-            return tableCellValues;
-        }
-
-        public boolean isProcessFlag() {
-            return processFlag;
-        }
-
-        public boolean isExistsFlag() {
-            return existsFlag;
-        }
-
-        public boolean isInsertFlag() {
-            return insertFlag;
-        }
-
-        public boolean isUpdateFlag() {
-            return updateFlag;
-        }
-
         public void setTable(TableData table) {
             this.table = table;
+        }
+
+        public int getLineNumber() {
+            return lineNumber;
         }
 
         public void setLineNumber(int lineNumber) {
             this.lineNumber = lineNumber;
         }
 
+        public List<TableCellValue> getTableCellValues() {
+            return tableCellValues;
+        }
+
         public void setTableCellValues(List<TableCellValue> tableCellValues) {
             this.tableCellValues = tableCellValues;
+        }
+
+        public boolean isProcessFlag() {
+            return processFlag;
         }
 
         public void setProcessFlag(boolean processFlag) {
             this.processFlag = processFlag;
         }
 
+        public boolean isExistsFlag() {
+            return existsFlag;
+        }
+
         public void setExistsFlag(boolean existsFlag) {
             this.existsFlag = existsFlag;
         }
 
+        public boolean isInsertFlag() {
+            return insertFlag;
+        }
+
         public void setInsertFlag(boolean insertFlag) {
             this.insertFlag = insertFlag;
+        }
+
+        public boolean isUpdateFlag() {
+            return updateFlag;
         }
 
         public void setUpdateFlag(boolean updateFlag) {
@@ -389,8 +389,8 @@ public class TableData {
             }
         }
 
-        public void setValue(String value) {
-            this.value = value;
+        public static Pattern getPattern() {
+            return pattern;
         }
 
         /**
@@ -442,12 +442,12 @@ public class TableData {
             return sb.toString();
         }
 
-        public static Pattern getPattern() {
-            return pattern;
-        }
-
         public String getValue() {
             return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
         }
 
         public String getFormula() {

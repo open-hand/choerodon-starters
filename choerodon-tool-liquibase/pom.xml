@@ -33,8 +33,8 @@
             <version>3.1.0</version>
         </dependency>
         <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -47,7 +47,9 @@
         <resources>
             <resource>
                 <directory>src/main/java</directory>
-                <excludes><exclude>**/*.java</exclude></excludes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>

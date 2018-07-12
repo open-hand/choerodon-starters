@@ -184,11 +184,11 @@ public class LiquibaseExecutor {
         }
     }
 
-    private void prepareGroovyParser(LiquibaseHelper liquibaseHelper){
+    private void prepareGroovyParser(LiquibaseHelper liquibaseHelper) {
         List<ChangeLogParser> glps = ChangeLogParserFactory.getInstance()
                 .getParsers()
                 .stream()
-                .filter(p -> (p instanceof GroovyLiquibaseChangeLogParser)||(p instanceof ChoerodonLiquibaseChangeLogParser)).collect(Collectors.toList());
+                .filter(p -> (p instanceof GroovyLiquibaseChangeLogParser) || (p instanceof ChoerodonLiquibaseChangeLogParser)).collect(Collectors.toList());
         glps.stream().forEach(glp -> ChangeLogParserFactory.getInstance().unregister(glp));
         ChangeLogParserFactory.getInstance().register(new ChoerodonLiquibaseChangeLogParser(liquibaseHelper));
     }
@@ -197,7 +197,7 @@ public class LiquibaseExecutor {
             throws IOException, CustomChangeException, SQLException, LiquibaseException {
         if (dir != null) {
             load(dir, ad);
-        }  else {
+        } else {
             load(".", ad);
         }
     }

@@ -1,12 +1,11 @@
 package io.choerodon.liquibase
 
 import io.choerodon.liquibase.helper.LiquibaseHelper
-import liquibase.parser.ChangeLogParser
-import liquibase.changelog.DatabaseChangeLog
 import liquibase.changelog.ChangeLogParameters
-import liquibase.resource.ResourceAccessor
+import liquibase.changelog.DatabaseChangeLog
 import liquibase.exception.ChangeLogParseException
-
+import liquibase.parser.ChangeLogParser
+import liquibase.resource.ResourceAccessor
 import org.liquibase.groovy.delegate.DatabaseChangeLogDelegate
 
 /**
@@ -22,7 +21,7 @@ class ChoerodonLiquibaseChangeLogParser
 
     private LiquibaseHelper liquibaseHelper;
 
-    public ChoerodonLiquibaseChangeLogParser(LiquibaseHelper liquibaseHelper){
+    public ChoerodonLiquibaseChangeLogParser(LiquibaseHelper liquibaseHelper) {
         super();
         this.liquibaseHelper = liquibaseHelper;
     }
@@ -34,7 +33,7 @@ class ChoerodonLiquibaseChangeLogParser
 
         physicalChangeLogLocation = physicalChangeLogLocation.replaceAll('\\\\', '/')
         def inputStreams = resourceAccessor.getResourcesAsStream(physicalChangeLogLocation)
-        if ( !inputStreams || inputStreams.size() < 1 ) {
+        if (!inputStreams || inputStreams.size() < 1) {
             throw new ChangeLogParseException(physicalChangeLogLocation + " does not exist")
         }
         def inputStream = inputStreams.toArray()[0]
@@ -44,7 +43,7 @@ class ChoerodonLiquibaseChangeLogParser
             changeLog.setChangeLogParameters(changeLogParameters)
 
             def binding = new Binding()
-            binding.setProperty("helper",liquibaseHelper);
+            binding.setProperty("helper", liquibaseHelper);
             def shell = new GroovyShell(binding)
 
             // Parse the script, give it the local changeLog instance, give it access
@@ -62,7 +61,7 @@ class ChoerodonLiquibaseChangeLogParser
             try {
                 inputStream.close()
             }
-            catch(Exception e) {
+            catch (Exception e) {
                 // Can't do much more than hope for the best here
             }
         }
@@ -81,10 +80,9 @@ class ChoerodonLiquibaseChangeLogParser
 
     def getChangeLogMethodMissing() {
         { name, args ->
-            if(name == 'databaseChangeLog') {
+            if (name == 'databaseChangeLog') {
                 processDatabaseChangeLogRootElement(databaseChangeLog, resourceAccessor, args)
-            }
-            else {
+            } else {
                 throw new ChangeLogParseException("Unrecognized root element ${name}")
             }
         }
@@ -94,13 +92,13 @@ class ChoerodonLiquibaseChangeLogParser
         def delegate;
         def closure;
 
-        switch(args.size()) {
+        switch (args.size()) {
             case 0:
                 throw new ChangeLogParseException("databaseChangeLog element cannot be empty")
 
             case 1:
                 closure = args[0]
-                if(!(closure instanceof Closure)) {
+                if (!(closure instanceof Closure)) {
                     throw new ChangeLogParseException("databaseChangeLog element must be followed by a closure (databaseChangeLog { ... })")
                 }
                 delegate = new DatabaseChangeLogDelegate(databaseChangeLog)
@@ -109,10 +107,10 @@ class ChoerodonLiquibaseChangeLogParser
             case 2:
                 def params = args[0]
                 closure = args[1]
-                if(!(params instanceof Map)) {
+                if (!(params instanceof Map)) {
                     throw new ChangeLogParseException("databaseChangeLog element must take parameters followed by a closure (databaseChangeLog(key: value) { ... })")
                 }
-                if(!(closure instanceof Closure)) {
+                if (!(closure instanceof Closure)) {
                     throw new ChangeLogParseException("databaseChangeLog element must take parameters followed by a closure (databaseChangeLog(key: value) { ... })")
                 }
                 delegate = new DatabaseChangeLogDelegate(params, databaseChangeLog)

@@ -1,10 +1,8 @@
 package io.choerodon.liquibase;
 
 import io.choerodon.liquibase.addition.ProfileMap;
-import io.choerodon.liquibase.helper.LiquibaseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
@@ -17,12 +15,12 @@ public class LiquibaseConfig {
     DataSource dataSource;
 
     @Bean
-    LiquibaseExecutor getLiquibaseExecutor(){
-        return new LiquibaseExecutor(dataSource,getProfileMap());
+    LiquibaseExecutor getLiquibaseExecutor() {
+        return new LiquibaseExecutor(dataSource, getProfileMap());
     }
 
     @Bean
-    ProfileMap getProfileMap(){
+    ProfileMap getProfileMap() {
         return new ProfileMap();
     }
 

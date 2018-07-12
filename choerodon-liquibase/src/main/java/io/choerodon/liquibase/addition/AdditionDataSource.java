@@ -32,10 +32,10 @@ public class AdditionDataSource {
      * @param drop     是否删除数据库
      */
     public AdditionDataSource(String url, String username, String password, String dir, boolean drop) {
-        this(url,username,password,dir,drop,null);
+        this(url, username, password, dir, drop, null);
     }
 
-    public AdditionDataSource(String url, String username, String password, String dir, boolean drop,DataSource dataSource) {
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -86,7 +86,7 @@ public class AdditionDataSource {
     }
 
     public DataSource getDataSource() {
-        if(dataSource==null){
+        if (dataSource == null) {
             dataSource = new DriverManagerDataSource(url, username, password);
         }
         return dataSource;
