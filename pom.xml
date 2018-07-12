@@ -68,6 +68,7 @@
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-websocket-helper</module>
         <module>choerodon-gitlab4j-api</module>
+        <module>choerodon-liquibase</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

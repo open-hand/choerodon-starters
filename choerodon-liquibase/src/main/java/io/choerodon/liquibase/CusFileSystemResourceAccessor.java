@@ -1,10 +1,10 @@
 package io.choerodon.liquibase;
 
-import java.io.File;
-import java.io.IOException;
-
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.resource.FileSystemResourceAccessor;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * 加载系统文件资源
