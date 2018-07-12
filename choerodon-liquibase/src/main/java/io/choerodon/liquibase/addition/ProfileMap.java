@@ -9,7 +9,6 @@ import org.springframework.core.env.Environment;
  * 读取环境变量
  * @author dongfan117@gmail.com
  */
-@Configuration
 public class ProfileMap implements EnvironmentAware {
     private RelaxedPropertyResolver springDatasourceProperty;
     private RelaxedPropertyResolver dataProperty;

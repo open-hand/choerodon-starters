@@ -1,22 +1,22 @@
 package io.choerodon.liquibase;
 
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.liquibase.addition.AdditionDataSource;
 import io.choerodon.liquibase.addition.ProfileMap;
 import io.choerodon.liquibase.excel.ExcelDataLoader;
+import io.choerodon.liquibase.helper.LiquibaseHelper;
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
 import liquibase.exception.LiquibaseException;
+import liquibase.parser.ChangeLogParser;
+import liquibase.parser.ChangeLogParserFactory;
+import liquibase.parser.ext.GroovyLiquibaseChangeLogParser;
 import liquibase.resource.ResourceAccessor;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -36,8 +36,7 @@ import java.util.stream.Collectors;
  * @author dongfan117@gmail.com
  * @see org.springframework.boot.CommandLineRunner
  */
-@Component
-public class LiquibaseExecutor implements CommandLineRunner {
+public class LiquibaseExecutor {
     private static final Logger logger = LoggerFactory.getLogger(LiquibaseExecutor.class);
     private static final String TEMP_DIR_NAME = "temp/";
     private static final String SUFFIX_XLSX = ".xlsx";
@@ -58,30 +57,39 @@ public class LiquibaseExecutor implements CommandLineRunner {
     @Value("${addition.datasource.names:#{null}}")
     private String additionDataSourceNameProfile;
 
+
+    @Value("${spring.datasource.url}")
+    private String dsUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dsUserName;
+
+    @Value("${spring.datasource.password}")
+    private String dsPassword;
+
     private DataSource defaultDataSource;
     private ProfileMap profileMap;
 
-    public LiquibaseExecutor(@Qualifier(value = "dataSource") DataSource defaultDataSource,
-                             @Qualifier(value = "profileMap") ProfileMap profileMap) {
+    public LiquibaseExecutor(DataSource defaultDataSource,
+                             ProfileMap profileMap) {
         this.defaultDataSource = defaultDataSource;
         this.profileMap = profileMap;
     }
 
 
-    @Override
-    public void run(String... args) {
+    public boolean execute(String... args) {
+
+        boolean success = false;
         try {
-            if (additionDataSourceNameProfile != null) {
-                additionDataSourceExec();
-            } else {
-                simpleExec(defaultDir, jar, defaultDataSource, defaultDrop);
-            }
+            runToDb(prepareDataSources());
             logger.info("数据库初始化任务完成");
-            System.exit(0);
+            success = true;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             logger.error("数据库初始化任务失败");
-            System.exit(1);
+            success = false;
+        } finally {
+            return success;
         }
     }
 
@@ -121,31 +129,39 @@ public class LiquibaseExecutor implements CommandLineRunner {
             }
         }
         if (res == null) {
-            throw new CommonException(searchDir + " not exist.");
+            throw new RuntimeException(searchDir + " not exist.");
         }
         return res;
+    }
+
+
+    private List<AdditionDataSource> prepareDataSources() {
+        List<AdditionDataSource> additionDataSourceList = new ArrayList<>();
+        AdditionDataSource dds = new AdditionDataSource(this.dsUrl, this.dsUserName, this.dsPassword, this.defaultDir, this.defaultDrop, this.defaultDataSource);
+        additionDataSourceList.add(dds);
+        if (additionDataSourceNameProfile != null) {
+            String[] additionDataSourceNames = additionDataSourceNameProfile.split(",");
+            for (String a : additionDataSourceNames) {
+                String url = profileMap.getAdditionValue(a + ".url");
+                String username = profileMap.getAdditionValue(a + ".username");
+                String password = profileMap.getAdditionValue(a + ".password");
+                String dir = profileMap.getAdditionValue(a + ".dir");
+                boolean drop = Boolean.parseBoolean(profileMap.getAdditionValue(a + ".drop"));
+
+                AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop);
+                additionDataSourceList.add(ads);
+            }
+        }
+        return additionDataSourceList;
     }
 
     /**
      * 根据多数据源解析文件
      */
-    private void additionDataSourceExec() throws IOException, CustomChangeException, SQLException, LiquibaseException {
-        String[] additionDataSourceNames = additionDataSourceNameProfile.split(",");
-        List<AdditionDataSource> additionDataSourceList = new ArrayList<>();
-        for (String a : additionDataSourceNames) {
-            String url = profileMap.getAdditionValue(a + ".url");
-            String username = profileMap.getAdditionValue(a + ".username");
-            String password = profileMap.getAdditionValue(a + ".password");
-            String dir = profileMap.getAdditionValue(a + ".dir");
-            boolean drop = Boolean.parseBoolean(profileMap.getAdditionValue(a + ".drop"));
-
-            AdditionDataSource additionDataSource = new AdditionDataSource(url, username, password, dir, drop);
-            additionDataSourceList.add(additionDataSource);
-        }
+    private void runToDb(List<AdditionDataSource> additionDataSourceList) throws IOException, CustomChangeException, SQLException, LiquibaseException {
         if (jar == null) {
-            simpleExec(defaultDir, null, defaultDataSource, defaultDrop);
             for (AdditionDataSource addition : additionDataSourceList) {
-                simpleExec(addition.getDir(), null, addition.getDataSource(), addition.isDrop());
+                simpleExec(addition.getDir(), addition);
             }
         } else {
             extra(jar, TEMP_DIR_NAME);
@@ -155,35 +171,34 @@ public class LiquibaseExecutor implements CommandLineRunner {
                 catalog = connection.getCatalog();
             }
             logger.info("{} 初始化", catalog);
-            if (!StringUtils.isEmpty(defaultDir)) {
-                simpleExec(getDirInJar(fileList, defaultDir), null, defaultDataSource, defaultDrop);
-            } else {
-                simpleExec(TEMP_DIR_NAME, null, defaultDataSource, defaultDrop);
-            }
             for (AdditionDataSource addition : additionDataSourceList) {
                 logger.info("{} 初始化", catalog);
                 if (!StringUtils.isEmpty(addition.getDir())) {
                     simpleExec(getDirInJar(fileList,
                             addition.getDir()),
-                            null,
-                            addition.getDataSource(),
-                            addition.isDrop());
+                            addition);
                 } else {
-                    simpleExec(TEMP_DIR_NAME, null, defaultDataSource, defaultDrop);
+                    simpleExec(TEMP_DIR_NAME, addition);
                 }
             }
         }
     }
 
-    private void simpleExec(String dir, String jar, DataSource dataSource, boolean drop)
+    private void prepareGroovyParser(LiquibaseHelper liquibaseHelper){
+        List<ChangeLogParser> glps = ChangeLogParserFactory.getInstance()
+                .getParsers()
+                .stream()
+                .filter(p -> (p instanceof GroovyLiquibaseChangeLogParser)||(p instanceof ChoerodonLiquibaseChangeLogParser)).collect(Collectors.toList());
+        glps.stream().forEach(glp -> ChangeLogParserFactory.getInstance().unregister(glp));
+        ChangeLogParserFactory.getInstance().register(new ChoerodonLiquibaseChangeLogParser(liquibaseHelper));
+    }
+
+    private void simpleExec(String dir, AdditionDataSource ad)
             throws IOException, CustomChangeException, SQLException, LiquibaseException {
         if (dir != null) {
-            load(dir, dataSource, drop);
-        } else if (jar != null) {
-            extra(jar, TEMP_DIR_NAME);
-            load(TEMP_DIR_NAME, dataSource, defaultDrop);
-        } else {
-            load(".", dataSource, defaultDrop);
+            load(dir, ad);
+        }  else {
+            load(".", ad);
         }
     }
 
@@ -218,22 +233,23 @@ public class LiquibaseExecutor implements CommandLineRunner {
         logger.info("Jar拆解完成");
     }
 
-    private void load(String dir, DataSource dataSource, boolean drop)
+    private void load(String dir, AdditionDataSource ad)
             throws IOException, CustomChangeException, SQLException, LiquibaseException {
+        prepareGroovyParser(ad.getLiquibaseHelper());
         Map<String, Set<String>> updateExclusionMap = processExclusion();
         ResourceAccessor accessor = new CusFileSystemResourceAccessor(dir);
         Set<String> fileNameSet = accessor.list(null, File.separator, true, false, true);
         List<String> fileNameList = new ArrayList<>();
         fileNameList.addAll(fileNameSet);
         Collections.sort(fileNameList);
-        if (drop) {
-            Liquibase liquibase = new Liquibase("drop", accessor, new JdbcConnection(dataSource.getConnection()));
+        if (ad.isDrop()) {
+            Liquibase liquibase = new Liquibase("drop", accessor, new JdbcConnection(ad.getDataSource().getConnection()));
             liquibase.dropAll();
         }
         //执行groovy脚本
         for (String file : fileNameList) {
             if (file.endsWith(SUFFIX_GROOVY)) {
-                Liquibase liquibase = new Liquibase(file, accessor, new JdbcConnection(dataSource.getConnection()));
+                Liquibase liquibase = new Liquibase(file, accessor, new JdbcConnection(ad.getDataSource().getConnection()));
                 liquibase.update(new Contexts());
             }
         }
@@ -243,24 +259,24 @@ public class LiquibaseExecutor implements CommandLineRunner {
                 ExcelDataLoader loader = new ExcelDataLoader();
                 Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
                 loader.setUpdateExclusionMap(updateExclusionMap);
-                loader.execute(inputStream.iterator().next(), dataSource);
+                loader.execute(inputStream.iterator().next(), ad);
             }
         }
     }
 
     /**
-     *
      * exclusion参数的格式是table1.column1, table1.column2, table2.column, table3
      * 此方法把string转为maps
+     *
      * @return
      */
-    private Map<String,Set<String>> processExclusion() {
+    private Map<String, Set<String>> processExclusion() {
         Map<String, Set<String>> map = new HashMap<>();
         if (updateExclusion != null) {
             String[] array = updateExclusion.split(",");
             for (String str : array) {
                 if (str != null && str.contains(".")) {
-                    String[] strArray =  str.split("\\.");
+                    String[] strArray = str.split("\\.");
                     String tableName = strArray[0];
                     String columnName = strArray[1];
                     Set<String> columns = map.get(tableName);

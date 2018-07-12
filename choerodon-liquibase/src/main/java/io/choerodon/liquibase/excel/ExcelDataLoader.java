@@ -1,14 +1,15 @@
 package io.choerodon.liquibase.excel;
 
-import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.*;
-import javax.sql.DataSource;
-
-import io.choerodon.core.exception.CommonException;
+import io.choerodon.liquibase.addition.AdditionDataSource;
+import io.choerodon.liquibase.helper.LiquibaseHelper;
 import liquibase.exception.CustomChangeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Excel 数据加载类
@@ -69,7 +70,7 @@ public class ExcelDataLoader {
         try {
             dbAdaptor.initConnection();
         } catch (SQLException e) {
-            throw new CommonException(e);
+            throw new RuntimeException(e);
         }
 
         long t0 = System.currentTimeMillis();
@@ -82,7 +83,7 @@ public class ExcelDataLoader {
             logger.info("SUCCESS");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new CommonException(e);
+            throw new RuntimeException(e);
         } finally {
             logger.info("data process finish, time:{}ms", (System.currentTimeMillis() - t0));
         }
@@ -112,7 +113,7 @@ public class ExcelDataLoader {
             }
             if (roundProcessCount == 0 && dbAdaptor.weakInsert(tablesCopy) == 0) {
                 int cc = errorLog(tablesCopy);
-                throw new CommonException(cc + " rows can not process.");
+                throw new RuntimeException(cc + " rows can not process.");
             }
         }
     }
@@ -280,16 +281,15 @@ public class ExcelDataLoader {
      * 根据数据流和数据源处理将excel 中的数据初始化到数据库中
      *
      * @param inputStream 输入流
-     * @param dataSource  数据源
      * @throws CustomChangeException 异常
      */
-    public void execute(InputStream inputStream, DataSource dataSource) throws CustomChangeException {
+    public void execute(InputStream inputStream, AdditionDataSource ad) throws CustomChangeException {
         logger.info("begin process excel : {}", filePath);
         try {
             ExcelSeedDataReader dataReader = new ExcelSeedDataReader(inputStream);
             tables = dataReader.load();
-            dbAdaptor = new DbAdaptor(this);
-            dbAdaptor.setDataSource(dataSource);
+            dbAdaptor = new DbAdaptor(this,ad);
+            dbAdaptor.setDataSource(ad.getDataSource());
             processData();
             dbAdaptor.closeConnection(true);
         } catch (Exception e) {

@@ -1,8 +1,9 @@
 package io.choerodon.liquibase.addition;
 
-import javax.sql.DataSource;
-
+import io.choerodon.liquibase.helper.LiquibaseHelper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import javax.sql.DataSource;
 
 /**
  * 多数据源配置
@@ -15,6 +16,8 @@ public class AdditionDataSource {
     private String password;
     private String dir;
     private boolean drop;
+    private DataSource dataSource;
+    private LiquibaseHelper liquibaseHelper;
 
     public AdditionDataSource() {
     }
@@ -29,11 +32,17 @@ public class AdditionDataSource {
      * @param drop     是否删除数据库
      */
     public AdditionDataSource(String url, String username, String password, String dir, boolean drop) {
+        this(url,username,password,dir,drop,null);
+    }
+
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop,DataSource dataSource) {
         this.url = url;
         this.username = username;
         this.password = password;
         this.dir = dir;
         this.drop = drop;
+        this.dataSource = dataSource;
+        this.liquibaseHelper = new LiquibaseHelper(this.url);
     }
 
     public String getUrl() {
@@ -77,6 +86,13 @@ public class AdditionDataSource {
     }
 
     public DataSource getDataSource() {
-        return new DriverManagerDataSource(url, username, password);
+        if(dataSource==null){
+            dataSource = new DriverManagerDataSource(url, username, password);
+        }
+        return dataSource;
+    }
+
+    public LiquibaseHelper getLiquibaseHelper() {
+        return liquibaseHelper;
     }
 }

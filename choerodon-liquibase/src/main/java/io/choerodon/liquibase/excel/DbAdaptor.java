@@ -1,18 +1,19 @@
 package io.choerodon.liquibase.excel;
 
-import static io.choerodon.liquibase.excel.TableData.TableCellValue;
+import io.choerodon.liquibase.addition.AdditionDataSource;
+import io.choerodon.liquibase.helper.LiquibaseHelper;
+import liquibase.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
-import javax.sql.DataSource;
 
-import io.choerodon.core.exception.CommonException;
-import liquibase.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static io.choerodon.liquibase.excel.TableData.TableCellValue;
 
 /**
  * DbAdaptor，包含数据库连接信息及基本的操作语句
@@ -49,7 +50,7 @@ public class DbAdaptor {
     private boolean useSeq = false;
     private boolean override = true;
 
-    public DbAdaptor(ExcelDataLoader dataProcessor) {
+    public DbAdaptor(ExcelDataLoader dataProcessor, AdditionDataSource ad) {
         this.dataProcessor = dataProcessor;
     }
 
@@ -471,7 +472,7 @@ public class DbAdaptor {
         } while (count > 0);
         for (TableData.TableRow tableRow : tempList) {
             if (!tableRow.isProcessFlag()) {
-                throw new CommonException("can not insert :" + tableRow);
+                throw new RuntimeException("can not insert :" + tableRow);
             }
         }
 
@@ -660,7 +661,7 @@ public class DbAdaptor {
                 }
                 return sdfL.parse(value);
             } catch (ParseException e) {
-                throw new CommonException(e);
+                throw new RuntimeException(e);
             }
         }
         if ("DECIMAL".equalsIgnoreCase(type) || "NUMBER".equalsIgnoreCase(type)

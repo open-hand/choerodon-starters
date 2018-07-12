@@ -1,6 +1,5 @@
 package io.choerodon.liquibase.excel;
 
-import io.choerodon.core.exception.CommonException;
 import liquibase.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -50,7 +49,7 @@ public class ExcelSeedDataReader {
             }
             return tablesAll;
         } catch (Exception e) {
-            throw new CommonException(e);
+            throw new RuntimeException(e);
         }
     }
 

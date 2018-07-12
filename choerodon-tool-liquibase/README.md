@@ -1,7 +1,7 @@
 # choerodon-tool-liquibase
 
 This project is a toolkit. When the microservice of choerodon uses the database as storage, it needs to use the tool to create the table structure and initialize the database.
- 
+
 According to the groovy files and xlsx files in the project, it automatically performs table operation aHnd initialization data.
 
 ## Usage
@@ -11,8 +11,24 @@ According to the groovy files and xlsx files in the project, it automatically pe
 ```
 curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.5.4.RELEASE/choerodon-tool-liquibase-0.5.4.RELEASE.jar -o choerodon-tool-liquibase.jar
 ```
+
 * Example:
 
+* H2 example
+
+open browser visit http://localhost:8080
+
+```
+java \
+ -Ddata.drop=false -Ddata.init=true \
+ -Dspring.h2.console.enabled=true \
+ -Dspring.main.web-environment=true \
+ -Ddata.dir=src/main/resources \
+ -Ddata.jar=app.jar \
+ -jar choerodon-tool-liquibase.jar
+```
+
+* Mysql example
 ```
 java \
  -Dspring.datasource.url='jdbc:mysql://localhost/choeroson_database?useUnicode=true&characterEncoding=utf-8&useSSL=false' \
@@ -55,7 +71,7 @@ Explanation：
 4. data.jar: The address of the data jar, it can start with http, https,file. At the end of '.jar'.
 5. data.dir: File directory, applicable to the development phase, it can automatically find groovy or xlsx.
 6. data.drop: Rebuild the database. default is false.
-7. data.update.exclusion: Exclude the whole table or column when update the db data by excel. Use the `,` to split the table and use `.` to express the column of table  
+7. data.update.exclusion: Exclude the whole table or column when update the db data by excel. Use the `,` to split the table and use `.` to express the column of table
 
 
 ## Dependencies
@@ -65,6 +81,6 @@ Explanation：
 ##  Reporting Issues
 
 If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
-    
+
 ## How to Contribute
 Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
