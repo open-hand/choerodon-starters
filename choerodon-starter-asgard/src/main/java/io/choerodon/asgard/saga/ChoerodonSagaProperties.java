@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "choerodon.saga")
 public class ChoerodonSagaProperties {
 
-    private Integer pollInterval = 60;
+    private Integer pollInterval = 1;
 
     private Integer maxExecuteThread = 5;
 

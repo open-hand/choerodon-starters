@@ -17,7 +17,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
-@ConditionalOnProperty(prefix = "choerodon.saga", name = "enabled")
+@ConditionalOnProperty(prefix = "choerodon.saga", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(ChoerodonSagaProperties.class)
 @Import(ChoerodonCoreAutoConfiguration.class)
 public class ChoerodonAsgardAutoConfiguration {

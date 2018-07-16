@@ -11,9 +11,6 @@ import org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistrati
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import rx.Observable;
-import rx.Observer;
-import rx.schedulers.Schedulers;
 
 import javax.annotation.PostConstruct;
 import java.io.PrintWriter;
@@ -23,6 +20,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class SagaMonitor {
 
@@ -42,7 +41,9 @@ public class SagaMonitor {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
+    private static volatile AtomicBoolean canExecutingFlag = new AtomicBoolean(true);
+
+    private static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
 
 
     public SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
@@ -61,33 +62,50 @@ public class SagaMonitor {
     @PostConstruct
     private void start() {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleWithFixedDelay(() -> {
-            if (eurekaRegistration.isPresent()) {
-                CloudEurekaInstanceConfig cloudEurekaInstanceConfig = eurekaRegistration.get().getInstanceConfig();
-                if (cloudEurekaInstanceConfig instanceof EurekaInstanceConfigBean) {
-                    EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
-                    String instance = eurekaInstanceConfigBean.getIpAddress() + ":" + eurekaInstanceConfigBean.getNonSecurePort();
-                    Observable.from(getSagaTasks(instance))
-                            .observeOn(Schedulers.from(executor))
-                            .subscribe(new Observer<DataObject.SagaTaskInstanceDTO>() {
-                                @Override
-                                public void onCompleted() {
-                                    // onCompleted
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    LOGGER.warn("error.invokeSagaTaskInstance {}", e.getMessage());
-                                }
-
-                                @Override
-                                public void onNext(DataObject.SagaTaskInstanceDTO sagaTaskInstanceDTO) {
-                                    invoke(sagaTaskInstanceDTO);
-                                }
+        Set<String> taskCodes = invokeBeanMap.entrySet().stream().map(t -> t.getValue().sagaTask.code()).collect(Collectors.toSet());
+        if (eurekaRegistration.isPresent()) {
+            CloudEurekaInstanceConfig cloudEurekaInstanceConfig = eurekaRegistration.get().getInstanceConfig();
+            if (cloudEurekaInstanceConfig instanceof EurekaInstanceConfigBean) {
+                EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
+                String instance = eurekaInstanceConfigBean.getIpAddress() + ":" + eurekaInstanceConfigBean.getNonSecurePort();
+                scheduledExecutorService.scheduleWithFixedDelay(() -> {
+                    if (canExecutingFlag.compareAndSet(true, false) && processingIds.isEmpty()) {
+                        try {
+                            List<DataObject.SagaTaskInstanceDTO> list = sagaClient.pollBatch(taskCodes, instance);
+                            LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
+                            list.forEach(t -> {
+                                processingIds.add(t.getId());
+                                executor.execute(new InvokeTask(t));
                             });
-                }
+                        } catch (Exception e) {
+                            LOGGER.info("error.pollSagaTaskInstances {}", e.getMessage());
+                        } finally {
+                            canExecutingFlag.set(true);
+                        }
+                    }
+                }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
             }
-        }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
+        }
+
+    }
+
+    private class InvokeTask implements Runnable {
+        private final DataObject.SagaTaskInstanceDTO dto;
+
+        InvokeTask(DataObject.SagaTaskInstanceDTO dto) {
+            this.dto = dto;
+        }
+
+        @Override
+        public void run() {
+            try {
+                invoke(dto);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                processingIds.remove(dto.getId());
+            }
+        }
     }
 
     private void invoke(DataObject.SagaTaskInstanceDTO data) {
@@ -106,9 +124,7 @@ public class SagaMonitor {
             sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
                     SagaDef.InstanceStatus.STATUS_COMPLETED.name(), resultData));
             transactionManager.commit(status);
-            processingIds.remove(data.getId());
         } catch (Exception e) {
-            processingIds.remove(data.getId());
             transactionManager.rollback(status);
             sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
                     SagaDef.InstanceStatus.STATUS_FAILED.name(), getErrorInfoFromException(e)));
@@ -130,18 +146,4 @@ public class SagaMonitor {
         }
     }
 
-    private List<DataObject.SagaTaskInstanceDTO> getSagaTasks(final String instance) {
-        List<DataObject.SagaTaskInstanceDTO> list = new ArrayList<>();
-        try {
-            invokeBeanMap.forEach((k, v) -> {
-                List<DataObject.SagaTaskInstanceDTO> taskList = sagaClient.pollBatch(v.sagaTask.code(), instance, processingIds);
-                list.addAll(taskList);
-            });
-            list.forEach(t -> processingIds.add(t.getId()));
-        } catch (Exception e) {
-            LOGGER.info("error.pollSagaTaskInstances {}", e.getMessage());
-        }
-        LOGGER.info("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
-        return list;
-    }
 }

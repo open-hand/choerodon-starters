@@ -11,9 +11,10 @@ public class SagaClientCallback implements SagaClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaClient.class);
 
+
     @Override
-    public List<DataObject.SagaTaskInstanceDTO> pollBatch(String code, String instance, Set<Long> filterIds) {
-        LOGGER.info("error.sagaTaskInstance.poll, code {}, instance {}, filterIds{}", code, instance, filterIds);
+    public List<DataObject.SagaTaskInstanceDTO> pollBatch(Set<String> codes, String instance) {
+        LOGGER.info("error.sagaTaskInstance.poll, code {}, instance {}", codes, instance);
         return Collections.emptyList();
     }
 
