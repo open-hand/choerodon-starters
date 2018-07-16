@@ -42,8 +42,10 @@ public class JwtTokenFilter implements Filter {
     }
 
     public JwtTokenFilter(ResourceServerTokenServices tokenServices,
+                          TokenExtractor tokenExtractor,
                           Set<PublicPermission> publicPermissions) {
         this.tokenServices = tokenServices;
+        this.tokenExtractor = tokenExtractor;
         this.publicPermissions = publicPermissions;
     }
 
