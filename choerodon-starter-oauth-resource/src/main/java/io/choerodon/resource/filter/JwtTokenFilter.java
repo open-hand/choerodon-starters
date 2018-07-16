@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class JwtTokenFilter implements Filter {
 
-    private TokenExtractor tokenExtractor = new JwtTokenExtractor();
+    private TokenExtractor tokenExtractor;
 
     private ResourceServerTokenServices tokenServices;
 

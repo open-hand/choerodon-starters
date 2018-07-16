@@ -91,7 +91,7 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
         try {
             converter.afterPropertiesSet();
         } catch (Exception e) {
-            LOGGER.warn("error.ChoerodonResourceServerConfiguration.accessTokenConverter {}", e.toString());
+            LOGGER.warn("error.ChoerodonResourceServerConfiguration.accessTokenConverter {}", e);
         }
         return converter;
     }
