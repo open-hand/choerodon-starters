@@ -48,7 +48,7 @@ public class Controller {
         ScheduledExecutorService register = new ScheduledThreadPoolExecutor(1);
         ScheduledExecutorService cleaner = new ScheduledThreadPoolExecutor(1);
         register.scheduleAtFixedRate(new RegisterThread(),2000,socketProperties.getRegisterInterval(),TimeUnit.MILLISECONDS);
-        cleaner.scheduleAtFixedRate(new CleanThread(),2000,socketProperties.getRegisterInterval(),TimeUnit.MILLISECONDS);
+        cleaner.scheduleAtFixedRate(new CleanThread(),2000,socketProperties.getRegisterInterval()+500,TimeUnit.MILLISECONDS);
         if (socketProperties.isCommandTimeoutEnabled()){
             ScheduledExecutorService commandRecorder = new ScheduledThreadPoolExecutor(1);
             commandRecorder.scheduleAtFixedRate(new CommandRecorderThread(),2,socketProperties.getCommandTimeoutSeconds(),TimeUnit.SECONDS);
