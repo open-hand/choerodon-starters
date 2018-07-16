@@ -9,8 +9,8 @@ import java.util.Set;
 @FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
 public interface SagaClient {
 
-    @GetMapping("/v1/saga/tasks/instances/{codes}/batch")
-    List<DataObject.SagaTaskInstanceDTO> pollBatch(@PathVariable("codes") Set<String> codes,
+    @GetMapping("/v1/saga/tasks/instances/batch")
+    List<DataObject.SagaTaskInstanceDTO> pollBatch(@RequestParam("codes") Set<String> codes,
                                                    @RequestParam("instance") String instance);
 
 
