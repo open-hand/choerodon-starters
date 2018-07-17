@@ -69,7 +69,7 @@ public class SagaMonitor {
                 scheduledExecutorService.scheduleWithFixedDelay(() -> {
                     if (canExecutingFlag.compareAndSet(true, false) && processingIds.isEmpty()) {
                         try {
-                            List<DataObject.SagaTaskInstanceDTO> list = sagaClient.pollBatch(taskCodes, instance);
+                            List<DataObject.SagaTaskInstanceDTO> list = sagaClient.pollBatch(new DataObject.PollBatchDTO(instance, taskCodes));
                             LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
                             list.forEach(t -> {
                                 processingIds.add(t.getId());
@@ -88,6 +88,7 @@ public class SagaMonitor {
     }
 
     private class InvokeTask implements Runnable {
+
         private final DataObject.SagaTaskInstanceDTO dto;
 
         InvokeTask(DataObject.SagaTaskInstanceDTO dto) {
