@@ -1,5 +1,9 @@
 package io.choerodon.core.excel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +12,10 @@ import java.util.Date;
  * @author superlee
  */
 public class DateUtil {
+
+    private DateUtil() {}
+
+    private static Logger logger = LoggerFactory.getLogger(DateUtil.class);
 
     /**
      * 将字符串(格式符合规范)转换成Date
@@ -23,11 +31,11 @@ public class DateUtil {
         }
         SimpleDateFormat sdf = getFormat(format);
         Date date = null;
+        value = formatDate(value, format);
         try {
-            value = formatDate(value, format);
             date = sdf.parse(value);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ParseException e) {
+            logger.info("SimpleDateFormat parse exception: {}", e.getMessage());
         }
         return date;
     }
@@ -56,7 +64,7 @@ public class DateUtil {
         SimpleDateFormat outFmt;
         ParsePosition pos = new ParsePosition(0);
         date = date.replace("-", "").replace(":", "");
-        if ((date == null) || ("".equals(date.trim())))
+        if (date == null || "".equals(date.trim()))
             return "";
         try {
             if (Long.parseLong(date) == 0L)
@@ -90,13 +98,14 @@ public class DateUtil {
             }
             if ((dt = inFmt.parse(date, pos)) == null)
                 return date;
-            if ((format == null) || ("".equals(format.trim()))) {
+            if (format == null || "".equals(format.trim())) {
                 outFmt = new SimpleDateFormat("yyyy年MM月dd日");
             } else {
                 outFmt = new SimpleDateFormat(format);
             }
             return outFmt.format(dt);
         } catch (Exception ex) {
+            logger.info(ex.getMessage());
         }
         return date;
     }

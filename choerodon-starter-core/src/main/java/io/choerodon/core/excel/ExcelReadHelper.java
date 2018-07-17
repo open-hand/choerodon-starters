@@ -17,6 +17,8 @@ import java.util.Map;
  */
 public class ExcelReadHelper {
 
+    private ExcelReadHelper() {}
+
     public static <T> List<T> read(File file, Class<T> clazz, Map<String, String> propertyMap)
             throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
         String name = file.getName();

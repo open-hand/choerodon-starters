@@ -1,11 +1,12 @@
 package io.choerodon.core.excel;
 
-import io.choerodon.core.exception.CommonException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.NumberToTextConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,9 @@ import java.util.*;
  */
 public class ExcelUtil {
 
-//    private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
+    private ExcelUtil() {}
+
+    private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 
     public static boolean isExcel2003(String name) {
         return name.matches("^.+\\.(?i)(xls)$");
@@ -33,7 +36,7 @@ public class ExcelUtil {
      *
      * @param workbook      excel工作薄
      * @param clazz         读取数据返回的类型
-     * @param propertyMap   excel列与dataObject字段的对应关系
+     * @param propertyMap   excel列名与dataObject字段的对应关系
      * @param <T>       返回类型
      * @return
      */
@@ -59,7 +62,7 @@ public class ExcelUtil {
                     continue;
                 }
                 if (!processTitleRow) {
-                    titleRow = getTitleRow(row);
+                    titleRow = getTitleRow(row, propertyMap);
                     processTitleRow = true;
                 } else {
                     list.add(getObject(row, clazz, titleRow, fieldMap, setterMethodMap));
@@ -69,7 +72,14 @@ public class ExcelUtil {
         return list;
     }
 
-    private static Map<Integer, String> getTitleRow(Row row) {
+    /**
+     *
+     * propertyMap为空用默认策略
+     * @param row               excel的行
+     * @param propertyMap       excel列名与dataObject字段的对应关系
+     * @return
+     */
+    private static Map<Integer, String> getTitleRow(Row row, Map<String, String> propertyMap) {
         Map<Integer, String> map = new HashMap<>();
         int lastCellNum = row.getLastCellNum();
         for (int cellNum = 0; cellNum < lastCellNum; cellNum++) {
@@ -78,7 +88,22 @@ public class ExcelUtil {
                 continue;
             }
             int column = cell.getAddress().getColumn();
-            map.put(column, cell.getStringCellValue());
+            String cellValue = cell.getStringCellValue();
+            //propertyMap为空，使用默认策略，即标题行要与对象字段名相对应，驼峰风格
+            if (propertyMap == null
+                    || propertyMap.isEmpty()) {
+                map.put(column, cellValue);
+            } else {
+                //遍历map，找到excel的标题行与对象字段的映射关系，如果propertyMap里面不包含excel里面的列名，抛异常
+                if (!propertyMap.keySet().contains(cellValue)) {
+                    throw new IllegalArgumentException("propertyMap does not contain the cell value : " + cellValue);
+                }
+                propertyMap.forEach((k, v) ->{
+                    if (k.equals(cellValue)) {
+                        map.put(column, v);
+                    }
+                });
+            }
         }
         return map;
     }
@@ -100,12 +125,12 @@ public class ExcelUtil {
                 continue;
             }
             Field field = fieldMap.get(property);
-            Method method = setterMethodMap.get(property);
             if (field == null) {
-                throw new CommonException("There are no fields match the column : {}", column);
+                throw new IllegalArgumentException("excel column name can not match the fields of object, column : " + column);
             }
+            Method method = setterMethodMap.get(property);
             if (method == null) {
-                throw new CommonException("There are no setter methods match the column : {}", column);
+                throw new IllegalArgumentException("excel column name can not match the setter methods of object, column : " + column);
             }
             setObjectPropertyValue(t,field,method,cellValue);
         }
@@ -165,9 +190,9 @@ public class ExcelUtil {
 
     @SuppressWarnings("static-access")
     public static String getValue(Cell cell) {
-        if (cell.getCellType() == cell.CELL_TYPE_BOOLEAN) {
+        if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
             return String.valueOf(cell.getBooleanCellValue());
-        } else if (cell.getCellType() == cell.CELL_TYPE_NUMERIC) {
+        } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
             return NumberToTextConverter.toText(cell.getNumericCellValue());
         } else {
             return String.valueOf(cell.getStringCellValue());
@@ -191,7 +216,6 @@ public class ExcelUtil {
      */
     public static void setObjectPropertyValue(Object obj, Field field,
                                                Method method, String value) throws InvocationTargetException, IllegalAccessException {
-//        Object[] oo = new Object[1];
         Object object = new Object();
         String type = field.getType().getName();
         if ("java.lang.String".equals(type) || "String".equals(type)) {
