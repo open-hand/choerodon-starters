@@ -1,6 +1,5 @@
 package io.choerodon.asgard.saga;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.core.saga.SagaDef;
 import org.slf4j.Logger;
@@ -56,7 +55,6 @@ public class SagaMonitor {
         this.executor = executor;
         this.eurekaRegistration = eurekaRegistration;
         this.transactionManager = transactionManager;
-        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
     }
 
     @PostConstruct
@@ -101,7 +99,7 @@ public class SagaMonitor {
             try {
                 invoke(dto);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.warn("message consume exception when InvokeTask, cause {}", e.getMessage());
             } finally {
                 processingIds.remove(dto.getId());
             }
@@ -128,10 +126,7 @@ public class SagaMonitor {
             transactionManager.rollback(status);
             sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
                     SagaDef.InstanceStatus.STATUS_FAILED.name(), getErrorInfoFromException(e)));
-            LOGGER.warn("message consume exception, msg : {}, cause {}", data, e.getMessage());
-            if (LOGGER.isDebugEnabled()) {
-                e.printStackTrace();
-            }
+            LOGGER.warn("message consume exception, msg : {}, cause {}", data, getErrorInfoFromException(e));
         }
     }
 
