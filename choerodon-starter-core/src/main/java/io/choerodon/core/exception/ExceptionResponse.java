@@ -8,6 +8,7 @@ package io.choerodon.core.exception;
 public class ExceptionResponse {
 
     private Boolean failed;
+    private String code;
     private String message;
 
     /**
@@ -15,9 +16,9 @@ public class ExceptionResponse {
      *
      * @param message 提示消息
      */
-    public ExceptionResponse(Boolean failed, String message) {
-        super();
+    public ExceptionResponse(Boolean failed, String code, String message) {
         this.failed = failed;
+        this.code = code;
         this.message = message;
     }
 
@@ -36,4 +37,13 @@ public class ExceptionResponse {
     public void setFailed(Boolean failed) {
         this.failed = failed;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 }

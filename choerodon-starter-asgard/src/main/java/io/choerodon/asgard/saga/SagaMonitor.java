@@ -1,6 +1,5 @@
 package io.choerodon.asgard.saga;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.core.saga.SagaDef;
 import org.slf4j.Logger;
@@ -56,7 +55,6 @@ public class SagaMonitor {
         this.executor = executor;
         this.eurekaRegistration = eurekaRegistration;
         this.transactionManager = transactionManager;
-        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
     }
 
     @PostConstruct
@@ -71,7 +69,7 @@ public class SagaMonitor {
                 scheduledExecutorService.scheduleWithFixedDelay(() -> {
                     if (canExecutingFlag.compareAndSet(true, false) && processingIds.isEmpty()) {
                         try {
-                            List<DataObject.SagaTaskInstanceDTO> list = sagaClient.pollBatch(taskCodes, instance);
+                            List<DataObject.SagaTaskInstanceDTO> list = sagaClient.pollBatch(new DataObject.PollBatchDTO(instance, taskCodes));
                             LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
                             list.forEach(t -> {
                                 processingIds.add(t.getId());
@@ -90,6 +88,7 @@ public class SagaMonitor {
     }
 
     private class InvokeTask implements Runnable {
+
         private final DataObject.SagaTaskInstanceDTO dto;
 
         InvokeTask(DataObject.SagaTaskInstanceDTO dto) {
@@ -101,7 +100,7 @@ public class SagaMonitor {
             try {
                 invoke(dto);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.warn("message consume exception when InvokeTask, cause {}", e.getMessage());
             } finally {
                 processingIds.remove(dto.getId());
             }
@@ -128,10 +127,7 @@ public class SagaMonitor {
             transactionManager.rollback(status);
             sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
                     SagaDef.InstanceStatus.STATUS_FAILED.name(), getErrorInfoFromException(e)));
-            LOGGER.warn("message consume exception, msg : {}, cause {}", data, e.getMessage());
-            if (LOGGER.isDebugEnabled()) {
-                e.printStackTrace();
-            }
+            LOGGER.warn("message consume exception, msg : {}, cause {}", data, getErrorInfoFromException(e));
         }
     }
 

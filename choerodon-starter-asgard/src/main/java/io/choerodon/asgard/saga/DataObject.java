@@ -1,7 +1,10 @@
 package io.choerodon.asgard.saga;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 public class DataObject {
 
@@ -288,8 +291,10 @@ public class DataObject {
 
         private String status;
 
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date startTime;
 
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date endTime;
 
         private Long inputDataId;
@@ -299,10 +304,13 @@ public class DataObject {
         private String refType;
 
         private Long refId;
+
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date creationDate;
 
         private Long createdBy;
 
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date lastUpdateDate;
 
         private Long lastUpdatedBy;
@@ -419,6 +427,45 @@ public class DataObject {
 
         public void setObjectVersionNumber(Long objectVersionNumber) {
             this.objectVersionNumber = objectVersionNumber;
+        }
+    }
+
+    public static class PollBatchDTO {
+
+        private String instance;
+
+        private Set<String> codes;
+
+        public String getInstance() {
+            return instance;
+        }
+
+        public void setInstance(String instance) {
+            this.instance = instance;
+        }
+
+        public Set<String> getCodes() {
+            return codes;
+        }
+
+        public void setCodes(Set<String> codes) {
+            this.codes = codes;
+        }
+
+        public PollBatchDTO() {
+        }
+
+        public PollBatchDTO(String instance, Set<String> codes) {
+            this.instance = instance;
+            this.codes = codes;
+        }
+
+        @Override
+        public String toString() {
+            return "PollBatchDTO{" +
+                    "instance='" + instance + '\'' +
+                    ", codes=" + codes +
+                    '}';
         }
     }
 
