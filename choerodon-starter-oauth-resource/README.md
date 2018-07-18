@@ -10,7 +10,7 @@ The dependencies of pom:
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-oauth-resource</artifactId>
-     <version>0.5.4.RELEASE</version>
+     <version>6.0.0.RELEASE</version>
 </dependency>
 ```
 

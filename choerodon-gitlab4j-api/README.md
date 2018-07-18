@@ -22,7 +22,7 @@ To utilize the GitLab API for Java in your project, simply add the following dep
 <dependency>
    <groupId>io.choerodon</groupId>
    	<artifactId>choerodon-gitlab4j-api</artifactId>
-   	<version>0.5.4.RELEASE</version>
+   	<version>6.0.0.RELEASE</version>
 </dependency>
 ```
 
