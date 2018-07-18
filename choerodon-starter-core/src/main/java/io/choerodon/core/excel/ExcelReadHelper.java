@@ -22,15 +22,15 @@ public class ExcelReadHelper {
 
     /**
      *
-     * @param file          excel文件
-     * @param clazz         excel数据要转换的类型
-     * @param propertyMap   excel列名与类字段的映射关系，传null则excel列名要与对象字段名一致
-     * @param <T>
-     * @return
-     * @throws IOException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws InvocationTargetException
+     * @param file                          excel文件
+     * @param clazz                         excel数据要转换的类型
+     * @param propertyMap                   excel列名与类字段的映射关系，传null则excel列名要与对象字段名一致
+     * @param <T>                           类型
+     * @throws IOException                  IOException
+     * @throws IllegalAccessException       IllegalAccessException
+     * @throws InstantiationException       InstantiationException
+     * @throws InvocationTargetException    InvocationTargetException
+     * @return list
      */
     public static <T> List<T> read(File file, Class<T> clazz, Map<String, String> propertyMap)
             throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
@@ -48,15 +48,15 @@ public class ExcelReadHelper {
 
     /**
      *
-     * @param multipartFile excel文件
-     * @param clazz         excel数据要转换的类型
-     * @param propertyMap   excel列名与类字段的映射关系，传null则excel列名要与对象字段名一致
-     * @param <T>
-     * @return
-     * @throws IOException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws InvocationTargetException
+     * @param multipartFile                 excel文件
+     * @param clazz                         excel数据要转换的类型
+     * @param propertyMap                   excel列名与类字段的映射关系，传null则excel列名要与对象字段名一致
+     * @param <T>                           类型
+     * @throws IOException                  IOException
+     * @throws IllegalAccessException       IllegalAccessException
+     * @throws InstantiationException       InstantiationException
+     * @throws InvocationTargetException    InvocationTargetException
+     * @return list
      */
     public static <T> List<T> read(MultipartFile multipartFile, Class<T> clazz, Map<String, String> propertyMap)
             throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {

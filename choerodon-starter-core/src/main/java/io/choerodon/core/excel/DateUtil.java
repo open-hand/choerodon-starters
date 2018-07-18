@@ -20,7 +20,6 @@ public class DateUtil {
     /**
      * 将字符串(格式符合规范)转换成Date
      * @author chenssy
-     * @date Dec 31, 2013
      * @param value 需要转换的字符串
      * @param format 日期格式
      * @return Date
@@ -43,9 +42,7 @@ public class DateUtil {
     /**
      * 获取日期显示格式，为空默认为yyyy-mm-dd HH:mm:ss
      * @author chenssy
-     * @date Dec 30, 2013
-     * @param format
-     * @return
+     * @param format    日期格式
      * @return SimpleDateFormat
      */
     protected static SimpleDateFormat getFormat(String format){

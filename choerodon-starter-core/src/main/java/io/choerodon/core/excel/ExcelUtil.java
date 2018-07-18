@@ -34,11 +34,14 @@ public class ExcelUtil {
 
     /**
      *
-     * @param workbook      excel工作薄
-     * @param clazz         读取数据返回的类型
-     * @param propertyMap   excel列名与dataObject字段的对应关系
-     * @param <T>       返回类型
-     * @return
+     * @param workbook                      excel工作薄
+     * @param clazz                         读取数据返回的类型
+     * @param propertyMap                   excel列名与dataObject字段的对应关系
+     * @param <T>                           类型
+     * @return list
+     * @throws InstantiationException       InstantiationException
+     * @throws IllegalAccessException       IllegalAccessException
+     * @throws InvocationTargetException    InvocationTargetException
      */
     public static <T> List<T> processExcel(Workbook workbook, Class<T> clazz, Map<String, String> propertyMap)
             throws InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -73,7 +76,6 @@ public class ExcelUtil {
     }
 
     /**
-     *
      * propertyMap为空用默认策略
      * @param row               excel的行
      * @param propertyMap       excel列名与dataObject字段的对应关系
@@ -139,13 +141,11 @@ public class ExcelUtil {
     }
 
     /**
-     * 获取object对象的所有属性，并构建map对象，对象结果为Map<'field','field'>
-     * @autor:chenssy
-     * @date:2014年8月10日
+     * 获取object对象的所有属性，并构建map对象，对象结果为Map
      *
      * @param clazz
      * 				object对象
-     * @return
+     * @return map
      */
     @SuppressWarnings("rawtypes")
     public static Map<String, Field> getObjectField(Class clazz) {
@@ -159,13 +159,11 @@ public class ExcelUtil {
     }
 
     /**
-     * 获取object对象所有属性的Setter方法，并构建map对象，结构为Map<'field','method'>
-     * @autor:chenssy
-     * @date:2014年8月9日
+     * 获取object对象所有属性的Setter方法，并构建map对象，结构为Map
      *
      * @param clazz
      * 				object对象
-     * @return
+     * @return map
      */
     @SuppressWarnings("rawtypes")
     public static Map<String, Method> getObjectSetterMethod(Class clazz) {
@@ -201,18 +199,13 @@ public class ExcelUtil {
 
     /**
      * 根据指定属性的的setter方法给object对象设置值
-     * @autor:chenssy
-     * @date:2014年8月10日
      *
-     * @param obj
-     * 			object对象
-     * @param field
-     * 				object对象的属性
-     * @param method
-     * 				object对象属性的相对应的方法
-     * @param value
-     * 				需要设置的值
-     * @throws Exception
+     * @param obj                           object对象
+     * @param field                         object对象的属性
+     * @param method                        object对象属性的相对应的方法
+     * @param value                         需要设置的值
+     * @throws InvocationTargetException    InvocationTargetException
+     * @throws IllegalAccessException       IllegalAccessException
      */
     public static void setObjectPropertyValue(Object obj, Field field,
                                                Method method, String value) throws InvocationTargetException, IllegalAccessException {
