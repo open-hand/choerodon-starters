@@ -1,6 +1,6 @@
 package io.choerodon.core.saga;
 
-public class SagaDef {
+public class SagaDefinition {
 
     public enum TimeoutPolicy {
         RETRY,
@@ -16,7 +16,7 @@ public class SagaDef {
         STATUS_NON_CONSUMER
     }
 
-    public enum TaskStatus {
+    public enum TaskInstanceStatus {
         STATUS_RUNNING,
         STATUS_ROLLBACK,
         STATUS_FAILED,

@@ -10,11 +10,8 @@ public class SagaApplicationContextHelper implements ApplicationContextAware {
 
     private DefaultListableBeanFactory springFactory;
 
-    private ApplicationContext context;
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        this.context = applicationContext;
         if (applicationContext instanceof AbstractRefreshableApplicationContext) {
             AbstractRefreshableApplicationContext springContext =
                     (AbstractRefreshableApplicationContext) applicationContext;
@@ -27,10 +24,6 @@ public class SagaApplicationContextHelper implements ApplicationContextAware {
 
     public DefaultListableBeanFactory getSpringFactory() {
         return springFactory;
-    }
-
-    public ApplicationContext getContext() {
-        return context;
     }
 
 }

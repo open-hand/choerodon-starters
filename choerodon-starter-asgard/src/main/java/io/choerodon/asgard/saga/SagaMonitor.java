@@ -1,7 +1,7 @@
 package io.choerodon.asgard.saga;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.core.saga.SagaDef;
+import io.choerodon.core.saga.SagaDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.netflix.eureka.CloudEurekaInstanceConfig;
@@ -100,7 +100,7 @@ public class SagaMonitor {
             try {
                 invoke(dto);
             } catch (Exception e) {
-                LOGGER.warn("message consume exception when InvokeTask, cause {}", e.getMessage());
+                LOGGER.error("message consume exception when InvokeTask, cause {}", e.getMessage());
             } finally {
                 processingIds.remove(dto.getId());
             }
@@ -121,13 +121,13 @@ public class SagaMonitor {
                 resultData = objectMapper.writeValueAsString(result);
             }
             sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDef.InstanceStatus.STATUS_COMPLETED.name(), resultData));
+                    SagaDefinition.InstanceStatus.STATUS_COMPLETED.name(), resultData));
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
             sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDef.InstanceStatus.STATUS_FAILED.name(), getErrorInfoFromException(e)));
-            LOGGER.warn("message consume exception, msg : {}, cause {}", data, getErrorInfoFromException(e));
+                    SagaDefinition.InstanceStatus.STATUS_FAILED.name(), getErrorInfoFromException(e)));
+            LOGGER.error("message consume exception, msg : {}, cause {}", data, getErrorInfoFromException(e));
         }
     }
 
