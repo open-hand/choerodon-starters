@@ -284,12 +284,21 @@ public class SqlHelper {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ");
         Set<EntityColumn> pkColumns = EntityHelper.getPkColumns(entityClass);
+        processSelectCount(entityClass, sql, pkColumns);
+        return sql.toString();
+    }
+
+    private static void processSelectCount(Class<?> entityClass, StringBuilder sql, Set<EntityColumn> pkColumns) {
         if (pkColumns.size() == 1) {
-            sql.append("COUNT(").append(pkColumns.iterator().next().getColumn()).append(") ");
+            EntityTable table = EntityHelper.getTableByEntity(entityClass);
+            if (table.isMultiLanguage()) {
+                sql.append("COUNT(t.").append(pkColumns.iterator().next().getColumn()).append(") ");
+            } else {
+                sql.append("COUNT(").append(pkColumns.iterator().next().getColumn()).append(") ");
+            }
         } else {
             sql.append("COUNT(*) ");
         }
-        return sql.toString();
     }
 
     /**
@@ -302,11 +311,7 @@ public class SqlHelper {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT CASE WHEN ");
         Set<EntityColumn> pkColumns = EntityHelper.getPkColumns(entityClass);
-        if (pkColumns.size() == 1) {
-            sql.append("COUNT(").append(pkColumns.iterator().next().getColumn()).append(") ");
-        } else {
-            sql.append("COUNT(*) ");
-        }
+        processSelectCount(entityClass, sql, pkColumns);
         sql.append(" > 0 THEN 1 ELSE 0 END AS result ");
         return sql.toString();
     }

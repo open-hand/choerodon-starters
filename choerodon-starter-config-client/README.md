@@ -26,7 +26,7 @@ git clone https://github.com/choerodon/choerodon-starters.git
     <dependency>
       <groupId>io.choerodon</groupId>
       <artifactId>choerodon-starter-config-client</artifactId>
-       <version>0.5.3.RELEASE</version>
+       <version>0.5.4.RELEASE</version>
     </dependency>
   ```
 - Add a bean using the service to make it effective:

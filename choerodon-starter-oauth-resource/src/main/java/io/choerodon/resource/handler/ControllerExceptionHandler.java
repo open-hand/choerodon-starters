@@ -1,10 +1,8 @@
 package io.choerodon.resource.handler;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import io.choerodon.core.exception.NotFoundException;
+import io.choerodon.core.exception.*;
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.core.oauth.DetailsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MultipartException;
 
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.exception.ExceptionResponse;
-import io.choerodon.core.oauth.CustomUserDetails;
-import io.choerodon.core.oauth.DetailsHelper;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 
 /**
@@ -45,23 +42,33 @@ public class ControllerExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
-    /**
-     * 拦截CommonException异常信息，将信息ID换为messages信息。
-     *
-     * @param exception 异常
-     * @return ExceptionResponse
-     */
-    @ExceptionHandler(CommonException.class)
-    public ResponseEntity<ExceptionResponse> process(CommonException exception) {
-        LOGGER.info("exception info", exception);
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ExceptionResponse> processFeignException(FeignException exception) {
+        LOGGER.info("exception info {}", exception.getTrace());
         String message = null;
         try {
-            message = messageSource.getMessage(exception.getMessage(), exception.getParameters(), locale());
+            message = messageSource.getMessage(exception.getCode(), exception.getParameters(), locale());
         } catch (Exception e) {
-            LOGGER.trace("exception message", exception);
+            LOGGER.trace("exception message {}", exception);
         }
         return new ResponseEntity<>(
-                new ExceptionResponse(true, message != null ? message : exception.getMessage()),
+                new ExceptionResponse(true, exception.getCode(), message != null ? message : exception.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+    @ExceptionHandler(CommonException.class)
+    public ResponseEntity<ExceptionResponse> process(CommonException exception) {
+        LOGGER.info("exception info {}", exception.getTrace());
+        String message = null;
+        try {
+            message = messageSource.getMessage(exception.getCode(), exception.getParameters(), locale());
+        } catch (Exception e) {
+            LOGGER.trace("exception message {}", exception);
+        }
+        return new ResponseEntity<>(
+                new ExceptionResponse(true, exception.getCode(), message != null ? message : exception.getMessage()),
                 HttpStatus.OK);
     }
 
@@ -76,14 +83,14 @@ public class ControllerExceptionHandler {
         LOGGER.info("exception info", exception);
         String message = null;
         exceptionMap.put(Locale.SIMPLIFIED_CHINESE, "资源不存在");
-        exceptionMap.put(Locale.US, "Resources do not exist");
+        exceptionMap.put(Locale.US, "error.resource.notExist");
         try {
-            message = messageSource.getMessage(exception.getMessage(),null, locale());
+            message = messageSource.getMessage(exception.getMessage(), null, locale());
         } catch (Exception e) {
             LOGGER.trace("exception message", exception);
         }
         return new ResponseEntity<>(
-                new ExceptionResponse(true, message != null ? message : exceptionMap.get(Locale.US)),
+                new ExceptionResponse(true, "error.resource.notExist" , message != null ? message : exceptionMap.get(Locale.US)),
                 HttpStatus.OK);
     }
 
@@ -104,7 +111,7 @@ public class ControllerExceptionHandler {
             LOGGER.trace("exception process get massage exception {}", exception);
         }
         return new ResponseEntity<>(
-                new ExceptionResponse(true, message != null
+                new ExceptionResponse(true, "error.methodArgument.notValid", message != null
                         ? message : exception.getBindingResult().getAllErrors().get(0).getDefaultMessage()),
                 HttpStatus.OK);
     }
@@ -125,7 +132,7 @@ public class ControllerExceptionHandler {
             LOGGER.trace("exception process get massage exception {}", exception);
         }
         return new ResponseEntity<>(
-                new ExceptionResponse(true, message != null ? message : "error.key.duplicate"),
+                new ExceptionResponse(true, "error.db.duplicateKey", message != null ? message : "error.key.duplicate"),
                 HttpStatus.OK);
     }
 
@@ -147,7 +154,7 @@ public class ControllerExceptionHandler {
             LOGGER.trace("exception process get massage exception", exception);
         }
         return new ResponseEntity<>(
-                new ExceptionResponse(true, message != null ? message : exceptionMap.get(Locale.US)),
+                new ExceptionResponse(true, "error.upload.multipartSize", message != null ? message : exceptionMap.get(Locale.US)),
                 HttpStatus.OK);
     }
 
@@ -170,7 +177,7 @@ public class ControllerExceptionHandler {
             LOGGER.trace("exception process get massage exception", exception);
         }
         return new ResponseEntity<>(
-                new ExceptionResponse(true, message != null ? message : exceptionMap.get(Locale.US)),
+                new ExceptionResponse(true, "error.db.badSql", message != null ? message : exceptionMap.get(Locale.US)),
                 HttpStatus.OK);
     }
 
