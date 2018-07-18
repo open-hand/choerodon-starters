@@ -5,9 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 实体对象转换超类
- *
- * @author superleader8@gmail.com
+ * @author superlee
  */
 public interface SuperConverter<T, R> extends Function<T, R> {
 

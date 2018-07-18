@@ -190,8 +190,8 @@ public class RepositoryApi extends AbstractApi {
      * @return the list of tags for the specified project ID
      * @throws GitLabApiException if any exception occurs
      */
-    public List<Tag> getTags(Integer projectId, String orderBy, String sort) throws GitLabApiException {
-        Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "repository", "tags", "order_by", orderBy, "sort", sort);
+    public List<Tag> getTags(Integer projectId) throws GitLabApiException {
+        Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "repository", "tags");
         return (response.readEntity(new GenericType<List<Tag>>() {
         }));
     }

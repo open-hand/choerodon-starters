@@ -1,6 +1,7 @@
 package io.choerodon.resource.config;
 
 import io.choerodon.core.oauth.CustomTokenConverter;
+import io.choerodon.resource.filter.JwtTokenExtractor;
 import io.choerodon.resource.filter.JwtTokenFilter;
 import io.choerodon.resource.permission.PublicPermissionOperationPlugin;
 import org.slf4j.Logger;
@@ -43,9 +44,9 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
     }
 
     @Bean
-    public FilterRegistrationBean someFilterRegistration(PublicPermissionOperationPlugin publicPermissionOperationPlugin) {
+    public FilterRegistrationBean someFilterRegistration(JwtTokenFilter jwtTokenFilter) {
         FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(jwtTokenFilter(publicPermissionOperationPlugin));
+        registration.setFilter(jwtTokenFilter);
         registration.addUrlPatterns(pattern);
         registration.setName("jwtTokenFilter");
         registration.setOrder(Ordered.LOWEST_PRECEDENCE);
@@ -53,8 +54,14 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
         return registration;
     }
 
-    private JwtTokenFilter jwtTokenFilter(PublicPermissionOperationPlugin publicPermissionOperationPlugin) {
-        return new JwtTokenFilter(tokenServices(), publicPermissionOperationPlugin.getPublicPaths());
+    @Bean
+    public JwtTokenExtractor jwtTokenExtractor() {
+        return new JwtTokenExtractor();
+    }
+
+    @Bean
+    public JwtTokenFilter jwtTokenFilter(PublicPermissionOperationPlugin publicPermissionOperationPlugin, JwtTokenExtractor jwtTokenExtractor) {
+        return new JwtTokenFilter(tokenServices(), jwtTokenExtractor, publicPermissionOperationPlugin.getPublicPaths());
     }
 
     /**
@@ -84,7 +91,7 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
         try {
             converter.afterPropertiesSet();
         } catch (Exception e) {
-            LOGGER.warn("error.ChoerodonResourceServerConfiguration.accessTokenConverter {}", e.toString());
+            LOGGER.warn("error.ChoerodonResourceServerConfiguration.accessTokenConverter {}", e);
         }
         return converter;
     }

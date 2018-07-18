@@ -14,6 +14,13 @@ public class BaseController {
      *  主要用于get搜索接口请求参数
      *  post/put请求对象里面的String字段无法操作
      * */
+
+    /**
+     *  控制层请求String字符串去除前后空格
+     *  主要用于get搜索接口请求参数
+     *  post/put请求对象里面的String字段无法操作
+     * @param binder    视图数据绑定器
+     */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         StringTrimmerEditor stringTrimmer = new StringTrimmerEditor(true);

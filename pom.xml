@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>0.5.3.RELEASE</version>
+    <version>0.5.4.RELEASE</version>
     <packaging>pom</packaging>
     <url>https://github.com/choerodon/choerodon-starters</url>
     <developers>
@@ -59,6 +59,7 @@
         <module>choerodon-starter-event-producer</module>
         <module>choerodon-starter-config-client</module>
         <module>choerodon-tool-config</module>
+        <module>choerodon-liquibase</module>
         <module>choerodon-tool-liquibase</module>
         <module>choerodon-starter-core</module>
         <module>choerodon-starter-event-consumer</module>
@@ -68,6 +69,7 @@
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-websocket-helper</module>
         <module>choerodon-gitlab4j-api</module>
+        <module>choerodon-starter-asgard</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
