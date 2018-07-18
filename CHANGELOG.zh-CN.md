@@ -2,6 +2,23 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+## [0.5.4] - 2018-07-18
+
+### 新增
+
+- `choerodon-starter-mybatis-mapper`添加了插入list方法
+- `choerodon-starter-core`添加excel文件转对象集合工具类
+
+### 修改
+
+### 修复
+
+- 修复liquibase工具包初始化excel数据时，如果最后一列为空，该行数据无法插入数据库的bug
+- 修复`choerodon-starter-mybatis-mapper`中`selectCount()`方法不支持多语言表的bug
+
+
+###
+
 ## [0.5.3] - 2018-06-28
 
 ### 修复
