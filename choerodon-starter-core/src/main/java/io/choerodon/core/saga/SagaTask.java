@@ -50,7 +50,7 @@ public @interface SagaTask {
     /**
      * 超时策略
      */
-    SagaDef.TimeoutPolicy timeoutPolicy() default SagaDef.TimeoutPolicy.RETRY;
+    SagaDefinition.TimeoutPolicy timeoutPolicy() default SagaDefinition.TimeoutPolicy.RETRY;
 
     /**
      * 最大重试次数。超时策略为SagaDef.TimeoutPolicy.RETRY时生效
