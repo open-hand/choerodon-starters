@@ -1,5 +1,6 @@
 package io.choerodon.asgard.saga;
 
+import io.choerodon.asgard.saga.dto.*;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,17 +12,17 @@ import java.util.List;
 @FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
 public interface SagaClient {
 
-    @PostMapping("/v1/saga/tasks/instances/poll/batch")
-    List<DataObject.SagaTaskInstanceDTO> pollBatch(@RequestBody DataObject.PollBatchDTO pollBatchDTO);
+    @PostMapping("/v1/sagas/tasks/instances/poll/batch")
+    List<SagaTaskInstanceDTO> pollBatch(@RequestBody PollBatchDTO pollBatchDTO);
 
 
-    @PutMapping("/v1/saga/tasks/instances/{id}/status")
-    List<DataObject.SagaTaskInstanceDTO> updateStatus(@PathVariable("id") Long id,
-                                                      @RequestBody DataObject.SagaTaskInstanceStatusDTO statusDTO);
+    @PutMapping("/v1/sagas/tasks/instances/{id}/status")
+    List<SagaTaskInstanceDTO> updateStatus(@PathVariable("id") Long id,
+                                           @RequestBody SagaTaskInstanceStatusDTO statusDTO);
 
-    @PostMapping("/v1/saga/{code}/instances")
-    DataObject.SagaInstance startSaga(@PathVariable("code") String code,
-                                      @RequestBody DataObject.StartInstanceDTO dto);
+    @PostMapping("/v1/sagas/instances/{code}")
+    SagaInstanceDTO startSaga(@PathVariable("code") String code,
+                              @RequestBody StartInstanceDTO dto);
 
 
 }

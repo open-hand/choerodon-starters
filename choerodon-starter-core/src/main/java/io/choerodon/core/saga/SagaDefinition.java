@@ -8,6 +8,12 @@ public class SagaDefinition {
         ALERT_ONLY
     }
 
+    public enum ConcurrentLimitPolicy {
+        NONE,
+        TYPE,
+        TYPE_AND_ID
+    }
+
     public enum InstanceStatus {
         STATUS_RUNNING,
         STATUS_ROLLBACK,
