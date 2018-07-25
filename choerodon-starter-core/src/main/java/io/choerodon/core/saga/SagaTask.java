@@ -44,8 +44,17 @@ public @interface SagaTask {
 
     /**
      * 最大并发数
+     * 并发策略不为null时生效
      */
-    int concurrentExecLimit() default 1;
+    int concurrentLimitNum() default 1;
+
+    /**
+     *并发策略
+     * NONE: 不设置并发限制
+     * TYPE: 根据ref_type限制并发
+     * TYPE_AND_ID: 根据ref_type和ref_id共同限制并发
+     */
+    SagaDefinition.ConcurrentLimitPolicy concurrentLimitPolicy() default SagaDefinition.ConcurrentLimitPolicy.NONE;
 
     /**
      * 超时策略

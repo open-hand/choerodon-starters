@@ -25,19 +25,23 @@ public class PropertyDataProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
-
+        Saga typeSaga = AnnotationUtils.findAnnotation(bean.getClass(), Saga.class);
+        if (typeSaga != null) {
+            propertyData.addSaga(new PropertyData.Saga(typeSaga.code(), typeSaga.description(), typeSaga.inputSchema()));
+        }
         Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
         if (methods != null) {
             for (Method method : methods) {
                 Saga saga = AnnotationUtils.findAnnotation(method, Saga.class);
                 if (saga != null) {
-                    propertyData.addSaga(new PropertyData.Saga(saga.code(), saga.description(), saga.inputKeys(), saga.outputKeys()));
+                    propertyData.addSaga(new PropertyData.Saga(saga.code(), saga.description(), saga.inputSchema()));
                 }
                 SagaTask sagaTask = AnnotationUtils.findAnnotation(method, SagaTask.class);
                 if (sagaTask != null) {
                     PropertyData.SagaTask task = new PropertyData.SagaTask(sagaTask.code(), sagaTask.description(),
                             sagaTask.sagaCode(), sagaTask.seq(), sagaTask.maxRetryCount());
-                    task.setConcurrentExecLimit(sagaTask.concurrentExecLimit());
+                    task.setConcurrentLimitNum(sagaTask.concurrentLimitNum());
+                    task.setConcurrentLimitPolicy(sagaTask.concurrentLimitPolicy().name());
                     task.setTimeoutPolicy(sagaTask.timeoutPolicy().name());
                     task.setTimeoutSeconds(sagaTask.timeoutSeconds());
                     propertyData.addSagaTask(task);
