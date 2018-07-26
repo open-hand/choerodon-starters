@@ -2,7 +2,7 @@ package io.choerodon.asgard.saga;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "choerodon.saga")
+@ConfigurationProperties(prefix = "choerodon.asgard")
 public class ChoerodonSagaProperties {
 
     private Integer pollInterval = 1;

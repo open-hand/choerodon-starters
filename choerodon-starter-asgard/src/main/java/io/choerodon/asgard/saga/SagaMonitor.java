@@ -1,6 +1,8 @@
 package io.choerodon.asgard.saga;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.asgard.saga.dto.PollCodeDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
@@ -16,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
@@ -120,13 +123,9 @@ public class SagaMonitor {
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
             invokeBean.method.setAccessible(true);
-            Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
-            String resultData = null;
-            if (result != null) {
-                resultData = objectMapper.writeValueAsString(result);
-            }
+            final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
             sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDefinition.InstanceStatus.STATUS_COMPLETED.name(), resultData, null));
+                    SagaDefinition.InstanceStatus.STATUS_COMPLETED.name(), resultToJson(result), null));
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
@@ -135,6 +134,20 @@ public class SagaMonitor {
                     SagaDefinition.InstanceStatus.STATUS_FAILED.name(), null, errorMsg));
             LOGGER.error("message consume exception, msg : {}, cause {}", data, errorMsg);
         }
+    }
+
+    private String resultToJson(final Object result) throws IOException {
+        if (result == null) {
+         return null;
+        }
+        if (result instanceof String) {
+            String resultStr = (String)result;
+            JsonNode jsonNode = objectMapper.readTree(resultStr);
+            if (jsonNode instanceof ObjectNode) {
+                return resultStr;
+            }
+        }
+        return objectMapper.writeValueAsString(result);
     }
 
     private String getErrorInfoFromException(Exception e) {
