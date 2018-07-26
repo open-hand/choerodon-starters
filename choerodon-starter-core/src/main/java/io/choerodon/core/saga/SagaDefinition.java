@@ -15,18 +15,18 @@ public class SagaDefinition {
     }
 
     public enum InstanceStatus {
-        STATUS_RUNNING,
-        STATUS_ROLLBACK,
-        STATUS_FAILED,
-        STATUS_COMPLETED,
-        STATUS_NON_CONSUMER
+        RUNNING,
+        ROLLBACK,
+        FAILED,
+        COMPLETED,
+        NON_CONSUMER
     }
 
     public enum TaskInstanceStatus {
-        STATUS_RUNNING,
-        STATUS_ROLLBACK,
-        STATUS_FAILED,
-        STATUS_COMPLETED,
+        RUNNING,
+        ROLLBACK,
+        FAILED,
+        COMPLETED,
         QUEUE
     }
 

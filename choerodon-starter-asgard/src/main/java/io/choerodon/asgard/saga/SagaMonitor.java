@@ -125,13 +125,13 @@ public class SagaMonitor {
             invokeBean.method.setAccessible(true);
             final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
             sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDefinition.InstanceStatus.STATUS_COMPLETED.name(), resultToJson(result), null));
+                    SagaDefinition.InstanceStatus.COMPLETED.name(), resultToJson(result), null));
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
             String errorMsg = getErrorInfoFromException(e);
             sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDefinition.InstanceStatus.STATUS_FAILED.name(), null, errorMsg));
+                    SagaDefinition.InstanceStatus.FAILED.name(), null, errorMsg));
             LOGGER.error("message consume exception, msg : {}, cause {}", data, errorMsg);
         }
     }

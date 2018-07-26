@@ -15,7 +15,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
-@ConditionalOnProperty(prefix = "choerodon.asgard", name = "enabled")
 @EnableConfigurationProperties(ChoerodonSagaProperties.class)
 public class ChoerodonAsgardAutoConfiguration {
 
@@ -23,6 +22,7 @@ public class ChoerodonAsgardAutoConfiguration {
     private ChoerodonSagaProperties choerodonSagaProperties;
 
     @Bean
+    @ConditionalOnProperty(prefix = "choerodon.saga.consumer", name = "enabled", matchIfMissing = true)
     public SagaApplicationContextHelper sagaApplicationContextHelper() {
         return new SagaApplicationContextHelper();
     }
@@ -33,16 +33,18 @@ public class ChoerodonAsgardAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "choerodon.saga.consumer", name = "enabled", matchIfMissing = true)
     public SagaTaskProcessor sagaTaskProcessor() {
         return new SagaTaskProcessor(sagaApplicationContextHelper());
     }
 
 
     @Bean
+    @ConditionalOnProperty(prefix = "choerodon.saga.consumer", name = "enabled", matchIfMissing = true)
     public Executor asyncServiceExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(choerodonSagaProperties.getMaxExecuteThread());
-        executor.setMaxPoolSize(choerodonSagaProperties.getMaxExecuteThread());
+        executor.setCorePoolSize(choerodonSagaProperties.getThreadNum());
+        executor.setMaxPoolSize(choerodonSagaProperties.getThreadNum());
         executor.setQueueCapacity(99999);
         executor.setThreadNamePrefix("saga-service-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
@@ -51,6 +53,7 @@ public class ChoerodonAsgardAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "choerodon.saga.consumer", name = "enabled", matchIfMissing = true)
     public SagaMonitor sagaMonitor(SagaClient sagaClient,
                                    DataSourceTransactionManager transactionManager,
                                    Optional<EurekaRegistration> eurekaRegistration) {
