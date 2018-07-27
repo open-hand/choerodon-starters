@@ -10,9 +10,7 @@ import io.choerodon.asgard.saga.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.core.saga.SagaDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.netflix.eureka.CloudEurekaInstanceConfig;
-import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
-import org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -21,6 +19,8 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -35,8 +35,6 @@ public class SagaMonitor {
 
     private ChoerodonSagaProperties choerodonSagaProperties;
 
-    private Optional<EurekaRegistration> eurekaRegistration;
-
     private SagaClient sagaClient;
 
     private Executor executor;
@@ -44,6 +42,8 @@ public class SagaMonitor {
     static final Map<String, SagaTaskInvokeBean> invokeBeanMap = new HashMap<>();
 
     private DataSourceTransactionManager transactionManager;
+
+    private Environment environment;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,12 +56,12 @@ public class SagaMonitor {
                        SagaClient sagaClient,
                        Executor executor,
                        DataSourceTransactionManager transactionManager,
-                       Optional<EurekaRegistration> eurekaRegistration) {
+                       Environment environment) {
         this.choerodonSagaProperties = choerodonSagaProperties;
         this.sagaClient = sagaClient;
         this.executor = executor;
-        this.eurekaRegistration = eurekaRegistration;
         this.transactionManager = transactionManager;
+        this.environment = environment;
     }
 
     @PostConstruct
@@ -69,28 +69,28 @@ public class SagaMonitor {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         List<PollCodeDTO> codeDTOS = invokeBeanMap.entrySet().stream().map(t -> new PollCodeDTO(t.getValue().sagaTask.sagaCode(),
                 t.getValue().sagaTask.code())).collect(Collectors.toList());
-        if (eurekaRegistration.isPresent()) {
-            CloudEurekaInstanceConfig cloudEurekaInstanceConfig = eurekaRegistration.get().getInstanceConfig();
-            if (cloudEurekaInstanceConfig instanceof EurekaInstanceConfigBean) {
-                EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
-                String instance = eurekaInstanceConfigBean.getIpAddress() + ":" + eurekaInstanceConfigBean.getNonSecurePort();
-                scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                    if (canExecutingFlag.compareAndSet(true, false) && processingIds.isEmpty()) {
-                        try {
-                            List<SagaTaskInstanceDTO> list = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS));
-                            LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
-                            list.forEach(t -> {
-                                processingIds.add(t.getId());
-                                executor.execute(new InvokeTask(t));
-                            });
-                        } catch (Exception e) {
-                            LOGGER.info("error.pollSagaTaskInstances {}", e.getMessage());
-                        } finally {
-                            canExecutingFlag.set(true);
-                        }
+
+        try {
+            String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
+            LOGGER.info("PollCodeDTO {}, instance {}, prepare to start saga consumer", codeDTOS, instance);
+            scheduledExecutorService.scheduleWithFixedDelay(() -> {
+                if (canExecutingFlag.compareAndSet(true, false) && processingIds.isEmpty()) {
+                    try {
+                        List<SagaTaskInstanceDTO> list = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS));
+                        LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
+                        list.forEach(t -> {
+                            processingIds.add(t.getId());
+                            executor.execute(new InvokeTask(t));
+                        });
+                    } catch (Exception e) {
+                        LOGGER.info("error.pollSagaTaskInstances {}", e.getMessage());
+                    } finally {
+                        canExecutingFlag.set(true);
                     }
-                }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
-            }
+                }
+            }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
+        } catch (UnknownHostException e) {
+            LOGGER.error("can't get localhost, failed to start saga consumer. {}", e.getCause());
         }
 
     }
@@ -138,10 +138,10 @@ public class SagaMonitor {
 
     private String resultToJson(final Object result) throws IOException {
         if (result == null) {
-         return null;
+            return null;
         }
         if (result instanceof String) {
-            String resultStr = (String)result;
+            String resultStr = (String) result;
             JsonNode jsonNode = objectMapper.readTree(resultStr);
             if (jsonNode instanceof ObjectNode) {
                 return resultStr;

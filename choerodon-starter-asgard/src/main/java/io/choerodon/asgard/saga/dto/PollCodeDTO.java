@@ -4,6 +4,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@ToString
 public class PollCodeDTO {
 
     private String sagaCode;
