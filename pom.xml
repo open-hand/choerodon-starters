@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>6.0.0.RELEASE</version>
+    <version>0.6.0.RELEASE</version>
     <packaging>pom</packaging>
     <url>https://github.com/choerodon/choerodon-starters</url>
     <developers>
@@ -58,9 +58,9 @@
         <module>choerodon-starter-feign-replay</module>
         <module>choerodon-starter-event-producer</module>
         <module>choerodon-starter-config-client</module>
-        <module>choerodon-tool-config</module>
+       <!-- <module>choerodon-tool-config</module>-->
         <module>choerodon-liquibase</module>
-        <module>choerodon-tool-liquibase</module>
+        <!--<module>choerodon-tool-liquibase</module>-->
         <module>choerodon-starter-core</module>
         <module>choerodon-starter-event-consumer</module>
         <module>choerodon-starter-hitoa</module>

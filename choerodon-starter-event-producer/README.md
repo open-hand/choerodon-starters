@@ -16,7 +16,7 @@
     <dependency>
       <groupId>io.choerodon</groupId>
       <artifactId>choerodon-starter-event-producer</artifactId>
-      <version>6.0.0.RELEASE</version>
+      <version>0.6.0.RELEASE</version>
     </dependency>
   ```
 - Add the back check interface (implement ``EventBackCheckControllerInter`` interface)
