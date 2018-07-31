@@ -7,6 +7,8 @@ public class ChoerodonSagaProperties {
 
     private Integer pollInterval = 1;
 
+    private Integer maxPollSize = 200;
+
     private Integer threadNum = 5;
 
     private Boolean enabled = true;
@@ -33,5 +35,13 @@ public class ChoerodonSagaProperties {
 
     public void setThreadNum(Integer threadNum) {
         this.threadNum = threadNum;
+    }
+
+    public Integer getMaxPollSize() {
+        return maxPollSize;
+    }
+
+    public void setMaxPollSize(Integer maxPollSize) {
+        this.maxPollSize = maxPollSize;
     }
 }

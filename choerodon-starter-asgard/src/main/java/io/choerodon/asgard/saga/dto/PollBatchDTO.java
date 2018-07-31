@@ -21,5 +21,6 @@ public class PollBatchDTO {
     @NotNull
     private List<PollCodeDTO> codes;
 
+    private Integer maxPollSize;
 
 }

@@ -21,12 +21,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class SagaMonitor {
@@ -49,7 +52,7 @@ public class SagaMonitor {
 
     private static volatile AtomicBoolean canExecutingFlag = new AtomicBoolean(true);
 
-    private static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
+    private static volatile AtomicInteger processingIds = new AtomicInteger(0);
 
 
     public SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
@@ -74,14 +77,13 @@ public class SagaMonitor {
             String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
             LOGGER.info("PollCodeDTO {}, instance {}, prepare to start saga consumer", codeDTOS, instance);
             scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                if (canExecutingFlag.compareAndSet(true, false) && processingIds.isEmpty()) {
+                if (canExecutingFlag.compareAndSet(true, false)) {
                     try {
-                        List<SagaTaskInstanceDTO> list = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS));
-                        LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
-                        list.forEach(t -> {
-                            processingIds.add(t.getId());
-                            executor.execute(new InvokeTask(t));
-                        });
+                        List<SagaTaskInstanceDTO> list = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS, choerodonSagaProperties.getMaxPollSize()));
+                        if (processingIds.compareAndSet(0, list.size())) {
+                            LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, processingIds);
+                            list.forEach(t -> executor.execute(new InvokeTask(t)));
+                        }
                     } catch (Exception e) {
                         LOGGER.info("error.pollSagaTaskInstances {}", e.getMessage());
                     } finally {
@@ -110,7 +112,7 @@ public class SagaMonitor {
             } catch (Exception e) {
                 LOGGER.error("message consume exception when InvokeTask, cause {}", e.getMessage());
             } finally {
-                processingIds.remove(dto.getId());
+                processingIds.decrementAndGet();
             }
         }
     }
