@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
+import java.util.Set;
 
 @FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
 public interface SagaClient {
 
     @PostMapping("/v1/sagas/tasks/instances/poll/batch")
-    List<SagaTaskInstanceDTO> pollBatch(@RequestBody PollBatchDTO pollBatchDTO);
+    Set<SagaTaskInstanceDTO> pollBatch(@RequestBody PollBatchDTO pollBatchDTO);
 
 
     @PutMapping("/v1/sagas/tasks/instances/{id}/status")
-    List<SagaTaskInstanceDTO> updateStatus(@PathVariable("id") Long id,
+    SagaTaskInstanceDTO updateStatus(@PathVariable("id") Long id,
                                            @RequestBody SagaTaskInstanceStatusDTO statusDTO);
 
     @PostMapping("/v1/sagas/instances/{code}")

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 public class SagaClientCallback implements SagaClient {
 
@@ -14,15 +14,15 @@ public class SagaClientCallback implements SagaClient {
 
 
     @Override
-    public List<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO) {
+    public Set<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO) {
         LOGGER.info("error.sagaTaskInstance.poll, pollBatchDTO {}", pollBatchDTO);
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 
     @Override
-    public List<SagaTaskInstanceDTO> updateStatus(Long id, SagaTaskInstanceStatusDTO statusDTO) {
+    public SagaTaskInstanceDTO updateStatus(Long id, SagaTaskInstanceStatusDTO statusDTO) {
         LOGGER.info("error.sagaTaskInstance.updateStatus, id {}, status {}", id, statusDTO);
-        return Collections.emptyList();
+        throw new CommonException("error.saga.updateStatus");
     }
 
     @Override

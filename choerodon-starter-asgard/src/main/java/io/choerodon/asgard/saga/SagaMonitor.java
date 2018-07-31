@@ -21,15 +21,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class SagaMonitor {
@@ -50,10 +46,7 @@ public class SagaMonitor {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static volatile AtomicBoolean canExecutingFlag = new AtomicBoolean(true);
-
-    private static volatile AtomicInteger processingIds = new AtomicInteger(0);
-
+    private volatile Set<SagaTaskInstanceDTO> msgQueue;
 
     public SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
                        SagaClient sagaClient,
@@ -65,6 +58,7 @@ public class SagaMonitor {
         this.executor = executor;
         this.transactionManager = transactionManager;
         this.environment = environment;
+        msgQueue = Collections.synchronizedSet(new HashSet<>(choerodonSagaProperties.getMaxPollSize()));
     }
 
     @PostConstruct
@@ -72,22 +66,19 @@ public class SagaMonitor {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         List<PollCodeDTO> codeDTOS = invokeBeanMap.entrySet().stream().map(t -> new PollCodeDTO(t.getValue().sagaTask.sagaCode(),
                 t.getValue().sagaTask.code())).collect(Collectors.toList());
-
+        final int maxPollSize = choerodonSagaProperties.getMaxPollSize();
         try {
             String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
-            LOGGER.info("PollCodeDTO {}, instance {}, prepare to start saga consumer", codeDTOS, instance);
+            LOGGER.info("PollCodeDTO {}, instance {}, maxPollSize {}, prepare to start saga consumer", codeDTOS, instance, maxPollSize);
             scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                if (canExecutingFlag.compareAndSet(true, false)) {
+                if (msgQueue.isEmpty()) {
                     try {
-                        List<SagaTaskInstanceDTO> list = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS, choerodonSagaProperties.getMaxPollSize()));
-                        if (processingIds.compareAndSet(0, list.size())) {
-                            LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, processingIds);
-                            list.forEach(t -> executor.execute(new InvokeTask(t)));
-                        }
+                        Set<SagaTaskInstanceDTO> set = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS, maxPollSize));
+                        LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} pollSize {}", System.currentTimeMillis(), instance, set.size());
+                        msgQueue.addAll(set);
+                        msgQueue.forEach(t -> executor.execute(new InvokeTask(t)));
                     } catch (Exception e) {
-                        LOGGER.info("error.pollSagaTaskInstances {}", e.getMessage());
-                    } finally {
-                        canExecutingFlag.set(true);
+                        LOGGER.warn("error.pollSagaTaskInstances {}", e.getMessage());
                     }
                 }
             }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
@@ -112,54 +103,55 @@ public class SagaMonitor {
             } catch (Exception e) {
                 LOGGER.error("message consume exception when InvokeTask, cause {}", e.getMessage());
             } finally {
-                processingIds.decrementAndGet();
+                msgQueue.remove(dto);
             }
         }
-    }
 
-    private void invoke(SagaTaskInstanceDTO data) {
-        final String key = data.getSagaCode() + data.getTaskCode();
-        SagaTaskInvokeBean invokeBean = invokeBeanMap.get(key);
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(invokeBean.sagaTask.transactionDefinition());
-        TransactionStatus status = transactionManager.getTransaction(def);
-        try {
-            invokeBean.method.setAccessible(true);
-            final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
-            sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDefinition.InstanceStatus.COMPLETED.name(), resultToJson(result), null));
-            transactionManager.commit(status);
-        } catch (Exception e) {
-            transactionManager.rollback(status);
-            String errorMsg = getErrorInfoFromException(e);
-            sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDefinition.InstanceStatus.FAILED.name(), null, errorMsg));
-            LOGGER.error("message consume exception, msg : {}, cause {}", data, errorMsg);
-        }
-    }
-
-    private String resultToJson(final Object result) throws IOException {
-        if (result == null) {
-            return null;
-        }
-        if (result instanceof String) {
-            String resultStr = (String) result;
-            JsonNode jsonNode = objectMapper.readTree(resultStr);
-            if (jsonNode instanceof ObjectNode) {
-                return resultStr;
+        private void invoke(SagaTaskInstanceDTO data) {
+            final String key = data.getSagaCode() + data.getTaskCode();
+            SagaTaskInvokeBean invokeBean = invokeBeanMap.get(key);
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(invokeBean.sagaTask.transactionDefinition());
+            TransactionStatus status = transactionManager.getTransaction(def);
+            try {
+                invokeBean.method.setAccessible(true);
+                final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
+                SagaTaskInstanceDTO updateResult = sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
+                        SagaDefinition.InstanceStatus.COMPLETED.name(), resultToJson(result), null));
+                LOGGER.debug("updateStatus result {} time {}", updateResult, System.currentTimeMillis());
+                transactionManager.commit(status);
+            } catch (Exception e) {
+                transactionManager.rollback(status);
+                String errorMsg = getErrorInfoFromException(e);
+                sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
+                        SagaDefinition.InstanceStatus.FAILED.name(), null, errorMsg));
+                LOGGER.error("message consume exception, msg : {}, cause {}", data, errorMsg);
             }
         }
-        return objectMapper.writeValueAsString(result);
-    }
 
-    private String getErrorInfoFromException(Exception e) {
-        try {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return "\r\n" + sw.toString() + "\r\n";
-        } catch (Exception e2) {
-            return "bad getErrorInfoFromException";
+        private String resultToJson(final Object result) throws IOException {
+            if (result == null) {
+                return null;
+            }
+            if (result instanceof String) {
+                String resultStr = (String) result;
+                JsonNode jsonNode = objectMapper.readTree(resultStr);
+                if (jsonNode instanceof ObjectNode) {
+                    return resultStr;
+                }
+            }
+            return objectMapper.writeValueAsString(result);
+        }
+
+        private String getErrorInfoFromException(Exception e) {
+            try {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                return "\r\n" + sw.toString() + "\r\n";
+            } catch (Exception e2) {
+                return "bad getErrorInfoFromException";
+            }
         }
     }
 
