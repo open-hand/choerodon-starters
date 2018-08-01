@@ -11,7 +11,7 @@ When using the toolkit for configuration initialization, you need to provide inf
 * Get the jar：
 
 ```
-curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/6.0.0.RELEASE/choerodon-tool-config-6.0.0.RELEASE.jar -o choerodon-tool-config.jar
+curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.6.0.RELEASE/choerodon-tool-config-0.6.0.RELEASE.jar -o choerodon-tool-config.jar
 ```
 
 * Configure type that file supported：
@@ -23,7 +23,7 @@ curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-
 ```bash
 if [ ! -f target/choerodon-tool-config.jar ]
 then
-    curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/6.0.0.RELEASE/choerodon-tool-config-6.0.0.RELEASE.jar -o target/choerodon-tool-config.jar # The version may be changed here. Please change it based on the downloaded package name.
+    curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.6.0.RELEASE/choerodon-tool-config-0.6.0.RELEASE.jar -o target/choerodon-tool-config.jar # The version may be changed here. Please change it based on the downloaded package name.
 fi
 java -Dspring.datasource.url="jdbc:mysql://localhost/manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false" \
  -Dspring.datasource.username=choerodon \

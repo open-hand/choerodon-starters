@@ -2,25 +2,19 @@ package io.choerodon.asgard.saga;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "choerodon.saga")
+@ConfigurationProperties(prefix = "choerodon.saga.consumer")
 public class ChoerodonSagaProperties {
 
     private Integer pollInterval = 1;
 
-    private Integer maxExecuteThread = 5;
+    private Integer maxPollSize = 200;
 
-    private Boolean enabled = false;
+    private Integer threadNum = 5;
+
+    private Boolean enabled = true;
 
     public Integer getPollInterval() {
         return pollInterval;
-    }
-
-    public Integer getMaxExecuteThread() {
-        return maxExecuteThread;
-    }
-
-    public void setMaxExecuteThread(Integer maxExecuteThread) {
-        this.maxExecuteThread = maxExecuteThread;
     }
 
     public void setPollInterval(Integer pollInterval) {
@@ -33,5 +27,21 @@ public class ChoerodonSagaProperties {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Integer getThreadNum() {
+        return threadNum;
+    }
+
+    public void setThreadNum(Integer threadNum) {
+        this.threadNum = threadNum;
+    }
+
+    public Integer getMaxPollSize() {
+        return maxPollSize;
+    }
+
+    public void setMaxPollSize(Integer maxPollSize) {
+        this.maxPollSize = maxPollSize;
     }
 }

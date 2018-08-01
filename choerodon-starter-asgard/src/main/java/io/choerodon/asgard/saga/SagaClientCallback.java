@@ -1,10 +1,12 @@
 package io.choerodon.asgard.saga;
 
+import io.choerodon.asgard.saga.dto.*;
+import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 public class SagaClientCallback implements SagaClient {
 
@@ -12,20 +14,19 @@ public class SagaClientCallback implements SagaClient {
 
 
     @Override
-    public List<DataObject.SagaTaskInstanceDTO> pollBatch(DataObject.PollBatchDTO pollBatchDTO) {
+    public Set<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO) {
         LOGGER.info("error.sagaTaskInstance.poll, pollBatchDTO {}", pollBatchDTO);
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 
     @Override
-    public List<DataObject.SagaTaskInstanceDTO> updateStatus(Long id, DataObject.SagaTaskInstanceStatusDTO statusDTO) {
+    public SagaTaskInstanceDTO updateStatus(Long id, SagaTaskInstanceStatusDTO statusDTO) {
         LOGGER.info("error.sagaTaskInstance.updateStatus, id {}, status {}", id, statusDTO);
-        return Collections.emptyList();
+        throw new CommonException("error.saga.updateStatus");
     }
 
     @Override
-    public DataObject.SagaInstance startSaga(String code, DataObject.StartInstanceDTO dto) {
-        LOGGER.info("error.saga.start, code {} , startDto {}", code, dto);
-        return null;
+    public SagaInstanceDTO startSaga(String code, StartInstanceDTO dto) {
+        throw new CommonException("error.saga.start");
     }
 }

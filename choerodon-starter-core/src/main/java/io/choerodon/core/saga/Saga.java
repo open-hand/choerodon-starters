@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * @author flyleft
  * 2018/4/10
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Saga {
 
@@ -24,14 +24,8 @@ public @interface Saga {
     String description() default "";
 
     /**
-     *输入参数名
+     *输入参数json
      */
-    String[] inputKeys() default {};
-
-
-    /**
-     *输出参数名
-     */
-    String[] outputKeys() default {};
+    String inputSchema() default "";
 
 }

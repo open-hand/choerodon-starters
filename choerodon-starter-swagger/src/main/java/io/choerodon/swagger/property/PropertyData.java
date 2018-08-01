@@ -1,7 +1,6 @@
 package io.choerodon.swagger.property;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PropertyData {
@@ -42,18 +41,23 @@ public class PropertyData {
 
         private String description;
 
-        private List<String> inputKeys;
+        private String inputSchema;
 
-        private List<String> outputKeys;
+        public Saga(String code, String description, String inputSchema) {
+            this.code = code;
+            this.description = description;
+            this.inputSchema = inputSchema;
+        }
 
         public Saga() {
         }
 
-        public Saga(String code, String description, String[] inputKeys, String[] outputKeys) {
-            this.code = code;
-            this.description = description;
-            this.inputKeys = Arrays.asList(inputKeys);
-            this.outputKeys = Arrays.asList(outputKeys);
+        public String getInputSchema() {
+            return inputSchema;
+        }
+
+        public void setInputSchema(String inputSchema) {
+            this.inputSchema = inputSchema;
         }
 
         public String getCode() {
@@ -72,31 +76,6 @@ public class PropertyData {
             this.description = description;
         }
 
-        public List<String> getInputKeys() {
-            return inputKeys;
-        }
-
-        public void setInputKeys(List<String> inputKeys) {
-            this.inputKeys = inputKeys;
-        }
-
-        public List<String> getOutputKeys() {
-            return outputKeys;
-        }
-
-        public void setOutputKeys(List<String> outputKeys) {
-            this.outputKeys = outputKeys;
-        }
-
-        @Override
-        public String toString() {
-            return "Saga{" +
-                    "code='" + code + '\'' +
-                    ", description='" + description + '\'' +
-                    ", inputKeys=" + inputKeys +
-                    ", outputKeys=" + outputKeys +
-                    '}';
-        }
     }
 
     public static class SagaTask {
@@ -115,7 +94,9 @@ public class PropertyData {
 
         private String timeoutPolicy;
 
-        private Integer concurrentExecLimit;
+        private Integer concurrentLimitNum;
+
+        private String concurrentLimitPolicy;
 
         public SagaTask() {
         }
@@ -184,27 +165,22 @@ public class PropertyData {
             this.timeoutPolicy = timeoutPolicy;
         }
 
-        public Integer getConcurrentExecLimit() {
-            return concurrentExecLimit;
+        public Integer getConcurrentLimitNum() {
+            return concurrentLimitNum;
         }
 
-        public void setConcurrentExecLimit(Integer concurrentExecLimit) {
-            this.concurrentExecLimit = concurrentExecLimit;
+        public void setConcurrentLimitNum(Integer concurrentLimitNum) {
+            this.concurrentLimitNum = concurrentLimitNum;
         }
 
-        @Override
-        public String toString() {
-            return "SagaTask{" +
-                    "code='" + code + '\'' +
-                    ", description='" + description + '\'' +
-                    ", sagaCode='" + sagaCode + '\'' +
-                    ", seq=" + seq +
-                    ", maxRetryCount=" + maxRetryCount +
-                    ", timeoutSeconds=" + timeoutSeconds +
-                    ", timeoutPolicy='" + timeoutPolicy + '\'' +
-                    ", concurrentExecLimit=" + concurrentExecLimit +
-                    '}';
+        public String getConcurrentLimitPolicy() {
+            return concurrentLimitPolicy;
         }
+
+        public void setConcurrentLimitPolicy(String concurrentLimitPolicy) {
+            this.concurrentLimitPolicy = concurrentLimitPolicy;
+        }
+
     }
 
     @Override

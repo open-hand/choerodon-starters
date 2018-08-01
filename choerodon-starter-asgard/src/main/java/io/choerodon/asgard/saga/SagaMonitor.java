@@ -1,25 +1,31 @@
 package io.choerodon.asgard.saga;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.choerodon.asgard.saga.dto.PollBatchDTO;
+import io.choerodon.asgard.saga.dto.PollCodeDTO;
+import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
+import io.choerodon.asgard.saga.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.core.saga.SagaDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.netflix.eureka.CloudEurekaInstanceConfig;
-import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
-import org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class SagaMonitor {
@@ -27,8 +33,6 @@ public class SagaMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaMonitor.class);
 
     private ChoerodonSagaProperties choerodonSagaProperties;
-
-    private Optional<EurekaRegistration> eurekaRegistration;
 
     private SagaClient sagaClient;
 
@@ -38,60 +42,57 @@ public class SagaMonitor {
 
     private DataSourceTransactionManager transactionManager;
 
+    private Environment environment;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static volatile AtomicBoolean canExecutingFlag = new AtomicBoolean(true);
-
-    private static final Set<Long> processingIds = Collections.synchronizedSet(new HashSet<>());
-
+    private volatile Set<SagaTaskInstanceDTO> msgQueue;
 
     public SagaMonitor(ChoerodonSagaProperties choerodonSagaProperties,
                        SagaClient sagaClient,
                        Executor executor,
                        DataSourceTransactionManager transactionManager,
-                       Optional<EurekaRegistration> eurekaRegistration) {
+                       Environment environment) {
         this.choerodonSagaProperties = choerodonSagaProperties;
         this.sagaClient = sagaClient;
         this.executor = executor;
-        this.eurekaRegistration = eurekaRegistration;
         this.transactionManager = transactionManager;
+        this.environment = environment;
+        msgQueue = Collections.synchronizedSet(new HashSet<>(choerodonSagaProperties.getMaxPollSize()));
     }
 
     @PostConstruct
     private void start() {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        Set<String> taskCodes = invokeBeanMap.entrySet().stream().map(t -> t.getValue().sagaTask.code()).collect(Collectors.toSet());
-        if (eurekaRegistration.isPresent()) {
-            CloudEurekaInstanceConfig cloudEurekaInstanceConfig = eurekaRegistration.get().getInstanceConfig();
-            if (cloudEurekaInstanceConfig instanceof EurekaInstanceConfigBean) {
-                EurekaInstanceConfigBean eurekaInstanceConfigBean = (EurekaInstanceConfigBean) cloudEurekaInstanceConfig;
-                String instance = eurekaInstanceConfigBean.getIpAddress() + ":" + eurekaInstanceConfigBean.getNonSecurePort();
-                scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                    if (canExecutingFlag.compareAndSet(true, false) && processingIds.isEmpty()) {
-                        try {
-                            List<DataObject.SagaTaskInstanceDTO> list = sagaClient.pollBatch(new DataObject.PollBatchDTO(instance, taskCodes));
-                            LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} size {}", System.currentTimeMillis(), instance, list.size());
-                            list.forEach(t -> {
-                                processingIds.add(t.getId());
-                                executor.execute(new InvokeTask(t));
-                            });
-                        } catch (Exception e) {
-                            LOGGER.info("error.pollSagaTaskInstances {}", e.getMessage());
-                        } finally {
-                            canExecutingFlag.set(true);
-                        }
+        List<PollCodeDTO> codeDTOS = invokeBeanMap.entrySet().stream().map(t -> new PollCodeDTO(t.getValue().sagaTask.sagaCode(),
+                t.getValue().sagaTask.code())).collect(Collectors.toList());
+        final int maxPollSize = choerodonSagaProperties.getMaxPollSize();
+        try {
+            String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
+            LOGGER.info("PollCodeDTO {}, instance {}, maxPollSize {}, prepare to start saga consumer", codeDTOS, instance, maxPollSize);
+            scheduledExecutorService.scheduleWithFixedDelay(() -> {
+                if (msgQueue.isEmpty()) {
+                    try {
+                        Set<SagaTaskInstanceDTO> set = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS, maxPollSize));
+                        LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} pollSize {}", System.currentTimeMillis(), instance, set.size());
+                        msgQueue.addAll(set);
+                        msgQueue.forEach(t -> executor.execute(new InvokeTask(t)));
+                    } catch (Exception e) {
+                        LOGGER.warn("error.pollSagaTaskInstances {}", e.getMessage());
                     }
-                }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
-            }
+                }
+            }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
+        } catch (UnknownHostException e) {
+            LOGGER.error("can't get localhost, failed to start saga consumer. {}", e.getCause());
         }
 
     }
 
     private class InvokeTask implements Runnable {
 
-        private final DataObject.SagaTaskInstanceDTO dto;
+        private final SagaTaskInstanceDTO dto;
 
-        InvokeTask(DataObject.SagaTaskInstanceDTO dto) {
+        InvokeTask(SagaTaskInstanceDTO dto) {
             this.dto = dto;
         }
 
@@ -102,43 +103,55 @@ public class SagaMonitor {
             } catch (Exception e) {
                 LOGGER.error("message consume exception when InvokeTask, cause {}", e.getMessage());
             } finally {
-                processingIds.remove(dto.getId());
+                msgQueue.remove(dto);
             }
         }
-    }
 
-    private void invoke(DataObject.SagaTaskInstanceDTO data) {
-        final String key = data.getSagaCode() + data.getTaskCode();
-        SagaTaskInvokeBean invokeBean = invokeBeanMap.get(key);
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(invokeBean.sagaTask.transactionDefinition());
-        TransactionStatus status = transactionManager.getTransaction(def);
-        try {
-            invokeBean.method.setAccessible(true);
-            Object result = invokeBean.method.invoke(invokeBean.object, data.getInputData());
-            String resultData = null;
-            if (result != null) {
-                resultData = objectMapper.writeValueAsString(result);
+        private void invoke(SagaTaskInstanceDTO data) {
+            final String key = data.getSagaCode() + data.getTaskCode();
+            SagaTaskInvokeBean invokeBean = invokeBeanMap.get(key);
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(invokeBean.sagaTask.transactionDefinition());
+            TransactionStatus status = transactionManager.getTransaction(def);
+            try {
+                invokeBean.method.setAccessible(true);
+                final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
+                SagaTaskInstanceDTO updateResult = sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
+                        SagaDefinition.InstanceStatus.COMPLETED.name(), resultToJson(result), null));
+                LOGGER.debug("updateStatus result {} time {}", updateResult, System.currentTimeMillis());
+                transactionManager.commit(status);
+            } catch (Exception e) {
+                transactionManager.rollback(status);
+                String errorMsg = getErrorInfoFromException(e);
+                sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
+                        SagaDefinition.InstanceStatus.FAILED.name(), null, errorMsg));
+                LOGGER.error("message consume exception, msg : {}, cause {}", data, errorMsg);
             }
-            sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDefinition.InstanceStatus.STATUS_COMPLETED.name(), resultData));
-            transactionManager.commit(status);
-        } catch (Exception e) {
-            transactionManager.rollback(status);
-            sagaClient.updateStatus(data.getId(), new DataObject.SagaTaskInstanceStatusDTO(data.getId(),
-                    SagaDefinition.InstanceStatus.STATUS_FAILED.name(), getErrorInfoFromException(e)));
-            LOGGER.error("message consume exception, msg : {}, cause {}", data, getErrorInfoFromException(e));
         }
-    }
 
-    private String getErrorInfoFromException(Exception e) {
-        try {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return "\r\n" + sw.toString() + "\r\n";
-        } catch (Exception e2) {
-            return "bad getErrorInfoFromException";
+        private String resultToJson(final Object result) throws IOException {
+            if (result == null) {
+                return null;
+            }
+            if (result instanceof String) {
+                String resultStr = (String) result;
+                JsonNode jsonNode = objectMapper.readTree(resultStr);
+                if (jsonNode instanceof ObjectNode) {
+                    return resultStr;
+                }
+            }
+            return objectMapper.writeValueAsString(result);
+        }
+
+        private String getErrorInfoFromException(Exception e) {
+            try {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                return "\r\n" + sw.toString() + "\r\n";
+            } catch (Exception e2) {
+                return "bad getErrorInfoFromException";
+            }
         }
     }
 

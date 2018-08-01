@@ -42,7 +42,6 @@ public class ControllerExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
-
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ExceptionResponse> processFeignException(FeignException exception) {
         LOGGER.info("exception info {}", exception.getTrace());
