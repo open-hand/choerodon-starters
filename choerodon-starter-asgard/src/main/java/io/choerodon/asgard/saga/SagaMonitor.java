@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -69,23 +70,22 @@ public class SagaMonitor {
         final int maxPollSize = choerodonSagaProperties.getMaxPollSize();
         try {
             String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
-            LOGGER.info("PollCodeDTO {}, instance {}, maxPollSize {}, prepare to start saga consumer", codeDTOS, instance, maxPollSize);
+            LOGGER.info("sagaMonitor prepare to start saga consumer, pollTasks {}, instance {}, maxPollSize {}, ", codeDTOS, instance, maxPollSize);
             scheduledExecutorService.scheduleWithFixedDelay(() -> {
                 if (msgQueue.isEmpty()) {
                     try {
                         Set<SagaTaskInstanceDTO> set = sagaClient.pollBatch(new PollBatchDTO(instance, codeDTOS, maxPollSize));
-                        LOGGER.debug("poll sagaTaskInstances from asgard, time {} instance {} pollSize {}", System.currentTimeMillis(), instance, set.size());
+                        LOGGER.debug("sagaMonitor polled messages, size {} data {}", set.size(), set);
                         msgQueue.addAll(set);
                         msgQueue.forEach(t -> executor.execute(new InvokeTask(t)));
                     } catch (Exception e) {
-                        LOGGER.warn("error.pollSagaTaskInstances {}", e.getMessage());
+                        LOGGER.warn("sagaMonitor poll error {}", e.getMessage());
                     }
                 }
             }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
         } catch (UnknownHostException e) {
-            LOGGER.error("can't get localhost, failed to start saga consumer. {}", e.getCause());
+            LOGGER.error("sagaMonitor can't get localhost, failed to start saga consumer. {}", e.getCause());
         }
-
     }
 
     private class InvokeTask implements Runnable {
@@ -101,7 +101,7 @@ public class SagaMonitor {
             try {
                 invoke(dto);
             } catch (Exception e) {
-                LOGGER.error("message consume exception when InvokeTask, cause {}", e.getMessage());
+                LOGGER.warn("sagaMonitor consume message error, cause {}", e.getMessage());
             } finally {
                 msgQueue.remove(dto);
             }
@@ -125,7 +125,7 @@ public class SagaMonitor {
                 String errorMsg = getErrorInfoFromException(e);
                 sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
                         SagaDefinition.InstanceStatus.FAILED.name(), null, errorMsg));
-                LOGGER.error("message consume exception, msg : {}, cause {}", data, errorMsg);
+                LOGGER.error("sagaMonitor invoke method error, msg {}, cause {}", data, errorMsg);
             }
         }
 
@@ -143,8 +143,11 @@ public class SagaMonitor {
             return objectMapper.writeValueAsString(result);
         }
 
-        private String getErrorInfoFromException(Exception e) {
+        private String getErrorInfoFromException(Throwable e) {
             try {
+                if (e instanceof InvocationTargetException) {
+                    e = ((InvocationTargetException) e).getTargetException();
+                }
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
