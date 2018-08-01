@@ -1,6 +1,8 @@
 package io.choerodon.asgard.saga.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
@@ -19,17 +21,14 @@ public class StartInstanceDTO {
     @NotNull
     private String refId = "";
 
-    private Long userId;
-
-    public StartInstanceDTO(String input, Long userId) {
+    public StartInstanceDTO(String input) {
         this.input = input;
-        this.userId = userId;
     }
 
-    public StartInstanceDTO(String input, Long userId, String refType, String refId) {
+    public StartInstanceDTO(String input, String refType, String refId) {
         this.input = input;
-        this.userId = userId;
         this.refType = refType;
         this.refId = refId;
     }
+
 }
