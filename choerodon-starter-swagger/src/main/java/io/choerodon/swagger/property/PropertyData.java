@@ -98,6 +98,8 @@ public class PropertyData {
 
         private String concurrentLimitPolicy;
 
+        private String outputSchema;
+
         public SagaTask() {
         }
 
@@ -181,6 +183,13 @@ public class PropertyData {
             this.concurrentLimitPolicy = concurrentLimitPolicy;
         }
 
+        public String getOutputSchema() {
+            return outputSchema;
+        }
+
+        public void setOutputSchema(String outputSchema) {
+            this.outputSchema = outputSchema;
+        }
     }
 
     @Override
