@@ -34,6 +34,10 @@ public class LiquibaseHelper {
         return dbType().isSupportSequence();
     }
 
+    public boolean isH2Base() {
+        return this.url.startsWith("jdbc:h2");
+    }
+
     public enum DbType {
         MYSQL(true, false), ORACLE(false, true), HANA(true, false), SQLSERVER(true, false), H2(true, false), DB2(false, true);
 
