@@ -48,7 +48,7 @@ public class PropertyDataProcessor implements BeanPostProcessor {
                     task.setConcurrentLimitPolicy(sagaTask.concurrentLimitPolicy().name());
                     task.setTimeoutPolicy(sagaTask.timeoutPolicy().name());
                     task.setTimeoutSeconds(sagaTask.timeoutSeconds());
-                    String outputSchema = GenerateJsonExampleUtil.generate(method.getReturnType(), mapper, true);
+                    String outputSchema = calculateTaskOutputSchema(sagaTask, method);
                     if (!StringUtils.isEmpty(outputSchema)) {
                         task.setOutputSchema(outputSchema);
                     }
@@ -59,6 +59,16 @@ public class PropertyDataProcessor implements BeanPostProcessor {
         return bean;
     }
 
+
+    private String calculateTaskOutputSchema(final SagaTask sagaTask, final Method method) {
+        if (!StringUtils.isEmpty(sagaTask.outputSchema())) {
+            return sagaTask.outputSchema();
+        }
+        if (!sagaTask.outputSchemaClass().equals(Object.class)) {
+            return GenerateJsonExampleUtil.generate(sagaTask.outputSchemaClass(), mapper, true);
+        }
+        return GenerateJsonExampleUtil.generate(method.getReturnType(), mapper, true);
+    }
 
     private String calculateInputSchema(final Saga saga) {
         if (!StringUtils.isEmpty(saga.inputSchema())) {
