@@ -71,4 +71,18 @@ public @interface SagaTask {
      * @return 事务传播行为，默认0，范围-1 ～ 7
      */
     int transactionDefinition() default DefaultTransactionDefinition.PROPAGATION_REQUIRED;
+
+
+    /**
+     * 通过类手动指定输出参数。根据类自动生成。
+     * outputSchema优先级 > 优先级 > 方法返回值优先级
+     */
+    Class<?> outputSchemaClass() default Object.class;
+
+    /**
+     * 通过json字符串手动指定输出参数。比如{"name":"wang","age":23}
+     * 优先级 > outputSchemaClass()优先级 > 方法返回值优先级。
+     * 不为空时会覆盖outputSchemaClass生成的json schema。
+     */
+    String outputSchema() default "";
 }

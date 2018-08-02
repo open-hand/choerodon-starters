@@ -25,7 +25,7 @@ public @interface Saga {
 
     /**
      * 手动输入参数json
-     * 不为空时会覆盖inputSchemaClass自动生成的json
+     * 不为empty时会覆盖inputSchemaClass自动生成的json
      */
     String inputSchema() default "";
 
