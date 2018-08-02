@@ -11,6 +11,11 @@ public class ExceptionResponse {
     private String code;
     private String message;
 
+
+    public ExceptionResponse() {
+
+    }
+
     /**
      * 创建MessageDto对象
      *
