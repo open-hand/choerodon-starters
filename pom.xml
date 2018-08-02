@@ -58,9 +58,9 @@
         <module>choerodon-starter-feign-replay</module>
         <module>choerodon-starter-event-producer</module>
         <module>choerodon-starter-config-client</module>
-       <!-- <module>choerodon-tool-config</module>-->
+        <module>choerodon-tool-config</module>
         <module>choerodon-liquibase</module>
-        <!--<module>choerodon-tool-liquibase</module>-->
+        <module>choerodon-tool-liquibase</module>
         <module>choerodon-starter-core</module>
         <module>choerodon-starter-event-consumer</module>
         <module>choerodon-starter-hitoa</module>
