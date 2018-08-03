@@ -30,4 +30,17 @@ public class SagaDefinition {
         QUEUE
     }
 
+    public enum SagaInputSchemaSource {
+        INPUT_SCHEMA,
+        INPUT_SCHEMA_CLASS,
+        NONE
+    }
+
+    public enum SagaTaskOutputSchemaSource {
+        OUTPUT_SCHEMA,
+        OUTPUT_SCHEMA_CLASS,
+        METHOD_RETURN_TYPE,
+        NONE
+    }
+
 }

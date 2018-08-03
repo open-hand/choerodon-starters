@@ -117,14 +117,14 @@ public class SagaMonitor {
                 invokeBean.method.setAccessible(true);
                 final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
                 SagaTaskInstanceDTO updateResult = sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                        SagaDefinition.InstanceStatus.COMPLETED.name(), resultToJson(result), null));
+                        SagaDefinition.TaskInstanceStatus.COMPLETED.name(), resultToJson(result), null));
                 LOGGER.debug("updateStatus result {} time {}", updateResult, System.currentTimeMillis());
                 transactionManager.commit(status);
             } catch (Exception e) {
                 transactionManager.rollback(status);
                 String errorMsg = getErrorInfoFromException(e);
                 sagaClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                        SagaDefinition.InstanceStatus.FAILED.name(), null, errorMsg));
+                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, errorMsg));
                 LOGGER.error("sagaMonitor invoke method error, msg {}, cause {}", data, errorMsg);
             }
         }
