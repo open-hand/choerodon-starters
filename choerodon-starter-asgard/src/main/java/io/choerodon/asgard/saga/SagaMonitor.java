@@ -82,7 +82,7 @@ public class SagaMonitor {
                         LOGGER.warn("sagaMonitor poll error {}", e.getMessage());
                     }
                 }
-            }, 20, choerodonSagaProperties.getPollInterval(), TimeUnit.SECONDS);
+            }, 20, choerodonSagaProperties.getPollIntervalMs(), TimeUnit.MILLISECONDS);
         } catch (UnknownHostException e) {
             LOGGER.error("sagaMonitor can't get localhost, failed to start saga consumer. {}", e.getCause());
         }
