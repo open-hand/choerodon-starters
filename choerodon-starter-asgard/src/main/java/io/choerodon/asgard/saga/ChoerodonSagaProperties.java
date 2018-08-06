@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "choerodon.saga.consumer")
 public class ChoerodonSagaProperties {
 
-    private Integer pollInterval = 1;
+    private Integer pollIntervalMs = 1000;
 
     private Integer maxPollSize = 200;
 
@@ -13,12 +13,12 @@ public class ChoerodonSagaProperties {
 
     private Boolean enabled = true;
 
-    public Integer getPollInterval() {
-        return pollInterval;
+    public Integer getPollIntervalMs() {
+        return pollIntervalMs;
     }
 
-    public void setPollInterval(Integer pollInterval) {
-        this.pollInterval = pollInterval;
+    public void setPollIntervalMs(Integer pollIntervalMs) {
+        this.pollIntervalMs = pollIntervalMs;
     }
 
     public Boolean getEnabled() {
