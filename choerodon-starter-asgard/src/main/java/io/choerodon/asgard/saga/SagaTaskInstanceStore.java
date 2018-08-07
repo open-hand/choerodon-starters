@@ -13,17 +13,14 @@ public class SagaTaskInstanceStore {
 
     private static final String TASK_INSTANCE_TABLE_EXIST_STATEMENT = "select count(*) from saga_task_instance_record";
 
-    private static final String TASK_INSTANCE_SELECT_OVERTIME_STATEMENT = "select id from saga_task_instance_record where ? - create_time > ?";
+    private static final String TASK_INSTANCE_SELECT_OVERTIME_STATEMENT = "select id from saga_task_instance_record";
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final long overtimeMs;
-
     private Boolean tableExist = null;
 
-    public SagaTaskInstanceStore(DataSource dataSource, ChoerodonSagaProperties sagaProperties) {
+    public SagaTaskInstanceStore(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-        overtimeMs = sagaProperties.getRecordBackCheckIntervalMs();
     }
 
     void storeTaskInstance(Long id) {
@@ -36,7 +33,7 @@ public class SagaTaskInstanceStore {
     }
 
     List<Long> selectOvertimeTaskInstance() {
-        return jdbcTemplate.queryForList(TASK_INSTANCE_SELECT_OVERTIME_STATEMENT, Long.class, System.currentTimeMillis(), overtimeMs);
+        return jdbcTemplate.queryForList(TASK_INSTANCE_SELECT_OVERTIME_STATEMENT, Long.class);
     }
 
     boolean tableNotExist() {

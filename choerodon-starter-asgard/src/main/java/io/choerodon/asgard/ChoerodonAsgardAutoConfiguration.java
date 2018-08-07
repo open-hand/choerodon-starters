@@ -60,7 +60,7 @@ public class ChoerodonAsgardAutoConfiguration {
 
         @Bean
         public SagaTaskInstanceStore taskInstanceStore(DataSource dataSource) {
-            return new SagaTaskInstanceStore(dataSource, choerodonSagaProperties);
+            return new SagaTaskInstanceStore(dataSource);
         }
 
         @Bean
