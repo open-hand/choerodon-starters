@@ -20,11 +20,6 @@
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-core</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-feign-replay</artifactId>
             <version>${parent.version}</version>
         </dependency>
