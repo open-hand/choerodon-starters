@@ -1,24 +1,14 @@
-package io.choerodon.asgard.saga;
+package io.choerodon.asgard.saga.feign;
 
-import io.choerodon.asgard.saga.dto.*;
+import io.choerodon.asgard.saga.dto.SagaInstanceDTO;
+import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.Set;
 
 @FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
 public interface SagaClient {
-
-    @PostMapping("/v1/sagas/tasks/instances/poll/batch")
-    Set<SagaTaskInstanceDTO> pollBatch(@RequestBody PollBatchDTO pollBatchDTO);
-
-
-    @PutMapping("/v1/sagas/tasks/instances/{id}/status")
-    SagaTaskInstanceDTO updateStatus(@PathVariable("id") Long id,
-                                           @RequestBody SagaTaskInstanceStatusDTO statusDTO);
 
     @PostMapping("/v1/sagas/instances/{code}")
     SagaInstanceDTO startSaga(@PathVariable("code") String code,

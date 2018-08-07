@@ -1,9 +1,6 @@
 package io.choerodon.swagger;
 
 import io.choerodon.swagger.exclude.EnableHandSwagger2;
-import io.choerodon.swagger.property.PropertyController;
-import io.choerodon.swagger.property.PropertyData;
-import io.choerodon.swagger.property.PropertyDataProcessor;
 import io.choerodon.swagger.swagger.CustomSwagger2Controller;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,22 +63,5 @@ public class SwaggerConfig {
         return new CustomSwagger2Controller();
     }
 
-    @Bean
-    public PropertyData propertyData() {
-        PropertyData propertyData = new PropertyData();
-        propertyData.setService(service);
-        return propertyData;
-    }
-
-    @Bean
-    public PropertyDataProcessor propertyDataProcessor() {
-        return new PropertyDataProcessor(propertyData());
-    }
-
-
-    @Bean
-    public PropertyController propertyController() {
-        return new PropertyController(propertyData());
-    }
 
 }

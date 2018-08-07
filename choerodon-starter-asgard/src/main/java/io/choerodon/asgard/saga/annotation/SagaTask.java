@@ -1,6 +1,7 @@
-package io.choerodon.core.saga;
+package io.choerodon.asgard.saga.annotation;
 
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import io.choerodon.asgard.saga.SagaDefinition;
+import org.springframework.transaction.annotation.Isolation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,12 +22,6 @@ public @interface SagaTask {
     String code();
 
     /**
-     * 描述
-     */
-    String description() default "";
-
-
-    /**
      * 所属的saga的code
      */
     String sagaCode();
@@ -36,6 +31,17 @@ public @interface SagaTask {
      * 越小越先执行
      */
     int seq();
+
+    /**
+     * 是否在数据库中记录消息消费
+     * 记录之后可增强数据一致性, 启用之后
+     */
+    boolean enabledDbRecord() default false;
+
+    /**
+     * 描述
+     */
+    String description() default "";
 
     /**
      * 超时时间
@@ -49,7 +55,7 @@ public @interface SagaTask {
     int concurrentLimitNum() default 1;
 
     /**
-     *并发策略
+     * 并发策略
      * NONE: 不设置并发限制
      * TYPE: 根据ref_type限制并发
      * TYPE_AND_ID: 根据ref_type和ref_id共同限制并发
@@ -64,14 +70,7 @@ public @interface SagaTask {
     /**
      * 最大重试次数。超时策略为SagaDef.TimeoutPolicy.RETRY时生效
      */
-    int maxRetryCount() default 3;
-
-    /**
-     * 事务传播行为，默认0，范围-1 ～ 7
-     * @return 事务传播行为，默认0，范围-1 ～ 7
-     */
-    int transactionDefinition() default DefaultTransactionDefinition.PROPAGATION_REQUIRED;
-
+    int maxRetryCount() default 1;
 
     /**
      * 通过类手动指定输出参数。根据类自动生成。
@@ -85,4 +84,26 @@ public @interface SagaTask {
      * 不为空时会覆盖outputSchemaClass生成的json schema。
      */
     String outputSchema() default "";
+
+    /**
+     * 事务超时时间(秒)。默认永不超时。
+     */
+    int transactionTimeout() default -1;
+
+    /**
+     * 是否为只读事务
+     */
+    boolean transactionReadOnly() default false;
+
+    /**
+     * 事务的隔离级别
+     */
+    Isolation transactionIsolation() default Isolation.DEFAULT;
+
+
+    /**
+     * 所用的事务管理器的bean名
+     */
+    String transactionManager() default "";
+
 }
