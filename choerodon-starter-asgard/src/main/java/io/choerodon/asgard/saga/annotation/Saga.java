@@ -1,4 +1,4 @@
-package io.choerodon.core.saga;
+package io.choerodon.asgard.saga.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -12,7 +12,6 @@
     <artifactId>choerodon-starter-asgard</artifactId>
     <version>0.6.0.RELEASE</version>
 
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -30,14 +29,8 @@
             <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-mybatis-mapper</artifactId>
-            <version>${parent.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -56,7 +49,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 </project>

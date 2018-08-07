@@ -1,6 +1,6 @@
 package io.choerodon.asgard.saga;
 
-import io.choerodon.core.saga.SagaTask;
+import io.choerodon.asgard.saga.annotation.SagaTask;
 
 import java.lang.reflect.Method;
 

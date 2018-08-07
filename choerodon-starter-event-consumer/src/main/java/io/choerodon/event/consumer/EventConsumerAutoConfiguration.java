@@ -98,7 +98,7 @@ public class EventConsumerAutoConfiguration {
                 LOGGER.info("token {}", jwtToken);
                 request.getHeaders().add("Authorization", jwtToken);
             } catch (IOException e) {
-                LOGGER.warn("IOException happen when add RestTemplate JWT token, {}", e.getCause());
+                LOGGER.warn("IOException happen when add RestTemplate JWT token, {}", e);
             }
             return execution.execute(request, body);
         }
@@ -133,7 +133,7 @@ public class EventConsumerAutoConfiguration {
                 scheduler = new StdSchedulerFactory().getScheduler();
                 scheduler.start();
             } catch (SchedulerException e) {
-                LOGGER.warn("error happen when start scheduler, {}", e.getCause());
+                LOGGER.warn("error happen when start scheduler, {}", e);
             }
             return scheduler;
         }
@@ -322,7 +322,7 @@ public class EventConsumerAutoConfiguration {
         try {
             consumeFactory.createConsumers(eventConsumers);
         } catch (Exception e) {
-            LOGGER.warn("error happen when create consumer, {}", e.getCause());
+            LOGGER.warn("error happen when create consumer, {}", e);
         }
         sw.stop();
         return true;
