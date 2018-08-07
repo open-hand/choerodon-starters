@@ -3,12 +3,12 @@ package io.choerodon.asgard.saga;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.choerodon.asgard.saga.annotation.SagaTask;
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.asgard.saga.dto.PollCodeDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.saga.feign.SagaMonitorClient;
-import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -55,6 +55,8 @@ public class SagaMonitor {
 
     private volatile Set<SagaTaskInstanceDTO> msgQueue;
 
+    private volatile Set<Long> records = Collections.synchronizedSet(new HashSet<>());
+
     private final SagaApplicationContextHelper applicationContextHelper;
 
     private final SagaTaskInstanceStore taskInstanceStore;
@@ -90,11 +92,8 @@ public class SagaMonitor {
             String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
             LOGGER.info("sagaMonitor prepare to start saga consumer, pollTasks {}, instance {}, maxPollSize {}, ", codeDTOS, instance, maxPollSize);
             scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                if (msgQueue.isEmpty()) {
+                if (noNeedUpdateSagaStatus() && msgQueue.isEmpty()) {
                     try {
-                        if (enabledDbRecord) {
-                            taskInstanceStore.selectOvertimeTaskInstance().forEach(t -> executor.execute(new UpdateStatusFailedTask(t)));
-                        }
                         Set<SagaTaskInstanceDTO> set = sagaMonitorClient.pollBatch(new PollBatchDTO(instance, codeDTOS, maxPollSize));
                         LOGGER.debug("sagaMonitor polled messages, size {} data {}", set.size(), set);
                         msgQueue.addAll(set);
@@ -107,6 +106,22 @@ public class SagaMonitor {
         } catch (UnknownHostException e) {
             LOGGER.error("sagaMonitor can't get localhost, failed to start saga consumer. {}", e.getCause());
         }
+    }
+
+    private boolean noNeedUpdateSagaStatus() {
+        if (enabledDbRecord) {
+            if (!records.isEmpty()) {
+                return false;
+            }
+            if (msgQueue.isEmpty()) {
+                records.addAll(taskInstanceStore.selectOvertimeTaskInstance());
+                if (!records.isEmpty()) {
+                    records.forEach(i -> executor.execute(new UpdateStatusFailedTask(i)));
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private class UpdateStatusFailedTask implements Runnable {
@@ -125,6 +140,8 @@ public class SagaMonitor {
                 taskInstanceStore.removeTaskInstance(taskInstanceId);
             } catch (Exception e) {
                 LOGGER.warn("error.SagaMonitor.updateStatusFailed.reRun, {}", e);
+            }finally {
+                records.remove(taskInstanceId);
             }
         }
     }

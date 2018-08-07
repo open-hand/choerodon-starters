@@ -13,8 +13,6 @@ public class ChoerodonSagaProperties {
 
     private Boolean enabled = true;
 
-    private Long recordBackCheckIntervalMs =  180_000L;
-
     public Long getPollIntervalMs() {
         return pollIntervalMs;
     }
@@ -47,11 +45,4 @@ public class ChoerodonSagaProperties {
         this.maxPollSize = maxPollSize;
     }
 
-    public Long getRecordBackCheckIntervalMs() {
-        return recordBackCheckIntervalMs;
-    }
-
-    public void setRecordBackCheckIntervalMs(Long recordBackCheckIntervalMs) {
-        this.recordBackCheckIntervalMs = recordBackCheckIntervalMs;
-    }
 }
