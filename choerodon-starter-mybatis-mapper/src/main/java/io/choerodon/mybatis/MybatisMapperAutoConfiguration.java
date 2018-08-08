@@ -1,5 +1,25 @@
 package io.choerodon.mybatis;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
+
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.sleuth.SpanAccessor;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
+
+import io.choerodon.mybatis.code.DbType;
+import io.choerodon.mybatis.constant.CommonMapperConfigConstant;
+import io.choerodon.mybatis.domain.Config;
 import io.choerodon.mybatis.language.MultiLanguageInterceptor;
 import io.choerodon.mybatis.pagehelper.Dialect;
 import io.choerodon.mybatis.pagehelper.PageInterceptor;
@@ -9,27 +29,15 @@ import io.choerodon.mybatis.pagehelper.dialect.OracleDialect;
 import io.choerodon.mybatis.pagehelper.dialect.SqlServerDialect;
 import io.choerodon.mybatis.spring.CommonMapperScannerConfigurer;
 import io.choerodon.mybatis.spring.resolver.MethodArgParamResolverConfig;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.mapper.MapperScannerConfigurer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.cloud.sleuth.SpanAccessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
 
 
 @Configuration
 @Import(MethodArgParamResolverConfig.class)
-public class MybatisMapperAutoConfiguration {
+public class MybatisMapperAutoConfiguration  implements EnvironmentAware{
 
     private static final Logger logger = LoggerFactory.getLogger(MybatisMapperAutoConfiguration.class);
+
+    private String datasourceUrl;
 
     /**
      * 配置扫描包路径
@@ -41,6 +49,21 @@ public class MybatisMapperAutoConfiguration {
     public MapperScannerConfigurer mapperScannerConfigurer() {
         CommonMapperScannerConfigurer configurer = new CommonMapperScannerConfigurer();
         configurer.setBasePackage("*.**.mapper");
+        Config config = configurer.getMapperHelper().getConfig();
+        config.setSeqFormat("{3}_s.nextval");
+        DbType dbType = DbType.MYSQL;
+        if (this.datasourceUrl.startsWith(CommonMapperConfigConstant.DB_URL_PREFIX_H2)) {
+            dbType = DbType.H2;
+        } else if (this.datasourceUrl.startsWith(CommonMapperConfigConstant.DB_URL_PREFIX_ORACLE)) {
+            dbType = DbType.ORACLE;
+        } else if (this.datasourceUrl.startsWith(CommonMapperConfigConstant.DB_URL_PREFIX_SQLSERVER)) {
+            dbType = DbType.SQLSERVER;
+        } else if (this.datasourceUrl.startsWith(CommonMapperConfigConstant.DB_URL_PREFIX_SAP)) {
+            dbType = DbType.HANA;
+        }
+        config.setDbType(dbType);
+        config.setBefore(dbType.isSupportSequence());
+        config.setIdentity(dbType.getIdentity());
         return configurer;
     }
 
@@ -98,4 +121,8 @@ public class MybatisMapperAutoConfiguration {
         return "";
     }
 
+    @Override
+    public void setEnvironment(Environment environment) {
+        datasourceUrl = environment.getProperty("spring.datasource.url");
+    }
 }

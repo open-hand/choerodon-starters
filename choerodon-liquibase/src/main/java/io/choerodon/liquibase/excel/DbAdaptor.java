@@ -1,6 +1,8 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.addition.AdditionDataSource;
+import io.choerodon.liquibase.helper.LiquibaseHelper;
+
 import liquibase.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +50,12 @@ public class DbAdaptor {
     private ExcelDataLoader dataProcessor;
     private boolean useSeq = false;
     private boolean override = true;
+    private LiquibaseHelper helper;
 
     public DbAdaptor(ExcelDataLoader dataProcessor, AdditionDataSource ad) {
         this.dataProcessor = dataProcessor;
+        this.helper = ad.getLiquibaseHelper();
+        this.useSeq = helper.isSupportSequence();
     }
 
     public DataSource getDataSource() {

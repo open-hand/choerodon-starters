@@ -29,6 +29,7 @@ import java.util.Properties;
 import io.choerodon.mybatis.MapperException;
 import io.choerodon.mybatis.code.IdentityDialect;
 import io.choerodon.mybatis.code.Style;
+import io.choerodon.mybatis.code.DbType;
 import io.choerodon.mybatis.util.SimpleTypeUtil;
 import io.choerodon.mybatis.util.StringUtil;
 
@@ -49,6 +50,8 @@ public class Config {
     private boolean checkExampleEntityClass;
     //使用简单类型
     private boolean useSimpleType;
+    //数据库类型
+    private DbType dbType;
     /**
      * 是否支持方法上的注解，默认false
      */
@@ -224,6 +227,14 @@ public class Config {
         this.useSimpleType = useSimpleType;
     }
 
+    public DbType getDbType() {
+        return dbType;
+    }
+
+    public void setDbType(DbType dbType) {
+        this.dbType = dbType;
+    }
+
     /**
      * 获取表前缀，带catalog或schema
      *
@@ -250,6 +261,12 @@ public class Config {
             this.style = Style.CAMELHUMP;
             return;
         }
+
+        String dataBaseType = properties.getProperty("dbType");
+        if (StringUtil.isNotEmpty(dataBaseType)) {
+            setDbType(DbType.getByValue(dataBaseType));
+        }
+
         String newUuid = properties.getProperty("uuid");
         if (StringUtil.isNotEmpty(newUuid)) {
             setUuid(newUuid);

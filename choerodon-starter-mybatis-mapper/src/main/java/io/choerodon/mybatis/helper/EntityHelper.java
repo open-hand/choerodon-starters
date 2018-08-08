@@ -319,7 +319,7 @@ public class EntityHelper {
             }
         } else {
             entityColumn.setIdentity(true);
-            entityColumn.setGenerator("JDBC");
+            //entityColumn.setGenerator("JDBC");
             entityTable.setKeyProperties(entityColumn.getProperty());
             entityTable.setKeyColumns(entityColumn.getColumn());
         }

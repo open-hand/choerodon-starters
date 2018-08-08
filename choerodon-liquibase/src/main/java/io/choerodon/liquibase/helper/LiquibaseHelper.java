@@ -39,7 +39,7 @@ public class LiquibaseHelper {
     }
 
     public enum DbType {
-        MYSQL(true, false), ORACLE(false, true), HANA(true, false), SQLSERVER(true, false), H2(true, false), DB2(false, true);
+        MYSQL(true, false), ORACLE(false, true), HANA(false, true), SQLSERVER(true, false), H2(true, false), DB2(false, true);
 
         private boolean supportAutoIncrement;
 
