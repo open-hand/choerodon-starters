@@ -1,4 +1,4 @@
-package io.choerodon.core.saga;
+package io.choerodon.asgard.saga;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +29,6 @@ public class GenerateJsonExampleUtil {
         }
         return value;
     }
-
 
     public static Object createExampleInstance(final Class<?> claz) {
         if (claz == null) {
@@ -68,7 +67,7 @@ public class GenerateJsonExampleUtil {
             return obj;
         } catch (Exception e) {
             LOGGER.trace("generate json example data error when createInstance," +
-                    " class {}, cause {}", claz, e.getCause());
+                    " class {}, cause {}", claz, e);
         }
         return null;
 
@@ -90,7 +89,7 @@ public class GenerateJsonExampleUtil {
             }
         } catch (Exception e) {
             LOGGER.trace("generate json example data error when invoke setter," +
-                    " filed {} setValue {} cause {}", att, value, e.getCause());
+                    " filed {} setValue {} cause {}", att, value, e);
         }
     }
 

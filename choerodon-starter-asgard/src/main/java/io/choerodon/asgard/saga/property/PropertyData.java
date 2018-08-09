@@ -1,4 +1,4 @@
-package io.choerodon.swagger.property;
+package io.choerodon.asgard.saga.property;
 
 import java.util.ArrayList;
 import java.util.List;

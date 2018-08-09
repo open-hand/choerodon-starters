@@ -1,10 +1,10 @@
-package io.choerodon.swagger.property;
+package io.choerodon.asgard.saga.property;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.core.saga.GenerateJsonExampleUtil;
-import io.choerodon.core.saga.Saga;
-import io.choerodon.core.saga.SagaDefinition;
-import io.choerodon.core.saga.SagaTask;
+import io.choerodon.asgard.saga.GenerateJsonExampleUtil;
+import io.choerodon.asgard.saga.SagaDefinition;
+import io.choerodon.asgard.saga.annotation.Saga;
+import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
