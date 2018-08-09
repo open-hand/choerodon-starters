@@ -1,5 +1,7 @@
 package io.choerodon.core.excel;
 
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -7,13 +9,17 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.NumberToTextConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author superlee
@@ -32,26 +38,33 @@ public class ExcelUtil {
         return name.matches("^.+\\.(?i)(xlsx)$");
     }
 
+    private static final String DEFAULT_SHEET_NAME = "sheet";
+
+    private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH24mmss";
+
     /**
      *
-     * @param workbook                      excel工作薄
-     * @param clazz                         读取数据返回的类型
-     * @param propertyMap                   excel列名与dataObject字段的对应关系
+     * @param workbook                          excel工作薄
+     * @param clazz                             读取数据返回的类型
+     * @param excelReadConfig               excel读取的配置项
      * @param <T>                           类型
      * @return list
      * @throws InstantiationException       InstantiationException
      * @throws IllegalAccessException       IllegalAccessException
      * @throws InvocationTargetException    InvocationTargetException
      */
-    public static <T> List<T> processExcel(Workbook workbook, Class<T> clazz, Map<String, String> propertyMap)
+    public static <T> List<T> processExcel(Workbook workbook, Class<T> clazz, ExcelReadConfig excelReadConfig)
             throws InstantiationException, IllegalAccessException, InvocationTargetException {
         List<T> list = new ArrayList<>();
         Map<String, Field> fieldMap = getObjectField(clazz);
         Map<String, Method> setterMethodMap = getObjectSetterMethod(clazz);
         int sheetNum = workbook.getNumberOfSheets();
+        Map<String, String> propertyMap = excelReadConfig.getPropertyMap();
+        String[] skipSheetNames = excelReadConfig.getSkipSheetNames();
         for (int i = 0; i < sheetNum; i++) {
             Sheet sheet = workbook.getSheetAt(i);
-            if (sheet == null) {
+            if (sheet == null
+                    || containSkipSheetName(sheet.getSheetName(), skipSheetNames)) {
                 continue;
             }
             int lastRowNum = sheet.getLastRowNum();
@@ -75,6 +88,15 @@ public class ExcelUtil {
         return list;
     }
 
+    private static boolean containSkipSheetName(String sheetName, String[] skipSheetNames) {
+        for (String skip : skipSheetNames) {
+            if (sheetName.equalsIgnoreCase(skip)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * propertyMap为空用默认策略
      * @param row               excel的行
@@ -92,8 +114,7 @@ public class ExcelUtil {
             int column = cell.getAddress().getColumn();
             String cellValue = cell.getStringCellValue();
             //propertyMap为空，使用默认策略，即标题行要与对象字段名相对应，驼峰风格
-            if (propertyMap == null
-                    || propertyMap.isEmpty()) {
+            if (propertyMap.isEmpty()) {
                 map.put(column, cellValue);
             } else {
                 //遍历map，找到excel的标题行与对象字段的映射关系，如果propertyMap里面不包含excel里面的列名，抛异常
@@ -102,7 +123,8 @@ public class ExcelUtil {
                 }
                 propertyMap.forEach((k, v) ->{
                     if (k.equals(cellValue)) {
-                        map.put(column, v);
+                        //如果是下划线，则转为驼峰
+                        map.put(column, underlineToCamelhump(v));
                     }
                 });
             }
@@ -128,11 +150,13 @@ public class ExcelUtil {
             }
             Field field = fieldMap.get(property);
             if (field == null) {
-                throw new IllegalArgumentException("excel column name can not match the fields of object, column : " + column);
+                throw new IllegalArgumentException("excel column name can not match the fields of object, column : "
+                        + column + ", please make sure the excel title and JavaBean field is mapped or set the custom propertyMap");
             }
             Method method = setterMethodMap.get(property);
             if (method == null) {
-                throw new IllegalArgumentException("excel column name can not match the setter methods of object, column : " + column);
+                throw new IllegalArgumentException("excel column name can not match the setter methods of object, column : "
+                        + column + ", please make sure the field has a setter method");
             }
             setObjectPropertyValue(t,field,method,cellValue);
         }
@@ -186,6 +210,10 @@ public class ExcelUtil {
         return methodMap;
     }
 
+    /**
+     * @param cell excel单元格
+     * @return 单元格的值
+     */
     @SuppressWarnings("static-access")
     public static String getValue(Cell cell) {
         if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
@@ -239,6 +267,7 @@ public class ExcelUtil {
             if (value.length() > 0)
                 object = DateUtil.formatDate(value, "yyyyMMddHH24mmss");
         } else if ("java.lang.Boolean".equals(type)  || "Boolean".equals(type)) {
+            //布尔类型
             if (value.length() > 0)
                 object = Boolean.valueOf(value);
         } else if ("java.lang.Long".equals(type) || "java.lang.long".equals(type)  || "Long".equals(type) || "long".equals(type)) {
@@ -246,5 +275,202 @@ public class ExcelUtil {
                 object = Long.valueOf(value);
         }
         method.invoke(obj, object);
+    }
+
+    /**
+     * 返回sheet名字，sheetTitle为空则返回sheet
+     *
+     * @param sheetTitle sheet标题名
+     * @return
+     */
+    public static String getSheetTitle(String sheetTitle) {
+        return StringUtils.isEmpty(sheetTitle) ? DEFAULT_SHEET_NAME : sheetTitle;
+    }
+
+    /**
+     * list中数据填充到excel中，headers字段要和javaBean的字段对应，否则写不进去值，headers是驼峰或下划线
+     *
+     * @param propertyMap key:JavaBean的字段名， value: 自定义的excel标题头
+     * @param list
+     * @param book
+     * @param sheet
+     * @param <T>
+     */
+    public static <T> void fillInExcel(Map<String, String> propertyMap, List<T> list, HSSFWorkbook book, HSSFSheet sheet, Class<T> clazz)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        //设置列头样式(居中、变粗、蓝色)
+        HSSFCellStyle headerStyle = book.createCellStyle();
+        setHeaderStyle(headerStyle, book);
+        // 设置单元格样式
+        HSSFCellStyle cellStyle = book.createCellStyle();
+        setCellStyle(cellStyle, book);
+        // 创建头部
+        Map<String, Integer> headerRow = createHeader(sheet, headerStyle, propertyMap);
+        // 画图的顶级管理器，一个sheet只能获取一个（一定要注意这点）
+        HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+        processCell(list, book, sheet, clazz, cellStyle, headerRow, patriarch);
+    }
+
+    private static <T> void processCell(List<T> list, HSSFWorkbook book, HSSFSheet sheet, Class<T> clazz, HSSFCellStyle cellStyle, Map<String, Integer> headerRow, HSSFPatriarch patriarch) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Map<String, Field> fieldMap = getObjectField(clazz);
+        //第0行已初始化header，从第一行开始
+        int rowNum = 1;
+        HSSFRow row;
+        String title;
+        Integer column;
+        Field field;
+        String fieldName;
+        String getterMethodName;
+        Method getterMethod;
+        Object value;
+        Cell cell;
+        for (T t : list) {
+            //创建一行
+            row = sheet.createRow(rowNum++);
+            for (Map.Entry<String, Integer> entry : headerRow.entrySet()) {
+                //下划线转驼峰，如果是驼峰，无影响
+                title = underlineToCamelhump(entry.getKey());
+                column = entry.getValue();
+                cell = row.createCell(column);
+                cell.setCellStyle(cellStyle);
+                field = fieldMap.get(title);
+                if (field == null) {
+                    throw new IllegalArgumentException("export excel headers are wrong, error one: " + title);
+                }
+                fieldName = field.getName();
+                getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+                try {
+                    getterMethod = clazz.getMethod(getterMethodName, new Class[]{});
+                    value = getterMethod.invoke(t, new Object[]{});
+                    fillInCell(row, column, value, sheet, patriarch, book, cell);
+                } catch (NoSuchMethodException e) {
+                    logger.info("can not get the method {} by reflection", getterMethodName);
+                    throw e;
+                } catch (IllegalAccessException e) {
+                    logger.info("illegal access for the method {}", getterMethodName);
+                    throw e;
+                } catch (InvocationTargetException e) {
+                    logger.info("invoke failed for the method {}", getterMethodName);
+                    throw e;
+                }
+            }
+        }
+    }
+
+    private static void fillInCell(HSSFRow row, Integer column, Object value, HSSFSheet sheet, HSSFPatriarch patriarch, HSSFWorkbook book, Cell cell) {
+        String cellValue = "";
+        if (value instanceof Date) {
+            //处理日期格式
+            Date date = (Date) value;
+            SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
+            cellValue = sdf.format(date);
+        } else if (value instanceof byte[]) {
+            //处理图片
+
+        } else if (value != null) {
+            //其他的按字符串处理
+            cellValue = String.valueOf(value);
+        }
+        Pattern p = Pattern.compile("^//d+(//.//d+)?$");
+        Matcher matcher = p.matcher(cellValue);
+
+        //设置单元格宽度，是文字能够全部显示
+        sheet.setColumnWidth(column, (cellValue.length() + 6) * 256);
+        row.setHeightInPoints((short) (20));   //设置单元格高度
+        if (matcher.matches()) {
+            // 是数字当作double处理
+            cell.setCellValue(Double.parseDouble(cellValue));
+        } else {
+            cell.setCellValue(cellValue);
+        }
+    }
+
+    /**
+     * 将下划线风格替换为驼峰风格
+     *
+     * @param str str
+     * @return String string
+     */
+    public static String underlineToCamelhump(String str) {
+        Matcher matcher = Pattern.compile("_[a-z]").matcher(str);
+        StringBuilder builder = new StringBuilder(str);
+        for (int i = 0; matcher.find(); i++) {
+            builder.replace(matcher.start() - i, matcher.end() - i, matcher.group().substring(1).toUpperCase());
+        }
+        if (Character.isUpperCase(builder.charAt(0))) {
+            builder.replace(0, 1, String.valueOf(Character.toLowerCase(builder.charAt(0))));
+        }
+        return builder.toString();
+    }
+
+    /**
+     * 根据头部样式、头部数据创建Excel头部
+     *
+     * @param sheet       sheet
+     * @param headerStyle 头部样式
+     * @param propertyMap key:JavaBean的字段名， value: 自定义的excel标题头
+     * @return 设置完成的头部Row
+     * @author chenssy
+     * @date 2014年6月17日 上午11:37:28
+     * @version 1.0
+     */
+    private static Map<String, Integer> createHeader(HSSFSheet sheet, HSSFCellStyle headerStyle,
+                                                     Map<String, String> propertyMap) {
+        Map<String, Integer> headerMap = new HashMap<>();
+        HSSFRow headRow = sheet.createRow(0);
+        headRow.setHeightInPoints((short) (20));   //设置头部高度
+        //添加数据
+        HSSFCell cell;
+        int i = 0;
+        for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
+            String column = entry.getKey();
+            String title = entry.getValue();
+            cell = headRow.createCell(i);
+            cell.setCellStyle(headerStyle);
+            HSSFRichTextString text = new HSSFRichTextString(title);
+            cell.setCellValue(text);
+            headerMap.put(column, i++);
+        }
+        return headerMap;
+    }
+
+    /**
+     * 设置单元格样式
+     *
+     * @param cellStyle 单元格样式
+     * @param book      book HSSFWorkbook对象
+     * @author chenssy
+     * @date 2014年6月17日 上午11:00:53
+     * @version 1.0
+     */
+    private static void setCellStyle(HSSFCellStyle cellStyle, HSSFWorkbook book) {
+        cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);   //水平居中
+        cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
+
+        HSSFFont font = book.createFont();
+        font.setFontHeightInPoints((short) 12);
+
+        cellStyle.setFont(font);
+    }
+
+    /**
+     * 设置Excel图片的格式：字体居中、变粗、蓝色、12号
+     *
+     * @param headerStyle 头部样式
+     * @param book        生产的excel book 	 HSSFWorkbook对象
+     * @author chenssy
+     * @date 2014年6月16日 下午8:46:49
+     * @version 1.0
+     */
+    private static void setHeaderStyle(HSSFCellStyle headerStyle, HSSFWorkbook book) {
+        headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);   //水平居中
+        headerStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
+        //设置字体
+        HSSFFont font = book.createFont();
+        font.setFontHeightInPoints((short) 12);     //字号：12号
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);   //变粗
+        font.setColor(HSSFColor.BLUE.index);   //蓝色
+
+        headerStyle.setFont(font);
     }
 }
