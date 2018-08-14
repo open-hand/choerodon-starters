@@ -1,15 +1,18 @@
 package io.choerodon.swagger;
 
 import io.choerodon.swagger.exclude.EnableHandSwagger2;
+import io.choerodon.swagger.notify.EmailTemplateProcessor;
 import io.choerodon.swagger.swagger.CustomSwagger2Controller;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import springfox.documentation.RequestHandler;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.DocumentationCache;
+import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
 
 import static com.google.common.base.Predicates.not;
 
@@ -57,10 +60,17 @@ public class SwaggerConfig {
         return new ExtraDataProcessor();
     }
 
+    @Bean("emailTemplateProcessor")
+    public EmailTemplateProcessor emailTemplateProcessor() {
+        return new EmailTemplateProcessor();
+    }
+
     @Bean
-    @DependsOn("extraDataProcessor")
-    public CustomSwagger2Controller customSwagger2Controller() {
-        return new CustomSwagger2Controller();
+    public CustomSwagger2Controller customSwagger2Controller(JsonSerializer jsonSerializer,
+                                                             DocumentationCache documentationCache,
+                                                             ServiceModelToSwagger2Mapper mapper) {
+        return new CustomSwagger2Controller(jsonSerializer, extraDataProcessor(),
+                emailTemplateProcessor(), documentationCache, mapper);
     }
 
 
