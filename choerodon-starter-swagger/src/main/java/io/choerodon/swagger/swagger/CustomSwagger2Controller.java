@@ -2,11 +2,12 @@ package io.choerodon.swagger.swagger;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import io.choerodon.swagger.notify.EmailTemplateProcessor;
+import io.choerodon.swagger.notify.EmailTemplateScanData;
 import io.choerodon.swagger.swagger.extra.ExtraData;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import io.swagger.models.Swagger;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -39,22 +41,40 @@ public class CustomSwagger2Controller {
 
     private static final String CUSTOM_SWAGGER_URL = "/v2/choerodon/api-docs";
 
+    public static final String CUSTOM_EMAIL_URL = "/choerodon/templates/email";
+
     private static final String HAL_MEDIA_TYPE = "application/hal+json";
 
-    @Autowired
     private JsonSerializer jsonSerializer;
 
-    @Autowired
     private ExtraDataProcessor extraDataProcessor;
+
+    private EmailTemplateProcessor emailTemplateProcessor;
+
+    private DocumentationCache documentationCache;
+
+    private ServiceModelToSwagger2Mapper mapper;
+
+    public CustomSwagger2Controller(JsonSerializer jsonSerializer, ExtraDataProcessor extraDataProcessor,
+                                    EmailTemplateProcessor emailTemplateProcessor, DocumentationCache documentationCache,
+                                    ServiceModelToSwagger2Mapper mapper) {
+        this.jsonSerializer = jsonSerializer;
+        this.extraDataProcessor = extraDataProcessor;
+        this.emailTemplateProcessor = emailTemplateProcessor;
+        this.documentationCache = documentationCache;
+        this.mapper = mapper;
+    }
 
     @Value("${springfox.documentation.swagger.v2.host:DEFAULT}")
     private String hostNameOverride;
 
-    @Autowired
-    private DocumentationCache documentationCache;
 
-    @Autowired
-    private ServiceModelToSwagger2Mapper mapper;
+    @GetMapping(value = CUSTOM_EMAIL_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
+    public
+    @ResponseBody
+    ResponseEntity<Set<EmailTemplateScanData>> getEmailTemplates() {
+        return new ResponseEntity<>(emailTemplateProcessor.getScanDataSet(), HttpStatus.OK);
+    }
 
     @GetMapping(value = CUSTOM_SWAGGER_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
     public
