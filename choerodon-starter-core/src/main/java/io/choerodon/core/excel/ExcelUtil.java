@@ -26,7 +26,8 @@ import java.util.regex.Pattern;
  */
 public class ExcelUtil {
 
-    private ExcelUtil() {}
+    private ExcelUtil() {
+    }
 
     private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 
@@ -43,15 +44,14 @@ public class ExcelUtil {
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH24mmss";
 
     /**
-     *
-     * @param workbook                          excel工作薄
-     * @param clazz                             读取数据返回的类型
-     * @param excelReadConfig               excel读取的配置项
-     * @param <T>                           类型
+     * @param workbook        excel工作薄
+     * @param clazz           读取数据返回的类型
+     * @param excelReadConfig excel读取的配置项
+     * @param <T>             类型
      * @return list
-     * @throws InstantiationException       InstantiationException
-     * @throws IllegalAccessException       IllegalAccessException
-     * @throws InvocationTargetException    InvocationTargetException
+     * @throws InstantiationException    InstantiationException
+     * @throws IllegalAccessException    IllegalAccessException
+     * @throws InvocationTargetException InvocationTargetException
      */
     public static <T> List<T> processExcel(Workbook workbook, Class<T> clazz, ExcelReadConfig excelReadConfig)
             throws InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -74,14 +74,14 @@ public class ExcelUtil {
             Map<Integer, String> titleRow = new HashMap<>();
             for (int rowNum = 0; rowNum < lastRowNum + 1; rowNum++) {
                 Row row = sheet.getRow(rowNum);
-                if(row == null) {
+                if (row == null) {
                     continue;
                 }
                 if (!processTitleRow) {
                     titleRow = getTitleRow(row, propertyMap);
                     processTitleRow = true;
                 } else {
-                    list.add(getObject(row, clazz, titleRow, fieldMap, setterMethodMap));
+                    Optional.ofNullable(getObject(row, clazz, titleRow, fieldMap, setterMethodMap)).ifPresent(t -> list.add(t));
                 }
             }
         }
@@ -99,8 +99,9 @@ public class ExcelUtil {
 
     /**
      * propertyMap为空用默认策略
-     * @param row               excel的行
-     * @param propertyMap       excel列名与dataObject字段的对应关系
+     *
+     * @param row         excel的行
+     * @param propertyMap excel列名与dataObject字段的对应关系
      * @return
      */
     private static Map<Integer, String> getTitleRow(Row row, Map<String, String> propertyMap) {
@@ -121,7 +122,7 @@ public class ExcelUtil {
                 if (!propertyMap.keySet().contains(cellValue)) {
                     throw new IllegalArgumentException("propertyMap does not contain the cell value : " + cellValue);
                 }
-                propertyMap.forEach((k, v) ->{
+                propertyMap.forEach((k, v) -> {
                     if (k.equals(cellValue)) {
                         //如果是下划线，则转为驼峰
                         map.put(column, underlineToCamelhump(v));
@@ -137,6 +138,8 @@ public class ExcelUtil {
             throws IllegalAccessException, InstantiationException, InvocationTargetException {
         T t = clazz.newInstance();
         int lastCellNum = row.getLastCellNum();
+        boolean cellAllEmpty = true;
+        Set<Integer> headerColumnSet = titleRow.keySet();
         for (int cellNum = 0; cellNum < lastCellNum; cellNum++) {
             Cell cell = row.getCell(cellNum);
             if (cell == null) {
@@ -144,6 +147,10 @@ public class ExcelUtil {
             }
             int column = cell.getAddress().getColumn();
             String cellValue = getValue(cell);
+            //这里反射的性能消耗大还是另外起一个for循环性能消耗大，代研究
+            if (!StringUtils.isEmpty(cellValue) && headerColumnSet.contains(column)) {
+                cellAllEmpty = false;
+            }
             String property = titleRow.get(column);
             if (property == null) {
                 continue;
@@ -158,24 +165,26 @@ public class ExcelUtil {
                 throw new IllegalArgumentException("excel column name can not match the setter methods of object, column : "
                         + column + ", please make sure the field has a setter method");
             }
-            setObjectPropertyValue(t,field,method,cellValue);
+            setObjectPropertyValue(t, field, method, cellValue);
         }
-        return t;
-
+        if (cellAllEmpty) {
+            return null;
+        } else {
+            return t;
+        }
     }
 
     /**
      * 获取object对象的所有属性，并构建map对象，对象结果为Map
      *
-     * @param clazz
-     * 				object对象
+     * @param clazz object对象
      * @return map
      */
     @SuppressWarnings("rawtypes")
     public static Map<String, Field> getObjectField(Class clazz) {
         Field[] fields = clazz.getDeclaredFields();       //获取object对象的所有属性
         Map<String, Field> fieldMap = new HashMap<>();
-        for(Field field : fields){
+        for (Field field : fields) {
             String fieldName = field.getName();
             fieldMap.put(fieldName, field);
         }
@@ -185,8 +194,7 @@ public class ExcelUtil {
     /**
      * 获取object对象所有属性的Setter方法，并构建map对象，结构为Map
      *
-     * @param clazz
-     * 				object对象
+     * @param clazz object对象
      * @return map
      */
     @SuppressWarnings("rawtypes")
@@ -194,14 +202,14 @@ public class ExcelUtil {
         Field[] fields = clazz.getDeclaredFields();       //获取object对象的所有属性
         Method[] methods = clazz.getDeclaredMethods();    //获取object对象的所有方法
         Map<String, Method> methodMap = new HashMap<>();
-        for(Field field : fields){
+        for (Field field : fields) {
             String fieldName = field.getName();
-            for(Method method : methods){
+            for (Method method : methods) {
                 String methodName = method.getName();
                 //匹配set方法
-                if(methodName != null && "set".equals(methodName.substring(0, 3)) &&
+                if (methodName != null && "set".equals(methodName.substring(0, 3)) &&
                         Modifier.isPublic(method.getModifiers()) &&
-                        ("set"+Character.toUpperCase(fieldName.charAt(0))+ fieldName.substring(1)).equals(methodName)){
+                        ("set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1)).equals(methodName)) {
                     methodMap.put(fieldName, method);       //将匹配的setter方法加入map对象中
                     break;
                 }
@@ -228,15 +236,15 @@ public class ExcelUtil {
     /**
      * 根据指定属性的的setter方法给object对象设置值
      *
-     * @param obj                           object对象
-     * @param field                         object对象的属性
-     * @param method                        object对象属性的相对应的方法
-     * @param value                         需要设置的值
-     * @throws InvocationTargetException    InvocationTargetException
-     * @throws IllegalAccessException       IllegalAccessException
+     * @param obj    object对象
+     * @param field  object对象的属性
+     * @param method object对象属性的相对应的方法
+     * @param value  需要设置的值
+     * @throws InvocationTargetException InvocationTargetException
+     * @throws IllegalAccessException    IllegalAccessException
      */
     public static void setObjectPropertyValue(Object obj, Field field,
-                                               Method method, String value) throws InvocationTargetException, IllegalAccessException {
+                                              Method method, String value) throws InvocationTargetException, IllegalAccessException {
         Object object = new Object();
         String type = field.getType().getName();
         if ("java.lang.String".equals(type) || "String".equals(type)) {
@@ -244,33 +252,32 @@ public class ExcelUtil {
         } else if ("java.lang.Integer".equals(type) || "java.lang.int".equals(type) || "Integer".equals(type) || "int".equals(type)) {
             if (value.length() > 0)
                 object = Integer.valueOf(value);
-        } else if ("java.lang.Float".equals(type) || "java.lang.float".equals(type)  || "Float".equals(type) || "float".equals(type)) {
+        } else if ("java.lang.Float".equals(type) || "java.lang.float".equals(type) || "Float".equals(type) || "float".equals(type)) {
             if (value.length() > 0)
                 object = Float.valueOf(value);
-        } else if ("java.lang.Double".equals(type)  || "java.lang.double".equals(type) || "Double".equals(type) || "double".equals(type)) {
+        } else if ("java.lang.Double".equals(type) || "java.lang.double".equals(type) || "Double".equals(type) || "double".equals(type)) {
             if (value.length() > 0)
                 object = Double.valueOf(value);
-        } else if ("java.math.BigDecimal".equals(type)  || "BigDecimal".equals(type)) {
+        } else if ("java.math.BigDecimal".equals(type) || "BigDecimal".equals(type)) {
             if (value.length() > 0)
                 object = new BigDecimal(value);
-        } else if ("java.util.Date".equals(type)  || "Date".equals(type)) {
-            if (value.length() > 0){
+        } else if ("java.util.Date".equals(type) || "Date".equals(type)) {
+            if (value.length() > 0) {
                 //当长度为19(yyyy-MM-dd HH24:mm:ss)或者为14(yyyyMMddHH24mmss)时Date格式转换为yyyyMMddHH24mmss
-                if(value.length() == 19 || value.length() == 14){
+                if (value.length() == 19 || value.length() == 14) {
                     object = DateUtil.string2Date(value, "yyyyMMddHH24mmss");
-                }
-                else{     //其余全部转换为yyyyMMdd格式
+                } else {     //其余全部转换为yyyyMMdd格式
                     object = DateUtil.string2Date(value, "yyyyMMdd");
                 }
             }
         } else if ("java.sql.Timestamp".equals(type)) {
             if (value.length() > 0)
                 object = DateUtil.formatDate(value, "yyyyMMddHH24mmss");
-        } else if ("java.lang.Boolean".equals(type)  || "Boolean".equals(type)) {
+        } else if ("java.lang.Boolean".equals(type) || "Boolean".equals(type)) {
             //布尔类型
             if (value.length() > 0)
                 object = Boolean.valueOf(value);
-        } else if ("java.lang.Long".equals(type) || "java.lang.long".equals(type)  || "Long".equals(type) || "long".equals(type)) {
+        } else if ("java.lang.Long".equals(type) || "java.lang.long".equals(type) || "Long".equals(type) || "long".equals(type)) {
             if (value.length() > 0)
                 object = Long.valueOf(value);
         }

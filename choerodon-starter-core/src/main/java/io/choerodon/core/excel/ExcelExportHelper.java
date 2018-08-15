@@ -3,6 +3,7 @@ package io.choerodon.core.excel;
 import io.choerodon.core.exception.CommonException;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.InvocationTargetException;
@@ -65,31 +66,39 @@ public class ExcelExportHelper {
      * @param <T>
      * @return
      */
-    public static <T> HSSFWorkbook exportExcel2003ForBigData(String[] headers, List<T> list) {
+    public static <T> HSSFWorkbook exportExcel2003ForBigData(String[] headers, List<T> list, Class<T> clazz) {
         return null;
     }
 
     /**
-     * @param headers    excel的头标题栏
+     * @param headers    excel的头标题栏，必须与JavaBean的字段对应，支持驼峰和下划线两种格式
      * @param list       写入的对象集合
      * @param sheetTitle 生成excel工作薄的名字
      * @param <T>        类型
      * @return
      */
-    public static <T> XSSFWorkbook exportExcel2007(String[] headers, List<T> list, String sheetTitle) {
+    public static <T> XSSFWorkbook exportExcel2007(String[] headers, List<T> list, String sheetTitle, Class<T> clazz) {
         return null;
     }
 
     /**
      * excel2007一个sheet最多1048576行
      *
-     * @param map        excel头标题栏与javaBean的映射关系
+     * @param propertyMap excel头标题栏与javaBean的映射关系,key: javaBean的字段，value: 自定义显示的excel头名称
      * @param list       写入的对象集合
      * @param sheetTitle 生成excel工作薄的名字
      * @param <T>        类型
      * @return
      */
-    public static <T> XSSFWorkbook exportExcel2007(Map<String, String> map, List<T> list, String sheetTitle) {
-        return null;
+    public static <T> XSSFWorkbook exportExcel2007(Map<String, String> propertyMap, List<T> list, String sheetTitle, Class<T> clazz) {
+        //该方法暂时未实现
+        if (propertyMap == null || propertyMap.isEmpty()) {
+            throw new CommonException("excel headers are empty, please set headers!");
+        }
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        sheetTitle = ExcelUtil.getSheetTitle(sheetTitle);
+        XSSFSheet sheet = workbook.createSheet(sheetTitle);
+//        ExcelUtil.fillInExcel(propertyMap,list,workbook,sheet,clazz);
+        return workbook;
     }
 }
