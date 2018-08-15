@@ -1,18 +1,18 @@
 package io.choerodon.swagger;
 
 import io.choerodon.swagger.exclude.EnableHandSwagger2;
-import io.choerodon.swagger.property.PropertyController;
-import io.choerodon.swagger.property.PropertyData;
-import io.choerodon.swagger.property.PropertyDataProcessor;
+import io.choerodon.swagger.notify.EmailTemplateProcessor;
 import io.choerodon.swagger.swagger.CustomSwagger2Controller;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import springfox.documentation.RequestHandler;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.DocumentationCache;
+import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
 
 import static com.google.common.base.Predicates.not;
 
@@ -60,28 +60,18 @@ public class SwaggerConfig {
         return new ExtraDataProcessor();
     }
 
-    @Bean
-    @DependsOn("extraDataProcessor")
-    public CustomSwagger2Controller customSwagger2Controller() {
-        return new CustomSwagger2Controller();
+    @Bean("emailTemplateProcessor")
+    public EmailTemplateProcessor emailTemplateProcessor() {
+        return new EmailTemplateProcessor();
     }
 
     @Bean
-    public PropertyData propertyData() {
-        PropertyData propertyData = new PropertyData();
-        propertyData.setService(service);
-        return propertyData;
+    public CustomSwagger2Controller customSwagger2Controller(JsonSerializer jsonSerializer,
+                                                             DocumentationCache documentationCache,
+                                                             ServiceModelToSwagger2Mapper mapper) {
+        return new CustomSwagger2Controller(jsonSerializer, extraDataProcessor(),
+                emailTemplateProcessor(), documentationCache, mapper);
     }
 
-    @Bean
-    public PropertyDataProcessor propertyDataProcessor() {
-        return new PropertyDataProcessor(propertyData());
-    }
-
-
-    @Bean
-    public PropertyController propertyController() {
-        return new PropertyController(propertyData());
-    }
 
 }

@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author superlee
@@ -24,7 +23,7 @@ public class ExcelReadHelper {
      *
      * @param file                          excel文件
      * @param clazz                         excel数据要转换的类型
-     * @param propertyMap                   excel列名与类字段的映射关系，传null则excel列名要与对象字段名一致
+     * @param excelReadConfig               excel读取的配置项
      * @param <T>                           类型
      * @throws IOException                  IOException
      * @throws IllegalAccessException       IllegalAccessException
@@ -32,7 +31,7 @@ public class ExcelReadHelper {
      * @throws InvocationTargetException    InvocationTargetException
      * @return list
      */
-    public static <T> List<T> read(File file, Class<T> clazz, Map<String, String> propertyMap)
+    public static <T> List<T> read(File file, Class<T> clazz, ExcelReadConfig excelReadConfig)
             throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
         String name = file.getName();
         Workbook workbook;
@@ -43,14 +42,17 @@ public class ExcelReadHelper {
         } else {
             throw new CommonException("The file is not end with xls or xlsx");
         }
-        return ExcelUtil.processExcel(workbook, clazz, propertyMap);
+        if (excelReadConfig == null) {
+            excelReadConfig = new ExcelReadConfig();
+        }
+        return ExcelUtil.processExcel(workbook, clazz, excelReadConfig);
     }
 
     /**
      *
      * @param multipartFile                 excel文件
      * @param clazz                         excel数据要转换的类型
-     * @param propertyMap                   excel列名与类字段的映射关系，传null则excel列名要与对象字段名一致
+     * @param excelReadConfig               excel读取的配置项
      * @param <T>                           类型
      * @throws IOException                  IOException
      * @throws IllegalAccessException       IllegalAccessException
@@ -58,7 +60,7 @@ public class ExcelReadHelper {
      * @throws InvocationTargetException    InvocationTargetException
      * @return list
      */
-    public static <T> List<T> read(MultipartFile multipartFile, Class<T> clazz, Map<String, String> propertyMap)
+    public static <T> List<T> read(MultipartFile multipartFile, Class<T> clazz, ExcelReadConfig excelReadConfig)
             throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
         String name = multipartFile.getOriginalFilename();
         Workbook workbook;
@@ -69,6 +71,9 @@ public class ExcelReadHelper {
         } else {
             throw new CommonException("The file is not end with xls or xlsx");
         }
-        return ExcelUtil.processExcel(workbook, clazz, propertyMap);
+        if (excelReadConfig == null) {
+            excelReadConfig = new ExcelReadConfig();
+        }
+        return ExcelUtil.processExcel(workbook, clazz, excelReadConfig);
     }
 }

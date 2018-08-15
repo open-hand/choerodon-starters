@@ -2,6 +2,15 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+## [0.6.0] - 2018-08-15
+
+### 新增
+
+- `choerodon-starter-asgard`，该依赖主要用于支持基于`saga`的数据最终一致性。。更多信息可以了解[asgard-service](https://github.com/choerodon/asgard-service)。
+- `choerodon-starter-core`添加了FeignException异常类，用于处理feign调用异常。
+- `choerodon-starter-core`包添加excel数据转换为list对象工具类。
+- `choerodon-starter-core`包添加了导出excel 2003的工具类。
+
 ## [0.5.4] - 2018-07-18
 
 ### 新增

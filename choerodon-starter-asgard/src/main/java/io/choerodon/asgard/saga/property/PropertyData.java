@@ -1,4 +1,4 @@
-package io.choerodon.swagger.property;
+package io.choerodon.asgard.saga.property;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +43,11 @@ public class PropertyData {
 
         private String inputSchema;
 
-        public Saga(String code, String description, String inputSchema) {
+        private String inputSchemaSource;
+
+        public Saga(String code, String description) {
             this.code = code;
             this.description = description;
-            this.inputSchema = inputSchema;
         }
 
         public Saga() {
@@ -76,6 +77,13 @@ public class PropertyData {
             this.description = description;
         }
 
+        public String getInputSchemaSource() {
+            return inputSchemaSource;
+        }
+
+        public void setInputSchemaSource(String inputSchemaSource) {
+            this.inputSchemaSource = inputSchemaSource;
+        }
     }
 
     public static class SagaTask {
@@ -97,6 +105,10 @@ public class PropertyData {
         private Integer concurrentLimitNum;
 
         private String concurrentLimitPolicy;
+
+        private String outputSchema;
+
+        private String outputSchemaSource;
 
         public SagaTask() {
         }
@@ -181,6 +193,21 @@ public class PropertyData {
             this.concurrentLimitPolicy = concurrentLimitPolicy;
         }
 
+        public String getOutputSchema() {
+            return outputSchema;
+        }
+
+        public void setOutputSchema(String outputSchema) {
+            this.outputSchema = outputSchema;
+        }
+
+        public String getOutputSchemaSource() {
+            return outputSchemaSource;
+        }
+
+        public void setOutputSchemaSource(String outputSchemaSource) {
+            this.outputSchemaSource = outputSchemaSource;
+        }
     }
 
     @Override

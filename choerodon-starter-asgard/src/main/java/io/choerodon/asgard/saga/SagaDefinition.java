@@ -1,4 +1,4 @@
-package io.choerodon.core.saga;
+package io.choerodon.asgard.saga;
 
 public class SagaDefinition {
 
@@ -28,6 +28,19 @@ public class SagaDefinition {
         FAILED,
         COMPLETED,
         QUEUE
+    }
+
+    public enum SagaInputSchemaSource {
+        INPUT_SCHEMA,
+        INPUT_SCHEMA_CLASS,
+        NONE
+    }
+
+    public enum SagaTaskOutputSchemaSource {
+        OUTPUT_SCHEMA,
+        OUTPUT_SCHEMA_CLASS,
+        METHOD_RETURN_TYPE,
+        NONE
     }
 
 }
