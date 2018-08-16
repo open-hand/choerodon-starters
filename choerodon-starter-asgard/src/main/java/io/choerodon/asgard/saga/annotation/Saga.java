@@ -15,17 +15,20 @@ public @interface Saga {
 
     /**
      * code，唯一
+     * @return code，唯一
      */
     String code();
 
     /**
      * 描述
+     * @return 描述
      */
     String description() default "";
 
     /**
      * 手动输入参数json
      * 不为empty时会覆盖inputSchemaClass自动生成的json
+     * @return demo json
      */
     String inputSchema() default "";
 
@@ -46,6 +49,7 @@ public @interface Saga {
      * {"creationDate":1533195966280,"createdBy":0,"lastUpdateDate":1533195966285,
      * "lastUpdatedBy":0,"objectVersionNumber":0,"id":0,"code":"string","description":"string",
      * "inputSchema":"string","service":"string"}
+     * @return 设置的json Class
      */
     Class<?> inputSchemaClass() default Object.class;
 
