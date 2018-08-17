@@ -216,6 +216,9 @@ public class SagaMonitor {
             }
             if (result instanceof String) {
                 String resultStr = (String) result;
+                if (resultStr.isEmpty()) {
+                    return null;
+                }
                 JsonNode jsonNode = objectMapper.readTree(resultStr);
                 if (!(jsonNode instanceof ValueNode)) {
                     return resultStr;
