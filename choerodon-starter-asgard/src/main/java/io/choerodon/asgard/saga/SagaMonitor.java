@@ -2,7 +2,7 @@ package io.choerodon.asgard.saga;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.asgard.saga.dto.PollCodeDTO;
@@ -140,7 +140,7 @@ public class SagaMonitor {
                 taskInstanceStore.removeTaskInstance(taskInstanceId);
             } catch (Exception e) {
                 LOGGER.warn("error.SagaMonitor.updateStatusFailed.reRun, {}", e);
-            }finally {
+            } finally {
                 records.remove(taskInstanceId);
             }
         }
@@ -216,8 +216,11 @@ public class SagaMonitor {
             }
             if (result instanceof String) {
                 String resultStr = (String) result;
+                if (resultStr.isEmpty()) {
+                    return null;
+                }
                 JsonNode jsonNode = objectMapper.readTree(resultStr);
-                if (jsonNode instanceof ObjectNode) {
+                if (!(jsonNode instanceof ValueNode)) {
                     return resultStr;
                 }
             }
