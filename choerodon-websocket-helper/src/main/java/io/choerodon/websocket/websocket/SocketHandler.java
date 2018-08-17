@@ -38,8 +38,8 @@ public class SocketHandler extends AbstractWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        logger.info(session +":"+ message.getPayload());
         Msg msg = SerializeTool.readMsg(message.getPayload());
+        logger.info("receive {} msg of {},",msg.getType(),msg.getKey());
         String sessionId = getSessionId(session);
         int sessionType = pathHelper.getSessionType(session.getUri().getPath());
         if(msg != null){
