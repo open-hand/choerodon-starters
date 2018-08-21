@@ -65,17 +65,28 @@ public class SagaTaskInstanceDTO {
         return Objects.hash(id);
     }
 
+//    @Override
+//    public String toString() {
+//        return "SagaTaskInstanceDTO{" +
+//                "id=" + id +
+//                ", sagaInstanceId=" + sagaInstanceId +
+//                ", taskCode='" + taskCode + '\'' +
+//                ", sagaCode='" + sagaCode + '\'' +
+//                ", instanceLock='" + instanceLock + '\'' +
+//                ", status='" + status + '\'' +
+//                ", seq=" + seq +
+//                ", input='" + input + '\'' +
+//                '}';
+//    }
+
+
     @Override
     public String toString() {
         return "SagaTaskInstanceDTO{" +
                 "id=" + id +
-                ", sagaInstanceId=" + sagaInstanceId +
                 ", taskCode='" + taskCode + '\'' +
                 ", sagaCode='" + sagaCode + '\'' +
                 ", instanceLock='" + instanceLock + '\'' +
-                ", status='" + status + '\'' +
-                ", seq=" + seq +
-                ", input='" + input + '\'' +
                 '}';
     }
 }
