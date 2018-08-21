@@ -3,6 +3,7 @@ package io.choerodon.core.iam;
 
 /**
  * 初始化角色的code
+ *
  * @author superlee
  */
 public class InitRoleCode {
@@ -37,14 +38,26 @@ public class InitRoleCode {
      */
     public static final String PROJECT_OWNER = "role/project/default/project-owner";
 
-    public static String[] values () {
-       return new String[] {
+    /**
+     * 组织成员
+     */
+    public static final String ORGANIZATION_MEMBER = "role/organization/default/organization-member";
+
+    /**
+     * 平台开发者
+     */
+    public static final String SITE_DEVELOPER = "role/site/default/developer";
+
+    public static String[] values() {
+        return new String[]{
                 SITE_ADMINISTRATOR,
                 ORGANIZATION_ADMINISTRATOR,
                 PROJECT_ADMINISTRATOR,
                 DEPLOY_ADMINISTRATOR,
                 PROJECT_MEMBER,
-                PROJECT_OWNER
+                PROJECT_OWNER,
+                ORGANIZATION_MEMBER,
+                SITE_DEVELOPER
         };
     }
 }
