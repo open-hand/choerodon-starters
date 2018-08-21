@@ -6,11 +6,10 @@
 
     <artifactId>choerodon-websocket-helper</artifactId>
 
-
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-starter-parent</artifactId>
-        <version>0.6.0.RELEASE</version>
+        <version>0.6.1.RELEASE</version>
     </parent>
     <properties>
         <java.version>1.8</java.version>
