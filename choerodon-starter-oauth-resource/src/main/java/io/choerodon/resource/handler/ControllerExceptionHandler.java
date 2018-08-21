@@ -1,6 +1,9 @@
 package io.choerodon.resource.handler;
 
-import io.choerodon.core.exception.*;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.exception.ExceptionResponse;
+import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.NotFoundException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.slf4j.Logger;
@@ -103,15 +106,15 @@ public class ControllerExceptionHandler {
     public ResponseEntity<ExceptionResponse> process(MethodArgumentNotValidException exception) {
         LOGGER.info("exception process {}", exception);
         String message = null;
+        String code = "error.methodArgument.notValid";
         try {
-            message = messageSource.getMessage(exception.getBindingResult().getAllErrors().get(0).getDefaultMessage(),
-                    null, locale());
+            code = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+            message = messageSource.getMessage(code, null, locale());
         } catch (Exception e) {
             LOGGER.trace("exception process get massage exception {}", exception);
         }
         return new ResponseEntity<>(
-                new ExceptionResponse(true, "error.methodArgument.notValid", message != null
-                        ? message : exception.getBindingResult().getAllErrors().get(0).getDefaultMessage()),
+                new ExceptionResponse(true, code, message != null ? message : code),
                 HttpStatus.OK);
     }
 
