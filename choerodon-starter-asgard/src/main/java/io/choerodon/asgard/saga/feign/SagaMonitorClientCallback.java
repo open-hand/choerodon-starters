@@ -8,16 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 public class SagaMonitorClientCallback implements SagaMonitorClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaClient.class);
 
     @Override
-    public Set<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO) {
+    public List<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO) {
         LOGGER.warn("error.sagaTaskInstance.poll, pollBatchDTO {}", pollBatchDTO);
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     @Override
