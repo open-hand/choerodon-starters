@@ -1,10 +1,20 @@
 package io.choerodon.mybatis;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
-
+import io.choerodon.mybatis.code.DbType;
+import io.choerodon.mybatis.constant.CommonMapperConfigConstant;
+import io.choerodon.mybatis.constant.DatabaseProductName;
+import io.choerodon.mybatis.domain.Config;
+import io.choerodon.mybatis.language.MultiLanguageInterceptor;
+import io.choerodon.mybatis.pagehelper.Dialect;
+import io.choerodon.mybatis.pagehelper.PageInterceptor;
+import io.choerodon.mybatis.pagehelper.dialect.DialectHelper;
+import io.choerodon.mybatis.pagehelper.dialect.MySqlDialect;
+import io.choerodon.mybatis.pagehelper.dialect.OracleDialect;
+import io.choerodon.mybatis.pagehelper.dialect.SqlServerDialect;
+import io.choerodon.mybatis.spring.CommonMapperScannerConfigurer;
+import io.choerodon.mybatis.spring.resolver.MethodArgParamResolverConfig;
+import org.apache.ibatis.mapping.DatabaseIdProvider;
+import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
@@ -17,18 +27,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 
-import io.choerodon.mybatis.code.DbType;
-import io.choerodon.mybatis.constant.CommonMapperConfigConstant;
-import io.choerodon.mybatis.domain.Config;
-import io.choerodon.mybatis.language.MultiLanguageInterceptor;
-import io.choerodon.mybatis.pagehelper.Dialect;
-import io.choerodon.mybatis.pagehelper.PageInterceptor;
-import io.choerodon.mybatis.pagehelper.dialect.DialectHelper;
-import io.choerodon.mybatis.pagehelper.dialect.MySqlDialect;
-import io.choerodon.mybatis.pagehelper.dialect.OracleDialect;
-import io.choerodon.mybatis.pagehelper.dialect.SqlServerDialect;
-import io.choerodon.mybatis.spring.CommonMapperScannerConfigurer;
-import io.choerodon.mybatis.spring.resolver.MethodArgParamResolverConfig;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 
 @Configuration
@@ -81,11 +83,11 @@ public class MybatisMapperAutoConfiguration  implements EnvironmentAware{
         Connection connection = dataSource.getConnection();
         try {
             String productName = connection.getMetaData().getDatabaseProductName();
-            if ("Microsoft SQL Server".equals(productName)) {
+            if (DatabaseProductName.SQL_SERVER.value().equals(productName)) {
                 dialect = new SqlServerDialect();
-            } else if ("Oracle".equals(productName)) {
+            } else if (DatabaseProductName.ORACLE.value().equals(productName)) {
                 dialect = new OracleDialect();
-            } else if ("MySQL".equals(productName)) {
+            } else if (DatabaseProductName.MYSQL.value().equals(productName)) {
                 dialect = new MySqlDialect();
             } else {
                 logger.warn("未知数据库类型，默认使用MySQL方言。");
@@ -120,6 +122,33 @@ public class MybatisMapperAutoConfiguration  implements EnvironmentAware{
         sqlSessionFactory.getConfiguration().addInterceptor(zipkinInterceptor);
         return "";
     }
+
+    /**
+     * 自动识别使用的数据库类型
+     * 在mapper.xml中databaseId的值就是跟这里对应，
+     * 如果没有databaseId选择则说明该sql适用所有数据库
+     *
+     * @return
+     */
+    @Bean
+    public DatabaseIdProvider getDatabaseIdProvider() {
+        DatabaseIdProvider databaseIdProvider = new VendorDatabaseIdProvider();
+        Properties properties = new Properties();
+        properties.setProperty("Oracle", "oracle");
+        properties.setProperty("MySQL", "mysql");
+        properties.setProperty("DB2", "db2");
+        properties.setProperty("Derby", "derby");
+        properties.setProperty("H2", "h2");
+        properties.setProperty("HSQL", "hsql");
+        properties.setProperty("Informix", "informix");
+        properties.setProperty("MS-SQL", "ms-sql");
+        properties.setProperty("PostgreSQL", "postgresql");
+        properties.setProperty("Sybase", "sybase");
+        properties.setProperty("Hana", "hana");
+        databaseIdProvider.setProperties(properties);
+        return databaseIdProvider;
+    }
+
 
     @Override
     public void setEnvironment(Environment environment) {

@@ -3,7 +3,6 @@ package io.choerodon.config.mapper;
 import io.choerodon.config.domain.ServiceConfig;
 
 import io.choerodon.mybatis.common.BaseMapper;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * config的数据库操作map
@@ -17,5 +16,5 @@ public interface ServiceConfigMapper extends BaseMapper<ServiceConfig> {
      * @param serviceName 服务名
      * @return Config对象
      */
-    ServiceConfig selectOneByServiceDefault(@Param("serviceName") String serviceName);
+//    ServiceConfig selectOneByServiceDefault(@Param("serviceName") String serviceName);
 }
