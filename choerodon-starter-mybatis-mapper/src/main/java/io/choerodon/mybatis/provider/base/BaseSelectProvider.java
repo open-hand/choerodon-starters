@@ -31,6 +31,7 @@ import io.choerodon.mybatis.helper.MapperTemplate;
 import io.choerodon.mybatis.helper.SqlHelper;
 import org.apache.ibatis.mapping.MappedStatement;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -66,12 +67,27 @@ public class BaseSelectProvider extends MapperTemplate {
     }
 
     private StringBuilder limitOne(MappedStatement ms, StringBuilder sql) throws SQLException {
-        String dbName = ms.getConfiguration().getEnvironment().getDataSource().getConnection().getMetaData().getDatabaseProductName();
+        Connection connection = null;
+        String dbName;
+        try {
+            connection = ms.getConfiguration().getEnvironment().getDataSource().getConnection();
+            dbName = connection.getMetaData().getDatabaseProductName();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    throw e;
+                }
+            }
+        }
         if (DatabaseProductName.MYSQL.value().equals(dbName)
                 || DatabaseProductName.H2.value().equals(dbName)) {
             sql.append(" LIMIT 1");
         } else if (DatabaseProductName.ORACLE.value().equals(dbName)) {
-            sql.append(" AND ROWNUM &gt;= 1");
+            sql.append(" AND ROWNUM &lt;= 1");
         } else if (DatabaseProductName.SQL_SERVER.value().equals(dbName)) {
             StringBuilder sb = new StringBuilder();
             sb.append("SELECT TOP 1 * FROM (");
