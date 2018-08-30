@@ -24,18 +24,11 @@
 
 package io.choerodon.mybatis.helper;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.text.MessageFormat;
-import java.util.*;
-
 import io.choerodon.mybatis.MapperException;
+import io.choerodon.mybatis.code.DbType;
 import io.choerodon.mybatis.constant.CommonMapperConfigConstant;
 import io.choerodon.mybatis.domain.EntityColumn;
 import io.choerodon.mybatis.domain.EntityTable;
-import io.choerodon.mybatis.code.DbType;
 import io.choerodon.mybatis.util.StringUtil;
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
@@ -51,6 +44,13 @@ import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.text.MessageFormat;
+import java.util.*;
 
 
 
@@ -450,4 +450,9 @@ public abstract class MapperTemplate {
             logger.debug("exception:" + e);
         }
     }
+
+    public DbType getDbType() {
+        return this.mapperHelper.getConfig().getDbType();
+    }
+
 }

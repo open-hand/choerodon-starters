@@ -26,6 +26,7 @@ package io.choerodon.mybatis.common;
 
 import io.choerodon.mybatis.common.optional.OptionalInsertMapper;
 import io.choerodon.mybatis.common.optional.OptionalUpdateMapper;
+import io.choerodon.mybatis.common.special.InsertListMapper;
 
 /**
  * 通用Mapper接口,其他接口继承该接口即可
@@ -39,7 +40,7 @@ public interface BaseMapper<T> extends
         CrudMapper<T>,
         OptionalInsertMapper<T>,
         OptionalUpdateMapper<T>,
-        MySqlMapper<T>,
+        InsertListMapper<T>,
         Marker {
 
 }
