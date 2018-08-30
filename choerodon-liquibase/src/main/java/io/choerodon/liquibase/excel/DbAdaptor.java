@@ -582,7 +582,7 @@ public class DbAdaptor {
             char c = str.charAt(i);
             if (Character.isLowerCase(c)) {
                 allIsUpperCase = false;
-                continue;
+                break;
             }
         }
         if (allIsUpperCase) {
