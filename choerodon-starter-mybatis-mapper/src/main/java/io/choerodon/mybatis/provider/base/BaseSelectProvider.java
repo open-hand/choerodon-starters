@@ -24,7 +24,7 @@
 
 package io.choerodon.mybatis.provider.base;
 
-import io.choerodon.mybatis.constant.DatabaseProductName;
+import io.choerodon.mybatis.code.DbType;
 import io.choerodon.mybatis.helper.EntityHelper;
 import io.choerodon.mybatis.helper.MapperHelper;
 import io.choerodon.mybatis.helper.MapperTemplate;
@@ -61,25 +61,26 @@ public class BaseSelectProvider extends MapperTemplate {
         sql.append(SqlHelper.selectAllColumns(entityClass));
         sql.append(SqlHelper.selectFromTableTl(entityClass, tableName(entityClass)));
         sql.append(SqlHelper.whereAllIfColumnsTl(entityClass, isNotEmpty()));
-        sql = limitOne(ms, sql);
+        sql = limitOne(sql);
         return sql.toString();
     }
 
-    private StringBuilder limitOne(MappedStatement ms, StringBuilder sql) throws SQLException {
-        String dbName = ms.getConfiguration().getEnvironment().getDataSource().getConnection().getMetaData().getDatabaseProductName();
-        if (DatabaseProductName.MYSQL.value().equals(dbName)
-                || DatabaseProductName.H2.value().equals(dbName)) {
+    private StringBuilder limitOne(StringBuilder sql) throws SQLException {
+
+        DbType dbType = getDbType();
+        if (DbType.MYSQL.getValue().equals(dbType.getValue())
+                || DbType.H2.getValue().equals(dbType.getValue())) {
             sql.append(" LIMIT 1");
-        } else if (DatabaseProductName.ORACLE.value().equals(dbName)) {
-            sql.append(" AND ROWNUM &gt;= 1");
-        } else if (DatabaseProductName.SQL_SERVER.value().equals(dbName)) {
+        } else if (DbType.ORACLE.getValue().equals(dbType.getValue())) {
+            sql.append(" AND ROWNUM &lt;= 1");
+        } else if (DbType.SQLSERVER.getValue().equals(dbType.getValue())) {
             StringBuilder sb = new StringBuilder();
             sb.append("SELECT TOP 1 * FROM (");
             sb.append(sql.toString());
             sb.append(") t");
             sql = sb;
         } else {
-            throw new SQLException("unknown databases type!");
+            throw new SQLException("unsupported databases type!");
         }
         return sql;
     }

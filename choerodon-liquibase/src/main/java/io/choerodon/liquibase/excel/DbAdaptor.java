@@ -576,7 +576,20 @@ public class DbAdaptor {
     }
 
     private String tlTableName(String str) {
-        return str + "_tl";
+        String s = str.replaceAll("_", "");
+        boolean allIsUpperCase = true;
+        for (int i = 0; i < s.length(); i++) {
+            char c = str.charAt(i);
+            if (Character.isLowerCase(c)) {
+                allIsUpperCase = false;
+                break;
+            }
+        }
+        if (allIsUpperCase) {
+            return str + "_TL";
+        } else {
+            return str + "_tl";
+        }
     }
 
     /**
@@ -718,7 +731,7 @@ public class DbAdaptor {
         //oracle数据库列名使用了保留字段，加双引号处理
         String columnName = tableCellValue.getColumn().getName();
         if (helper.isOracle()) {
-            sb.append("\"").append(columnName.toUpperCase()).append("\"");
+            sb.append("\"").append(columnName).append("\"");
         } else if (helper.isMysql()) {
             sb.append("`").append(columnName).append("`");
         } else if (helper.isSqlServer()) {
