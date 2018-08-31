@@ -17,7 +17,7 @@ public class RedisSender {
     public void sendToChannel(Set<String> channels, Msg msg){
         String realChannel;
         for (String channel : channels){
-            realChannel  = msg.getMsgType() == Msg.PIPE? "log"+channel:channel;
+            realChannel  = msg.getMsgType() == Msg.PIPE || msg.getMsgType() == Msg.PIPE_EXEC? "log"+channel:channel;
             redisTemplate.convertAndSend(realChannel,msg);
 
         }

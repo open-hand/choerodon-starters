@@ -1,5 +1,6 @@
 package io.choerodon.websocket.session;
 
+import io.choerodon.websocket.Msg;
 import io.choerodon.websocket.helper.PipeRequest;
 import io.choerodon.websocket.listener.AbstractSessionListener;
 import io.choerodon.websocket.listener.AgentCommandListener;
@@ -39,13 +40,21 @@ public class PipeSessionListener extends AbstractSessionListener{
                 logger.info("error when close socket");
             }
         }
-        agentCommandListener.onMsg(MsgFactory.logMsg(session.getUuid(),session.getRegisterKey(), pipeRequest));
+
+        Msg msg = null;
+
+        if (session.getType() == Session.LOG) {
+            msg = MsgFactory.logMsg(session.getUuid(),session.getRegisterKey(), pipeRequest);
+        } else if (session.getType() == Session.EXEC ){
+            msg = MsgFactory.execMsg(session.getUuid(),session.getRegisterKey(), pipeRequest);
+        }
+        agentCommandListener.onMsg(msg);
     }
 
     @Override
     public Session onClose(String sessionId) {
         Session session = super.onClose(sessionId);
-        dispatcher.dispatcher(MsgFactory.CloseMsg(session));
+        dispatcher.dispatcher(MsgFactory.closeMsg(session));
         return session;
     }
 
