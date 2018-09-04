@@ -1,6 +1,7 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.addition.AdditionDataSource;
+import io.choerodon.liquibase.helper.LiquibaseHelper;
 import liquibase.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,12 @@ public class DbAdaptor {
     private ExcelDataLoader dataProcessor;
     private boolean useSeq = false;
     private boolean override = true;
+    private LiquibaseHelper helper;
 
     public DbAdaptor(ExcelDataLoader dataProcessor, AdditionDataSource ad) {
         this.dataProcessor = dataProcessor;
+        this.helper = ad.getLiquibaseHelper();
+        this.useSeq = helper.isSupportSequence();
     }
 
     public DataSource getDataSource() {
@@ -311,13 +315,15 @@ public class DbAdaptor {
             for (TableCellValue tableCellValue : normals) {
                 if (tableCellValue.getColumn().getLang() == null
                         || ZH_CN.equalsIgnoreCase(tableCellValue.getColumn().getLang())) {
-                    sb.append(tableCellValue.getColumn().getName()).append("=?,");
+                    appendColumn(sb, tableCellValue);
+                    sb.append("=?,");
                 }
             }
             sb.deleteCharAt(sb.length() - 1);
             sb.append(SQL_WHERE);
             for (TableCellValue tableCellValue : uniques) {
-                sb.append(tableCellValue.getColumn().getName()).append("=? AND ");
+                appendColumn(sb, tableCellValue);
+                sb.append("=? AND ");
             }
             sb.delete(sb.length() - 4, sb.length());
             sql = sb.toString();
@@ -570,7 +576,20 @@ public class DbAdaptor {
     }
 
     private String tlTableName(String str) {
-        return str + "_tl";
+        String s = str.replaceAll("_", "");
+        boolean allIsUpperCase = true;
+        for (int i = 0; i < s.length(); i++) {
+            char c = str.charAt(i);
+            if (Character.isLowerCase(c)) {
+                allIsUpperCase = false;
+                break;
+            }
+        }
+        if (allIsUpperCase) {
+            return str + "_TL";
+        } else {
+            return str + "_tl";
+        }
     }
 
     /**
@@ -690,7 +709,8 @@ public class DbAdaptor {
                 if (tableCellValue.getColumn().getLang() == null
                         || ZH_CN.equals(tableCellValue.getColumn().getLang())) {
                     cc++;
-                    sb.append(tableCellValue.getColumn().getName()).append(",");
+                    appendColumn(sb, tableCellValue);
+                    sb.append(",");
                 }
             }
             sb.deleteCharAt(sb.length() - 1);
@@ -704,6 +724,21 @@ public class DbAdaptor {
             tableInsertSqlMap.put(tableRow.getTable().getName(), sql);
         }
         return sql;
+    }
+
+    private void appendColumn(StringBuilder sb, TableCellValue tableCellValue) {
+        //mysql处理保留字段处理时加撇号``,oracle是加"", sqlserver是加[]
+        //oracle数据库列名使用了保留字段，加双引号处理
+        String columnName = tableCellValue.getColumn().getName();
+        if (helper.isOracle()) {
+            sb.append("\"").append(columnName).append("\"");
+        } else if (helper.isMysql()) {
+            sb.append("`").append(columnName).append("`");
+        } else if (helper.isSqlServer()) {
+            sb.append("[").append(columnName).append("]");
+        } else {
+            sb.append(columnName);
+        }
     }
 
     protected Long getSeqNextVal(String tableName) throws SQLException {

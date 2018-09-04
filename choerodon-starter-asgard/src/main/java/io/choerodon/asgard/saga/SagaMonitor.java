@@ -53,9 +53,9 @@ public class SagaMonitor {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private volatile Set<SagaTaskInstanceDTO> msgQueue;
+    private Set<SagaTaskInstanceDTO> msgQueue;
 
-    private volatile Set<Long> records = Collections.synchronizedSet(new HashSet<>());
+    private Set<Long> records = Collections.synchronizedSet(new LinkedHashSet<>());
 
     private final SagaApplicationContextHelper applicationContextHelper;
 
@@ -92,15 +92,18 @@ public class SagaMonitor {
             String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
             LOGGER.info("sagaMonitor prepare to start saga consumer, pollTasks {}, instance {}, maxPollSize {}, ", codeDTOS, instance, maxPollSize);
             scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                if (noNeedUpdateSagaStatus() && msgQueue.isEmpty()) {
+                boolean noNeedUpdateSagaStatus = noNeedUpdateSagaStatus();
+                if (noNeedUpdateSagaStatus && msgQueue.isEmpty()) {
                     try {
-                        Set<SagaTaskInstanceDTO> set = sagaMonitorClient.pollBatch(new PollBatchDTO(instance, codeDTOS, maxPollSize));
-                        LOGGER.debug("sagaMonitor polled messages, size {} data {}", set.size(), set);
-                        msgQueue.addAll(set);
+                        List<SagaTaskInstanceDTO> pollMessages = sagaMonitorClient.pollBatch(new PollBatchDTO(instance, codeDTOS, maxPollSize));
+                        LOGGER.debug("sagaMonitor polled messages, size {} data {}", pollMessages.size(), pollMessages);
+                        msgQueue.addAll(pollMessages);
                         msgQueue.forEach(t -> executor.execute(new InvokeTask(t)));
                     } catch (Exception e) {
                         LOGGER.warn("sagaMonitor poll error {}", e.getMessage());
                     }
+                } else {
+                    LOGGER.debug("sagaMonitor skip poll, dbRecordNotEmpty {}, msgQueue {}", noNeedUpdateSagaStatus, msgQueue);
                 }
             }, 20, choerodonSagaProperties.getPollIntervalMs(), TimeUnit.MILLISECONDS);
         } catch (UnknownHostException e) {

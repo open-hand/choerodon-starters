@@ -12,6 +12,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 
 /**
@@ -53,11 +54,19 @@ public class SocketSender {
                     continue;
                 }
                 WebSocketSession realSession = session.getWebSocketSession();
-                synchronized(realSession) {
-                    if(msg.getMsgType() == Msg.PIPE){
-                        BinaryMessage toSend = new BinaryMessage(msg.getPayload().getBytes());
+                synchronized (realSession) {
+                    if (msg.getMsgType() == Msg.PIPE) {
+                        BinaryMessage toSend = new BinaryMessage(msg.getBytesPayload());
                         realSession.sendMessage(toSend);
-                    }else {
+                    } else if (msg.getMsgType() == Msg.PIPE_EXEC) {
+                        realSession.sendMessage(new TextMessage(msg.getPayload()));
+                    } else if (msg.getMsgType() == Msg.FRONT_PIP_EXEC) {
+                        byte[] old = msg.getPayload().getBytes();
+                        byte[] bytes = new byte[old.length+1];
+                        bytes[0] = 0x0;
+                        System.arraycopy(old, 0, bytes, 1, old.length);
+                        realSession.sendMessage(new BinaryMessage(bytes));
+                    } else {
                         realSession.sendMessage(new TextMessage(OBJECT_MAPPER.writeValueAsString(msg.simpleMsg())));
                     }
                 }

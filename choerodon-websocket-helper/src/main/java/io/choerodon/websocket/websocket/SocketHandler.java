@@ -38,50 +38,73 @@ public class SocketHandler extends AbstractWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        Msg msg = SerializeTool.readMsg(message.getPayload());
-        logger.info("receive {} msg of {},",msg.getType(),msg.getKey());
         String sessionId = getSessionId(session);
         int sessionType = pathHelper.getSessionType(session.getUri().getPath());
-        if(msg != null){
-            switch (sessionType){
-                case Session.AGENT:
-                    msg.setMsgType(Msg.AGENT);
-                    msg.setEnvId((String) session.getAttributes().get("envId"));
-                    break;
-                case Session.EXEC:
-                    msg.setMsgType(Msg.PIPE);
-                    break;
-                case Session.LOG:
-                     msg.setMsgType(Msg.PIPE);
-                     break;
-                case Session.COMMON:
-                    msg.setMsgType(Msg.DEFAULT);
-                    break;
-                default:
-                    msg.setMsgType(Msg.DEFAULT);
-                    break;
-            }
-            msg.setBrokerFrom(sessionId+session.getAttributes().get("key").toString());
-            sockHandlerDelegate.onMsgReceived(msg);
+        int msgType;
+        switch (sessionType){
+            case Session.AGENT:
+                msgType = Msg.AGENT;
+                break;
+            case Session.EXEC:
+                msgType = Msg.FRONT_PIP_EXEC;
+                break;
+            case Session.LOG:
+                 msgType = Msg.PIPE;
+                 break;
+            case Session.COMMON:
+                msgType = Msg.DEFAULT;
+                break;
+            default:
+                msgType = Msg.DEFAULT;
+                break;
         }
+        Msg msg = null;
+        if (msgType == Msg.FRONT_PIP_EXEC) {
+            msg = new Msg();
+            msg.setPayload(message.getPayload());
+            msg.setKey((String) session.getAttributes().get("key"));
+        } else {
+            msg = SerializeTool.readMsg(message.getPayload());
+        }
+        msg.setMsgType(msgType);
+        logger.info("receive {} msg of {},",msg.getType(),msg.getKey());
+        if (msg.getMsgType() == Msg.AGENT) {
+            msg.setEnvId((String) session.getAttributes().get("envId"));
+        }
+        msg.setBrokerFrom(sessionId+session.getAttributes().get("key").toString());
+        sockHandlerDelegate.onMsgReceived(msg);
 
     }
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         try{
-            CharBuffer charBuffer = null;
-            ByteBuffer buffer = message.getPayload();
-            Charset charset = Charset.forName("UTF-8");
-            CharsetDecoder decoder = charset.newDecoder();
-            charBuffer = decoder.decode(buffer);
-            String payload = charBuffer.toString();
-            String sessionId = getSessionId(session);
             Msg msg = new Msg();
-            msg.setPayload(payload);
+
+            switch (pathHelper.getSessionType(session.getUri().getPath())){
+                case Session.EXEC:
+                    msg.setMsgType(Msg.PIPE_EXEC);
+                    break;
+                case Session.LOG:
+                    msg.setMsgType(Msg.PIPE);
+                    break;
+                default:
+                    msg.setMsgType(Msg.DEFAULT);
+                    break;
+            }
+            ByteBuffer buffer = message.getPayload();
+            byte[] bytesArray = new byte[buffer.remaining()];
+            buffer.get(bytesArray, 0, bytesArray.length);
+            String sessionId = getSessionId(session);
+            if (msg.getMsgType() == Msg.PIPE_EXEC) {
+                byte[] newBytes = new byte[bytesArray.length-1];
+                System.arraycopy(bytesArray, 1, newBytes, 0, bytesArray.length-1);
+                msg.setPayload(new String(newBytes, "utf-8"));
+            } else {
+                msg.setBytesPayload(bytesArray);
+            }
             msg.setKey((String) session.getAttributes().get("key"));
             msg.setBrokerFrom(sessionId+msg.getKey());
-            msg.setMsgType(Msg.PIPE);
             sockHandlerDelegate.onMsgReceived(msg);
         }catch (Exception e){
             logger.error("handle binary message error!!!!",e);

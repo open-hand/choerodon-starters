@@ -38,8 +38,20 @@ public class LiquibaseHelper {
         return this.url.startsWith("jdbc:h2");
     }
 
+    public boolean isOracle(){
+        return this.url.startsWith("jdbc:oracle");
+    }
+
+    public boolean isMysql() {
+        return this.url.startsWith("jdbc:mysql");
+    }
+
+    public boolean isSqlServer() {
+        return this.url.startsWith("jdbc:sqlserver");
+    }
+
     public enum DbType {
-        MYSQL(true, false), ORACLE(false, true), HANA(true, false), SQLSERVER(true, false), H2(true, false), DB2(false, true);
+        MYSQL(true, false), ORACLE(false, true), HANA(false, true), SQLSERVER(true, false), H2(true, false), DB2(false, true);
 
         private boolean supportAutoIncrement;
 

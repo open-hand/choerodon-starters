@@ -246,10 +246,12 @@ public class LiquibaseExecutor {
             Liquibase liquibase = new Liquibase("drop", accessor, new JdbcConnection(ad.getDataSource().getConnection()));
             liquibase.dropAll();
         }
+        Liquibase liquibase = new Liquibase("clearCheckSums", accessor, new JdbcConnection(ad.getDataSource().getConnection()));
+        liquibase.clearCheckSums();
         //执行groovy脚本
         for (String file : fileNameList) {
             if (file.endsWith(SUFFIX_GROOVY)) {
-                Liquibase liquibase = new Liquibase(file, accessor, new JdbcConnection(ad.getDataSource().getConnection()));
+                liquibase = new Liquibase(file, accessor, new JdbcConnection(ad.getDataSource().getConnection()));
                 liquibase.update(new Contexts());
             }
         }

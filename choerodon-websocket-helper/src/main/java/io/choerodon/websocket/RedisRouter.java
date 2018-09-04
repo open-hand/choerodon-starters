@@ -22,9 +22,9 @@ public class RedisRouter {
     }
 
     public Set<String> getToChannel(Msg msg){
-        Set<String> channels = new HashSet();
+        Set<String> channels = new HashSet<>();
         Set<String> socketIdAndKeys = getToSocketWithKeys(KEY_PREFIX+msg.getKey(),msg.getBrokerFrom(),
-                (msg.getMsgType() == Msg.PIPE) || (msg.getMsgType() == Msg.INTER));
+                (msg.getMsgType() == Msg.PIPE) || (msg.getMsgType() == Msg.INTER) || (msg.getMsgType() == Msg.FRONT_PIP_EXEC) || (msg.getMsgType() == Msg.PIPE_EXEC));
         if(!socketIdAndKeys.isEmpty()){
             for (String socketIdKey : socketIdAndKeys){
 

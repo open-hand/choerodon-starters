@@ -24,14 +24,9 @@
 
 package io.choerodon.mybatis.helper;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.text.MessageFormat;
-import java.util.*;
-
 import io.choerodon.mybatis.MapperException;
+import io.choerodon.mybatis.code.DbType;
+import io.choerodon.mybatis.constant.CommonMapperConfigConstant;
 import io.choerodon.mybatis.domain.EntityColumn;
 import io.choerodon.mybatis.domain.EntityTable;
 import io.choerodon.mybatis.util.StringUtil;
@@ -49,6 +44,13 @@ import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.text.MessageFormat;
+import java.util.*;
 
 
 
@@ -363,9 +365,24 @@ public abstract class MapperTemplate {
         String identity =
                 (column.getGenerator() == null
                         || column.getGenerator().equals("")) ? getIdentity() : column.getGenerator();
-        if (identity.equalsIgnoreCase("JDBC")) {
+        if (CommonMapperConfigConstant.IDENTITY_JDBC.equalsIgnoreCase(identity)) {
             keyGenerator = new Jdbc3KeyGenerator();
         } else {
+            if (CommonMapperConfigConstant.IDENTITY_SEQUENCE.equalsIgnoreCase(identity)) {
+                //  sql for selectKey
+                DbType DdType = Optional.ofNullable(mapperHelper.getConfig().getDbType()).orElse(DbType.ORACLE);
+                switch (DdType) {
+                    case HANA:
+                        identity = "SELECT " + getSeqNextVal(column) + " FROM DUMMY";
+                        break;
+                    case POSTGRES:
+                        identity = "SELECT nextval('" + column.getTable().getName() + "_s')";
+                        break;
+                    default:
+                        identity = "SELECT " + getSeqNextVal(column) + " FROM DUAL";
+                        break;
+                }
+            }
             SqlSource sqlSource = new RawSqlSource(configuration, identity, entityClass);
 
             MappedStatement.Builder statementBuilder =
@@ -433,4 +450,9 @@ public abstract class MapperTemplate {
             logger.debug("exception:" + e);
         }
     }
+
+    public DbType getDbType() {
+        return this.mapperHelper.getConfig().getDbType();
+    }
+
 }

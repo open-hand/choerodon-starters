@@ -12,8 +12,10 @@ public class Msg implements Serializable{
     public static final int DEFAULT = 0;
     public static final int COMMAND = 1;
     public static final int AGENT = 2;
-    public static final int PIPE =3;
-    public static final int INFORM =4;
+    public static final int PIPE = 3;
+    public static final int INFORM = 4;
+    public static final int PIPE_EXEC = 6;
+    public static final int FRONT_PIP_EXEC = 7;
 
     //dispatch 到对应socket所在实例之后进行 发送而是找到对应
     // socket session执行相应逻辑
@@ -29,6 +31,7 @@ public class Msg implements Serializable{
     private int msgType;
     private String envId;
     private Long commandId;
+    private byte[] bytesPayload;
 
 
     public int getMsgType() {
@@ -122,6 +125,14 @@ public class Msg implements Serializable{
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public byte[] getBytesPayload() {
+        return bytesPayload;
+    }
+
+    public void setBytesPayload(byte[] bytesPayload) {
+        this.bytesPayload = bytesPayload;
     }
 
     @Override
