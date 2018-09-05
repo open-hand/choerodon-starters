@@ -575,20 +575,20 @@ public class DbAdaptor {
 
     }
 
-    private String tlTableName(String str) {
-        String s = str.replaceAll("_", "");
+    private String tlTableName(String tableName) {
+        String s = tableName.replaceAll("_", "");
         boolean allIsUpperCase = true;
         for (int i = 0; i < s.length(); i++) {
-            char c = str.charAt(i);
+            char c = s.charAt(i);
             if (Character.isLowerCase(c)) {
                 allIsUpperCase = false;
                 break;
             }
         }
         if (allIsUpperCase) {
-            return str + "_TL";
+            return tableName + "_TL";
         } else {
-            return str + "_tl";
+            return tableName + "_tl";
         }
     }
 

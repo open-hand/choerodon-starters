@@ -174,4 +174,20 @@ public class StringUtil {
         }
         return builder.toString();
     }
+
+    /**
+     * 判断下划线分割的表名是不是全大写，如果有一个小写字母，判定为小写
+     * @param tableName
+     * @return
+     */
+    public static boolean tableNameAllUpperCase(String tableName) {
+        String s = tableName.replaceAll("_", "");
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (Character.isLowerCase(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
