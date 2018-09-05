@@ -38,4 +38,10 @@ public @interface Permission {
      * @return 是否拥有此权限
      */
     boolean permissionPublic() default false;
+
+    /**
+     * 接口类型
+     * @return 是否为内部接口
+     */
+    boolean permissionWithin() default false;
 }

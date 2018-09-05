@@ -18,6 +18,8 @@ public class PermissionData {
 
     private boolean permissionPublic;
 
+    private boolean permissionWithin;
+
     public String getAction() {
         return action;
     }
@@ -66,4 +68,11 @@ public class PermissionData {
         this.permissionPublic = permissionPublic;
     }
 
+    public boolean isPermissionWithin() {
+        return permissionWithin;
+    }
+
+    public void setPermissionWithin(boolean permissionWithin) {
+        this.permissionWithin = permissionWithin;
+    }
 }
