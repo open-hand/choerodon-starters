@@ -9,12 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Controller {
     public static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
@@ -61,40 +63,49 @@ public class Controller {
 
         @Override
         public void run() {
-                Map<Object,Object> objectMap =stringRedisTemplate.opsForHash().entries(BROKERS_KEY);
-                Map<String, String> brokers = (Map<String,String>)(Map)objectMap;
-                //check alive of other brokers
-                Set<String> brokerIds = brokers.keySet();
-                brokerIds.remove(SocketHelperAutoConfiguration.BROkER_ID);
-                long now = System.currentTimeMillis();
-                for (String brokerId : brokerIds){
-                    if( now - Long.valueOf(brokers.get(brokerId)) > socketProperties.getRegisterInterval()+200){
-                        LOGGER.info(brokerId+" is down ------------");
-                        //清除注册
-                        stringRedisTemplate.opsForHash().delete(BROKERS_KEY,brokerId);
-                        Set<String> envs = (Set<String>)(Set)redisTemplate.opsForHash().entries(AGENT_SESSION).keySet();
+            Map<Object,Object> objectMap =stringRedisTemplate.opsForHash().entries(BROKERS_KEY);
+            Map<String, String> brokers = (Map<String,String>)(Map)objectMap;
+            //check alive of other brokers
+            Set<String> brokerIds = brokers.keySet();
+            long now = System.currentTimeMillis();
+            Set<String> existAgents = new HashSet<>();
+            Set<String> envs = (Set<String>)(Set)redisTemplate.opsForHash().entries(AGENT_SESSION).keySet();
+            for (String brokerId : brokerIds){
+                if( now - Long.valueOf(brokers.get(brokerId)) > socketProperties.getRegisterInterval()+200){
+                    LOGGER.info(brokerId+" is down ------------");
+                    //清除注册
+                    stringRedisTemplate.opsForHash().delete(BROKERS_KEY,brokerId);
 
-                        Set<String> socketIdKeys = stringRedisTemplate.opsForSet().members(BROKER_SOCKETS_PREFIX+brokerId);
-                        for (String socketIdkey : socketIdKeys){
-                            //清除 socket
-                            stringRedisTemplate.delete(socketIdkey);
-                            String key = getSocketKey(socketIdkey);
 
-                            //unregister key
-                            stringRedisTemplate.opsForSet().remove(KEY_PREFIX+key,socketIdkey.substring(7));
+                    Set<String> socketIdKeys = stringRedisTemplate.opsForSet().members(BROKER_SOCKETS_PREFIX+brokerId);
+                    for (String socketIdkey : socketIdKeys){
+                        //清除 socket
+                        stringRedisTemplate.delete(socketIdkey);
+                        String key = getSocketKey(socketIdkey);
 
-                            //
-                            if (envs.contains(key)){
-                                LOGGER.info("env "+key+"close----------");
-                                agentOptionListener.onClose(key);
-                            }
+                        //unregister key
+                        stringRedisTemplate.opsForSet().remove(KEY_PREFIX+key,socketIdkey.substring(7));
+
+                        //
+                        if (envs.contains(key)){
+                            LOGGER.info("env "+key+"close----------");
+                            agentOptionListener.onClose(key);
                         }
-                        //clean broker sockets
-                        stringRedisTemplate.delete(BROKER_SOCKETS_PREFIX+brokerId);
                     }
+                    //clean broker sockets
+                    stringRedisTemplate.delete(BROKER_SOCKETS_PREFIX+brokerId);
+                } else {
+                    Set<String> socketIdKeys = stringRedisTemplate.opsForSet().members(BROKER_SOCKETS_PREFIX+brokerId);
+                    existAgents.addAll(socketIdKeys);
                 }
-
             }
+            Set<String> existKeys =  existAgents.stream().map(Controller.this::getSocketKey).collect(Collectors.toSet());
+            for ( String redisAgentKey : envs ) {
+                if (!existKeys.contains(redisAgentKey)) {
+                    agentOptionListener.onClose(redisAgentKey);
+                }
+            }
+        }
 
 
     }
@@ -102,13 +113,7 @@ public class Controller {
     class RegisterThread implements Runnable{
         @Override
         public void run() {
-                stringRedisTemplate.opsForHash().put(BROKERS_KEY,SocketHelperAutoConfiguration.BROkER_ID,System.currentTimeMillis()+"");
-                try {
-                    Thread.sleep(socketProperties.getRegisterInterval());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
+                stringRedisTemplate.opsForHash().put(BROKERS_KEY,SocketHelperAutoConfiguration.BROKER_ID,System.currentTimeMillis()+"");
         }
     }
 

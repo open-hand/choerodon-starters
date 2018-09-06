@@ -5,7 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>choerodon-websocket-helper</artifactId>
-    <version>0.6.3.RELEASE</version>
+
+
+    <version>0.6.30.RELEASE</version>
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-starter-parent</artifactId>
