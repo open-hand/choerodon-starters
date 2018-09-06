@@ -50,7 +50,7 @@ public class Controller {
         ScheduledExecutorService register = new ScheduledThreadPoolExecutor(1);
         ScheduledExecutorService cleaner = new ScheduledThreadPoolExecutor(1);
         register.scheduleAtFixedRate(new RegisterThread(),2000,socketProperties.getRegisterInterval(),TimeUnit.MILLISECONDS);
-        cleaner.scheduleAtFixedRate(new CleanThread(),2000,socketProperties.getRegisterInterval()+500,TimeUnit.MILLISECONDS);
+        cleaner.scheduleAtFixedRate(new CleanThread(),2000,socketProperties.getRegisterInterval()+1000,TimeUnit.MILLISECONDS);
         if (socketProperties.isCommandTimeoutEnabled()){
             ScheduledExecutorService commandRecorder = new ScheduledThreadPoolExecutor(1);
             commandRecorder.scheduleAtFixedRate(new CommandRecorderThread(),2,socketProperties.getCommandTimeoutSeconds(),TimeUnit.SECONDS);
@@ -71,7 +71,7 @@ public class Controller {
             Set<String> existAgents = new HashSet<>();
             Set<String> envs = (Set<String>)(Set)redisTemplate.opsForHash().entries(AGENT_SESSION).keySet();
             for (String brokerId : brokerIds){
-                if( now - Long.valueOf(brokers.get(brokerId)) > socketProperties.getRegisterInterval()+200){
+                if( now - Long.valueOf(brokers.get(brokerId)) > socketProperties.getRegisterInterval()+1000){
                     LOGGER.info(brokerId+" is down ------------");
                     //清除注册
                     stringRedisTemplate.opsForHash().delete(BROKERS_KEY,brokerId);
@@ -93,6 +93,7 @@ public class Controller {
                         }
                     }
                     //clean broker sockets
+                    LOGGER.info("delete broker keys {}", brokerId);
                     stringRedisTemplate.delete(BROKER_SOCKETS_PREFIX+brokerId);
                 } else {
                     Set<String> socketIdKeys = stringRedisTemplate.opsForSet().members(BROKER_SOCKETS_PREFIX+brokerId);
@@ -102,6 +103,7 @@ public class Controller {
             Set<String> existKeys =  existAgents.stream().map(Controller.this::getSocketKey).collect(Collectors.toSet());
             for ( String redisAgentKey : envs ) {
                 if (!existKeys.contains(redisAgentKey)) {
+                    LOGGER.info("delete agent session ", redisAgentKey);
                     agentOptionListener.onClose(redisAgentKey);
                 }
             }
