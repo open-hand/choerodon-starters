@@ -297,7 +297,7 @@ public class DbAdaptor {
     private boolean excluded(String column, Set<String> excludedColumns) {
         if (excludedColumns != null) {
             for (String excludedColumn : excludedColumns) {
-                if (excludedColumn != null && excludedColumn.equals(column)) {
+                if (excludedColumn != null && excludedColumn.equalsIgnoreCase(column)) {
                     return true;
                 }
             }
@@ -315,14 +315,14 @@ public class DbAdaptor {
             for (TableCellValue tableCellValue : normals) {
                 if (tableCellValue.getColumn().getLang() == null
                         || ZH_CN.equalsIgnoreCase(tableCellValue.getColumn().getLang())) {
-                    appendColumn(sb, tableCellValue);
+                    sb.append(tableCellValue.getColumn().getName());
                     sb.append("=?,");
                 }
             }
             sb.deleteCharAt(sb.length() - 1);
             sb.append(SQL_WHERE);
             for (TableCellValue tableCellValue : uniques) {
-                appendColumn(sb, tableCellValue);
+                sb.append(tableCellValue.getColumn().getName());
                 sb.append("=? AND ");
             }
             sb.delete(sb.length() - 4, sb.length());
@@ -709,7 +709,7 @@ public class DbAdaptor {
                 if (tableCellValue.getColumn().getLang() == null
                         || ZH_CN.equals(tableCellValue.getColumn().getLang())) {
                     cc++;
-                    appendColumn(sb, tableCellValue);
+                    sb.append(tableCellValue.getColumn().getName());
                     sb.append(",");
                 }
             }
@@ -724,21 +724,6 @@ public class DbAdaptor {
             tableInsertSqlMap.put(tableRow.getTable().getName(), sql);
         }
         return sql;
-    }
-
-    private void appendColumn(StringBuilder sb, TableCellValue tableCellValue) {
-        //mysql处理保留字段处理时加撇号``,oracle是加"", sqlserver是加[]
-        //oracle数据库列名使用了保留字段，加双引号处理
-        String columnName = tableCellValue.getColumn().getName();
-        if (helper.isOracle()) {
-            sb.append("\"").append(columnName).append("\"");
-        } else if (helper.isMysql()) {
-            sb.append("`").append(columnName).append("`");
-        } else if (helper.isSqlServer()) {
-            sb.append("[").append(columnName).append("]");
-        } else {
-            sb.append(columnName);
-        }
     }
 
     protected Long getSeqNextVal(String tableName) throws SQLException {
