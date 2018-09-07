@@ -1,4 +1,4 @@
-package io.choerodon.asgard.quartz;
+package io.choerodon.asgard.schedule;
 
 public enum ParamType {
     BOOLEAN("Boolean"),
@@ -20,6 +20,15 @@ public enum ParamType {
 
     public String getValue() {
         return value;
+    }
+
+    public static ParamType getParamTypeByValue(final String value) {
+        for (ParamType paramType : ParamType.values()) {
+            if (paramType.value.equals(value)) {
+                return paramType;
+            }
+        }
+        return null;
     }
 
 }

@@ -1,6 +1,6 @@
-package io.choerodon.asgard.quartz.exception;
+package io.choerodon.asgard.schedule.exception;
 
-import io.choerodon.asgard.quartz.ParamType;
+import io.choerodon.asgard.schedule.ParamType;
 
 public class NotSupportParamTypeException extends RuntimeException {
 

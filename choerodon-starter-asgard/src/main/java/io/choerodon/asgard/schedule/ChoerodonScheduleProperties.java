@@ -1,15 +1,13 @@
-package io.choerodon.asgard.saga;
+package io.choerodon.asgard.schedule;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "choerodon.saga.consumer")
-public class ChoerodonSagaProperties {
+@ConfigurationProperties(prefix = "choerodon.schedule.consumer")
+public class ChoerodonScheduleProperties {
 
     private Long pollIntervalMs = 1000L;
 
-    private Integer maxPollSize = 200;
-
-    private Integer threadNum = 5;
+    private Integer threadNum = 2;
 
     private Boolean enabled = false;
 
@@ -21,14 +19,6 @@ public class ChoerodonSagaProperties {
         this.pollIntervalMs = pollIntervalMs;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public Integer getThreadNum() {
         return threadNum;
     }
@@ -37,12 +27,12 @@ public class ChoerodonSagaProperties {
         this.threadNum = threadNum;
     }
 
-    public Integer getMaxPollSize() {
-        return maxPollSize;
+    public Boolean getEnabled() {
+        return enabled;
     }
 
-    public void setMaxPollSize(Integer maxPollSize) {
-        this.maxPollSize = maxPollSize;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

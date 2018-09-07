@@ -1,10 +1,16 @@
 package io.choerodon.asgard.property;
 
-import io.choerodon.asgard.quartz.annotation.JobParam;
+import io.choerodon.asgard.schedule.annotation.JobParam;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class PropertyJobTask {
 
     private String method;
@@ -13,31 +19,7 @@ public class PropertyJobTask {
 
     private List<PropertyJobParam> params;
 
-    public int getMaxRetryCount() {
-        return maxRetryCount;
-    }
-
-    public void setMaxRetryCount(int maxRetryCount) {
-        this.maxRetryCount = maxRetryCount;
-    }
-
-    public List<PropertyJobParam> getParams() {
-        return params;
-    }
-
-    public void setParams(List<PropertyJobParam> params) {
-        this.params = params;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    PropertyJobTask(String method, int maxRetryCount, JobParam[] params) {
+    public PropertyJobTask(String method, int maxRetryCount, JobParam[] params) {
         this.method = method;
         this.maxRetryCount = maxRetryCount;
         this.params = new ArrayList<>();
@@ -46,6 +28,4 @@ public class PropertyJobTask {
         }
     }
 
-    public PropertyJobTask() {
-    }
 }

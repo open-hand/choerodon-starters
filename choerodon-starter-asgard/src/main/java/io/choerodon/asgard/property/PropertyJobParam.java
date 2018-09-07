@@ -1,9 +1,15 @@
 package io.choerodon.asgard.property;
 
-import io.choerodon.asgard.quartz.annotation.JobParam;
-import io.choerodon.asgard.quartz.ParamType;
-import io.choerodon.asgard.quartz.exception.NotSupportParamTypeException;
+import io.choerodon.asgard.schedule.annotation.JobParam;
+import io.choerodon.asgard.schedule.ParamType;
+import io.choerodon.asgard.schedule.exception.NotSupportParamTypeException;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class PropertyJobParam {
 
     private String name;
@@ -12,34 +18,7 @@ public class PropertyJobParam {
 
     private String type;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public PropertyJobParam() {
-    }
-
-    PropertyJobParam(final JobParam jobParam) {
+    public PropertyJobParam(final JobParam jobParam) {
         this.name = jobParam.name();
         this.defaultValue = jobParam.defaultValue();
         this.type = getParamTypeByClass(jobParam.type()).getValue();

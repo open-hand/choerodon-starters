@@ -1,5 +1,12 @@
 package io.choerodon.asgard.property;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@NoArgsConstructor
 public class PropertySagaTask {
 
     private String code;
@@ -24,10 +31,8 @@ public class PropertySagaTask {
 
     private String outputSchemaSource;
 
-    public PropertySagaTask() {
-    }
 
-    PropertySagaTask(String code, String description, String sagaCode, Integer seq, Integer maxRetryCount) {
+    public PropertySagaTask(String code, String description, String sagaCode, Integer seq, Integer maxRetryCount) {
         this.code = code;
         this.description = description;
         this.sagaCode = sagaCode;
@@ -35,91 +40,4 @@ public class PropertySagaTask {
         this.maxRetryCount = maxRetryCount;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getSagaCode() {
-        return sagaCode;
-    }
-
-    public void setSagaCode(String sagaCode) {
-        this.sagaCode = sagaCode;
-    }
-
-    public Integer getSeq() {
-        return seq;
-    }
-
-    public void setSeq(Integer seq) {
-        this.seq = seq;
-    }
-
-    public Integer getMaxRetryCount() {
-        return maxRetryCount;
-    }
-
-    public void setMaxRetryCount(Integer maxRetryCount) {
-        this.maxRetryCount = maxRetryCount;
-    }
-
-    public Integer getTimeoutSeconds() {
-        return timeoutSeconds;
-    }
-
-    public void setTimeoutSeconds(Integer timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
-    }
-
-    public String getTimeoutPolicy() {
-        return timeoutPolicy;
-    }
-
-    public void setTimeoutPolicy(String timeoutPolicy) {
-        this.timeoutPolicy = timeoutPolicy;
-    }
-
-    public Integer getConcurrentLimitNum() {
-        return concurrentLimitNum;
-    }
-
-    public void setConcurrentLimitNum(Integer concurrentLimitNum) {
-        this.concurrentLimitNum = concurrentLimitNum;
-    }
-
-    public String getConcurrentLimitPolicy() {
-        return concurrentLimitPolicy;
-    }
-
-    public void setConcurrentLimitPolicy(String concurrentLimitPolicy) {
-        this.concurrentLimitPolicy = concurrentLimitPolicy;
-    }
-
-    public String getOutputSchema() {
-        return outputSchema;
-    }
-
-    public void setOutputSchema(String outputSchema) {
-        this.outputSchema = outputSchema;
-    }
-
-    public String getOutputSchemaSource() {
-        return outputSchemaSource;
-    }
-
-    public void setOutputSchemaSource(String outputSchemaSource) {
-        this.outputSchemaSource = outputSchemaSource;
-    }
 }

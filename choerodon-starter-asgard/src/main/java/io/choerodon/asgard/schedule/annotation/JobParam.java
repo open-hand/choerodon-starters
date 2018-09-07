@@ -1,4 +1,4 @@
-package io.choerodon.asgard.quartz.annotation;
+package io.choerodon.asgard.schedule.annotation;
 
 import org.springframework.web.bind.annotation.ValueConstants;
 

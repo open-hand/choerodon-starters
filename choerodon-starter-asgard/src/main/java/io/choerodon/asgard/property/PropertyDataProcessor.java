@@ -1,7 +1,7 @@
 package io.choerodon.asgard.property;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.quartz.annotation.JobTask;
+import io.choerodon.asgard.schedule.annotation.JobTask;
 import io.choerodon.asgard.saga.GenerateJsonExampleUtil;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.annotation.Saga;
