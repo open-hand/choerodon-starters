@@ -1,14 +1,20 @@
 package io.choerodon.asgard;
 
-import io.choerodon.asgard.schedule.ChoerodonScheduleProperties;
-import io.choerodon.asgard.saga.*;
-import io.choerodon.asgard.saga.feign.SagaClientCallback;
-import io.choerodon.asgard.saga.feign.SagaMonitorClient;
-import io.choerodon.asgard.saga.feign.SagaMonitorClientCallback;
 import io.choerodon.asgard.property.PropertyData;
 import io.choerodon.asgard.property.PropertyDataProcessor;
 import io.choerodon.asgard.property.PropertyEndpoint;
+import io.choerodon.asgard.saga.ChoerodonSagaProperties;
+import io.choerodon.asgard.saga.SagaMonitor;
+import io.choerodon.asgard.saga.SagaTaskInstanceStore;
+import io.choerodon.asgard.saga.SagaTaskProcessor;
+import io.choerodon.asgard.saga.feign.SagaClientCallback;
+import io.choerodon.asgard.saga.feign.SagaMonitorClient;
+import io.choerodon.asgard.saga.feign.SagaMonitorClientCallback;
+import io.choerodon.asgard.schedule.ChoerodonScheduleProperties;
 import io.choerodon.asgard.schedule.JobTaskProcessor;
+import io.choerodon.asgard.schedule.ScheduleMonitor;
+import io.choerodon.asgard.schedule.feign.ScheduleMonitorClient;
+import io.choerodon.asgard.schedule.feign.ScheduleMonitorClientCallback;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -67,9 +73,18 @@ public class ChoerodonAsgardAutoConfiguration {
             this.scheduleProperties = scheduleProperties;
         }
 
+        @Bean
+        public ScheduleMonitorClientCallback scheduleMonitorClientCallback() {
+            return new ScheduleMonitorClientCallback();
+        }
+
         @Value("${spring.application.name}")
         private String service;
 
+        @Bean(name = "quartzScheduledExecutorService")
+        public ScheduledExecutorService quartzScheduledExecutorService() {
+            return Executors.newScheduledThreadPool(1);
+        }
 
         @Bean
         public JobTaskProcessor sagaTaskProcessor() {
@@ -86,6 +101,16 @@ public class ChoerodonAsgardAutoConfiguration {
             executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
             executor.initialize();
             return executor;
+        }
+
+        @Bean
+        public ScheduleMonitor scheduleMonitor(ScheduleMonitorClient scheduleMonitorClient,
+                                               DataSourceTransactionManager transactionManager,
+                                               Environment environment,
+                                               AsgardApplicationContextHelper applicationContextHelper) {
+            return new ScheduleMonitor(transactionManager, environment, scheduleExecutor(), scheduleMonitorClient,
+                    applicationContextHelper, quartzScheduledExecutorService(), scheduleProperties.getPollIntervalMs());
+
         }
     }
 

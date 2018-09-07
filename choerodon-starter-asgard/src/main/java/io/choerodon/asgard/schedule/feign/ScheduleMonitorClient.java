@@ -1,7 +1,7 @@
 package io.choerodon.asgard.schedule.feign;
 
 import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
-import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
+import io.choerodon.asgard.schedule.dto.ScheduleTaskInstanceDTO;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +15,11 @@ import java.util.Set;
 public interface ScheduleMonitorClient {
 
     @PostMapping("/v1/schedules/tasks/instances/poll/batch")
-    List<SagaTaskInstanceDTO> pollBatch(@RequestBody Set<String> method);
+    List<ScheduleTaskInstanceDTO> pollBatch(@RequestBody Set<String> methods);
 
 
     @PutMapping("/v1/schedules/tasks/instances/{id}/status")
-    SagaTaskInstanceDTO updateStatus(@PathVariable("id") Long id,
-                                     @RequestBody UpdateTaskInstanceStatusDTO statusDTO);
+    void updateStatus(@PathVariable("id") Long id,
+                      @RequestBody UpdateTaskInstanceStatusDTO statusDTO);
 
 }

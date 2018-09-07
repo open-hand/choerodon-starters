@@ -1,8 +1,6 @@
 package io.choerodon.asgard.saga;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ValueNode;
 import io.choerodon.asgard.AsgardApplicationContextHelper;
 import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.saga.annotation.SagaTask;
@@ -21,10 +19,6 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -32,6 +26,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static io.choerodon.asgard.InstanceCommonUtils.getErrorInfoFromException;
+import static io.choerodon.asgard.InstanceCommonUtils.resultToJson;
 
 public class SagaMonitor {
 
@@ -77,7 +74,7 @@ public class SagaMonitor {
         this.environment = environment;
         this.asgardApplicationContextHelper = asgardApplicationContextHelper;
         this.taskInstanceStore = taskInstanceStore;
-        msgQueue = Collections.synchronizedSet(new HashSet<>(choerodonSagaProperties.getMaxPollSize()));
+        msgQueue = Collections.synchronizedSet(new LinkedHashSet<>(choerodonSagaProperties.getMaxPollSize()));
     }
 
     public void setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
@@ -201,7 +198,7 @@ public class SagaMonitor {
                 invokeBean.method.setAccessible(true);
                 final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
                 sagaMonitorClient.updateStatus(data.getId(), new UpdateTaskInstanceStatusDTO(data.getId(),
-                        SagaDefinition.TaskInstanceStatus.COMPLETED.name(), resultToJson(result), null));
+                        SagaDefinition.TaskInstanceStatus.COMPLETED.name(), resultToJson(result, objectMapper), null));
                 if (sagaTask.enabledDbRecord()) {
                     taskInstanceStore.removeTaskInstance(data.getId());
                 }
@@ -215,37 +212,6 @@ public class SagaMonitor {
                 if (sagaTask.enabledDbRecord()) {
                     taskInstanceStore.removeTaskInstance(data.getId());
                 }
-            }
-        }
-
-        private String resultToJson(final Object result) throws IOException {
-            if (result == null) {
-                return null;
-            }
-            if (result instanceof String) {
-                String resultStr = (String) result;
-                if (resultStr.isEmpty()) {
-                    return null;
-                }
-                JsonNode jsonNode = objectMapper.readTree(resultStr);
-                if (!(jsonNode instanceof ValueNode)) {
-                    return resultStr;
-                }
-            }
-            return objectMapper.writeValueAsString(result);
-        }
-
-        private String getErrorInfoFromException(Throwable e) {
-            try {
-                if (e instanceof InvocationTargetException) {
-                    e = ((InvocationTargetException) e).getTargetException();
-                }
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                return "\r\n" + sw.toString() + "\r\n";
-            } catch (Exception e2) {
-                return "bad getErrorInfoFromException";
             }
         }
     }
