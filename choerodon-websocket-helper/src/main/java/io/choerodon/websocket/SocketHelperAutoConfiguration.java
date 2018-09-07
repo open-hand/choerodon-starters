@@ -47,7 +47,7 @@ import java.util.concurrent.*;
 @EnableConfigurationProperties(SocketProperties.class)
 public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	private static final Logger logger = LoggerFactory.getLogger(SocketHelperAutoConfiguration.class);
-	public static final String BROkER_ID = UUID.randomUUID().toString().replace("-","");
+	public static final String BROKER_ID = UUID.randomUUID().toString().replace("-","");
 	@Autowired
 	SessionRepository sessionRepository;
 	@Autowired
@@ -195,8 +195,8 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 		final ClRedisContainer container = new ClRedisContainer();
 		container.setConnectionFactory(redisConnectionFactory);
 		container.setTaskExecutor(commandTaskExecutor);
-		container.addMessageListener( listenerAdapter, new ChannelTopic(BROkER_ID));
-		container.addMessageListener( listenerAdapter, new ChannelTopic("log"+BROkER_ID));
+		container.addMessageListener( listenerAdapter, new ChannelTopic(BROKER_ID));
+		container.addMessageListener( listenerAdapter, new ChannelTopic("log"+BROKER_ID));
 		return container;
 	}
 

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.socket.server.HandshakeFailureException;
 
 public class WebSecurityInterceptor implements SecurityInterceptor {
     private SocketProperties socketProperties;
@@ -18,7 +19,7 @@ public class WebSecurityInterceptor implements SecurityInterceptor {
     }
 
     @Override
-    public void check(ServletServerHttpRequest request) throws Exception {
+    public void check(ServletServerHttpRequest request) throws HandshakeFailureException {
         String token = request.getServletRequest().getParameter("token");
         if (socketProperties.isSecurity()){
             if(token == null || token.trim().isEmpty()){

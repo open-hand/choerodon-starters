@@ -47,14 +47,14 @@ public class ProcessManager {
                         channels.isEmpty() ){
                    processInter(errorMsg(msg));
                 }
-                if(channels.contains(SocketHelperAutoConfiguration.BROkER_ID) ){
+                if(channels.contains(SocketHelperAutoConfiguration.BROKER_ID) ){
                     Map<String,Set<String>> localToMap = new HashMap<>();
-                    localToMap.put(SocketHelperAutoConfiguration.BROkER_ID,msg.getBrokersTO().get(SocketHelperAutoConfiguration.BROkER_ID));
+                    localToMap.put(SocketHelperAutoConfiguration.BROKER_ID,msg.getBrokersTO().get(SocketHelperAutoConfiguration.BROKER_ID));
                     Msg localMsg = new Msg();
                     BeanUtils.copyProperties(msg,localMsg);
                     localMsg.setBrokersTO(localToMap);
                     socketSender.sendToSocket(localMsg);
-                    msg.getBrokersTO().remove(SocketHelperAutoConfiguration.BROkER_ID);
+                    msg.getBrokersTO().remove(SocketHelperAutoConfiguration.BROKER_ID);
                 if(msg.getBrokersTO().isEmpty()){
                     return;
                 }

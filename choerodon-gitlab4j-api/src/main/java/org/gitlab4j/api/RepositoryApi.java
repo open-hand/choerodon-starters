@@ -23,10 +23,6 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +31,10 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.gitlab4j.api.GitLabApi.ApiVersion;
 import org.gitlab4j.api.models.Branch;
@@ -294,6 +294,23 @@ public class RepositoryApi extends AbstractApi {
     public void deleteTag(Integer projectId, String tagName) throws GitLabApiException {
         Response.Status expectedStatus = (isApiVersion(ApiVersion.V3) ? Response.Status.OK : Response.Status.NO_CONTENT);
         delete(expectedStatus, null, "projects", projectId, "repository", "tags", tagName);
+    }
+
+    /**
+     * Updates the release notes of a given release.
+     * <p>
+     * PUT /projects/:id/repository/tags/:tag_name/release
+     *
+     * @param projectId    the ID of the project
+     * @param tagName      The name of the tag Must be unique for the project
+     * @param releaseNotes the release notes for the tag
+     * @return a Tag instance containing release notes on the newly updated tag
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Tag updateTagRelease(Integer projectId, String tagName, String releaseNotes) throws GitLabApiException {
+        Form formData = new GitLabApiForm().withParam("description", releaseNotes, true);
+        Response response = put(Response.Status.OK, formData.asMap(), "projects", projectId, "repository", "tags", tagName, "release");
+        return (response.readEntity(Tag.class));
     }
 
     /**

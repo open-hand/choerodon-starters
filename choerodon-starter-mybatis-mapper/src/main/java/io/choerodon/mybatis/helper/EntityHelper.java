@@ -48,7 +48,8 @@ import io.choerodon.mybatis.util.StringUtil;
  * @author liuzh
  */
 public class EntityHelper {
-    private static final String MULTI_LANGUAGE_TABLE_SUFFIX = "_tl";
+    private static final String MULTI_LANGUAGE_TABLE_SUFFIX_LOW_CASE = "_tl";
+    private static final String MULTI_LANGUAGE_TABLE_SUFFIX_UPPER_CASE = "_TL";
 
     /**
      * 实体类 => 表对象
@@ -194,7 +195,12 @@ public class EntityHelper {
         }
         if (entityClass.isAnnotationPresent(MultiLanguage.class)) {
             entityTable.setMultiLanguage(true);
-            entityTable.setMultiLanguageTableName(entityTable.getName() + MULTI_LANGUAGE_TABLE_SUFFIX);
+            String tableName = entityTable.getName();
+            if(StringUtil.tableNameAllUpperCase(tableName)) {
+                entityTable.setMultiLanguageTableName(tableName + MULTI_LANGUAGE_TABLE_SUFFIX_UPPER_CASE);
+            } else {
+                entityTable.setMultiLanguageTableName(tableName + MULTI_LANGUAGE_TABLE_SUFFIX_LOW_CASE);
+            }
         }
         entityTable.setEntityClassColumns(new LinkedHashSet<>());
         entityTable.setEntityClassPkColumns(new LinkedHashSet<>());

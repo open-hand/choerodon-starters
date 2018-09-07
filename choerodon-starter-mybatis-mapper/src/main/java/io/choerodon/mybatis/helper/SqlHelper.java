@@ -331,7 +331,12 @@ public class SqlHelper {
         EntityTable table = EntityHelper.getTableByEntity(entityClass);
         if (table.isMultiLanguage()) {
             builder.append("b ");
-            builder.append("LEFT JOIN ").append(defaultTableName + "_tl t ");
+            if (StringUtil.tableNameAllUpperCase(defaultTableName)) {
+                builder.append("LEFT JOIN ").append(defaultTableName + "_TL t ");
+            } else {
+                builder.append("LEFT JOIN ").append(defaultTableName + "_tl t ");
+
+            }
             builder.append("ON (");
             for (EntityColumn column : table.getEntityClassPkColumns()) {
                 builder.append("b.").append(column.getColumn())

@@ -23,9 +23,9 @@ public class SocketRegister {
         //注册msg key 与socket uuid本socket关心的目标
         stringRedisTemplate.opsForSet().add(KEY_PREFIX+key,socketId+key);
         //注册 socket uuid 与 broker
-        stringRedisTemplate.opsForValue().set(SOCKET_PREFIX+socketId+key, SocketHelperAutoConfiguration.BROkER_ID);
+        stringRedisTemplate.opsForValue().set(SOCKET_PREFIX+socketId+key, SocketHelperAutoConfiguration.BROKER_ID);
         //register brokers sockets
-        stringRedisTemplate.opsForSet().add(BROKER_SOCKETS_PREFIX+SocketHelperAutoConfiguration.BROkER_ID,SOCKET_PREFIX+socketId+key);
+        stringRedisTemplate.opsForSet().add(BROKER_SOCKETS_PREFIX+SocketHelperAutoConfiguration.BROKER_ID,SOCKET_PREFIX+socketId+key);
 
     }
 
@@ -39,7 +39,7 @@ public class SocketRegister {
         //unregister key
         stringRedisTemplate.opsForSet().remove(KEY_PREFIX+key,socketId+key);
         //unregister broker sockets
-        stringRedisTemplate.opsForSet().remove(BROKER_SOCKETS_PREFIX+SocketHelperAutoConfiguration.BROkER_ID,SOCKET_PREFIX+socketId+key);
+        stringRedisTemplate.opsForSet().remove(BROKER_SOCKETS_PREFIX+SocketHelperAutoConfiguration.BROKER_ID,SOCKET_PREFIX+socketId+key);
     }
 
     public void unRegisterKey(String msgKey, String socketId){
