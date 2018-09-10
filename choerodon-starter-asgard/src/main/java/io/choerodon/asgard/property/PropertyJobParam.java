@@ -6,6 +6,7 @@ import io.choerodon.asgard.schedule.exception.NotSupportParamTypeException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.bind.annotation.ValueConstants;
 
 @Getter
 @Setter
@@ -20,7 +21,10 @@ public class PropertyJobParam {
 
     public PropertyJobParam(final JobParam jobParam) {
         this.name = jobParam.name();
-        this.defaultValue = jobParam.defaultValue();
+        if (!ValueConstants.DEFAULT_NONE.equals(jobParam.defaultValue())) {
+            this.defaultValue = jobParam.defaultValue();
+        }
+
         this.type = getParamTypeByClass(jobParam.type()).getValue();
     }
 
@@ -48,6 +52,9 @@ public class PropertyJobParam {
         }
         if (claz.equals(Double.class)) {
             return ParamType.DOUBLE;
+        }
+        if (claz.equals(Boolean.class)) {
+            return ParamType.BOOLEAN;
         }
         throw new NotSupportParamTypeException(claz);
     }

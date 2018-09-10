@@ -7,7 +7,7 @@ public class ChoerodonScheduleProperties {
 
     private Long pollIntervalMs = 1000L;
 
-    private Integer threadNum = 2;
+    private Integer threadNum = 1;
 
     private Boolean enabled = false;
 

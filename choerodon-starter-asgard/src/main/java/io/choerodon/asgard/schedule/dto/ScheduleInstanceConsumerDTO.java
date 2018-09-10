@@ -1,9 +1,6 @@
 package io.choerodon.asgard.schedule.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Objects;
 
@@ -11,7 +8,8 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleTaskInstanceDTO {
+@ToString
+public class ScheduleInstanceConsumerDTO {
 
     private Long id;
 
@@ -19,11 +17,15 @@ public class ScheduleTaskInstanceDTO {
 
     private String executeParams;
 
+    private String instanceLock;
+
+    private Long objectVersionNumber;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ScheduleTaskInstanceDTO that = (ScheduleTaskInstanceDTO) o;
+        ScheduleInstanceConsumerDTO that = (ScheduleInstanceConsumerDTO) o;
         return Objects.equals(id, that.id);
     }
 
@@ -32,4 +34,5 @@ public class ScheduleTaskInstanceDTO {
 
         return Objects.hash(id);
     }
+
 }
