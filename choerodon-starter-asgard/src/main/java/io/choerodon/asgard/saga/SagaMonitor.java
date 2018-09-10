@@ -141,7 +141,7 @@ public class SagaMonitor {
         public void run() {
             try {
                 sagaMonitorClient.updateStatus(taskInstanceId, new UpdateTaskInstanceStatusDTO(taskInstanceId,
-                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, "error.SagaMonitor.updateStatusFailed"));
+                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, "error.SagaMonitor.updateStatusFailed", null));
                 taskInstanceStore.removeTaskInstance(taskInstanceId);
             } catch (Exception e) {
                 LOGGER.warn("error.SagaMonitor.updateStatusFailed.reRun, {}", e);
@@ -198,7 +198,7 @@ public class SagaMonitor {
                 invokeBean.method.setAccessible(true);
                 final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
                 sagaMonitorClient.updateStatus(data.getId(), new UpdateTaskInstanceStatusDTO(data.getId(),
-                        SagaDefinition.TaskInstanceStatus.COMPLETED.name(), resultToJson(result, objectMapper), null));
+                        SagaDefinition.TaskInstanceStatus.COMPLETED.name(), resultToJson(result, objectMapper), null, null));
                 if (sagaTask.enabledDbRecord()) {
                     taskInstanceStore.removeTaskInstance(data.getId());
                 }
@@ -208,7 +208,7 @@ public class SagaMonitor {
                 String errorMsg = getErrorInfoFromException(e);
                 LOGGER.warn("sagaMonitor invoke method error, transaction rollback, msg {}, cause {}", data, errorMsg);
                 sagaMonitorClient.updateStatus(data.getId(), new UpdateTaskInstanceStatusDTO(data.getId(),
-                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, errorMsg));
+                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, errorMsg, null));
                 if (sagaTask.enabledDbRecord()) {
                     taskInstanceStore.removeTaskInstance(data.getId());
                 }
