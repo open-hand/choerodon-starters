@@ -10,7 +10,7 @@ public class SocketProperties {
     private String front = "/ws/**";
     private boolean commandTimeoutEnabled = true;
     //millisecond
-    private long registerInterval = 2000;
+    private long registerInterval = 1000;
     private int maxRedisMsgListenerConcurrency;
     private int commandTimeoutSeconds = 10;
     /**

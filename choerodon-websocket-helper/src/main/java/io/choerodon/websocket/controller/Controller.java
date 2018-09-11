@@ -71,8 +71,10 @@ public class Controller {
             Set<String> existAgents = new HashSet<>();
             Set<String> envs = (Set<String>)(Set)redisTemplate.opsForHash().entries(AGENT_SESSION).keySet();
             for (String brokerId : brokerIds){
-                if( now - Long.valueOf(brokers.get(brokerId)) > socketProperties.getRegisterInterval()+1000){
-                    LOGGER.info(brokerId+" is down ------------");
+                long brokerLastRenewTime = Long.valueOf(brokers.get(brokerId));
+                long duration = now - brokerLastRenewTime;
+                if( duration > socketProperties.getRegisterInterval()+1000){
+                    LOGGER.info(brokerId+" down !  last renew time is {}, and now is {}, duration {} exceed ",brokerLastRenewTime, now, duration);
                     //清除注册
                     stringRedisTemplate.opsForHash().delete(BROKERS_KEY,brokerId);
 
