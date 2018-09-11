@@ -1,17 +1,16 @@
-package io.choerodon.asgard.saga.dto;
+package io.choerodon.asgard;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.NotNull;
-
 @Getter
 @Setter
-public class SagaTaskInstanceStatusDTO {
+@NoArgsConstructor
+public class UpdateTaskInstanceStatusDTO {
 
-    @NotNull
     private Long id;
 
     @NotEmpty
@@ -21,10 +20,13 @@ public class SagaTaskInstanceStatusDTO {
 
     private String exceptionMessage;
 
-    public SagaTaskInstanceStatusDTO(Long id, String status, String output, String exceptionMessage) {
+    private Long objectVersionNumber;
+
+    public UpdateTaskInstanceStatusDTO(Long id, String status, String output, String exceptionMessage, Long objectVersionNumber) {
         this.id = id;
         this.status = status;
         this.output = output;
         this.exceptionMessage = exceptionMessage;
+        this.objectVersionNumber = objectVersionNumber;
     }
 }

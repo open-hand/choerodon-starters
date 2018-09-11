@@ -2,8 +2,8 @@ package io.choerodon.asgard.saga.feign;
 
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.saga.dto.SagaTaskInstanceStatusDTO;
-import io.choerodon.asgard.saga.exception.SagaUpdateStatusException;
+import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
+import io.choerodon.asgard.AsgardUpdateStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +21,8 @@ public class SagaMonitorClientCallback implements SagaMonitorClient {
     }
 
     @Override
-    public SagaTaskInstanceDTO updateStatus(Long id, SagaTaskInstanceStatusDTO statusDTO) {
-        throw new SagaUpdateStatusException(id, statusDTO.getStatus());
+    public SagaTaskInstanceDTO updateStatus(Long id, UpdateTaskInstanceStatusDTO statusDTO) {
+        throw new AsgardUpdateStatusException(id, statusDTO.getStatus());
     }
 
 }

@@ -1,4 +1,4 @@
-package io.choerodon.asgard.saga.property;
+package io.choerodon.asgard.property;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

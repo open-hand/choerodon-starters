@@ -1,13 +1,12 @@
 package io.choerodon.asgard.saga;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import io.choerodon.asgard.AsgardApplicationContextHelper;
+import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.asgard.saga.dto.PollCodeDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.saga.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.saga.feign.SagaMonitorClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,18 +19,16 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static io.choerodon.asgard.InstanceCommonUtils.getErrorInfoFromException;
+import static io.choerodon.asgard.InstanceCommonUtils.resultToJson;
 
 public class SagaMonitor {
 
@@ -53,11 +50,13 @@ public class SagaMonitor {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private ScheduledExecutorService scheduledExecutorService;
+
     private Set<SagaTaskInstanceDTO> msgQueue;
 
     private Set<Long> records = Collections.synchronizedSet(new LinkedHashSet<>());
 
-    private final SagaApplicationContextHelper applicationContextHelper;
+    private final AsgardApplicationContextHelper asgardApplicationContextHelper;
 
     private final SagaTaskInstanceStore taskInstanceStore;
 
@@ -66,16 +65,20 @@ public class SagaMonitor {
                        Executor executor,
                        DataSourceTransactionManager transactionManager,
                        Environment environment,
-                       SagaApplicationContextHelper sagaApplicationContextHelper,
-                       SagaTaskInstanceStore taskInstanceStore) {
+                       SagaTaskInstanceStore taskInstanceStore,
+                       AsgardApplicationContextHelper asgardApplicationContextHelper) {
         this.choerodonSagaProperties = choerodonSagaProperties;
         this.sagaMonitorClient = sagaMonitorClient;
         this.executor = executor;
         this.transactionManager = transactionManager;
         this.environment = environment;
-        this.applicationContextHelper = sagaApplicationContextHelper;
+        this.asgardApplicationContextHelper = asgardApplicationContextHelper;
         this.taskInstanceStore = taskInstanceStore;
-        msgQueue = Collections.synchronizedSet(new HashSet<>(choerodonSagaProperties.getMaxPollSize()));
+        msgQueue = Collections.synchronizedSet(new LinkedHashSet<>(choerodonSagaProperties.getMaxPollSize()));
+    }
+
+    public void setScheduledExecutorService(ScheduledExecutorService scheduledExecutorService) {
+        this.scheduledExecutorService = scheduledExecutorService;
     }
 
     static void setEnabledDbRecordTrue() {
@@ -84,7 +87,6 @@ public class SagaMonitor {
 
     @PostConstruct
     private void start() {
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         List<PollCodeDTO> codeDTOS = invokeBeanMap.entrySet().stream().map(t -> new PollCodeDTO(t.getValue().sagaTask.sagaCode(),
                 t.getValue().sagaTask.code())).collect(Collectors.toList());
         final int maxPollSize = choerodonSagaProperties.getMaxPollSize();
@@ -138,8 +140,8 @@ public class SagaMonitor {
         @Override
         public void run() {
             try {
-                sagaMonitorClient.updateStatus(taskInstanceId, new SagaTaskInstanceStatusDTO(taskInstanceId,
-                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, "error.SagaMonitor.updateStatusFailed"));
+                sagaMonitorClient.updateStatus(taskInstanceId, new UpdateTaskInstanceStatusDTO(taskInstanceId,
+                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, "error.SagaMonitor.updateStatusFailed", null));
                 taskInstanceStore.removeTaskInstance(taskInstanceId);
             } catch (Exception e) {
                 LOGGER.warn("error.SagaMonitor.updateStatusFailed.reRun, {}", e);
@@ -188,15 +190,15 @@ public class SagaMonitor {
             if (StringUtils.isEmpty(transactionManagerName)) {
                 platformTransactionManager = transactionManager;
             } else {
-                platformTransactionManager = applicationContextHelper.getSpringFactory()
+                platformTransactionManager = asgardApplicationContextHelper.getSpringFactory()
                         .getBean(transactionManagerName, PlatformTransactionManager.class);
             }
             TransactionStatus status = platformTransactionManager.getTransaction(def);
             try {
                 invokeBean.method.setAccessible(true);
                 final Object result = invokeBean.method.invoke(invokeBean.object, data.getInput());
-                sagaMonitorClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                        SagaDefinition.TaskInstanceStatus.COMPLETED.name(), resultToJson(result), null));
+                sagaMonitorClient.updateStatus(data.getId(), new UpdateTaskInstanceStatusDTO(data.getId(),
+                        SagaDefinition.TaskInstanceStatus.COMPLETED.name(), resultToJson(result, objectMapper), null, null));
                 if (sagaTask.enabledDbRecord()) {
                     taskInstanceStore.removeTaskInstance(data.getId());
                 }
@@ -205,42 +207,11 @@ public class SagaMonitor {
                 platformTransactionManager.rollback(status);
                 String errorMsg = getErrorInfoFromException(e);
                 LOGGER.warn("sagaMonitor invoke method error, transaction rollback, msg {}, cause {}", data, errorMsg);
-                sagaMonitorClient.updateStatus(data.getId(), new SagaTaskInstanceStatusDTO(data.getId(),
-                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, errorMsg));
+                sagaMonitorClient.updateStatus(data.getId(), new UpdateTaskInstanceStatusDTO(data.getId(),
+                        SagaDefinition.TaskInstanceStatus.FAILED.name(), null, errorMsg, null));
                 if (sagaTask.enabledDbRecord()) {
                     taskInstanceStore.removeTaskInstance(data.getId());
                 }
-            }
-        }
-
-        private String resultToJson(final Object result) throws IOException {
-            if (result == null) {
-                return null;
-            }
-            if (result instanceof String) {
-                String resultStr = (String) result;
-                if (resultStr.isEmpty()) {
-                    return null;
-                }
-                JsonNode jsonNode = objectMapper.readTree(resultStr);
-                if (!(jsonNode instanceof ValueNode)) {
-                    return resultStr;
-                }
-            }
-            return objectMapper.writeValueAsString(result);
-        }
-
-        private String getErrorInfoFromException(Throwable e) {
-            try {
-                if (e instanceof InvocationTargetException) {
-                    e = ((InvocationTargetException) e).getTargetException();
-                }
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                return "\r\n" + sw.toString() + "\r\n";
-            } catch (Exception e2) {
-                return "bad getErrorInfoFromException";
             }
         }
     }

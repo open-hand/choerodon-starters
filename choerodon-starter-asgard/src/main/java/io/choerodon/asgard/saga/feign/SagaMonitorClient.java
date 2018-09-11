@@ -2,7 +2,7 @@ package io.choerodon.asgard.saga.feign;
 
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.saga.dto.SagaTaskInstanceStatusDTO;
+import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +20,6 @@ public interface SagaMonitorClient {
 
     @PutMapping("/v1/sagas/tasks/instances/{id}/status")
     SagaTaskInstanceDTO updateStatus(@PathVariable("id") Long id,
-                                     @RequestBody SagaTaskInstanceStatusDTO statusDTO);
+                                     @RequestBody UpdateTaskInstanceStatusDTO statusDTO);
 
 }
