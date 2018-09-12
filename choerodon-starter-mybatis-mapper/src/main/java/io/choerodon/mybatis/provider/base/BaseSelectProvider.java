@@ -72,7 +72,11 @@ public class BaseSelectProvider extends MapperTemplate {
                 || DbType.H2.getValue().equals(dbType.getValue())) {
             sql.append(" LIMIT 1");
         } else if (DbType.ORACLE.getValue().equals(dbType.getValue())) {
-            sql.append(" AND ROWNUM &lt;= 1");
+            StringBuilder sb = new StringBuilder();
+            sb.append("SELECT * FROM (");
+            sb.append(sql);
+            sb.append(") TEM_PAGE WHERE ROWNUM &lt;= 1");
+            sql = sb;
         } else if (DbType.SQLSERVER.getValue().equals(dbType.getValue())) {
             StringBuilder sb = new StringBuilder();
             sb.append("SELECT TOP 1 * FROM (");
