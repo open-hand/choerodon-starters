@@ -32,6 +32,7 @@ import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -261,6 +262,15 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 						  AbstractAgentMsgHandler msgHandler){
 	    return new Controller(stringRedisTemplate,redisTemplate, agentOptionListener,socketProperties,msgHandler);
     }
+
+	@Bean
+	public ServletServerContainerFactoryBean createWebSocketContainer() {
+		ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+		container.setMaxTextMessageBufferSize(500 * 1024);
+		container.setMaxBinaryMessageBufferSize(500 * 1024);
+		return container;
+	}
+
 
 
 	@Autowired
