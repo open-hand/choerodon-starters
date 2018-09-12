@@ -1,5 +1,20 @@
 package io.choerodon.asgard;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
 import io.choerodon.asgard.property.PropertyData;
 import io.choerodon.asgard.property.PropertyDataProcessor;
 import io.choerodon.asgard.property.PropertyEndpoint;
@@ -15,20 +30,6 @@ import io.choerodon.asgard.schedule.JobTaskProcessor;
 import io.choerodon.asgard.schedule.ScheduleMonitor;
 import io.choerodon.asgard.schedule.feign.ScheduleMonitorClient;
 import io.choerodon.asgard.schedule.feign.ScheduleMonitorClientCallback;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import javax.sql.DataSource;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @EnableConfigurationProperties({ChoerodonSagaProperties.class, ChoerodonScheduleProperties.class})
@@ -88,7 +89,7 @@ public class ChoerodonAsgardAutoConfiguration {
 
         @Bean
         public JobTaskProcessor sagaTaskProcessor() {
-            return new JobTaskProcessor(service);
+            return new JobTaskProcessor();
         }
 
         @Bean(name = "scheduleExecutor")

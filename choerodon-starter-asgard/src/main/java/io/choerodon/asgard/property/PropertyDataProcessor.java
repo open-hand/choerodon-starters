@@ -1,17 +1,18 @@
 package io.choerodon.asgard.property;
 
+import java.lang.reflect.Method;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.schedule.annotation.JobTask;
-import io.choerodon.asgard.saga.GenerateJsonExampleUtil;
-import io.choerodon.asgard.saga.SagaDefinition;
-import io.choerodon.asgard.saga.annotation.Saga;
-import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Method;
+import io.choerodon.asgard.saga.GenerateJsonExampleUtil;
+import io.choerodon.asgard.saga.SagaDefinition;
+import io.choerodon.asgard.saga.annotation.Saga;
+import io.choerodon.asgard.saga.annotation.SagaTask;
+import io.choerodon.asgard.schedule.annotation.JobTask;
 
 public class PropertyDataProcessor implements BeanPostProcessor {
 
@@ -60,8 +61,8 @@ public class PropertyDataProcessor implements BeanPostProcessor {
                 }
                 JobTask jobTask = AnnotationUtils.findAnnotation(method, JobTask.class);
                 if (jobTask != null) {
-                    String methodName = propertyData.getService() +  "." + bean.getClass().getName() + "." + method.getName() + "()";
-                    propertyData.addJobTask(new PropertyJobTask(methodName, jobTask.maxRetryCount(), jobTask.params()));
+                    String methodName = bean.getClass().getName() + "." + method.getName();
+                    propertyData.addJobTask(new PropertyJobTask(methodName, jobTask.maxRetryCount(), jobTask.code(), jobTask.description(), jobTask.params()));
                 }
             }
         }
@@ -73,10 +74,10 @@ public class PropertyDataProcessor implements BeanPostProcessor {
         if (!StringUtils.isEmpty(sagaTask.outputSchema())) {
             data.setOutputSchema(sagaTask.outputSchema());
             data.setOutputSchemaSource(SagaDefinition.SagaTaskOutputSchemaSource.OUTPUT_SCHEMA.name());
-        }else if (!sagaTask.outputSchemaClass().equals(Object.class)) {
+        } else if (!sagaTask.outputSchemaClass().equals(Object.class)) {
             data.setOutputSchema(GenerateJsonExampleUtil.generate(sagaTask.outputSchemaClass(), mapper, true));
             data.setOutputSchemaSource(SagaDefinition.SagaTaskOutputSchemaSource.OUTPUT_SCHEMA_CLASS.name());
-        }else {
+        } else {
             data.setOutputSchema(GenerateJsonExampleUtil.generate(method.getReturnType(), mapper, true));
             data.setOutputSchemaSource(SagaDefinition.SagaTaskOutputSchemaSource.METHOD_RETURN_TYPE.name());
         }

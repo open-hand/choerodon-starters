@@ -14,12 +14,6 @@ import java.util.Map;
 
 public class JobTaskProcessor implements BeanPostProcessor {
 
-    private final String service;
-
-    public JobTaskProcessor(String service) {
-        this.service = service;
-    }
-
     @Override
     public Object postProcessBeforeInitialization(Object bean, String s) throws BeansException {
         return bean;
@@ -48,8 +42,7 @@ public class JobTaskProcessor implements BeanPostProcessor {
                     if (!validParam) {
                         throw new InvalidJobTaskMethodException(method);
                     }
-                    String key = service + "." + bean.getClass().getName() + "." + method.getName() + "()";
-                    ScheduleMonitor.addInvokeBean(key, new JobTaskInvokeBean(method, bean, jobTask, key));
+                    ScheduleMonitor.addInvokeBean(jobTask.code(), new JobTaskInvokeBean(method, bean, jobTask));
                 }
             }
         }

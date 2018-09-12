@@ -9,12 +9,10 @@ public class JobTaskInvokeBean {
     final Method method;
     final Object object;
     final JobTask jobTask;
-    final String key;
 
-    public JobTaskInvokeBean(Method method, Object object, JobTask jobTask, String key) {
+    public JobTaskInvokeBean(Method method, Object object, JobTask jobTask) {
         this.method = method;
         this.object = object;
         this.jobTask = jobTask;
-        this.key = key;
     }
 }

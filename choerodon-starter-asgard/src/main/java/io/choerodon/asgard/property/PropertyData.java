@@ -1,12 +1,12 @@
 package io.choerodon.asgard.property;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -15,6 +15,8 @@ import java.util.List;
 public class PropertyData {
 
     private String service;
+    private String code;
+    private String description;
 
     private List<PropertySaga> sagas = new ArrayList<>();
 
