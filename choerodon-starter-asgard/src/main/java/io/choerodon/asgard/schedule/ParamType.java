@@ -4,10 +4,6 @@ public enum ParamType {
     BOOLEAN("Boolean"),
     INTEGER("Integer"),
     LONG("Long"),
-    BYTE("Byte"),
-    SHORT("Short"),
-    CHARACTER("Character"),
-    FLOAT("Float"),
     DOUBLE("Double"),
     STRING("String"),
     ;

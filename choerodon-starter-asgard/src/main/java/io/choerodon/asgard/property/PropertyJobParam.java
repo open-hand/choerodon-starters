@@ -32,23 +32,11 @@ public class PropertyJobParam {
         if (claz.equals(String.class)) {
             return ParamType.STRING;
         }
-        if (claz.equals(Byte.class)) {
-            return ParamType.BYTE;
-        }
-        if (claz.equals(Short.class)) {
-            return ParamType.SHORT;
-        }
-        if (claz.equals(Character.class)) {
-            return ParamType.CHARACTER;
-        }
         if (claz.equals(Integer.class)) {
             return ParamType.INTEGER;
         }
         if (claz.equals(Long.class)) {
             return ParamType.LONG;
-        }
-        if (claz.equals(Float.class)) {
-            return ParamType.FLOAT;
         }
         if (claz.equals(Double.class)) {
             return ParamType.DOUBLE;
