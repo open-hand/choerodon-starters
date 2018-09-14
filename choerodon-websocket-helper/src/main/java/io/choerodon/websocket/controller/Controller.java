@@ -63,18 +63,19 @@ public class Controller {
 
         @Override
         public void run() {
+            long now = System.currentTimeMillis();
             Map<Object,Object> objectMap =stringRedisTemplate.opsForHash().entries(BROKERS_KEY);
             Map<String, String> brokers = (Map<String,String>)(Map)objectMap;
             //check alive of other brokers
             Set<String> brokerIds = brokers.keySet();
-            long now = System.currentTimeMillis();
+            LOGGER.info("now {} and register brokers {}", now, brokers);
             Set<String> existAgents = new HashSet<>();
             Set<String> envs = (Set<String>)(Set)redisTemplate.opsForHash().entries(AGENT_SESSION).keySet();
             for (String brokerId : brokerIds){
                 long brokerLastRenewTime = Long.valueOf(brokers.get(brokerId));
                 long duration = now - brokerLastRenewTime;
-                if( duration > socketProperties.getRegisterInterval()+1000){
-                    LOGGER.info(brokerId+" down !  last renew time is {}, and now is {}, duration {} exceed ",brokerLastRenewTime, now, duration);
+                if( duration > socketProperties.getRegisterInterval()+5000){
+                    LOGGER.warn(brokerId+" down !  last renew time is {}, and now is {}, duration {} exceed ",brokerLastRenewTime, now, duration);
                     //清除注册
                     stringRedisTemplate.opsForHash().delete(BROKERS_KEY,brokerId);
 
@@ -117,7 +118,9 @@ public class Controller {
     class RegisterThread implements Runnable{
         @Override
         public void run() {
-                stringRedisTemplate.opsForHash().put(BROKERS_KEY,SocketHelperAutoConfiguration.BROKER_ID,System.currentTimeMillis()+"");
+                long now = System.currentTimeMillis();
+                stringRedisTemplate.opsForHash().put(BROKERS_KEY,SocketHelperAutoConfiguration.BROKER_ID,now+"");
+                LOGGER.debug("broker {} register at {} ",SocketHelperAutoConfiguration.BROKER_ID , now );
         }
     }
 
