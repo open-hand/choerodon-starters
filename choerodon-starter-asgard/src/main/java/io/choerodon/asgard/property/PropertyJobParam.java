@@ -27,6 +27,8 @@ public class PropertyJobParam {
 
     private String type;
 
+    private String description;
+
     public PropertyJobParam(final JobParam jobParam) {
         this.name = jobParam.name();
         this.type = getParamTypeByClass(jobParam.type()).getValue();
@@ -38,6 +40,7 @@ public class PropertyJobParam {
             }
 
         }
+        this.description=jobParam.description();
     }
 
     private ParamType getParamTypeByClass(final Class<?> claz) {
