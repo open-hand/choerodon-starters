@@ -91,7 +91,7 @@ public class ScheduleMonitor {
                 } else {
                     log.debug("scheduleMonitor skip poll, dbRecordNotEmpty {}, msgQueue {}", msgQueue);
                 }
-            }, 20, pollIntervalMs, TimeUnit.MILLISECONDS);
+            }, 20000, pollIntervalMs, TimeUnit.MILLISECONDS);
         } catch (UnknownHostException e) {
             log.error("scheduleMonitor can't get localhost, failed to start schedule consumer. {}", e.getCause());
         }

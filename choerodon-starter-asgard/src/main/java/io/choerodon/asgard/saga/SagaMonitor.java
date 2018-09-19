@@ -107,7 +107,7 @@ public class SagaMonitor {
                 } else {
                     LOGGER.debug("sagaMonitor skip poll, dbRecordNotEmpty {}, msgQueue {}", noNeedUpdateSagaStatus, msgQueue);
                 }
-            }, 20, choerodonSagaProperties.getPollIntervalMs(), TimeUnit.MILLISECONDS);
+            }, 20000, choerodonSagaProperties.getPollIntervalMs(), TimeUnit.MILLISECONDS);
         } catch (UnknownHostException e) {
             LOGGER.error("sagaMonitor can't get localhost, failed to start saga consumer. {}", e.getCause());
         }
