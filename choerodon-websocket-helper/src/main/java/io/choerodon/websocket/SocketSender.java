@@ -31,14 +31,14 @@ public class SocketSender {
     }
 
     public void sendToSocket(Msg msg){
-        logger.debug("current brockID: "+SocketHelperAutoConfiguration.BROkER_ID);
+        logger.debug("current brockID: "+SocketHelperAutoConfiguration.BROKER_ID);
         if(msg.getPayload() == null){
             msg.setPayload("");
         }
         String err = null;
         logger.debug("receive msg to send to socket with key :"+msg.getKey()+" and length is: "+msg.getPayload().length());
         boolean isAgentSend = false;
-        for (String socketId : msg.getBrokersTO().get(SocketHelperAutoConfiguration.BROkER_ID)){
+        for (String socketId : msg.getBrokersTO().get(SocketHelperAutoConfiguration.BROKER_ID)){
             try{
                 Session session = sessionRepository.getById(socketId);
                 if (session == null){

@@ -126,7 +126,7 @@ public class ExcelDataLoader {
                 Set<String> columnSet = entry.getValue();
                 //如果只有表名没有列集合，跳过整张表
                 if (columnSet == null || columnSet.isEmpty()) {
-                    if (tableName.equals(tableData.getName())) {
+                    if (tableName.equalsIgnoreCase(tableData.getName())) {
                         updateExclusionMap.remove(tableName);
                         logger.info("skip update table : {}", tableData.getName());
                         skipWholeTable = true;
@@ -137,7 +137,7 @@ public class ExcelDataLoader {
             if (skipWholeTable) {
                 continue;
             }
-            Set<String> exclusionColumns = updateExclusionMap.get(tableData.getName());
+            Set<String> exclusionColumns = updateExclusionMap.get(tableData.getName().toLowerCase());
             Set<String> logInfo = new HashSet<>();
             for (TableData.TableRow tableRow : tableData.getTableRows()) {
                 if (tableRow.isExistsFlag()) {

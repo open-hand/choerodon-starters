@@ -7,6 +7,7 @@ import io.choerodon.websocket.helper.PathHelper;
 import io.choerodon.websocket.session.Session;
 import io.choerodon.websocket.websocket.SocketProperties;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.web.socket.server.HandshakeFailureException;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -51,13 +52,13 @@ public class AgentSecurityInterceptor implements SecurityInterceptor {
             boolean success = agentTokenInterceptor.checkToken(request.getServletRequest().getParameter("envId"),
                     request.getServletRequest().getParameter("token"));
             if(!success){
-                throw new RuntimeException("agent token check failed");
+                throw new HandshakeFailureException("agent token check failed");
             }
         }
         if(pathHelper.getSessionType(request.getURI().getPath()) == Session.AGENT){
             String key = request.getServletRequest().getParameter("key");
             if (isEnvAlreadyExist(key)){
-                throw new RuntimeException("already have a agent in this env");
+                throw new HandshakeFailureException("already have a agent in this env");
             }
         }
     }

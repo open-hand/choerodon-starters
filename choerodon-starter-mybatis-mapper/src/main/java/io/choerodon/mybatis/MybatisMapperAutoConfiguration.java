@@ -16,6 +16,7 @@ import io.choerodon.mybatis.spring.resolver.MethodArgParamResolverConfig;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.type.JdbcType;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +101,8 @@ public class MybatisMapperAutoConfiguration  implements EnvironmentAware{
 
             MultiLanguageInterceptor multiLanguageInterceptor = new MultiLanguageInterceptor();
             sqlSessionFactory.getConfiguration().addInterceptor(multiLanguageInterceptor);
-
+            //配置JdbcTypeForNull, oracle数据库必须配置，解决插入null的时候报错问题
+            sqlSessionFactory.getConfiguration().setJdbcTypeForNull(JdbcType.NULL);
         } catch (SQLException e) {
             logger.info("[sql exception]" + e);
         } finally {

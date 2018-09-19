@@ -1,12 +1,11 @@
 package io.choerodon.asgard;
 
-import io.choerodon.asgard.saga.*;
-import io.choerodon.asgard.saga.feign.SagaClientCallback;
-import io.choerodon.asgard.saga.feign.SagaMonitorClient;
-import io.choerodon.asgard.saga.feign.SagaMonitorClientCallback;
-import io.choerodon.asgard.saga.property.PropertyData;
-import io.choerodon.asgard.saga.property.PropertyDataProcessor;
-import io.choerodon.asgard.saga.property.PropertyEndpoint;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,16 +15,33 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import javax.sql.DataSource;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
+import io.choerodon.asgard.property.PropertyData;
+import io.choerodon.asgard.property.PropertyDataProcessor;
+import io.choerodon.asgard.property.PropertyEndpoint;
+import io.choerodon.asgard.saga.ChoerodonSagaProperties;
+import io.choerodon.asgard.saga.SagaMonitor;
+import io.choerodon.asgard.saga.SagaTaskInstanceStore;
+import io.choerodon.asgard.saga.SagaTaskProcessor;
+import io.choerodon.asgard.saga.feign.SagaClientCallback;
+import io.choerodon.asgard.saga.feign.SagaMonitorClient;
+import io.choerodon.asgard.saga.feign.SagaMonitorClientCallback;
+import io.choerodon.asgard.schedule.ChoerodonScheduleProperties;
+import io.choerodon.asgard.schedule.JobTaskProcessor;
+import io.choerodon.asgard.schedule.ScheduleMonitor;
+import io.choerodon.asgard.schedule.feign.ScheduleMonitorClient;
+import io.choerodon.asgard.schedule.feign.ScheduleMonitorClientCallback;
 
 @Configuration
-@EnableConfigurationProperties(ChoerodonSagaProperties.class)
+@EnableConfigurationProperties({ChoerodonSagaProperties.class, ChoerodonScheduleProperties.class})
 public class ChoerodonAsgardAutoConfiguration {
 
     @Value("${spring.application.name}")
     private String service;
+
+    @Bean
+    public AsgardApplicationContextHelper sagaApplicationContextHelper() {
+        return new AsgardApplicationContextHelper();
+    }
 
     @Bean
     public PropertyData propertyData() {
@@ -49,12 +65,62 @@ public class ChoerodonAsgardAutoConfiguration {
         return new SagaClientCallback();
     }
 
-    @ConditionalOnProperty(prefix = "choerodon.saga.consumer", name = "enabled", matchIfMissing = true)
-    static class Consumer {
+    @ConditionalOnProperty(prefix = "choerodon.schedule.consumer", name = "enabled")
+    static class ScheduleConsumer {
+
+        private ChoerodonScheduleProperties scheduleProperties;
+
+        public ScheduleConsumer(ChoerodonScheduleProperties scheduleProperties) {
+            this.scheduleProperties = scheduleProperties;
+        }
+
+        @Bean
+        public ScheduleMonitorClientCallback scheduleMonitorClientCallback() {
+            return new ScheduleMonitorClientCallback();
+        }
+
+        @Value("${spring.application.name}")
+        private String service;
+
+        @Bean(name = "quartzScheduledExecutorService")
+        public ScheduledExecutorService quartzScheduledExecutorService() {
+            return Executors.newScheduledThreadPool(1);
+        }
+
+        @Bean
+        public JobTaskProcessor sagaTaskProcessor() {
+            return new JobTaskProcessor();
+        }
+
+        @Bean(name = "scheduleExecutor")
+        public Executor scheduleExecutor() {
+            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+            executor.setCorePoolSize(scheduleProperties.getThreadNum());
+            executor.setMaxPoolSize(scheduleProperties.getThreadNum());
+            executor.setQueueCapacity(99999);
+            executor.setThreadNamePrefix("Asgard-schedule-consumer-");
+            executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+            executor.initialize();
+            return executor;
+        }
+
+        @Bean
+        public ScheduleMonitor scheduleMonitor(ScheduleMonitorClient scheduleMonitorClient,
+                                               DataSourceTransactionManager transactionManager,
+                                               Environment environment,
+                                               AsgardApplicationContextHelper applicationContextHelper) {
+            return new ScheduleMonitor(transactionManager, environment, scheduleExecutor(), scheduleMonitorClient,
+                    applicationContextHelper, quartzScheduledExecutorService(), scheduleProperties.getPollIntervalMs());
+
+        }
+    }
+
+    @ConditionalOnProperty(prefix = "choerodon.saga.consumer", name = "enabled")
+    static class SagaConsumer {
 
         private ChoerodonSagaProperties choerodonSagaProperties;
 
-        public Consumer(ChoerodonSagaProperties choerodonSagaProperties) {
+        public SagaConsumer(ChoerodonSagaProperties choerodonSagaProperties) {
             this.choerodonSagaProperties = choerodonSagaProperties;
         }
 
@@ -64,20 +130,19 @@ public class ChoerodonAsgardAutoConfiguration {
         }
 
         @Bean
-        public SagaApplicationContextHelper sagaApplicationContextHelper() {
-            return new SagaApplicationContextHelper();
+        public SagaTaskProcessor sagaTaskProcessor(SagaTaskInstanceStore sagaTaskInstanceStore) {
+            return new SagaTaskProcessor(sagaTaskInstanceStore);
         }
 
-        @Bean
-        public SagaProcessor sagaTaskProcessor(SagaTaskInstanceStore sagaTaskInstanceStore,
-                                               SagaApplicationContextHelper applicationContextHelper) {
-            return new SagaProcessor(applicationContextHelper, sagaTaskInstanceStore);
+        @Bean(name = "sagaScheduledExecutorService")
+        public ScheduledExecutorService sagaScheduledExecutorService() {
+            return Executors.newScheduledThreadPool(1);
         }
 
-        @Bean
-        public Executor asyncServiceExecutor() {
+        @Bean(name = "sagaExecutor")
+        public Executor sagaExecutor() {
             ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-            executor.setCorePoolSize(choerodonSagaProperties.getThreadNum());
+            executor.setCorePoolSize(1);
             executor.setMaxPoolSize(choerodonSagaProperties.getThreadNum());
             executor.setQueueCapacity(99999);
             executor.setThreadNamePrefix("Asgard-saga-consumer-");
@@ -95,11 +160,15 @@ public class ChoerodonAsgardAutoConfiguration {
         public SagaMonitor sagaMonitor(SagaMonitorClient sagaMonitorClient,
                                        DataSourceTransactionManager transactionManager,
                                        Environment environment,
-                                       SagaTaskInstanceStore taskInstanceStore) {
-            return new SagaMonitor(choerodonSagaProperties, sagaMonitorClient,
-                    asyncServiceExecutor(), transactionManager,
-                    environment, sagaApplicationContextHelper(),
-                    taskInstanceStore);
+                                       SagaTaskInstanceStore taskInstanceStore,
+                                       AsgardApplicationContextHelper asgardApplicationContextHelper) {
+            SagaMonitor sagaMonitor = new SagaMonitor(choerodonSagaProperties, sagaMonitorClient,
+                    sagaExecutor(), transactionManager,
+                    environment,
+                    taskInstanceStore,
+                    asgardApplicationContextHelper);
+            sagaMonitor.setScheduledExecutorService(sagaScheduledExecutorService());
+            return sagaMonitor;
         }
 
     }

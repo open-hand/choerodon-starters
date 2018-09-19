@@ -32,6 +32,7 @@ import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ import java.util.concurrent.*;
 @EnableConfigurationProperties(SocketProperties.class)
 public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	private static final Logger logger = LoggerFactory.getLogger(SocketHelperAutoConfiguration.class);
-	public static final String BROkER_ID = UUID.randomUUID().toString().replace("-","");
+	public static final String BROKER_ID = UUID.randomUUID().toString().replace("-","");
 	@Autowired
 	SessionRepository sessionRepository;
 	@Autowired
@@ -195,8 +196,8 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 		final ClRedisContainer container = new ClRedisContainer();
 		container.setConnectionFactory(redisConnectionFactory);
 		container.setTaskExecutor(commandTaskExecutor);
-		container.addMessageListener( listenerAdapter, new ChannelTopic(BROkER_ID));
-		container.addMessageListener( listenerAdapter, new ChannelTopic("log"+BROkER_ID));
+		container.addMessageListener( listenerAdapter, new ChannelTopic(BROKER_ID));
+		container.addMessageListener( listenerAdapter, new ChannelTopic("log"+BROKER_ID));
 		return container;
 	}
 
@@ -261,6 +262,15 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 						  AbstractAgentMsgHandler msgHandler){
 	    return new Controller(stringRedisTemplate,redisTemplate, agentOptionListener,socketProperties,msgHandler);
     }
+
+	@Bean
+	public ServletServerContainerFactoryBean createWebSocketContainer() {
+		ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+		container.setMaxTextMessageBufferSize(500 * 1024);
+		container.setMaxBinaryMessageBufferSize(500 * 1024);
+		return container;
+	}
+
 
 
 	@Autowired

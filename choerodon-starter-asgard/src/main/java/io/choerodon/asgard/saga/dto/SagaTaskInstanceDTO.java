@@ -3,12 +3,11 @@ package io.choerodon.asgard.saga.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Objects;
+import java.util.Date;
 
 @Getter
 @Setter
 public class SagaTaskInstanceDTO {
-
     private Long id;
 
     private Long sagaInstanceId;
@@ -51,42 +50,11 @@ public class SagaTaskInstanceDTO {
 
     private String service;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SagaTaskInstanceDTO that = (SagaTaskInstanceDTO) o;
-        return Objects.equals(id, that.id);
-    }
+    private Date plannedStartTime;
 
-    @Override
-    public int hashCode() {
+    private Date actualStartTime;
 
-        return Objects.hash(id);
-    }
+    private Date actualEndTime;
 
-//    @Override
-//    public String toString() {
-//        return "SagaTaskInstanceDTO{" +
-//                "id=" + id +
-//                ", sagaInstanceId=" + sagaInstanceId +
-//                ", taskCode='" + taskCode + '\'' +
-//                ", sagaCode='" + sagaCode + '\'' +
-//                ", instanceLock='" + instanceLock + '\'' +
-//                ", status='" + status + '\'' +
-//                ", seq=" + seq +
-//                ", input='" + input + '\'' +
-//                '}';
-//    }
-
-
-    @Override
-    public String toString() {
-        return "SagaTaskInstanceDTO{" +
-                "id=" + id +
-                ", taskCode='" + taskCode + '\'' +
-                ", sagaCode='" + sagaCode + '\'' +
-                ", instanceLock='" + instanceLock + '\'' +
-                '}';
-    }
+    private Long objectVersionNumber;
 }

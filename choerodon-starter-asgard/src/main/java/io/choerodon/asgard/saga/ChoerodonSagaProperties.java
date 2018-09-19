@@ -11,7 +11,7 @@ public class ChoerodonSagaProperties {
 
     private Integer threadNum = 5;
 
-    private Boolean enabled = true;
+    private Boolean enabled = false;
 
     public Long getPollIntervalMs() {
         return pollIntervalMs;

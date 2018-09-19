@@ -1,9 +1,9 @@
 package io.choerodon.asgard.saga;
 
+import io.choerodon.asgard.saga.annotation.SagaTask;
 import io.choerodon.asgard.saga.exception.SagaTaskCodeNotUniqueError;
 import io.choerodon.asgard.saga.exception.SagaTaskInstanceTableNotExistError;
 import io.choerodon.asgard.saga.exception.SagaTaskMethodParameterError;
-import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
@@ -12,15 +12,11 @@ import java.lang.reflect.Method;
 
 import static io.choerodon.asgard.saga.SagaMonitor.invokeBeanMap;
 
-public class SagaProcessor implements BeanPostProcessor {
-
-    private final SagaApplicationContextHelper applicationContextHelper;
+public class SagaTaskProcessor implements BeanPostProcessor {
 
     private final SagaTaskInstanceStore taskInstanceStore;
 
-    public SagaProcessor(SagaApplicationContextHelper applicationContextHelper,
-                         SagaTaskInstanceStore taskInstanceStore) {
-        this.applicationContextHelper = applicationContextHelper;
+    public SagaTaskProcessor(SagaTaskInstanceStore taskInstanceStore) {
         this.taskInstanceStore = taskInstanceStore;
     }
 
@@ -37,8 +33,7 @@ public class SagaProcessor implements BeanPostProcessor {
                 if (sagaTask != null) {
                     String key = sagaTask.sagaCode() + sagaTask.code();
                     errorCheck(method, sagaTask, key);
-                    Object object = applicationContextHelper.getSpringFactory().getBean(method.getDeclaringClass());
-                    invokeBeanMap.put(key, new SagaTaskInvokeBean(method, object, sagaTask, key));
+                    invokeBeanMap.put(key, new SagaTaskInvokeBean(method, bean, sagaTask, key));
                 }
             }
         }

@@ -97,9 +97,9 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-                byte[] newBytes = new byte[bytesArray.length-1];
-                System.arraycopy(bytesArray, 1, newBytes, 0, bytesArray.length-1);
-                msg.setPayload(new String(newBytes, "utf-8"));
+//                byte[] newBytes = new byte[bytesArray.length-1];
+//                System.arraycopy(bytesArray, 1, newBytes, 0, bytesArray.length-1);
+                msg.setPayload(new String(bytesArray, "utf-8"));
             } else {
                 msg.setBytesPayload(bytesArray);
             }

@@ -275,12 +275,12 @@ public class LiquibaseExecutor {
     private Map<String, Set<String>> processExclusion() {
         Map<String, Set<String>> map = new HashMap<>();
         if (updateExclusion != null) {
-            String[] array = updateExclusion.split(",");
-            for (String str : array) {
+                String[] array = updateExclusion.split(",");
+                for (String str : array) {
                 if (str != null && str.contains(".")) {
                     String[] strArray = str.split("\\.");
-                    String tableName = strArray[0];
-                    String columnName = strArray[1];
+                    String tableName = strArray[0] == null ? null : strArray[0].toLowerCase();
+                    String columnName = strArray[1] == null ? null : strArray[1].toLowerCase();
                     Set<String> columns = map.get(tableName);
                     if (columns == null) {
                         Set<String> set = new HashSet<>();

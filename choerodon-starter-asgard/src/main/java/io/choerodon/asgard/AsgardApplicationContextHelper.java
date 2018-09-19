@@ -1,4 +1,4 @@
-package io.choerodon.asgard.saga;
+package io.choerodon.asgard;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
-public class SagaApplicationContextHelper implements ApplicationContextAware {
+public class AsgardApplicationContextHelper implements ApplicationContextAware {
 
     private DefaultListableBeanFactory springFactory;
 
@@ -22,7 +22,7 @@ public class SagaApplicationContextHelper implements ApplicationContextAware {
         }
     }
 
-    DefaultListableBeanFactory getSpringFactory() {
+    public  DefaultListableBeanFactory getSpringFactory() {
         return springFactory;
     }
 

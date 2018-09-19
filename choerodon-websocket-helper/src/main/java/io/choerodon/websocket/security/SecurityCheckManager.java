@@ -4,6 +4,7 @@ import io.choerodon.websocket.helper.PathHelper;
 import io.choerodon.websocket.session.Session;
 import io.choerodon.websocket.tool.KeyParseTool;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.web.socket.server.HandshakeFailureException;
 
 public class SecurityCheckManager {
     private PathHelper pathHelper;
@@ -18,7 +19,7 @@ public class SecurityCheckManager {
         this.agentSecurityInterceptor = agentSecurityInterceptor;
     }
 
-    public void check(ServletServerHttpRequest request) throws Exception{
+    public void check(ServletServerHttpRequest request) throws HandshakeFailureException {
         String key = request.getServletRequest().getParameter("key");
         if(key == null || key.trim().isEmpty()){
             throw new RuntimeException("Key null");
@@ -37,7 +38,7 @@ public class SecurityCheckManager {
         }else{
             return new SecurityInterceptor() {
                 @Override
-                public void check(ServletServerHttpRequest request) throws Exception {
+                public void check(ServletServerHttpRequest request) throws HandshakeFailureException {
 
                 }
             };
