@@ -12,11 +12,11 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EmailTemplateProcessor implements BeanPostProcessor {
+public class NotifyTemplateProcessor implements BeanPostProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailTemplateProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotifyTemplateProcessor.class);
 
-    private final Set<EmailTemplateScanData> scanDataSet = new HashSet<>(1 << 3);
+    private final Set<NotifyTemplateScanData> scanDataSet = new HashSet<>(1 << 3);
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
@@ -25,40 +25,40 @@ public class EmailTemplateProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
-        if (bean instanceof EmailTemplate) {
-            EmailTemplate template = (EmailTemplate) bean;
-            EmailTemplateScanData scanData = new EmailTemplateScanData(template.businessTypeCode(),
-                    template.code(), template.name(), template.title(), template.content());
-            if (validEmailTemplate(scanData)) {
+        if (bean instanceof NotifyTemplate) {
+            NotifyTemplate template = (NotifyTemplate) bean;
+            NotifyTemplateScanData scanData = new NotifyTemplateScanData(template.businessTypeCode(),
+                    template.code(), template.name(), template.title(), template.content(),template.type());
+            if (validNotifyTemplate(scanData)) {
                 scanDataSet.add(scanData);
             }
         }
         return bean;
     }
 
-    public Set<EmailTemplateScanData> getScanDataSet() {
+    public Set<NotifyTemplateScanData> getScanDataSet() {
         return scanDataSet;
     }
 
-    private boolean validEmailTemplate(final EmailTemplateScanData template) {
+    private boolean validNotifyTemplate(final NotifyTemplateScanData template) {
         if (StringUtils.isEmpty(template.getBusinessType())) {
-            LOGGER.error("error.emailTemplate.businessTypeCodeEmpty {}", template);
+            LOGGER.error("error.notifyTemplate.businessTypeCodeEmpty {}", template);
             return false;
         }
         if (StringUtils.isEmpty(template.getCode())) {
-            LOGGER.error("error.emailTemplate.codeEmpty {}", template);
+            LOGGER.error("error.notifyTemplate.codeEmpty {}", template);
             return false;
         }
         if (StringUtils.isEmpty(template.getName())) {
-            LOGGER.error("error.emailTemplate.nameEmpty {}", template);
+            LOGGER.error("error.notifyTemplate.nameEmpty {}", template);
             return false;
         }
         if (StringUtils.isEmpty(template.getTitle())) {
-            LOGGER.error("error.emailTemplate.titleEmpty {}", template);
+            LOGGER.error("error.notifyTemplate.titleEmpty {}", template);
             return false;
         }
         if (StringUtils.isEmpty(template.getContent())) {
-            LOGGER.error("error.emailTemplate.contentEmpty {}", template);
+            LOGGER.error("error.notifyTemplate.contentEmpty {}", template);
             return false;
         }
         template.setContent(readTemplate(template.getContent()));
@@ -80,7 +80,7 @@ public class EmailTemplateProcessor implements BeanPostProcessor {
                 sb.append(s).append("\n");
             }
         } catch (IOException e) {
-            LOGGER.warn("error.emailTemplateProcessor.readTemplate.IOException {}", e);
+            LOGGER.warn("error.NotifyTemplateProcessor.readTemplate.IOException {}", e);
             return trimContentPath;
         }
         return sb.toString();

@@ -2,8 +2,8 @@ package io.choerodon.swagger.swagger;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import io.choerodon.swagger.notify.EmailTemplateProcessor;
-import io.choerodon.swagger.notify.EmailTemplateScanData;
+import io.choerodon.swagger.notify.NotifyTemplateProcessor;
+import io.choerodon.swagger.notify.NotifyTemplateScanData;
 import io.choerodon.swagger.swagger.extra.ExtraData;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import io.swagger.models.Swagger;
@@ -41,7 +41,7 @@ public class CustomSwagger2Controller {
 
     private static final String CUSTOM_SWAGGER_URL = "/v2/choerodon/api-docs";
 
-    public static final String CUSTOM_EMAIL_URL = "/choerodon/templates/email";
+    public static final String CUSTOM_NOTIFY_URL = "/choerodon/templates/notify";
 
     private static final String HAL_MEDIA_TYPE = "application/hal+json";
 
@@ -49,18 +49,18 @@ public class CustomSwagger2Controller {
 
     private ExtraDataProcessor extraDataProcessor;
 
-    private EmailTemplateProcessor emailTemplateProcessor;
+    private NotifyTemplateProcessor notifyTemplateProcessor;
 
     private DocumentationCache documentationCache;
 
     private ServiceModelToSwagger2Mapper mapper;
 
     public CustomSwagger2Controller(JsonSerializer jsonSerializer, ExtraDataProcessor extraDataProcessor,
-                                    EmailTemplateProcessor emailTemplateProcessor, DocumentationCache documentationCache,
+                                    NotifyTemplateProcessor notifyTemplateProcessor, DocumentationCache documentationCache,
                                     ServiceModelToSwagger2Mapper mapper) {
         this.jsonSerializer = jsonSerializer;
         this.extraDataProcessor = extraDataProcessor;
-        this.emailTemplateProcessor = emailTemplateProcessor;
+        this.notifyTemplateProcessor = notifyTemplateProcessor;
         this.documentationCache = documentationCache;
         this.mapper = mapper;
     }
@@ -69,11 +69,11 @@ public class CustomSwagger2Controller {
     private String hostNameOverride;
 
 
-    @GetMapping(value = CUSTOM_EMAIL_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
+    @GetMapping(value = CUSTOM_NOTIFY_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
     public
     @ResponseBody
-    ResponseEntity<Set<EmailTemplateScanData>> getEmailTemplates() {
-        return new ResponseEntity<>(emailTemplateProcessor.getScanDataSet(), HttpStatus.OK);
+    ResponseEntity<Set<NotifyTemplateScanData>> getNotifyTemplates() {
+        return new ResponseEntity<>(notifyTemplateProcessor.getScanDataSet(), HttpStatus.OK);
     }
 
     @GetMapping(value = CUSTOM_SWAGGER_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})

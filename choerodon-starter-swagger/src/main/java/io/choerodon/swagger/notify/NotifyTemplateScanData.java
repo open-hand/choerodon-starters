@@ -2,23 +2,27 @@ package io.choerodon.swagger.notify;
 
 import java.util.Objects;
 
-public class EmailTemplateScanData {
-
+/**
+ * @author dengyouquan
+ **/
+public class NotifyTemplateScanData {
     private String businessType;
     private String code;
     private String name;
     private String title;
     private String content;
+    private String type;
 
-    public EmailTemplateScanData(String businessType, String code, String name, String title, String content) {
+    public NotifyTemplateScanData() {
+    }
+
+    public NotifyTemplateScanData(String businessType, String code, String name, String title, String content, String type) {
         this.businessType = businessType;
         this.code = code;
         this.name = name;
         this.title = title;
         this.content = content;
-    }
-
-    public EmailTemplateScanData() {
+        this.type = type;
     }
 
     public String getBusinessType() {
@@ -61,14 +65,23 @@ public class EmailTemplateScanData {
         this.content = content;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
-        return "EmailTemplateScanData{" +
+        return "NotifyTemplateScanData{" +
                 "businessType='" + businessType + '\'' +
                 ", code='" + code + '\'' +
                 ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
+                ", type='" + type + '\'' +
                 '}';
     }
 
@@ -76,13 +89,13 @@ public class EmailTemplateScanData {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EmailTemplateScanData that = (EmailTemplateScanData) o;
-        return Objects.equals(code, that.code);
+        NotifyTemplateScanData that = (NotifyTemplateScanData) o;
+        return Objects.equals(getCode(), that.getCode()) &&
+                Objects.equals(getType(), that.getType());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(code);
+        return Objects.hash(getCode(), getType());
     }
 }
