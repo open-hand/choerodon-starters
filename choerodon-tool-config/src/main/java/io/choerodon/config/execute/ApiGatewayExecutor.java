@@ -42,6 +42,7 @@ public class ApiGatewayExecutor extends AbstractExector {
      * @return map
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> executeInternal(Map<String, Object> map) {
         Set<String> extraKeySet = map.keySet().stream()
                 .filter(o -> o.startsWith("zuul.route")).collect(Collectors.toSet());
@@ -58,8 +59,7 @@ public class ApiGatewayExecutor extends AbstractExector {
      *
      * @param map 服务路由信息的map
      */
-    @Transactional(rollbackFor = Exception.class)
-    public void dataImport(Map<String, Object> map) {
+    private void dataImport(Map<String, Object> map) {
         try {
             Map<String, Object> normalMap = map.keySet().stream().collect(Collectors.toMap(
                     i -> i.substring(12),

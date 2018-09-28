@@ -10,8 +10,6 @@ import io.choerodon.config.parser.ParserFactory;
 import io.choerodon.config.utils.ConfigFileFormat;
 import io.choerodon.config.utils.FileUtil;
 import io.choerodon.core.exception.CommonException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +26,6 @@ import java.util.Set;
  * @author wuguokai
  */
 public abstract class AbstractExector implements Executor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractExector.class);
 
     private FileUtil fileUtil = new FileUtil();
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -52,7 +48,7 @@ public abstract class AbstractExector implements Executor {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void execute(String serviceName, String configFile) throws IOException {
+    public void execute(String serviceName, String serviceVersion, String configFile) throws IOException {
         File file = new File(configFile);
         ConfigFileFormat fileFormat = ConfigFileFormat.fromString(fileUtil.getFileExt(file));
         Parser parser = ParserFactory.getParser(fileFormat);
@@ -72,6 +68,7 @@ public abstract class AbstractExector implements Executor {
         if (serviceConfig == null) {
             serviceConfig = new ServiceConfig(serviceName + "." + System.currentTimeMillis(), true, service.getId(),
                     objectMapper.writeValueAsString(map), CONFIG_BY_TOOL, new Date(System.currentTimeMillis()));
+            serviceConfig.setConfigVersion(serviceVersion);
             if (serviceConfigMapper.insert(serviceConfig) != 1) {
                 throw new CommonException("error.serviceConfig.insert");
             }
@@ -80,6 +77,7 @@ public abstract class AbstractExector implements Executor {
             Map<String, Object> mergeMap = mergeMap(baseMap, map);
             String newJson = objectMapper.writeValueAsString(mergeMap);
             serviceConfig.setValue(newJson);
+            serviceConfig.setConfigVersion(serviceVersion);
             if (serviceConfigMapper.updateByPrimaryKeySelective(serviceConfig) != 1) {
                 throw new CommonException("error.serviceConfig.update");
             }
