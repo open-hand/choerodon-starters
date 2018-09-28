@@ -2,20 +2,25 @@ package io.choerodon.websocket.session;
 
 import io.choerodon.websocket.helper.EnvSession;
 import io.choerodon.websocket.listener.OptionalListener;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import java.io.IOException;
 
-import java.util.Map;
-import java.util.Set;
-
+/**
+ * @author crcokitwood
+ */
 public class AgentOptionListener implements OptionalListener {
-    public static final String AGENT_SESSION = "agent-sessions";
+    private static final Logger logger = LoggerFactory.getLogger(AgentOptionListener.class);
+    private static final String AGENT_SESSION = "agent-sessions";
 
     private RedisTemplate<Object,Object> redisTemplate;
+    private SessionRepository sessionRepository;
 
-    public AgentOptionListener(RedisTemplate<Object, Object> redisTemplate) {
+    public AgentOptionListener(RedisTemplate<Object, Object> redisTemplate, SessionRepository sessionRepository) {
         this.redisTemplate = redisTemplate;
+        this.sessionRepository = sessionRepository;
     }
 
     @Override
@@ -24,7 +29,19 @@ public class AgentOptionListener implements OptionalListener {
     }
 
     @Override
-    public void onClose(String key) {
+    public void onClose(String key, boolean isClean) {
         redisTemplate.opsForHash().delete(AGENT_SESSION,key);
+        if (isClean) {
+            for (Session session : sessionRepository.allExecutors()) {
+                if (session.getRegisterKey().equals(key)) {
+                    try {
+                        session.getWebSocketSession().close();
+                    } catch (IOException e) {
+                        logger.warn("close clean timeout session failed {}",e.getMessage());
+                    }
+                }
+            }
+        }
+
     }
 }

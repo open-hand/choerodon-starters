@@ -131,7 +131,7 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
             }
 
             @Override
-            public void onClose(String sessionId) {
+            public void onClose(String sessionId, boolean isClean) {
 
             }
         });
@@ -250,8 +250,8 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	}
 
 	@Bean
-    AgentOptionListener agentOptionListener(RedisTemplate<Object, Object> redisTemplate){
-	    return new AgentOptionListener(redisTemplate);
+    AgentOptionListener agentOptionListener(RedisTemplate<Object, Object> redisTemplate, SessionRepository sessionRepository){
+	    return new AgentOptionListener(redisTemplate, sessionRepository);
     }
 
     @Bean
@@ -261,6 +261,11 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
                           SocketProperties socketProperties,
 						  AbstractAgentMsgHandler msgHandler){
 	    return new Controller(stringRedisTemplate,redisTemplate, agentOptionListener,socketProperties,msgHandler);
+    }
+
+    @Bean
+    AgentEndpoint agentEndpoint (RedisTemplate<Object,Object> redisTemplate) {
+	    return new AgentEndpoint(redisTemplate);
     }
 
 	@Bean
