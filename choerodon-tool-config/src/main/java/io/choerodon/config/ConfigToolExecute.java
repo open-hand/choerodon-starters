@@ -1,9 +1,5 @@
 package io.choerodon.config;
 
-import java.util.List;
-
-import java.io.File;
-
 import io.choerodon.config.domain.Service;
 import io.choerodon.config.execute.Executor;
 import io.choerodon.config.execute.ExecutorFactory;
@@ -11,13 +7,15 @@ import io.choerodon.config.mapper.ServiceMapper;
 import io.choerodon.config.utils.FileUtil;
 import io.choerodon.config.utils.GatewayProperties;
 import io.choerodon.config.utils.ServiceType;
-
 import io.choerodon.mybatis.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * 读取传入的配置信息，并执行初始化配置操作
@@ -38,6 +36,9 @@ public class ConfigToolExecute implements CommandLineRunner {
     @Value("${config.jar:#{null}}")
     private String jar;
 
+    @Value("${service.version:#{null}}")
+    private String serviceVersion;
+
     private FileUtil fileUtil = new FileUtil();
 
     private ServiceMapper serviceMapper;
@@ -49,8 +50,9 @@ public class ConfigToolExecute implements CommandLineRunner {
 
     /**
      * 构造器
-     * @param serviceMapper serviceMapper
-     * @param executorFactory executorFactory
+     *
+     * @param serviceMapper     serviceMapper
+     * @param executorFactory   executorFactory
      * @param gatewayProperties gatewayProperties
      */
     public ConfigToolExecute(ServiceMapper serviceMapper, ExecutorFactory executorFactory, GatewayProperties gatewayProperties) {
@@ -81,7 +83,7 @@ public class ConfigToolExecute implements CommandLineRunner {
             String absConfigFilePath = fileUtil.getDirInJar(fileList, configFileName);
             ServiceType type = judgeType(serviceName);
             Executor executor = executorFactory.getExecutor(type);
-            executor.execute(serviceName, absConfigFilePath);
+            executor.execute(serviceName, serviceVersion, absConfigFilePath);
             System.exit(0);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
@@ -109,7 +111,7 @@ public class ConfigToolExecute implements CommandLineRunner {
      * @return 服务类型枚举类
      */
     private ServiceType judgeType(String serviceName) {
-        for (int i = 0; i < gatewayProperties.getNames().length; i++){
+        for (int i = 0; i < gatewayProperties.getNames().length; i++) {
             if (serviceName.equals(gatewayProperties.getNames()[i])) {
                 return ServiceType.fromString(0);
             }

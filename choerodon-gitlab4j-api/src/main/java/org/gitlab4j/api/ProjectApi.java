@@ -56,14 +56,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.gitlab4j.api.GitLabApi.ApiVersion;
-import org.gitlab4j.api.models.Event;
-import org.gitlab4j.api.models.Issue;
-import org.gitlab4j.api.models.Member;
-import org.gitlab4j.api.models.Project;
-import org.gitlab4j.api.models.ProjectHook;
-import org.gitlab4j.api.models.ProjectUser;
-import org.gitlab4j.api.models.Snippet;
-import org.gitlab4j.api.models.Visibility;
+import org.gitlab4j.api.models.*;
 
 /**
  * This class provides an entry point to all the GitLab API project calls.
@@ -1515,6 +1508,21 @@ public class ProjectApi extends AbstractApi implements Constants {
         formData.param("protected", String.valueOf(protecteds));
         Response response = post(Response.Status.CREATED, formData, "projects", id, "variables");
         return (response.readEntity(Map.class));
+    }
+
+
+    /**
+     * Create a new project variable
+     *
+     * POST /projects/:id/variables
+     *
+     * @param id The ID of a project or urlencoded NAMESPACE/PROJECT_NAME of the project owned by the authenticated user
+     * @return get project variable.
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Variable> getVariable(Integer id) throws GitLabApiException {
+        Response response = get(Response.Status.OK, null, "projects", id, "variables");
+        return (response.readEntity(new GenericType<List<Variable>>() {}));
     }
 
     /**

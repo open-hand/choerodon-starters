@@ -38,7 +38,7 @@ public class AgentSessionListener extends AbstractSessionListener {
     @Override
     public Session onClose(String sessionId) {
         Session session = super.onClose(sessionId);
-        optionalListener.onClose(session.getRegisterKey());
+        optionalListener.onClose(session.getRegisterKey(), false);
         logger.info("agent session close "  + sessionId  +"\nthe count of executor :"+sessionRepository.allExecutors().size());
         return session;
     }

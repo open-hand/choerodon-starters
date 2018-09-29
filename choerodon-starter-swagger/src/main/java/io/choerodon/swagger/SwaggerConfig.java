@@ -1,7 +1,7 @@
 package io.choerodon.swagger;
 
 import io.choerodon.swagger.exclude.EnableHandSwagger2;
-import io.choerodon.swagger.notify.EmailTemplateProcessor;
+import io.choerodon.swagger.notify.NotifyTemplateProcessor;
 import io.choerodon.swagger.swagger.CustomSwagger2Controller;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,9 +60,9 @@ public class SwaggerConfig {
         return new ExtraDataProcessor();
     }
 
-    @Bean("emailTemplateProcessor")
-    public EmailTemplateProcessor emailTemplateProcessor() {
-        return new EmailTemplateProcessor();
+    @Bean("notifyTemplateProcessor")
+    public NotifyTemplateProcessor notifyTemplateProcessor() {
+        return new NotifyTemplateProcessor();
     }
 
     @Bean
@@ -70,7 +70,7 @@ public class SwaggerConfig {
                                                              DocumentationCache documentationCache,
                                                              ServiceModelToSwagger2Mapper mapper) {
         return new CustomSwagger2Controller(jsonSerializer, extraDataProcessor(),
-                emailTemplateProcessor(), documentationCache, mapper);
+                notifyTemplateProcessor(), documentationCache, mapper);
     }
 
 

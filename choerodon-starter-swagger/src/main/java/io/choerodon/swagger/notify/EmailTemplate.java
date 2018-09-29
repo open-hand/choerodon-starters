@@ -1,17 +1,7 @@
 package io.choerodon.swagger.notify;
 
-public interface EmailTemplate {
-
-    String businessTypeCode();
-
-    String code();
-
-    String name();
-
-    String title();
-
-    String content();
-
-
-
+public interface EmailTemplate extends NotifyTemplate {
+    default String type(){
+        return "email";
+    }
 }

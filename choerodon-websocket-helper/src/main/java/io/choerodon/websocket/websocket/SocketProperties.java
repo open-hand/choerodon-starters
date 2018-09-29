@@ -10,9 +10,10 @@ public class SocketProperties {
     private String front = "/ws/**";
     private boolean commandTimeoutEnabled = true;
     //millisecond
-    private long registerInterval = 1000;
+    private long registerInterval = 2000;
     private int maxRedisMsgListenerConcurrency;
     private int commandTimeoutSeconds = 10;
+    private int durationCount = 10;
     /**
      *  don`t dispatch to channel when destination is self
      */
@@ -91,5 +92,13 @@ public class SocketProperties {
 
     public void setDispatchChannel(boolean dispatchChannel) {
         this.dispatchChannel = dispatchChannel;
+    }
+
+    public int getDurationCount() {
+        return durationCount;
+    }
+
+    public void setDurationCount(int durationCount) {
+        this.durationCount = durationCount;
     }
 }

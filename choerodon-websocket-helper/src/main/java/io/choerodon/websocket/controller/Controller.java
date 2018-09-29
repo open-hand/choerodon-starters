@@ -19,12 +19,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Controller {
-    public static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
     //no leader no manage broker
     //public static final String SOCKET_LEADER_KEY ="controller_broker";
-    public static final String BROKERS_KEY = "brokers";
-    public static final String COMMANDS_KEY = "commands";
-    public static final String AGENT_SESSION = "agent-sessions";
+    private static final String BROKERS_KEY = "brokers";
+    private static final String COMMANDS_KEY = "commands";
+    private static final String AGENT_SESSION = "agent-sessions";
     private static final String COMMAND_TIMEOUT = "command_not_send";
     private RedisTemplate<String,String> stringRedisTemplate;
     private RedisTemplate<Object,Object> redisTemplate;
@@ -33,6 +33,7 @@ public class Controller {
     private static final String SOCKET_PREFIX = "SOCKET:";
     private static final String BROKER_SOCKETS_PREFIX = "brokers:";
     private static volatile boolean running = true;
+    private static final long MAX_DURATION = 30000;
     private SocketProperties socketProperties;
     private AbstractAgentMsgHandler agentMsgHandler;
 
@@ -68,13 +69,12 @@ public class Controller {
             Map<String, String> brokers = (Map<String,String>)(Map)objectMap;
             //check alive of other brokers
             Set<String> brokerIds = brokers.keySet();
-            LOGGER.info("now {} and register brokers {}", now, brokers);
             Set<String> existAgents = new HashSet<>();
             Set<String> envs = (Set<String>)(Set)redisTemplate.opsForHash().entries(AGENT_SESSION).keySet();
             for (String brokerId : brokerIds){
                 long brokerLastRenewTime = Long.valueOf(brokers.get(brokerId));
                 long duration = now - brokerLastRenewTime;
-                if( duration > socketProperties.getRegisterInterval()+5000){
+                if( duration > socketProperties.getDurationCount() * socketProperties.getRegisterInterval()){
                     LOGGER.warn(brokerId+" down !  last renew time is {}, and now is {}, duration {} exceed ",brokerLastRenewTime, now, duration);
                     //清除注册
                     stringRedisTemplate.opsForHash().delete(BROKERS_KEY,brokerId);
@@ -92,7 +92,7 @@ public class Controller {
                         //
                         if (envs.contains(key)){
                             LOGGER.info("env "+key+"close----------");
-                            agentOptionListener.onClose(key);
+                            agentOptionListener.onClose(key, true);
                         }
                     }
                     //clean broker sockets
@@ -107,7 +107,7 @@ public class Controller {
             for ( String redisAgentKey : envs ) {
                 if (!existKeys.contains(redisAgentKey)) {
                     LOGGER.info("delete agent session ", redisAgentKey);
-                    agentOptionListener.onClose(redisAgentKey);
+                    agentOptionListener.onClose(redisAgentKey, true);
                 }
             }
         }

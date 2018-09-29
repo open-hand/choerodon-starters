@@ -13,10 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +39,7 @@ public class ApiGatewayExecutor extends AbstractExector {
      * @return map
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> executeInternal(Map<String, Object> map) {
         Set<String> extraKeySet = map.keySet().stream()
                 .filter(o -> o.startsWith("zuul.route")).collect(Collectors.toSet());
@@ -58,8 +56,8 @@ public class ApiGatewayExecutor extends AbstractExector {
      *
      * @param map 服务路由信息的map
      */
-    @Transactional(rollbackFor = Exception.class)
-    public void dataImport(Map<String, Object> map) {
+    @SuppressWarnings("unchecked")
+    private void dataImport(Map<String, Object> map) {
         try {
             Map<String, Object> normalMap = map.keySet().stream().collect(Collectors.toMap(
                     i -> i.substring(12),
@@ -68,13 +66,17 @@ public class ApiGatewayExecutor extends AbstractExector {
             Builder builder = BuilderFactory.getBuilder(ConfigFileFormat.YML);
             String yml = builder.build(normalMap);
             List<ZuulRoute> existZuulRoutes = zuulRouteMapper.selectAll();
-            Set<String> existRouteIds = existZuulRoutes.stream()
-                    .map(ZuulRoute::getName).collect(Collectors.toSet());
+            final Map<String, ZuulRoute> existRouteNameWithIds = new HashMap<>();
+            existZuulRoutes.forEach(t -> existRouteNameWithIds.put(t.getName(), t));
             LinkedHashMap<String, LinkedHashMap> routeMap = mapper.readValue(yml, LinkedHashMap.class);
-            List<ZuulRoute> addOrUpdateZuulRoutes = routeMapToZuulRoute(routeMap).stream()
-                    .filter(i -> !existRouteIds.contains(i.getName())).collect(Collectors.toList());
-            addOrUpdateZuulRoutes.forEach(i -> {
-                i.setBuiltIn(true);
+            routeMapToZuulRoute(routeMap).forEach(i -> {
+                ZuulRoute existRoute = existRouteNameWithIds.get(i.getName());
+                if (existRoute != null) {
+                    i.setId(existRoute.getId());
+                    i.setObjectVersionNumber(existRoute.getObjectVersionNumber());
+                    zuulRouteMapper.updateByPrimaryKeySelective(i);
+                    return;
+                }
                 ZuulRoute pathRoute = new ZuulRoute();
                 pathRoute.setPath(i.getPath());
                 ZuulRoute zuulRoute = zuulRouteMapper.selectOne(pathRoute);
@@ -91,6 +93,7 @@ public class ApiGatewayExecutor extends AbstractExector {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<ZuulRoute> routeMapToZuulRoute(LinkedHashMap<String, LinkedHashMap> routeMap) {
         return routeMap.keySet().stream().map(key -> {
             LinkedHashMap<String, Object> tmp = routeMap.get(key);
@@ -117,9 +120,9 @@ public class ApiGatewayExecutor extends AbstractExector {
             if (tmp.containsKey("stripPrefix")) {
                 route.setStripPrefix((Boolean) tmp.get("stripPrefix"));
             }
+            route.setBuiltIn(true);
             return route;
         }).collect(Collectors.toList());
     }
 
-//    public void
 }

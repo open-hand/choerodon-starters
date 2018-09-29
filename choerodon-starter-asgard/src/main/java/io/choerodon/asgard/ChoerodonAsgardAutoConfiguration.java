@@ -88,7 +88,7 @@ public class ChoerodonAsgardAutoConfiguration {
         }
 
         @Bean
-        public JobTaskProcessor sagaTaskProcessor() {
+        public JobTaskProcessor jobTaskProcessor() {
             return new JobTaskProcessor();
         }
 
