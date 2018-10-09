@@ -8,11 +8,8 @@ maven-test-branches:
   stage: mvn-package
   script:
     - git_merge develop
-#    - mvn package source:jar-no-fork javadoc:jar -DskipTests=false
-    - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package -Dmaven.test.failure.ignore=true -DskipTests=false -U
-#    - mvn --batch-mode verify sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.analysis.mode=preview -Dsonar.gitlab.commit_sha=${CI_COMMIT_SHA} -Dsonar.gitlab.ref_name=${CI_COMMIT_REF_NAME} -Dsonar.gitlab.project_id=${CI_PROJECT_ID}
-    - mvn --batch-mode  verify sonar:sonar  -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.serviceGroup=$GROUP_NAME -Dsonar.analysis.commitId=$CI_COMMIT_SHA -Dsonar.projectKey=$GROUP_NAME:$PROJECT_NAME
-
+    - mvn package source:jar-no-fork javadoc:jar -DskipTests=false
+    - mvn --batch-mode verify sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.analysis.mode=preview -Dsonar.gitlab.commit_sha=${CI_COMMIT_SHA} -Dsonar.gitlab.ref_name=${CI_COMMIT_REF_NAME} -Dsonar.gitlab.project_id=${CI_PROJECT_ID}
   only:
     - branches
   except:
@@ -21,6 +18,19 @@ maven-test-branches:
     - develop
     - /^release-.*$/
     - /^hotfix-.*$/
+
+maven-test-build:
+  stage: mvn-package
+  script:
+    - update_pom_version
+    - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package -Dmaven.test.failure.ignore=true -DskipTests=false -U
+    - mvn --batch-mode  verify sonar:sonar  -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.serviceGroup=$GROUP_NAME -Dsonar.analysis.commitId=$CI_COMMIT_SHA -Dsonar.projectKey=$GROUP_NAME:$PROJECT_NAME
+  only:
+    - master
+    - tags
+    - /^release-.*$/
+    - /^hotfix-.*$/
+
 
 maven-deploy-choerodon:
   stage: maven-deploy
