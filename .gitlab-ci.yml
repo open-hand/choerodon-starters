@@ -8,8 +8,7 @@ maven-test-branches:
   stage: mvn-package
   script:
     - git_merge develop
-    - mvn package source:jar-no-fork javadoc:jar -DskipTests=false
-    - mvn --batch-mode verify sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.analysis.mode=preview -Dsonar.gitlab.commit_sha=${CI_COMMIT_SHA} -Dsonar.gitlab.ref_name=${CI_COMMIT_REF_NAME} -Dsonar.gitlab.project_id=${CI_PROJECT_ID}
+    - mvn package source:jar-no-fork javadoc:jar -DskipTests=true
   only:
     - branches
   except:
