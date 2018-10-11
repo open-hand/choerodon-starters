@@ -1,8 +1,11 @@
 package io.choerodon.swagger.notify;
 
+import io.choerodon.core.notify.NotifyBusinessType;
+import io.choerodon.core.notify.NotifyTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +19,9 @@ public class NotifyTemplateProcessor implements BeanPostProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyTemplateProcessor.class);
 
-    private final Set<NotifyTemplateScanData> scanDataSet = new HashSet<>(1 << 3);
+    private final Set<NotifyTemplateScanData> templateScanData = new HashSet<>(1 << 3);
+
+    private final Set<NotifyBusinessTypeScanData> businessTypeScanData = new HashSet<>(1 << 3);
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
@@ -28,16 +33,25 @@ public class NotifyTemplateProcessor implements BeanPostProcessor {
         if (bean instanceof NotifyTemplate) {
             NotifyTemplate template = (NotifyTemplate) bean;
             NotifyTemplateScanData scanData = new NotifyTemplateScanData(template.businessTypeCode(),
-                    template.code(), template.name(), template.title(), template.content(),template.type());
+                    template.code(), template.name(), template.title(), template.content(), template.type());
             if (validNotifyTemplate(scanData)) {
-                scanDataSet.add(scanData);
+                templateScanData.add(scanData);
             }
+        }
+        NotifyBusinessType business = AnnotationUtils.findAnnotation(bean.getClass(), NotifyBusinessType.class);
+        if (business != null) {
+            businessTypeScanData.add(new NotifyBusinessTypeScanData(business.code(), business.name(), business.description(),
+                    business.level().getValue(), business.retryCount(), business.isSendInstantly(), business.isManualRetry()));
         }
         return bean;
     }
 
-    public Set<NotifyTemplateScanData> getScanDataSet() {
-        return scanDataSet;
+    public Set<NotifyTemplateScanData> getTemplateScanData() {
+        return templateScanData;
+    }
+
+    public Set<NotifyBusinessTypeScanData> getBusinessTypeScanData() {
+        return businessTypeScanData;
     }
 
     private boolean validNotifyTemplate(final NotifyTemplateScanData template) {

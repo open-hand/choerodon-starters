@@ -1,9 +1,10 @@
-package io.choerodon.swagger.notify;
+package io.choerodon.core.notify;
 
 /**
  * @author dengyouquan
  **/
 public interface NotifyTemplate {
+
     String businessTypeCode();
 
     String code();
@@ -15,4 +16,5 @@ public interface NotifyTemplate {
     String content();
 
     String type();
+
 }

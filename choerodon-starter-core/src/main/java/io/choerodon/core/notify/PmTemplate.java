@@ -1,4 +1,4 @@
-package io.choerodon.swagger.notify;
+package io.choerodon.core.notify;
 
 /**
  * @author dengyouquan

@@ -17,7 +17,7 @@
  *
  */
 
-package io.choerodon.swagger;
+package io.choerodon.swagger.swagger;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;

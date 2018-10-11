@@ -1,9 +1,11 @@
-package io.choerodon.swagger.swagger;
+package io.choerodon.swagger;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import io.choerodon.swagger.notify.NotifyScanData;
 import io.choerodon.swagger.notify.NotifyTemplateProcessor;
-import io.choerodon.swagger.notify.NotifyTemplateScanData;
+import io.choerodon.swagger.swagger.CustomSwagger;
+import io.choerodon.swagger.swagger.ForwardedHeader;
 import io.choerodon.swagger.swagger.extra.ExtraData;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import io.swagger.models.Swagger;
@@ -26,7 +28,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -37,7 +38,7 @@ import static org.springframework.util.StringUtils.*;
  */
 @Controller
 @ApiIgnore
-public class CustomSwagger2Controller {
+public class CustomController {
 
     private static final String CUSTOM_SWAGGER_URL = "/v2/choerodon/api-docs";
 
@@ -55,9 +56,9 @@ public class CustomSwagger2Controller {
 
     private ServiceModelToSwagger2Mapper mapper;
 
-    public CustomSwagger2Controller(JsonSerializer jsonSerializer, ExtraDataProcessor extraDataProcessor,
-                                    NotifyTemplateProcessor notifyTemplateProcessor, DocumentationCache documentationCache,
-                                    ServiceModelToSwagger2Mapper mapper) {
+    public CustomController(JsonSerializer jsonSerializer, ExtraDataProcessor extraDataProcessor,
+                            NotifyTemplateProcessor notifyTemplateProcessor, DocumentationCache documentationCache,
+                            ServiceModelToSwagger2Mapper mapper) {
         this.jsonSerializer = jsonSerializer;
         this.extraDataProcessor = extraDataProcessor;
         this.notifyTemplateProcessor = notifyTemplateProcessor;
@@ -72,8 +73,9 @@ public class CustomSwagger2Controller {
     @GetMapping(value = CUSTOM_NOTIFY_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
     public
     @ResponseBody
-    ResponseEntity<Set<NotifyTemplateScanData>> getNotifyTemplates() {
-        return new ResponseEntity<>(notifyTemplateProcessor.getScanDataSet(), HttpStatus.OK);
+    ResponseEntity<NotifyScanData> getNotifyTemplates() {
+        return new ResponseEntity<>(new NotifyScanData(notifyTemplateProcessor.getTemplateScanData(),
+                notifyTemplateProcessor.getBusinessTypeScanData()), HttpStatus.OK);
     }
 
     @GetMapping(value = CUSTOM_SWAGGER_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
