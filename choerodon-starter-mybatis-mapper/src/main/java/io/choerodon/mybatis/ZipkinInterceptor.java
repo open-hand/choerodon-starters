@@ -23,8 +23,8 @@ import org.springframework.cloud.sleuth.SpanAccessor;
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class,
                 RowBounds.class, ResultHandler.class})})
 public class ZipkinInterceptor implements Interceptor {
-    private static Logger logger = LoggerFactory.getLogger(ZipkinInterceptor.class);
 
+    private static Logger logger = LoggerFactory.getLogger(ZipkinInterceptor.class);
 
     private SpanAccessor spanAccessor;
 
@@ -34,7 +34,7 @@ public class ZipkinInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        Object returnValue = null;
+        Object returnValue;
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
         String sqlId = mappedStatement.getId();
         long start = System.currentTimeMillis();
