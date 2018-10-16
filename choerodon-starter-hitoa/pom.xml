@@ -30,5 +30,12 @@
             <artifactId>spring-context</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- 单元测试-->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
