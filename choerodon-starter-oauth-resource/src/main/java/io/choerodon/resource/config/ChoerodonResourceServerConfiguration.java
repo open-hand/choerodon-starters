@@ -33,6 +33,14 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
     @Value("${choerodon.resource.pattern:/v1/*}")
     private String pattern;
 
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/v1/**").antMatchers("/prometheus");
