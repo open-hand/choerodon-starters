@@ -69,6 +69,9 @@ public class CustomController {
     @Value("${springfox.documentation.swagger.v2.host:DEFAULT}")
     private String hostNameOverride;
 
+    public void setHostNameOverride(String hostNameOverride) {
+        this.hostNameOverride = hostNameOverride;
+    }
 
     @GetMapping(value = CUSTOM_NOTIFY_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
     public
