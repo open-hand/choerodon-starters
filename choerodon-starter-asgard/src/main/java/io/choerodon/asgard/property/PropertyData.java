@@ -15,8 +15,6 @@ import lombok.ToString;
 public class PropertyData {
 
     private String service;
-    private String code;
-    private String description;
 
     private List<PropertySaga> sagas = new ArrayList<>();
 

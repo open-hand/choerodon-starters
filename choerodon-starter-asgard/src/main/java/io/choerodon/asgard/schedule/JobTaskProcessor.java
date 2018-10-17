@@ -2,7 +2,6 @@ package io.choerodon.asgard.schedule;
 
 import io.choerodon.asgard.schedule.annotation.JobTask;
 import io.choerodon.asgard.schedule.exception.InvalidJobTaskMethodException;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
@@ -15,12 +14,12 @@ import java.util.Map;
 public class JobTaskProcessor implements BeanPostProcessor {
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String s) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String s) {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String s) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String s) {
         Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
         if (methods != null) {
             for (Method method : methods) {
