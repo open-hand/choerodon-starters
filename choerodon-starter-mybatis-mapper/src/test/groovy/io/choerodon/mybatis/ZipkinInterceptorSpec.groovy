@@ -1,6 +1,5 @@
 package io.choerodon.mybatis
 
-import io.choerodon.core.oauth.DetailsHelper
 import org.apache.ibatis.mapping.BoundSql
 import org.apache.ibatis.mapping.MappedStatement
 import org.apache.ibatis.plugin.Invocation

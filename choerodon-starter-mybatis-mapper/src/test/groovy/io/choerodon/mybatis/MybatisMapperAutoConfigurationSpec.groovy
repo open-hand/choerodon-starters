@@ -1,6 +1,9 @@
 package io.choerodon.mybatis
 
+import org.apache.ibatis.session.Configuration
 import org.apache.ibatis.session.SqlSessionFactory
+import org.springframework.cloud.sleuth.SpanAccessor
+import org.springframework.core.env.Environment
 import spock.lang.Specification
 
 import javax.sql.DataSource
@@ -13,18 +16,18 @@ import java.sql.DatabaseMetaData
 class MybatisMapperAutoConfigurationSpec extends Specification {
 
     def "MapperScannerConfigurer"() {
-        given: ""
+        given: 
         def mybatisMapperAutoConfiguration = new MybatisMapperAutoConfiguration("jdbc:h2")
 
-        when: ""
+        when:
         def configurer = mybatisMapperAutoConfiguration.mapperScannerConfigurer()
 
-        then: ""
+        then:
         true
     }
 
     def "Dialect"() {
-        given: ""
+        given:
         def dataSource = Mock(DataSource)
         def sqlSessionFactory = Mock(SqlSessionFactory)
         def mybatisMapperAutoConfiguration = new MybatisMapperAutoConfiguration()
@@ -33,20 +36,46 @@ class MybatisMapperAutoConfigurationSpec extends Specification {
         def databaseMetaData = Mock(DatabaseMetaData)
         connection.getMetaData() >> databaseMetaData
         databaseMetaData.getDatabaseProductName() >> "MySQL"
+        def configuration = Mock(Configuration)
+        sqlSessionFactory.getConfiguration() >> configuration
 
-        when: ""
+        when:
         mybatisMapperAutoConfiguration.dialect(dataSource, sqlSessionFactory)
 
-        then: ""
+        then:
+        true
 
     }
 
     def "ZipkinInterceptor"() {
+        given:
+        def sqlSessionFactory = Mock(SqlSessionFactory)
+        sqlSessionFactory.getConfiguration() >> Mock(Configuration)
+        def spanAccessor = Mock(SpanAccessor)
+        def mybatisMapperAutoConfiguration = new MybatisMapperAutoConfiguration()
+
+        when:
+        def value = mybatisMapperAutoConfiguration.zipkinInterceptor(sqlSessionFactory, spanAccessor)
+
+        then:
+        value == ""
+
     }
 
     def "GetDatabaseIdProvider"() {
+        given:
+        def mybatisMapperAutoConfiguration = new MybatisMapperAutoConfiguration()
+        when:
+        mybatisMapperAutoConfiguration.getDatabaseIdProvider()
+        then:
+        true
     }
 
     def "SetEnvironment"() {
+        when:
+        def mybatisMapperAutoConfiguration = new MybatisMapperAutoConfiguration()
+        mybatisMapperAutoConfiguration.setEnvironment(Mock(Environment))
+        then:
+        true
     }
 }
