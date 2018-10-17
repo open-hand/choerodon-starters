@@ -16,10 +16,10 @@ class ThreadStateBeanImplSpec extends Specification {
         then: "结果分析"
         noExceptionThrown()
         NEWCount == 0
-        RUNNABLECount!=0
+        RUNNABLECount != 0
         BLOCKEDCount == 0
-        WAITINGCount!=0
+        WAITINGCount != 0
         TIMEDWAITINGCount == 0
-        TERMINATEDCount==0
+        TERMINATEDCount == 0
     }
 }

@@ -10,7 +10,7 @@ import springfox.documentation.spi.service.contexts.OperationContext
 
 @Stepwise
 class PublicPermissionOperationPluginSpec extends Specification {
-    private PublicPermissionOperationPlugin publicPermissionOperationPlugin= new PublicPermissionOperationPlugin()
+    private PublicPermissionOperationPlugin publicPermissionOperationPlugin = new PublicPermissionOperationPlugin()
     Optional<Permission> optional = Mock(Optional)
 
     def "Apply"() {

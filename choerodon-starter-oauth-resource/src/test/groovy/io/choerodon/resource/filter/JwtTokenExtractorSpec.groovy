@@ -33,6 +33,7 @@ class JwtTokenExtractorSpec extends Specification {
         then: "结果分析"
         noExceptionThrown()
     }
+
     def "Extract-2"() {
         given: "准备mock参数"
         def request = Mock(HttpServletRequest)
