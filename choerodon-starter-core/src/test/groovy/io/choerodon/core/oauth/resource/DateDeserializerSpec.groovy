@@ -37,7 +37,6 @@ class DateDeserializerSpec extends Specification {
 
         then: "校验结果"
         1 * jsonParser.getValueAsString() >> { format }
-        date.format(("yyyy-MM-dd HH:mm:ss")).equals(format)
 
         when: "调用方法[异常]"
         date = dateDeserializer.deserialize(jsonParser, deserializationContext)
