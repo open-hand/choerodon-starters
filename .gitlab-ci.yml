@@ -7,14 +7,13 @@ stages:
 maven-test-branches:
   stage: mvn-package
   script:
-    - git_merge develop
+    - git_merge master
     - mvn package source:jar-no-fork javadoc:jar -DskipTests=true
   only:
     - branches
   except:
     - master
     - tags
-    - develop
     - /^release-.*$/
     - /^hotfix-.*$/
 
@@ -37,7 +36,6 @@ maven-deploy-choerodon:
     - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_REPOSITORY_URL}
   only:
     - master
-    - develop
     - tags
     - /^release-.*$/
 
@@ -56,7 +54,7 @@ maven-deploy-ossrh:
     function git_merge(){
         git config user.name ${GITLAB_USER_NAME}
         git config user.email ${GITLAB_USER_EMAIL}
-        git checkout origin/${1:-"develop"}
+        git checkout origin/${1:-"master"}
         git merge ${CI_COMMIT_SHA} --no-commit --no-ff
     }
 
