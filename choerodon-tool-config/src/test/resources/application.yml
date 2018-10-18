@@ -1,0 +1,139 @@
+---
+spring:
+  datasource:
+    url: "jdbc:mysql://127.0.0.1/iam_service?useUnicode=true&characterEncoding=utf-8&useSSL=false"
+    username: "choerodon"
+    password: 123456
+  sleuth:
+    integration:
+      enabled: false
+    scheduled:
+      enabled: false
+    sampler:
+      percentage: 1.0
+    stream:
+      enabled: true
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: "127.0.0.1:9092"
+          zkNodes: "127.0.0.1:2181"
+      bindings:
+        input:
+          destination: "eureka-instance"
+          default-binder: "kafka"
+    bus:
+      enabled: true
+choerodon:
+  helper:
+    jwt-key: "choerodon"
+    oauth-info-uri: "http://oauth-server/oauth/api/user"
+    permission:
+      enabled: true
+      skip-paths: "/**/skip/**, /oauth/**,/prometheus,/health,/env,/metrics"
+      cache-seconds: 600
+      cache-size: 3000
+      check-multiply-match: false
+mybatis:
+  mapperLocations: "classpath*:/mapper/*.xml"
+  configuration:
+    mapUnderscoreToCamelCase: true
+zuul:
+  addHostHeader: true
+  routes:
+    event:
+      path: "/event/**"
+      serviceId: "event-store-service"
+      helperService: "gateway-helper"
+    devops:
+      path: "/devops/**"
+      serviceId: "devops-service"
+    iam:
+      path: "/iam/**"
+      serviceId: "iam-service"
+    oauth:
+      path: "/oauth/**"
+      sensitiveHeaders: null
+      serviceId: "oauth-server"
+      stripPrefix: false
+    notify:
+      path: "/notify/**"
+      serviceId: "notification-service"
+    manager:
+      path: "/manager/**"
+      serviceId: "manager-service"
+    file:
+      path: "/file/**"
+      serviceId: "file-service"
+    org:
+      path: "/org/**"
+      serviceId: "organization-service"
+  semaphore:
+    max-semaphores: 300
+  sensitiveHeaders: "Cookie,Set-Cookie"
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+  client:
+    serviceUrl:
+      defaultZone: "http://localhost:8000/eureka/"
+    registryFetchIntervalSeconds: 10
+    disable-delta: true
+ribbon:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+hystrix:
+  stream:
+    queue:
+      enabled: true
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+security:
+  oauth2:
+    client:
+      grant-type: "client_credentials"
+    resource:
+      userInfoUri: "http://oauth-server/oauth/api/user"
+  ignored:
+  - "/oauth/**"
+  - "/**/skip/**"
+logging:
+  level:
+    com.netflix.discovery.DiscoveryClient: "warn"
+map:
+- datasource:
+    url: "jdbc:mysql://127.0.0.1/iam_service?useUnicode=true&characterEncoding=utf-8&useSSL=false"
+    username: "choerodon"
+    password: 123456
+  sleuth:
+    integration:
+      enabled: false
+    scheduled:
+      enabled: false
+    sampler:
+      percentage: 1.0
+    stream:
+      enabled: true
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: "127.0.0.1:9092"
+          zkNodes: "127.0.0.1:2181"
+      bindings:
+        input:
+          destination: "eureka-instance"
+          default-binder: "kafka"
+    bus:
+      enabled: true
+list:
+- - "list1"
