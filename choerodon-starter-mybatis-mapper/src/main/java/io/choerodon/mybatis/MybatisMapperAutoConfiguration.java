@@ -36,11 +36,18 @@ import java.util.Properties;
 
 @Configuration
 @Import(MethodArgParamResolverConfig.class)
-public class MybatisMapperAutoConfiguration  implements EnvironmentAware{
+public class MybatisMapperAutoConfiguration implements EnvironmentAware {
 
     private static final Logger logger = LoggerFactory.getLogger(MybatisMapperAutoConfiguration.class);
 
     private String datasourceUrl;
+
+    public MybatisMapperAutoConfiguration() {
+    }
+
+    public MybatisMapperAutoConfiguration(String datasourceUrl) {
+        this.datasourceUrl = datasourceUrl;
+    }
 
     /**
      * 配置扫描包路径

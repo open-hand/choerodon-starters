@@ -10,8 +10,6 @@ import org.spockframework.runtime.Sputnik
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.common.exceptions.InvalidTokenException
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor
