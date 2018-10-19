@@ -3,13 +3,20 @@ package io.choerodon.resource.handler
 import io.choerodon.core.exception.CommonException
 import io.choerodon.core.exception.FeignException
 import io.choerodon.core.exception.NotFoundException
+import io.choerodon.resource.IntegrationTestConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.MessageSource
+import org.springframework.context.annotation.Import
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.jdbc.BadSqlGrammarException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.multipart.MultipartException
 import spock.lang.Specification
 
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@Import(IntegrationTestConfiguration)
 class ControllerExceptionHandlerSpec extends Specification {
     private ControllerExceptionHandler controllerExceptionHandler
     private MessageSource messageSource = Mock(MessageSource)
