@@ -1,0 +1,37 @@
+spring:
+  cloud:
+    bus:
+      enabled: false
+  sleuth:
+    stream:
+      enabled: false
+  datasource:
+    password: sa
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
+    username: sa
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+  h2:
+    console:
+      enabled: true
+hystrix:
+  stream:
+    queue:
+      enabled: false
+data:
+  dir: src/main/resources
+eureka:
+  client:
+    enabled: false
+choerodon:
+  devops:
+    message: false
+  saga:
+    consumer:
+      enabled: false # 启动消费端
+      thread-num: 2 # saga消息消费线程池大小
+      max-poll-size: 200 # 每次拉取消息最大数量
+      poll-interval-ms: 1000 # 拉取间隔，默认1000毫秒
+logging:
+  level:
+    io.choerodon.iam: debug
