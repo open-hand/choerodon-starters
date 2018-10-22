@@ -118,6 +118,7 @@
                 <version>1.5</version>
                 <configuration>
                     <providerSelection>2.0</providerSelection>
+                    <source/>
                 </configuration>
                 <dependencies>
                     <dependency>
