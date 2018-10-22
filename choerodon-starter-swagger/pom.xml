@@ -74,6 +74,37 @@
             <version>1.7.4</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
 
+        <!--jacoco-->
+        <!--<dependency>-->
+            <!--<groupId>org.jacoco</groupId>-->
+            <!--<artifactId>jacoco-maven-plugin</artifactId>-->
+            <!--<version>0.8.2</version>-->
+        <!--</dependency>-->
+    </dependencies>
+    <!--&lt;!&ndash;jacoco本地查看分支覆盖率&ndash;&gt;-->
+    <!--<build>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.jacoco</groupId>-->
+                <!--<artifactId>jacoco-maven-plugin</artifactId>-->
+                <!--<version>0.8.2</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>jacoco-initialize</id>-->
+                        <!--<goals>-->
+                            <!--<goal>prepare-agent</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>jacoco-site</id>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>report</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</build>-->
 </project>

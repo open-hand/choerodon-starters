@@ -80,11 +80,14 @@ class ConfigServicePropertySourceLocatorSpec extends Specification {
             entity.getBody() >> {
                 def result = new Environment(Mock(Environment))
                 result.setName("name")
+                result.getName()
                 result.setLabel("label1,label2")
+                result.getLabel()
                 result.setVersion("version")
                 result.setState("state")
                 def profiles = new String[0]
                 result.setProfiles(profiles)
+                result.getProfiles()
                 def source1 = new HashMap<String, Object>()
                 source1.put("zuul.routes.test.path", "path1")
                 source1.put("zuul.routes.test.id", "id1")
