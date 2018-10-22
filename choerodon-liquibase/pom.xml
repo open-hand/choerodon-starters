@@ -11,6 +11,9 @@
 
     <artifactId>choerodon-liquibase</artifactId>
 
+    <properties>
+        <choerodon.starters.version>0.7.0.RELEASE</choerodon.starters.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -72,6 +75,20 @@
             <version>1.7.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-starter-oauth-core</artifactId>
+            <version>${choerodon.starters.version}</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 

@@ -11,14 +11,14 @@ import spock.lang.Specification
  */
 class HystrixInterceptorAutoConfigurationSpec extends Specification {
     def "AddInterceptors"() {
-        given:
+        given: "配置调用环境"
         InterceptorRegistry interceptorRegistry = Mock(InterceptorRegistry)
         HystrixInterceptorAutoConfiguration configuration = new HystrixInterceptorAutoConfiguration()
 
-        when:
+        when: "调用方法"
         configuration.addInterceptors(interceptorRegistry)
 
-        then:
+        then: "期望无异常"
         noExceptionThrown()
     }
 }

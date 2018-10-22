@@ -23,7 +23,6 @@ class FeignRequestInterceptorSpec extends Specification {
 
     void setup() {
         def properties = new CommonProperties()
-//        properties.serviceAccountId = 1L
         interceptor = new FeignRequestInterceptor(properties)
         Method method = interceptor.getClass().getDeclaredMethod("init")
         method.setAccessible(true)
@@ -31,7 +30,7 @@ class FeignRequestInterceptorSpec extends Specification {
     }
 
     def "Apply without security context"() {
-        given:
+        given: "初始化数据"
         def request = new RequestTemplate()
         Constructor<HystrixRequestContext> hystrixRequestContextConstructor = HystrixRequestContext.getDeclaredConstructor()
         hystrixRequestContextConstructor.setAccessible(true)
@@ -41,31 +40,29 @@ class FeignRequestInterceptorSpec extends Specification {
         field.set(hystrix, new ConcurrentHashMap<>())
         HystrixRequestContext.setContextOnCurrentThread(hystrix)
 
-        when:
+        when: "执行apply()方法"
         interceptor.apply(request)
         Field headers = request.getClass().getDeclaredField("headers")
         headers.setAccessible(true)
         def value = (Map<String, Collection<String>>) headers.get(request)
-        then:
+
+        then: "校验结果"
         value != null
     }
 
     def "Apply with security context"() {
-        given:
+        given: "初始化数据"
         def request = new RequestTemplate()
         SecurityContextHolder.setContext(new SecurityContextImpl())
         SecurityContextHolder.getContext().setAuthentication(Mock(Authentication))
 
-        when:
+        when: "调用apply()方法"
         interceptor.apply(request)
         Field headers = request.getClass().getDeclaredField("headers")
         headers.setAccessible(true)
-//        def value = (Map<String, Collection<String>>) headers.get(request)
-//        PowerMockito.when(interceptor.apply(PowerMockito.mock(RequestTemplate)))
-        then:
-//        value != null
+
+        then: "校验方法"
         thrown(NullPointerException)
-//        value.get(RequestVariableHolder.HEADER_LABEL) != null
     }
 
 }

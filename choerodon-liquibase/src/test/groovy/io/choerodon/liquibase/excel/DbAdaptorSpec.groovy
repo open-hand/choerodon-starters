@@ -12,11 +12,7 @@ class DbAdaptorSpec extends Specification {
     private DbAdaptor dbAdaptor
 
     void setup() {
-//        ExcelDataLoader excelDataLoader = Mockito.mock(ExcelDataLoader)
-//        AdditionDataSource additionDataSource = Mockito.mock(AdditionDataSource)
-//        dbAdaptor = new DbAdaptor(excelDataLoader, additionDataSource)
-//        ad.getLiquibaseHelper() >> { new LiquibaseHelper() }
-//        helper.isSupportSequence() >> { true }
+
     }
 
     def "InitConnection"() {
