@@ -1,8 +1,15 @@
 package io.choerodon.resource.permission
 
+import io.choerodon.resource.IntegrationTestConfiguration
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpMethod
 import spock.lang.Specification
 
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@Import(IntegrationTestConfiguration)
 class PublicPermissionSpec extends Specification {
     def "Equals"() {
         given: "参数准备"

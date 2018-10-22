@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.mapper.RoleMapper">
+
+    <insert id="customInsert" keyProperty="id" parameterType="io.choerodon.mapper.RoleDO" useGeneratedKeys="true">
+        <selectKey keyProperty="id" order="AFTER" resultType="long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO
+        iam_role (name,code,description,FD_LEVEL,is_enabled,is_modified,is_enable_forbidden,
+        is_built_in,is_assignable,object_version_number,created_by,creation_date,last_updated_by,last_update_date)
+        VALUES (
+        #{roleDO.name},#{roleDO.code},#{roleDO.description},
+        #{roleDO.level},
+        #{roleDO.enabled},
+        #{roleDO.modified},
+        #{roleDO.enableForbidden},
+        #{roleDO.builtIn},
+        #{roleDO.assignable},
+        #{roleDO.objectVersionNumber},
+        #{roleDO.createdBy},
+        #{roleDO.creationDate},
+        #{roleDO.lastUpdatedBy},
+        #{roleDO.lastUpdateDate}
+        )
+    </insert>
+</mapper>

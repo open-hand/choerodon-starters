@@ -55,6 +55,18 @@ public class DiscoveryClientConfigServiceBootstrapConfiguration {
 
     private HeartbeatMonitor monitor = new HeartbeatMonitor();
 
+    public void setConfig(ConfigClientProperties config) {
+        this.config = config;
+    }
+
+    public void setInstanceProvider(ConfigServerInstanceProvider instanceProvider) {
+        this.instanceProvider = instanceProvider;
+    }
+
+    public void setMonitor(HeartbeatMonitor monitor) {
+        this.monitor = monitor;
+    }
+
     @Bean
     public ConfigServerInstanceProvider configServerInstanceProvider(
             DiscoveryClient discoveryClient) {

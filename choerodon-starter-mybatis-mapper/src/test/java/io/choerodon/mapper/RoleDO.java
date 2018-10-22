@@ -5,6 +5,7 @@ import io.choerodon.mybatis.annotation.MultiLanguage;
 import io.choerodon.mybatis.annotation.MultiLanguageField;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.helper.SelectKeyGenerator;
 
 import javax.persistence.*;
 import java.util.List;

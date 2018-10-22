@@ -61,6 +61,7 @@ class CustomControllerSpec extends Specification {
         builder.build() >> {
             def uriComponents = Mock(UriComponents)
             uriComponents.getPort() >> { return port }
+            uriComponents.getPath() >> { return path }
             return uriComponents
         }
         PowerMockito.when(ServletUriComponentsBuilder.fromServletMapping(request)).thenReturn(builder)
@@ -68,7 +69,9 @@ class CustomControllerSpec extends Specification {
         and: "mock返回值"
         mockDocumentationCache.documentationByGroup(_) >> { return Mock(Documentation) }
         mockMapper.mapDocumentation(_) >> {
-            return Mock(Swagger)
+            def swagger = Mock(Swagger)
+            swagger.getHost() >> { return host }
+            return swagger
         }
         request.getHeader(ForwardedHeader.NAME) >> { return forward }
         request.getHeader("X-Forwarded-Ssl") >> { return "ON" }
@@ -83,11 +86,11 @@ class CustomControllerSpec extends Specification {
         documentation.statusCode.is2xxSuccessful()
 
         where: "分支覆盖"
-        forward                     | port | hostNameOverride
-        "proto=proto;host=host"     | 1    | "DEFAULT"
-        "proto=proto;host=host:111" | 1    | "DEFAULT"
-        "proto=proto;host=host:111" | 1    | ""
-        "source=source"             | -1   | "DEFAULT"
+        forward                     | port | hostNameOverride | host | path
+        "proto=proto;host=host"     | 1    | "DEFAULT"        | null | null
+        "proto=proto;host=host:111" | 1    | "DEFAULT"        | ""   | null
+        "proto=proto;host=host:111" | 1    | ""               | null | ""
+        "source=source"             | -1   | "DEFAULT"        | ""   | ""
 
     }
 

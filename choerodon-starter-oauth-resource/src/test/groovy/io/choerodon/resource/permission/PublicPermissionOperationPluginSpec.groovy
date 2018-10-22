@@ -1,14 +1,21 @@
 package io.choerodon.resource.permission
 
 import com.google.common.base.Optional
+import io.choerodon.resource.IntegrationTestConfiguration
 import io.choerodon.swagger.annotation.Permission
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpMethod
 import spock.lang.Specification
 import spock.lang.Stepwise
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spi.service.contexts.OperationContext
 
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
 @Stepwise
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@Import(IntegrationTestConfiguration)
 class PublicPermissionOperationPluginSpec extends Specification {
     private PublicPermissionOperationPlugin publicPermissionOperationPlugin = new PublicPermissionOperationPlugin()
     Optional<Permission> optional = Mock(Optional)

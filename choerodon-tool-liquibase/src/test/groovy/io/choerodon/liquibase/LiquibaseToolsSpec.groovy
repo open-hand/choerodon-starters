@@ -51,6 +51,11 @@ class LiquibaseToolsSpec extends Specification {
         noExceptionThrown()
 
         1 * liquibaseExecutor.execute(_) >> { false }
+//        when:
+//        LiquibaseTools.main("")
+//
+//        then:
+//        noExceptionThrown()
     }
 
     def "Startup runner 0"() {

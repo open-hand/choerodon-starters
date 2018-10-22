@@ -8,8 +8,11 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import io.choerodon.mybatis.pagehelper.domain.Sort
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
+import org.springframework.http.ResponseEntity
 import spock.lang.Specification
+import spock.lang.Stepwise
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -18,10 +21,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(IntegrationTestConfiguration)
+@Stepwise
 class PageInterceptorSpec extends Specification {
 
     @Autowired
     RoleMapper roleMapper
+    @Autowired
+    TestRestTemplate testRestTemplate
 
     def order = new Sort.Order(Sort.Direction.ASC, "name")
     def sort = new Sort(order)
@@ -75,10 +81,6 @@ class PageInterceptorSpec extends Specification {
         def role = new RoleDO()
         role.setCode("a")
         RoleDO roleDO = roleMapper.selectOne(role)
-//        int objectNumberVersion = roleDO.getObjectVersionNumber()
-//        roleDO.setObjectVersionNumber(0)
-//        roleMapper.updateByPrimaryKey(roleDO)
-//        roleDO.setObjectVersionNumber(objectNumberVersion)
         roleMapper.updateByPrimaryKey(roleDO)
 
         RoleDO r = roleMapper.selectOne(role)
@@ -94,7 +96,28 @@ class PageInterceptorSpec extends Specification {
 
         then:
         roleMapper.selectOne(role) == null
+    }
 
+    def "restPageQuery"() {
+        when:
+        ResponseEntity<Page<RoleDO>> value = testRestTemplate.getForEntity("/v1/test?page=0&size=5&sort=id", Page)
+        then:
+        value.statusCode.is2xxSuccessful()
+        value.body.get(0).getAt("id") == 1
+
+        when: "不传排序字段，按默认id升序排序"
+        ResponseEntity<Page<RoleDO>> value1 = testRestTemplate.getForEntity("/v1/test?page=0&size=5", Page)
+        then:
+        value1.statusCode.is2xxSuccessful()
+        value1.body.get(0).getAt("id") == 1
+    }
+
+    def "restQueryByService"() {
+        when:
+        def value = testRestTemplate.getForEntity("/v1/test_service", String)
+        then:
+        value.statusCode.is2xxSuccessful()
+        value.body != null
     }
 
 }

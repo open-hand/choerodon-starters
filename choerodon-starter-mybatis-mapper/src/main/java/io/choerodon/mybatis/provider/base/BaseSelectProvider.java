@@ -159,7 +159,7 @@ public class BaseSelectProvider extends MapperTemplate {
         StringBuilder sql = new StringBuilder();
         sql.append(SqlHelper.selectCountExists(entityClass));
         sql.append(SqlHelper.selectFromTableTl(entityClass, tableName(entityClass)));
-        sql.append(SqlHelper.wherePkColumns(entityClass));
+        sql.append(SqlHelper.wherePkColumnsTl(entityClass));
         return sql.toString();
     }
 
