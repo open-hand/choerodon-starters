@@ -24,7 +24,7 @@ import spock.lang.Specification
 @PrepareForTest([MappedStatement.class])
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Sputnik.class)
-class MapperTemplateTest extends Specification {
+class MapperTemplateSpec extends Specification {
 
 
     def "processKeyGeneratorWithSequence"() {
