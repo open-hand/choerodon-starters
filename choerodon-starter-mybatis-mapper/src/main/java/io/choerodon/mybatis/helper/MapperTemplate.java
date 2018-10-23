@@ -368,73 +368,7 @@ public abstract class MapperTemplate {
         if (CommonMapperConfigConstant.IDENTITY_JDBC.equalsIgnoreCase(identity)) {
             keyGenerator = new Jdbc3KeyGenerator();
         } else {
-            if (CommonMapperConfigConstant.IDENTITY_SEQUENCE.equalsIgnoreCase(identity)) {
-                //  sql for selectKey
-                DbType DdType = Optional.ofNullable(mapperHelper.getConfig().getDbType()).orElse(DbType.ORACLE);
-                switch (DdType) {
-                    case HANA:
-                        identity = "SELECT " + getSeqNextVal(column) + " FROM DUMMY";
-                        break;
-                    case POSTGRES:
-                        identity = "SELECT nextval('" + column.getTable().getName() + "_s')";
-                        break;
-                    default:
-                        identity = "SELECT " + getSeqNextVal(column) + " FROM DUAL";
-                        break;
-                }
-            }
-            SqlSource sqlSource = new RawSqlSource(configuration, identity, entityClass);
-
-            MappedStatement.Builder statementBuilder =
-                    new MappedStatement.Builder(configuration, keyId, sqlSource, SqlCommandType.SELECT);
-            statementBuilder.resource(ms.getResource());
-            statementBuilder.fetchSize(null);
-            statementBuilder.statementType(StatementType.STATEMENT);
-            statementBuilder.keyGenerator(new NoKeyGenerator());
-            statementBuilder.keyProperty(column.getProperty());
-            statementBuilder.keyColumn(null);
-            statementBuilder.databaseId(null);
-            statementBuilder.lang(configuration.getDefaultScriptingLanuageInstance());
-            statementBuilder.resultOrdered(false);
-            statementBuilder.resulSets(null);
-            statementBuilder.timeout(configuration.getDefaultStatementTimeout());
-
-            List<ParameterMapping> parameterMappings = new ArrayList<>();
-            ParameterMap.Builder inlineParameterMapBuilder = new ParameterMap.Builder(
-                    configuration,
-                    statementBuilder.id() + "-Inline",
-                    entityClass,
-                    parameterMappings);
-            statementBuilder.parameterMap(inlineParameterMapBuilder.build());
-
-            List<ResultMap> resultMaps = new ArrayList<>();
-            ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(
-                    configuration,
-                    statementBuilder.id() + "-Inline",
-                    column.getJavaType(),
-                    new ArrayList<ResultMapping>(),
-                    null);
-            resultMaps.add(inlineResultMapBuilder.build());
-            statementBuilder.resultMaps(resultMaps);
-            statementBuilder.resultSetType(null);
-
-            statementBuilder.flushCacheRequired(false);
-            statementBuilder.useCache(false);
-            statementBuilder.cache(null);
-
-            MappedStatement statement = statementBuilder.build();
-            try {
-                configuration.addMappedStatement(statement);
-            } catch (Exception e) {
-                //ignore
-            }
-            MappedStatement keyStatement = configuration.getMappedStatement(keyId, false);
-            keyGenerator = new SelectKeyGenerator(keyStatement, executeBefore);
-            try {
-                configuration.addKeyGenerator(keyId, keyGenerator);
-            } catch (Exception e) {
-                //ignore
-            }
+            keyGenerator = processKeyGeneratorWithSequence(ms, column, keyId, entityClass, configuration, executeBefore, identity);
         }
         //keyGenerator
         try {
@@ -449,6 +383,78 @@ public abstract class MapperTemplate {
         } catch (Exception e) {
             logger.debug("exception:" + e);
         }
+    }
+
+    private KeyGenerator processKeyGeneratorWithSequence(MappedStatement ms, EntityColumn column, String keyId, Class<?> entityClass, Configuration configuration, Boolean executeBefore, String identity) {
+        KeyGenerator keyGenerator;
+        if (CommonMapperConfigConstant.IDENTITY_SEQUENCE.equalsIgnoreCase(identity)) {
+            //  sql for selectKey
+            DbType DdType = Optional.ofNullable(mapperHelper.getConfig().getDbType()).orElse(DbType.ORACLE);
+            switch (DdType) {
+                case HANA:
+                    identity = "SELECT " + getSeqNextVal(column) + " FROM DUMMY";
+                    break;
+                case POSTGRES:
+                    identity = "SELECT nextval('" + column.getTable().getName() + "_s')";
+                    break;
+                default:
+                    identity = "SELECT " + getSeqNextVal(column) + " FROM DUAL";
+                    break;
+            }
+        }
+        SqlSource sqlSource = new RawSqlSource(configuration, identity, entityClass);
+
+        MappedStatement.Builder statementBuilder =
+                new MappedStatement.Builder(configuration, keyId, sqlSource, SqlCommandType.SELECT);
+        statementBuilder.resource(ms.getResource());
+        statementBuilder.fetchSize(null);
+        statementBuilder.statementType(StatementType.STATEMENT);
+        statementBuilder.keyGenerator(new NoKeyGenerator());
+        statementBuilder.keyProperty(column.getProperty());
+        statementBuilder.keyColumn(null);
+        statementBuilder.databaseId(null);
+        statementBuilder.lang(configuration.getDefaultScriptingLanuageInstance());
+        statementBuilder.resultOrdered(false);
+        statementBuilder.resulSets(null);
+        statementBuilder.timeout(configuration.getDefaultStatementTimeout());
+
+        List<ParameterMapping> parameterMappings = new ArrayList<>();
+        ParameterMap.Builder inlineParameterMapBuilder = new ParameterMap.Builder(
+                configuration,
+                statementBuilder.id() + "-Inline",
+                entityClass,
+                parameterMappings);
+        statementBuilder.parameterMap(inlineParameterMapBuilder.build());
+
+        List<ResultMap> resultMaps = new ArrayList<>();
+        ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(
+                configuration,
+                statementBuilder.id() + "-Inline",
+                column.getJavaType(),
+                new ArrayList<ResultMapping>(),
+                null);
+        resultMaps.add(inlineResultMapBuilder.build());
+        statementBuilder.resultMaps(resultMaps);
+        statementBuilder.resultSetType(null);
+
+        statementBuilder.flushCacheRequired(false);
+        statementBuilder.useCache(false);
+        statementBuilder.cache(null);
+
+        MappedStatement statement = statementBuilder.build();
+        try {
+            configuration.addMappedStatement(statement);
+        } catch (Exception e) {
+            //ignore
+        }
+        MappedStatement keyStatement = configuration.getMappedStatement(keyId, false);
+        keyGenerator = new SelectKeyGenerator(keyStatement, executeBefore);
+        try {
+            configuration.addKeyGenerator(keyId, keyGenerator);
+        } catch (Exception e) {
+            //ignore
+        }
+        return keyGenerator;
     }
 
     public DbType getDbType() {
