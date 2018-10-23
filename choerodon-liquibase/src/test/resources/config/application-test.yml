@@ -17,3 +17,5 @@ data:
 logging:
   level:
     io.choerodon.liquibase: debug
+server:
+  port: 0

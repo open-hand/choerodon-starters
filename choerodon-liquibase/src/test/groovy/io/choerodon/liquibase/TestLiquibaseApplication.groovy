@@ -12,6 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 @SpringBootApplication
 class TestLiquibaseApplication {
     static void main(String[] args) {
-        SpringApplication.run(TestLiquibaseApplication.class, args);
+        SpringApplication.run(TestLiquibaseApplication.class, args)
     }
 }

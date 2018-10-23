@@ -5,9 +5,9 @@ spring:
     username: root
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
-  h2:
-    console:
-      enabled: true
+#  h2:
+#    console:
+#      enabled: true
 data:
   drop: false
   dir: src/test/resources
