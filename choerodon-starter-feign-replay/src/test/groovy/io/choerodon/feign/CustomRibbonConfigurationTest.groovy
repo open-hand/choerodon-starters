@@ -10,13 +10,13 @@ import spock.lang.Specification
  */
 class CustomRibbonConfigurationTest extends Specification {
     def "RibbonRule"() {
-        given:
+        given: "初始化配置"
         CustomRibbonConfiguration configuration = new CustomRibbonConfiguration()
 
-        when:
+        when: "调用方法"
         def value = configuration.ribbonRule()
 
-        then:
+        then: "校验结果"
         value instanceof CustomMetadataRule
     }
 }
