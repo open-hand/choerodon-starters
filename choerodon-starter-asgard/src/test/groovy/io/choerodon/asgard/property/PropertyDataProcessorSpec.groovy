@@ -4,8 +4,11 @@ import io.choerodon.asgard.saga.SagaDefinition
 import io.choerodon.asgard.saga.annotation.Saga
 import io.choerodon.asgard.saga.annotation.SagaTask
 import io.choerodon.asgard.schedule.ParamType
+import io.choerodon.asgard.schedule.QuartzDefinition
 import io.choerodon.asgard.schedule.annotation.JobParam
 import io.choerodon.asgard.schedule.annotation.JobTask
+import io.choerodon.asgard.schedule.annotation.TaskParam
+import io.choerodon.asgard.schedule.annotation.TimedTask
 import org.springframework.transaction.annotation.Isolation
 import spock.lang.Specification
 
@@ -87,6 +90,9 @@ class PropertyDataProcessorSpec extends Specification {
             transactionIsolation = Isolation.DEFAULT,
             transactionManager = "manager"
     )
+    @TimedTask(name = "test", description = "description", oneExecution = true, repeatCount = 0,
+            repeatInterval = 100L, repeatIntervalUnit = QuartzDefinition.SimpleRepeatIntervalUnit.SECONDS,
+            params = @TaskParam(name = "age", value = "11"))
     Map<String, Object> test(Map<String, Object> data) {
         return data
     }
