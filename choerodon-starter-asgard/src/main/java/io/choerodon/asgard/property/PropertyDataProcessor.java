@@ -13,6 +13,7 @@ import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import io.choerodon.asgard.schedule.annotation.JobTask;
+import io.choerodon.asgard.schedule.annotation.TimedTask;
 
 public class PropertyDataProcessor implements BeanPostProcessor {
 
@@ -63,6 +64,12 @@ public class PropertyDataProcessor implements BeanPostProcessor {
                 if (jobTask != null) {
                     String methodName = bean.getClass().getName() + "." + method.getName();
                     propertyData.addJobTask(new PropertyJobTask(methodName, jobTask.maxRetryCount(), jobTask.code(), jobTask.description(), jobTask.params()));
+                    TimedTask timedTask = AnnotationUtils.findAnnotation(method, TimedTask.class);
+                    if (timedTask != null) {
+                        propertyData.addTimedTasks(new PropertyTimedTask(timedTask.name(), timedTask.description(), timedTask.oneExecution(),
+                                jobTask.code(), timedTask.params(), jobTask.params(),
+                                timedTask.repeatCount(), timedTask.repeatInterval(), timedTask.repeatIntervalUnit().name()));
+                    }
                 }
             }
         }
