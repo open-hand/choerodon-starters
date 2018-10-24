@@ -20,6 +20,7 @@ import java.util.List;
 public class RoleDO extends AuditDomain {
     @Id
     @GeneratedValue
+//    @OrderBy
     private Long id;
     @MultiLanguageField
     private String name;

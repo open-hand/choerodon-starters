@@ -36,7 +36,7 @@ public class SagaMonitor {
 
     private final ChoerodonSagaProperties choerodonSagaProperties;
 
-    private final SagaMonitorClient sagaMonitorClient;
+    private SagaMonitorClient sagaMonitorClient;
 
     private final Executor executor;
 
@@ -81,6 +81,10 @@ public class SagaMonitor {
         this.scheduledExecutorService = scheduledExecutorService;
     }
 
+    public void setSagaMonitorClient(SagaMonitorClient sagaMonitorClient) {
+        this.sagaMonitorClient = sagaMonitorClient;
+    }
+
     static void setEnabledDbRecordTrue() {
         SagaMonitor.enabledDbRecord = true;
     }
@@ -92,24 +96,28 @@ public class SagaMonitor {
         final int maxPollSize = choerodonSagaProperties.getMaxPollSize();
         try {
             String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
+            final PollBatchDTO pollBatchDTO = new PollBatchDTO(instance, codeDTOS, maxPollSize);
             LOGGER.info("sagaMonitor prepare to start saga consumer, pollTasks {}, instance {}, maxPollSize {}, ", codeDTOS, instance, maxPollSize);
-            scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                boolean noNeedUpdateSagaStatus = noNeedUpdateSagaStatus();
-                if (noNeedUpdateSagaStatus && msgQueue.isEmpty()) {
-                    try {
-                        List<SagaTaskInstanceDTO> pollMessages = sagaMonitorClient.pollBatch(new PollBatchDTO(instance, codeDTOS, maxPollSize));
-                        LOGGER.debug("sagaMonitor polled messages, size {} data {}", pollMessages.size(), pollMessages);
-                        msgQueue.addAll(pollMessages);
-                        msgQueue.forEach(t -> executor.execute(new InvokeTask(t)));
-                    } catch (Exception e) {
-                        LOGGER.warn("sagaMonitor poll error {}", e.getMessage());
-                    }
-                } else {
-                    LOGGER.debug("sagaMonitor skip poll, dbRecordNotEmpty {}, msgQueue {}", noNeedUpdateSagaStatus, msgQueue);
-                }
-            }, 20000, choerodonSagaProperties.getPollIntervalMs(), TimeUnit.MILLISECONDS);
+            scheduledExecutorService.scheduleWithFixedDelay(() -> invokeRunner(pollBatchDTO),
+                    20000, choerodonSagaProperties.getPollIntervalMs(), TimeUnit.MILLISECONDS);
         } catch (UnknownHostException e) {
             LOGGER.error("sagaMonitor can't get localhost, failed to start saga consumer. {}", e.getCause());
+        }
+    }
+
+    public void invokeRunner(PollBatchDTO pollBatchDTO) {
+        boolean noNeedUpdateSagaStatus = noNeedUpdateSagaStatus();
+        if (noNeedUpdateSagaStatus && msgQueue.isEmpty()) {
+            try {
+                List<SagaTaskInstanceDTO> pollMessages = sagaMonitorClient.pollBatch(pollBatchDTO);
+                LOGGER.debug("sagaMonitor polled messages, size {} data {}", pollMessages.size(), pollMessages);
+                msgQueue.addAll(pollMessages);
+                msgQueue.forEach(t -> executor.execute(new InvokeTask(t)));
+            } catch (Exception e) {
+                LOGGER.warn("sagaMonitor poll error {}", e.getMessage());
+            }
+        } else {
+            LOGGER.debug("sagaMonitor skip poll, dbRecordNotEmpty {}, msgQueue {}", noNeedUpdateSagaStatus, msgQueue);
         }
     }
 

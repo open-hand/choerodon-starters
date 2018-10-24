@@ -3,10 +3,12 @@ package io.choerodon.mybatis
 import io.choerodon.core.domain.Page
 import io.choerodon.mapper.RoleDO
 import io.choerodon.mapper.RoleMapper
+import io.choerodon.mapper.RoleTlMapper
 import io.choerodon.mybatis.pagehelper.PageHelper
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import io.choerodon.mybatis.pagehelper.domain.Sort
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,6 +29,8 @@ class TestController {
     RoleMapper roleMapper
     @Autowired
     RoleServiceImpl roleService
+    @Autowired
+    RoleTlMapper roleTlMapper
 
     @GetMapping("/test")
     ResponseEntity<Page<RoleDO>> query(
@@ -40,7 +44,8 @@ class TestController {
 
     @Transactional
     @GetMapping("/test_service")
-    ResponseEntity<List<RoleDO>> queryByService() {
+    ResponseEntity<List<RoleDO>> queryByService(
+            @SortDefault.SortDefaults([@SortDefault(sort = "dateRecorded", direction = Sort.Direction.DESC), @SortDefault(sort = "encounterId", direction = Sort.Direction.ASC)]) PageRequest pageRequest) {
         RoleDO roleDO = new RoleDO()
         roleDO.setEnabled(true)
         roleService.select(roleDO)
@@ -80,6 +85,18 @@ class TestController {
         roleService.page(roleDO, 0, 10)
         //todo 这里有问题
 //        roleService.existsWithPrimaryKey(1L)
+
+        //insertMultiLanguage多语言被删掉的情况
+        RoleDO role1 = new RoleDO()
+        BeanUtils.copyProperties(role, role1)
+        role1.setCode("020310")
+        roleMapper.insertSelective(role1)
+        long id = role1.getId()
+        roleTlMapper.deleteByPrimaryKey(id)
+        role1.setName("676767")
+        role1.setObjectVersionNumber(1L)
+        roleMapper.updateByPrimaryKeySelective(role1)
+
 
         return new ResponseEntity<>(roleService.selectAll(), HttpStatus.OK)
     }

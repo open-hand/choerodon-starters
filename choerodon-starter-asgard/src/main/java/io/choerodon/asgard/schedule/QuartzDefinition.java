@@ -14,5 +14,10 @@ public class QuartzDefinition {
         FINISHED,
     }
 
-
+    public enum SimpleRepeatIntervalUnit {
+        SECONDS,
+        MINUTES,
+        HOURS,
+        DAYS,
+    }
 }
