@@ -1,19 +1,19 @@
 spring:
   datasource:
-    password: toor
+    password: sa
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
-    username: root
+    username: sa
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
   h2:
     console:
       enabled: true
 data:
-  drop: false
+  drop: true
   dir: src/test/resources
   init: false
   update:
-    exclusion: fd_organization
+    exclusion: FD_ORGANIZATION.NAME
 logging:
   level:
     io.choerodon.liquibase: debug

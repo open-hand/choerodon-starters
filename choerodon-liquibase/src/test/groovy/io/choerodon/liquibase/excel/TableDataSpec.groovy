@@ -3,6 +3,7 @@ package io.choerodon.liquibase.excel
 
 import org.apache.poi.ss.usermodel.Sheet
 import spock.lang.Specification
+
 /**
  *
  * @author zmf
@@ -16,13 +17,6 @@ class TableDataSpec extends Specification {
     void setup() {
         ExcelSeedDataReader dataReader = new ExcelSeedDataReader(this.getClass().getClassLoader().getResourceAsStream("script/db/2018-03-27-init-data.xlsx"))
         tables = dataReader.load()
-
-//        data.setName("IAM_SYSTEM_SETTING")
-//        data.setColumns(new ArrayList<TableData.Column>())
-//        data.setInsert(1)
-//        data.setLangs(new HashSet<String>())
-//        data.setStartCol(3)
-//        data.setStartLine(7)
     }
 
     def "GetStartLine"() {

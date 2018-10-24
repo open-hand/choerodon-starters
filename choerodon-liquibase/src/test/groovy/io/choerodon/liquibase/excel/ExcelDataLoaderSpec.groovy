@@ -2,6 +2,9 @@ package io.choerodon.liquibase.excel
 
 
 import spock.lang.Specification
+
+import java.lang.reflect.Method
+
 /**
  *
  * @author zmf
@@ -70,39 +73,25 @@ class ExcelDataLoaderSpec extends Specification {
         loader.getUpdateExclusionMap().size() == 0
     }
 
-    def "ProcessData"() {
-//        given: "准备上下文"
-//        ExcelDataLoader loader = new ExcelDataLoader()
-//        AdditionDataSource additionDataSource = Mock(AdditionDataSource)
-//        additionDataSource.getLiquibaseHelper() >> { Mock(LiquibaseHelper) }
-////        additionDataSource. >> { Mock(Connection) }
-//        DataSource dataSource = Mock(DataSource)
-//        dataSource.getConnection() >> { Mock(Connection) }
-//        DbAdaptor dbAdaptor = new DbAdaptor(loader, additionDataSource)
-//        dbAdaptor.setDataSource(dataSource)
-//        loader.dbAdaptor = dbAdaptor
-//        loader.setUpdateExclusionMap(new HashMap<String, Set<String>>())
-//
-//        when: "调用方法"
-//        def value = loader.processData()
-//
-//        then: "校验结果"
-//        value.size() == 0
-    }
+    def "errorLog"() {
+        given: "准备上下文"
+        ExcelDataLoader loader = new ExcelDataLoader()
+        List<TableData> tableData = new ArrayList<>()
+        TableData data = new TableData()
+        List<TableData.TableRow> tableRows = new ArrayList<>()
+        TableData.TableRow row = new TableData.TableRow()
+        row.setProcessFlag(true)
+        tableRows.add(row)
+        data.setTableRows(tableRows)
+        tableData.add(data)
 
-    def "ProcessTable"() {
-    }
+        Method errorLog = loader.getClass().getDeclaredMethod("errorLog", List.class)
+        errorLog.setAccessible(true)
 
-    def "UpdateCellFormula"() {
-    }
+        when: "调用方法"
+        def value = errorLog.invoke(loader, tableData)
 
-    def "TryUpdateCell"() {
-    }
-
-    def "FindCell"() {
-    }
-
-    def "Execute"() {
-
+        then: "校验结果"
+        value == 1
     }
 }
