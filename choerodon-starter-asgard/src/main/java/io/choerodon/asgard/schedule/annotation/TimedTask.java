@@ -8,10 +8,9 @@ import java.lang.annotation.Target;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 
 /**
- * @Description: 服务自定义定时任务
- * @Author: Eugen
- * @Mail: longhe1996@foxmail.com
- * @CreateDate: 2018/10/22 17:44
+ * 服务自定义定时任务
+ * @author Eugen
+ * 2018/10/22 17:44
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
