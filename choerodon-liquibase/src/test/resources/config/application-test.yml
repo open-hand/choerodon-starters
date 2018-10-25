@@ -13,7 +13,7 @@ data:
   dir: src/test/resources
   init: false
   update:
-    exclusion: FD_ORGANIZATION.NAME
+    exclusion: FD_ORGANIZATION.NAME,FD_ORGANIZATION,IAM_LABEL.TYPE,IAM_LABEL.FD_LEVEL
 logging:
   level:
     io.choerodon.liquibase: debug

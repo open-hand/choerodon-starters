@@ -14,14 +14,12 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.sql.DataSource
-import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.stream.Collectors
-
 /**
  *
  * @author zmf
@@ -100,11 +98,10 @@ class DbAdaptorSpec extends Specification {
     def "DoUpdate"() {
         given: "初始化"
         PowerMockito.doReturn(false).when(dbAdaptor, "excluded", "test", new HashSet())
-        Method doUpdate = prepareMethod(dbAdaptor.getClass(), "doUpdate", TableData.TableRow.class, Set.class, Set.class)
         MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
 
         when: "调用方法"
-        doUpdate.invoke(dbAdaptor, tableRow, new HashSet<String>(), new HashSet<String>())
+        dbAdaptor.doUpdate(tableRow, new HashSet<String>(), new HashSet<String>())
 
         then: "校验结果"
         noExceptionThrown()
@@ -166,7 +163,6 @@ class DbAdaptorSpec extends Specification {
     def "DoPostUpdate"() {
         given: "初始化"
         TableData.TableRow tableRow = tables.get(0).getTableRows().get(0)
-        def doPostUpdate = prepareMethod(DbAdaptor, "doPostUpdate", TableData.TableRow, TableData.TableCellValue, Long)
         TableData.TableCellValue tableCellValue = Mock(TableData.TableCellValue)
         TableData.Column column = Mock(TableData.Column)
         tableCellValue.getColumn() >> { column }
@@ -175,18 +171,15 @@ class DbAdaptorSpec extends Specification {
         Long value = 5L
 
         when: "调用方法"
-        doPostUpdate.invoke(dbAdaptor, tableRow, tableCellValue, value)
+        dbAdaptor.doPostUpdate(tableRow, tableCellValue, value)
 
         then: "校验结果"
         noExceptionThrown()
     }
 
     def "convert normally"() {
-        given: "初始化"
-        def convertDataType = prepareMethod(DbAdaptor, "convertDataType", String, String)
-
         when: "调用方法"
-        convertDataType.invoke(dbAdaptor, value, type)
+        dbAdaptor.convertDataType(value, type)
 
         then: "校验结果"
         noExceptionThrown()
@@ -200,26 +193,22 @@ class DbAdaptorSpec extends Specification {
     }
 
     def "convertDataType with exception"() {
-        given: "初始化"
-        def convertDataType = prepareMethod(DbAdaptor, "convertDataType", String, String)
-
         when: "调用方法"
-        convertDataType.invoke(dbAdaptor, "2017-1", "DATE")
+        dbAdaptor.convertDataType("2017-1", "DATE")
 
         then: "校验结果"
-        thrown(InvocationTargetException)
+        thrown(RuntimeException)
     }
 
     def "getSeqNextVal"() {
         given: "初始化"
-        def getSeqNextVal = prepareMethod(DbAdaptor, "getSeqNextVal", String)
         MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
         ResultSet resultSet = PowerMockito.mock(ResultSet)
         PowerMockito.when(preparedStatement.executeQuery()).thenReturn(resultSet)
         PowerMockito.when(resultSet.getLong(1)).thenReturn(1L)
 
         when: "调用方法"
-        def result = getSeqNextVal.invoke(dbAdaptor, "FD_ORGANIZATION")
+        def result = dbAdaptor.getSeqNextVal("FD_ORGANIZATION")
 
         then: "校验结果"
         result == 1L
@@ -227,16 +216,15 @@ class DbAdaptorSpec extends Specification {
 
     def "getSeqNextVal with exception"() {
         given: "初始化"
-        def getSeqNextVal = prepareMethod(DbAdaptor, "getSeqNextVal", String)
         MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
         ResultSet resultSet = PowerMockito.mock(ResultSet)
         PowerMockito.when(preparedStatement.executeQuery()).thenReturn(resultSet)
         PowerMockito.when(resultSet.getLong(1)).thenThrow(Mock(SQLException))
 
         when: "调用方法"
-        getSeqNextVal.invoke(dbAdaptor, "FD_ORGANIZATION")
+        dbAdaptor.getSeqNextVal("FD_ORGANIZATION")
 
         then: "校验结果"
-        thrown(InvocationTargetException)
+        thrown(NullPointerException)
     }
 }
