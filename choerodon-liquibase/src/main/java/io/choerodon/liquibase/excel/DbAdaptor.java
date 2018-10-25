@@ -733,7 +733,7 @@ public class DbAdaptor {
                 rs.next();
                 return rs.getLong(1);
             } catch (SQLException e) {
-                logger.error("error get sequence nextVal, tableName:{}" + tableName);
+                logger.error("error get sequence nextVal, tableName:{}", tableName);
                 throw e;
             }
         }

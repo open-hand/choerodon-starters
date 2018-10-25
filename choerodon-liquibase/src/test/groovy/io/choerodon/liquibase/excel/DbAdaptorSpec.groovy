@@ -40,7 +40,7 @@ class DbAdaptorSpec extends Specification {
     @Shared
     List<TableData> tables
 
-    void setup() {
+    def setup() {
         ExcelSeedDataReader dataReader = new ExcelSeedDataReader(this.getClass().getClassLoader().getResourceAsStream("script/db/2018-03-27-init-data.xlsx"))
         tables = dataReader.load()
         PowerMockito.when(additionDataSource.getLiquibaseHelper()).thenReturn(liquibaseHelper)
@@ -69,14 +69,6 @@ class DbAdaptorSpec extends Specification {
         method.setAccessible(true)
         return method
     }
-
-//    private Connection connection() {
-//        def sourceUrl = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;"
-//        def user="sa"
-//        def key="sa"
-//        Class.forName("org.h2.Driver")
-//        return DriverManager.getConnection(sourceUrl, user, key)
-//    }
 
     def "ProcessTableRow"() {
         given: "准备上下文"
@@ -146,12 +138,15 @@ class DbAdaptorSpec extends Specification {
 
     def "weakInsert"() {
         given: "初始化"
-        PowerMockito.doReturn(null).when(dbAdaptor, "checkExists", Mockito.any(TableData.TableRow))
-        PowerMockito.doReturn(1).when(dbAdaptor, "doInsertTl", Mockito.any(TableData.TableRow))
-        PowerMockito.doReturn(1L).when(dbAdaptor, "doInsert", Mockito.any(TableData.TableRow))
         ExcelDataLoader loader = new ExcelDataLoader()
         loader.tables = tables
         MemberModifier.field(DbAdaptor, "dataProcessor").set(dbAdaptor, loader)
+
+        and: "mock私有方法"
+        PowerMockito.doReturn(null).when(dbAdaptor, "checkExists", Mockito.any(TableData.TableRow))
+        PowerMockito.doReturn(1).when(dbAdaptor, "doInsertTl", Mockito.any(TableData.TableRow))
+        PowerMockito.doReturn(1L).when(dbAdaptor, "doInsert", Mockito.any(TableData.TableRow))
+        PowerMockito.when(excelDataLoader.tryUpdateCell(Mockito.any(TableData.TableCellValue))).thenReturn(true)
 
         when: "调用方法"
         dbAdaptor.weakInsert(tables)
