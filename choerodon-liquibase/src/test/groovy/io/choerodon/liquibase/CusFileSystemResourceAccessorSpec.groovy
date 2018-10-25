@@ -33,7 +33,7 @@ class CusFileSystemResourceAccessorSpec extends Specification {
     def "Convert To Path For Exception"() {
         given: "准备上下文"
         CusFileSystemResourceAccessor accessor = new CusFileSystemResourceAccessor("/tmp")
-        MemberModifier.field(CusFileSystemResourceAccessor, "baseDirectory").set(accessor, new File("/tmp"))
+        MemberModifier.field(CusFileSystemResourceAccessor, "baseDirectory").set(accessor, new File("script/db"))
 
         when: "调用方法"
         accessor.convertToPath("asfasfas")
