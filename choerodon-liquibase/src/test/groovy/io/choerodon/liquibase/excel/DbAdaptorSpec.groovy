@@ -14,12 +14,12 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.sql.DataSource
-import java.lang.reflect.Method
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.stream.Collectors
+
 /**
  *
  * @author zmf
@@ -64,10 +64,9 @@ class DbAdaptorSpec extends Specification {
         list.asImmutable()
     }
 
-    private static Method prepareMethod(Class aClass, String methodName, Class... params) {
-        Method method = aClass.getDeclaredMethod(methodName, params)
-        method.setAccessible(true)
-        return method
+    private List<TableData> getAllTables() {
+        ExcelSeedDataReader dataReader = new ExcelSeedDataReader(this.getClass().getClassLoader().getResourceAsStream("script/db/2018-03-27-init-data.xlsx"))
+        return dataReader.load()
     }
 
     def "ProcessTableRow"() {
@@ -83,13 +82,111 @@ class DbAdaptorSpec extends Specification {
         value == 1
     }
 
-    def "CheckExists"() {
+    def "processTableRow when is processed"() {
+        given: "准备上下文"
+        TableData.TableRow tableRow = new TableData.TableRow()
+        tableRow.setProcessFlag(true)
+
+        when: "调用方法"
+        def value = dbAdaptor.processTableRow(tableRow)
+
+        then: "校验结果"
+        value == 0
+    }
+
+    def "ProcessTableRow for indefinite tablerow"() {
+        given: "准备上下文"
+        TableData.TableRow tableRow = Mock(TableData.TableRow)
+        PowerMockito.doReturn(-1L).when(dbAdaptor, "checkExists", tableRow)
+
+        when: "调用方法"
+        def value = dbAdaptor.processTableRow(tableRow)
+
+        then: "校验结果"
+        value == 0
+    }
+
+    def "check exists when statement throws exception"() {
+        given: "初始化"
+        ExcelDataLoader loader = new ExcelDataLoader()
+        loader.tables = tables
+        MemberModifier.field(DbAdaptor, "dataProcessor").set(dbAdaptor, loader)
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
+        ResultSet resultSet = PowerMockito.mock(ResultSet)
+
+        and: "mock私有方法"
+//        PowerMockito.doReturn(null).when(dbAdaptor, "checkExists", Mockito.any(TableData.TableRow))
+        PowerMockito.doReturn(1).when(dbAdaptor, "doInsertTl", Mockito.any(TableData.TableRow))
+        PowerMockito.doReturn(1L).when(dbAdaptor, "doInsert", Mockito.any(TableData.TableRow))
+        PowerMockito.when(excelDataLoader.tryUpdateCell(Mockito.any(TableData.TableCellValue))).thenReturn(true)
+        PowerMockito.when(preparedStatement.executeQuery()).thenReturn(resultSet)
+        PowerMockito.when(resultSet.close()).thenThrow(new SQLException("Failure"))
+
+
+        when: "调用方法"
+        dbAdaptor.weakInsert(tables)
+
+        then: "校验结果"
+        thrown(SQLException)
+    }
+
+    def "do insert for sequence"() {
+        given: "初始化"
+        Connection mockConnection = PowerMockito.mock(Connection)
+        PreparedStatement mockPreparedStatement = PowerMockito.mock(PreparedStatement)
+        ResultSet resultSet = PowerMockito.mock(ResultSet)
+
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, mockConnection)
+        PowerMockito.when(dbAdaptor.sequencePk()).thenReturn(true)
+        PowerMockito.when(mockConnection.prepareStatement(Mockito.any(String), Mockito.anyInt())).thenReturn(mockPreparedStatement)
+        PowerMockito.when(mockConnection.prepareStatement(Mockito.any(String))).thenReturn(mockPreparedStatement)
+        PowerMockito.when(mockPreparedStatement.executeUpdate()).thenThrow(new SQLException("failure"))
+        PowerMockito.when(mockPreparedStatement.executeQuery()).thenReturn(resultSet)
+        PowerMockito.when(resultSet.getLong(1)).thenReturn(1L)
+
+        when: "调用方法"
+        dbAdaptor.doInsert(getAllTables().get(0).getTableRows().get(0))
+
+        then: "校验结果"
+        thrown(SQLException)
+    }
+
+    def "doInsertTl for non existent row"() {
+        given: "初始化"
+        PowerMockito.doReturn(true).when(dbAdaptor, "checkTlExists", Mockito.any(TableData.TableRow), Mockito.any(String))
+
+
+        when: "调用方法"
+        def value = dbAdaptor.doInsertTl(Mock(TableData.TableRow), "zh_CN")
+
+        then: "校验结果"
+        value == 0
+    }
+
+    def "doInsertTl for exception"() {
+        given: "初始化"
+        Connection mockConnection = PowerMockito.mock(Connection)
+        PreparedStatement mockPreparedStatement = PowerMockito.mock(PreparedStatement)
+        ResultSet resultSet = PowerMockito.mock(ResultSet)
+
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, mockConnection)
+        PowerMockito.when(dbAdaptor.sequencePk()).thenReturn(true)
+        PowerMockito.when(mockConnection.prepareStatement(Mockito.any(String), Mockito.anyInt())).thenReturn(mockPreparedStatement)
+        PowerMockito.when(mockConnection.prepareStatement(Mockito.any(String))).thenReturn(mockPreparedStatement)
+        PowerMockito.when(mockPreparedStatement.executeUpdate()).thenThrow(new SQLException("failure"))
+        PowerMockito.when(mockPreparedStatement.executeQuery()).thenReturn(resultSet)
+        PowerMockito.when(resultSet.getLong(1)).thenReturn(1L)
+
+        when: "调用方法"
+        dbAdaptor.doInsert(getAllTables().get(0).getTableRows().get(0))
+
+        then: "校验结果"
+        thrown(SQLException)
     }
 
 
     def "DoUpdate"() {
         given: "初始化"
-        PowerMockito.doReturn(false).when(dbAdaptor, "excluded", "test", new HashSet())
         MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
 
         when: "调用方法"
@@ -102,39 +199,112 @@ class DbAdaptorSpec extends Specification {
         tableRow << fetchTables()
     }
 
+    def "DoUpdate for exception"() {
+        given: "初始化"
+        Connection mockConnection = PowerMockito.mock(Connection)
+        PreparedStatement mockPreparedStatement = PowerMockito.mock(PreparedStatement)
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, mockConnection)
+        PowerMockito.when(mockConnection.prepareStatement(Mockito.any(String))).thenReturn(mockPreparedStatement)
+        PowerMockito.when(mockPreparedStatement.executeUpdate()).thenThrow(new SQLException("failure"))
+
+        when: "调用方法"
+        dbAdaptor.doUpdate(getAllTables().get(0).getTableRows().get(0), new HashSet<String>(), new HashSet<String>())
+
+        then: "校验结果"
+        thrown(SQLException)
+    }
+
+    def "close connection for rollback"() {
+        given: "初始化"
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
+
+        when: "调用方法"
+        dbAdaptor.closeConnection(false)
+
+        then: "校验结果"
+        noExceptionThrown()
+    }
+
+    def "close connection for exception"() {
+        given: "初始化"
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
+        PowerMockito.when(connection.rollback()).thenThrow(new SQLException("Failure"))
+
+        when: "调用方法"
+        dbAdaptor.closeConnection(false)
+
+        then: "校验结果"
+        noExceptionThrown()
+    }
+
     def "processLog"() {
+//        given: "初始化"
+//        TableData.TableRow tableRow = tables.get(2).getTableRows().get(0)
+//        def processLog = prepareMethod(DbAdaptor, "processLog", TableData.TableRow, TableData.TableCellValue)
+//
+//        when: "调用方法"
+//        def value = processLog.invoke(dbAdaptor, tableRow, tableRow.getTableCellValues().get(1))
+//
+//        then: "校验结果"
+//        value != null
         given: "初始化"
-        TableData.TableRow tableRow = tables.get(2).getTableRows().get(0)
-        def processLog = prepareMethod(DbAdaptor, "processLog", TableData.TableRow, TableData.TableCellValue)
+        PowerMockito.doReturn(true).when(dbAdaptor, "excluded", Mockito.any(String), Mockito.any(Set))
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
 
         when: "调用方法"
-        def value = processLog.invoke(dbAdaptor, tableRow, tableRow.getTableCellValues().get(1))
+        dbAdaptor.doUpdate(tableRow, new HashSet<String>(), new HashSet<String>())
 
         then: "校验结果"
-        value != null
+        noExceptionThrown()
+
+        where: "多次执行"
+        tableRow << fetchTables()
     }
 
-    def "getUnpresentFormulaTds"() {
+    def "check exsits for empty table"() {
         given: "初始化"
-        TableData.TableRow tableRow = Mock(TableData.TableRow)
-        def getUnpresentFormulaTds = prepareMethod(DbAdaptor, "getUnpresentFormulaTds", TableData.TableRow)
-        List<TableData.TableCellValue> tableCellValues = new ArrayList<>()
-        TableData.TableCellValue tableCellValue1 = Mock(TableData.TableCellValue)
-        TableData.TableCellValue tableCellValue2 = Mock(TableData.TableCellValue)
-        tableCellValue1.isValuePresent() >> { false }
-        tableCellValue2.isValuePresent() >> { true }
-        tableCellValue1.isFormula() >> { true }
-        tableCellValue2.isFormula() >> { false }
-        tableCellValues.add(tableCellValue1)
-        tableCellValues.add(tableCellValue2)
-        tableRow.getTableCellValues() >> { tableCellValues }
+        TableData.TableRow tableRow = PowerMockito.mock(TableData.TableRow)
+        TableData.TableCellValue tableCellValue = PowerMockito.mock(TableData.TableCellValue)
+        TableData.Column column = PowerMockito.mock(TableData.Column)
+        TableData table = PowerMockito.mock(TableData)
+        List<TableData.TableCellValue> cells = new ArrayList<TableData.TableCellValue>()
+        cells.add(tableCellValue)
+        PowerMockito.when(table.getName()).thenReturn("FD_LABEL")
+        PowerMockito.when(tableRow.getTableCellValues()).thenReturn(cells)
+        PowerMockito.when(tableRow.getTable()).thenReturn(table)
+        PowerMockito.when(tableCellValue.isValuePresent()).thenReturn(false)
+        PowerMockito.when(column.isUnique()).thenReturn(true)
+        PowerMockito.when(tableCellValue.getColumn()).thenReturn(column)
+        MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
 
         when: "调用方法"
-        List<TableData.TableCellValue> values = (List<TableData.TableCellValue>) getUnpresentFormulaTds.invoke(dbAdaptor, tableRow)
+        def value = dbAdaptor.checkExists(tableRow)
 
         then: "校验结果"
-        values.size() == 1
+        value == -1L
     }
+
+//    def "getUnpresentFormulaTds"() {
+//        given: "初始化"
+//        TableData.TableRow tableRow = Mock(TableData.TableRow)
+//        def getUnpresentFormulaTds = prepareMethod(DbAdaptor, "getUnpresentFormulaTds", TableData.TableRow)
+//        List<TableData.TableCellValue> tableCellValues = new ArrayList<>()
+//        TableData.TableCellValue tableCellValue1 = Mock(TableData.TableCellValue)
+//        TableData.TableCellValue tableCellValue2 = Mock(TableData.TableCellValue)
+//        tableCellValue1.isValuePresent() >> { false }
+//        tableCellValue2.isValuePresent() >> { true }
+//        tableCellValue1.isFormula() >> { true }
+//        tableCellValue2.isFormula() >> { false }
+//        tableCellValues.add(tableCellValue1)
+//        tableCellValues.add(tableCellValue2)
+//        tableRow.getTableCellValues() >> { tableCellValues }
+//
+//        when: "调用方法"
+//        List<TableData.TableCellValue> values = (List<TableData.TableCellValue>) getUnpresentFormulaTds.invoke(dbAdaptor, tableRow)
+//
+//        then: "校验结果"
+//        values.size() == 1
+//    }
 
     def "weakInsert"() {
         given: "初始化"
@@ -214,12 +384,12 @@ class DbAdaptorSpec extends Specification {
         MemberModifier.field(DbAdaptor, "connection").set(dbAdaptor, connection)
         ResultSet resultSet = PowerMockito.mock(ResultSet)
         PowerMockito.when(preparedStatement.executeQuery()).thenReturn(resultSet)
-        PowerMockito.when(resultSet.getLong(1)).thenThrow(Mock(SQLException))
+        PowerMockito.when(resultSet.getLong(1)).thenThrow(new SQLException())
 
         when: "调用方法"
         dbAdaptor.getSeqNextVal("FD_ORGANIZATION")
 
         then: "校验结果"
-        thrown(NullPointerException)
+        thrown(SQLException)
     }
 }
