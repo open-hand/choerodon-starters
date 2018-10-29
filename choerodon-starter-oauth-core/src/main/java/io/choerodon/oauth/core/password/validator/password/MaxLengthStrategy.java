@@ -16,7 +16,7 @@ public class MaxLengthStrategy implements PasswordStrategy {
     @Override
     public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
         Integer max = (Integer) policyMap.getPasswordConfig().get(TYPE);
-        if (max != null && max != 0 && password.length()>max) {
+        if (max != null && max != 0 && password.length() > max) {
             throw new CommonException(ERROR_MESSAGE, max);
         }
         return null;

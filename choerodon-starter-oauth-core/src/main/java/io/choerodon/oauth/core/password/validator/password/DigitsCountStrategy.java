@@ -9,7 +9,7 @@ import io.choerodon.oauth.core.password.PasswordPolicyType;
 /**
  * @author wuguokai
  */
-public class DigitsCountStategy implements PasswordStrategy {
+public class DigitsCountStrategy implements PasswordStrategy {
     private static final String ERROR_MESSAGE = "error.password.policy.digits";
     public static final String TYPE = PasswordPolicyType.DIGITS_COUNT.getValue();
 

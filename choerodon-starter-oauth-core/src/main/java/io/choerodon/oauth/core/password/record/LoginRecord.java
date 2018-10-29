@@ -1,23 +1,26 @@
 package io.choerodon.oauth.core.password.record;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
-
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO;
 import io.choerodon.oauth.core.password.domain.BaseLoginHistoryDO;
 import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper;
 import io.choerodon.oauth.core.password.mapper.BaseLoginHistoryMapper;
 
+import java.util.Date;
+
 /**
  * @author wuguokai
  */
 public class LoginRecord {
-    @Autowired
+
     private BaseLoginAttemptTimesMapper baseLoginAttemptTimesMapper;
-    @Autowired
+
     private BaseLoginHistoryMapper baseLoginHistoryMapper;
+
+    public LoginRecord(BaseLoginAttemptTimesMapper baseLoginAttemptTimesMapper, BaseLoginHistoryMapper baseLoginHistoryMapper) {
+        this.baseLoginAttemptTimesMapper = baseLoginAttemptTimesMapper;
+        this.baseLoginHistoryMapper = baseLoginHistoryMapper;
+    }
 
     public void loginError(Long userId) {
         BaseLoginAttemptTimesDO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(userId);
@@ -28,8 +31,8 @@ public class LoginRecord {
             if (baseLoginAttemptTimesMapper.insertSelective(baseLoginAttemptTimesDO) != 1) {
                 throw new CommonException("error.insert.loginAttempt");
             }
-        }else {
-            baseLoginAttemptTimesDO.setLoginAttemptTimes(baseLoginAttemptTimesDO.getLoginAttemptTimes()+1);
+        } else {
+            baseLoginAttemptTimesDO.setLoginAttemptTimes(baseLoginAttemptTimesDO.getLoginAttemptTimes() + 1);
             if (baseLoginAttemptTimesMapper.updateByPrimaryKeySelective(baseLoginAttemptTimesDO) != 1) {
                 throw new CommonException("error.update.loginAttempt");
             }
@@ -46,7 +49,7 @@ public class LoginRecord {
             if (baseLoginHistoryMapper.insertSelective(baseLoginHistoryDO) != 1) {
                 throw new CommonException("error.insert.loginHistory");
             }
-        }else {
+        } else {
             baseLoginHistoryDO.setLastLoginAt(new Date());
             if (baseLoginHistoryMapper.updateByPrimaryKeySelective(baseLoginHistoryDO) != 1) {
                 throw new CommonException("error.update.loginHistory");

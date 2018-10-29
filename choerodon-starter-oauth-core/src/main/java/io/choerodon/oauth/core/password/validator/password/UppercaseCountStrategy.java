@@ -9,9 +9,9 @@ import io.choerodon.oauth.core.password.domain.BaseUserDO;
 /**
  * @author wuguokai
  */
-public class LowercaseCountStategy implements PasswordStrategy {
-    private static final String ERROR_MESSAGE = "error.password.policy.lowerCase";
-    public static final String TYPE = PasswordPolicyType.LOWERCASE_COUNT.getValue();
+public class UppercaseCountStrategy implements PasswordStrategy {
+    private static final String ERROR_MESSAGE = "error.password.policy.upperCase";
+    public static final String TYPE = PasswordPolicyType.UPPERCASE_COUNT.getValue();
 
     @Override
     public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
@@ -19,7 +19,7 @@ public class LowercaseCountStategy implements PasswordStrategy {
         if (min != null && min != 0) {
             int count = 0;
             for (char c : password.toCharArray()) {
-                if (Character.isLowerCase(c)) {
+                if (Character.isUpperCase(c)) {
                     count++;
                 }
             }

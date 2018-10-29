@@ -11,7 +11,6 @@ import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper;
  * @author wuguokai
  */
 public class MaxErrorTimeStrategy implements PasswordStrategy {
-    private static final String ERROR_MESSAGE = "error.password.policy.maxErrorTime";
     private static final String TYPE = PasswordPolicyType.MAX_ERROR_TIME.getValue();
     private static final String ENABLE_LOCK_TYPE = PasswordPolicyType.ENABLE_LOCK.getValue();
 
@@ -28,14 +27,11 @@ public class MaxErrorTimeStrategy implements PasswordStrategy {
         if (enableLock) {
             BaseLoginAttemptTimesDO loginAttemptTimesDO = new BaseLoginAttemptTimesDO();
             loginAttemptTimesDO.setUserId(userDO.getId());
-            loginAttemptTimesDO  = loginAttemptTimesMapper.selectOne(loginAttemptTimesDO);
-            if (loginAttemptTimesDO == null){
+            loginAttemptTimesDO = loginAttemptTimesMapper.selectOne(loginAttemptTimesDO);
+            if (loginAttemptTimesDO == null) {
                 return true;
             }
-            Integer attemptTimes = loginAttemptTimesDO.getLoginAttemptTimes();
-            if (attemptTimes >= max) {
-                return false;
-            }
+            return loginAttemptTimesDO.getLoginAttemptTimes() < max;
         }
         return true;
     }
