@@ -47,7 +47,7 @@ class PasswordPolicyMapSpec extends Specification {
         pdo.setterThree(true, true, 2, true, 3)
 
         when:
-        def result = PasswordPolicyMap.parse(null, pdo)
+        def result = PasswordPolicyMap.parse(pdo)
 
         then:
         result != null
