@@ -18,7 +18,7 @@ public class PasswordStrategyStore {
         this.context = context;
     }
     @PostConstruct
-    private void init() {
+    public void init() {
         Map<String, PasswordStrategy> passwordStrategyMap = context.getBeansOfType(PasswordStrategy.class);
         for (Map.Entry<String, PasswordStrategy> entry : passwordStrategyMap.entrySet()) {
             String type = entry.getValue().getType();
@@ -33,4 +33,5 @@ public class PasswordStrategyStore {
     public PasswordStrategy getProvider(String key){
         return strategyMap.get(key);
     }
+
 }

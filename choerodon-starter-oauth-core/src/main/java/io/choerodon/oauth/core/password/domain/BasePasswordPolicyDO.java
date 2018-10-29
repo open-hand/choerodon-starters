@@ -1,12 +1,12 @@
 package io.choerodon.oauth.core.password.domain;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @author wuguokai
@@ -38,6 +38,43 @@ public class BasePasswordPolicyDO extends AuditDomain {
     private Integer lockedExpireTime;
     private Boolean enableCaptcha;
     private Integer maxCheckCaptcha;
+
+    public BasePasswordPolicyDO() {
+        //empty
+    }
+
+    public void setterOne(String name, Long organizationId, String originalPassword,
+                          Integer minLength, Integer maxLength,
+                          Integer maxErrorTime, Integer digitsCount) {
+        this.name = name;
+        this.organizationId = organizationId;
+        this.originalPassword = originalPassword;
+        this.minLength = minLength;
+        this.maxLength = maxLength;
+        this.maxErrorTime = maxErrorTime;
+        this.digitsCount = digitsCount;
+    }
+
+    public void setterTwo(Integer lowercaseCount, Integer uppercaseCount,
+                          Integer specialCharCount, Boolean notUsername,
+                          String regularExpression, Integer notRecentCount, Boolean enablePassword) {
+        this.lowercaseCount = lowercaseCount;
+        this.uppercaseCount = uppercaseCount;
+        this.specialCharCount = specialCharCount;
+        this.notUsername = notUsername;
+        this.regularExpression = regularExpression;
+        this.notRecentCount = notRecentCount;
+        this.enablePassword = enablePassword;
+    }
+
+    public void setterThree(Boolean enableSecurity, Boolean enableLock, Integer lockedExpireTime,
+                            Boolean enableCaptcha, Integer maxCheckCaptcha) {
+        this.enableSecurity = enableSecurity;
+        this.enableLock = enableLock;
+        this.lockedExpireTime = lockedExpireTime;
+        this.enableCaptcha = enableCaptcha;
+        this.maxCheckCaptcha = maxCheckCaptcha;
+    }
 
     public Long getId() {
         return id;
