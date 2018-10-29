@@ -77,14 +77,14 @@ public class ClientEndpoint {
     /**
      * 根据条件过滤转换
      *
-     * @param instanceId     instanceId
-     * @param transformInfos transformInfos
+     * @param instanceId    instanceId
+     * @param transformDTOS transformDTOS
      * @return TransformInfo
      */
     @PostMapping(value = "v1/statemachine/filter_transform")
     public ResponseEntity<List<TransformInfo>> filterTransform(@RequestParam(value = "instance_id") Long instanceId,
-                                                               @RequestBody List<TransformInfo> transformInfos) {
-        return new ResponseEntity<>(clientService.conditionFilter(instanceId, transformInfos), HttpStatus.OK);
+                                                               @RequestBody List<TransformInfo> transformDTOS) {
+        return new ResponseEntity<>(clientService.conditionFilter(instanceId, transformDTOS), HttpStatus.OK);
     }
 
 }

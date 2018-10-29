@@ -36,13 +36,13 @@ public class ClientServiceImpl implements ClientService {
     private static final String UPDATE_STATUS_FAIL = "状态更新失败";
 
     @Override
-    public List<TransformInfo> conditionFilter(Long instanceId, List<TransformInfo> transformInfos) {
-        logger.info("stateMachine client conditionFilter start: instanceId:{}, transformInfos:{}", instanceId, transformInfos);
-        if (transformInfos == null || transformInfos.isEmpty()) {
+    public List<TransformInfo> conditionFilter(Long instanceId, List<TransformInfo> transformDTOS) {
+        logger.info("stateMachine client conditionFilter start: instanceId:{}, transformInfos:{}", instanceId, transformDTOS);
+        if (transformDTOS == null || transformDTOS.isEmpty()) {
             return Collections.emptyList();
         }
         List<TransformInfo> resultTransforms = new ArrayList<>();
-        transformInfos.forEach(transformInfo -> {
+        transformDTOS.forEach(transformInfo -> {
             List<StateMachineConfigDTO> configDTOS = transformInfo.getConditions();
             ExecuteResult result = configExecuteCondition(instanceId, transformInfo.getEndStatusId(), transformInfo.getConditionStrategy(), configDTOS);
             if (result.getSuccess()) {
