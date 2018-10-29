@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author shinan.chen, dinghuang123@gmail.com
- * @date 2018/9/25
+ * @since 2018/9/25
  */
 @Component
 public class InstanceFeignClientFallback implements InstanceFeignClient {
