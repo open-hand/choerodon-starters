@@ -12,7 +12,7 @@ public class ExecuteResult {
 
     private Boolean isSuccess;
 
-    private Long resultStateId;
+    private Long resultStatusId;
 
     private String errorMessage;
 
@@ -24,12 +24,12 @@ public class ExecuteResult {
         isSuccess = success;
     }
 
-    public Long getResultStateId() {
-        return resultStateId;
+    public Long getResultStatusId() {
+        return resultStatusId;
     }
 
-    public void setResultStateId(Long resultStateId) {
-        this.resultStateId = resultStateId;
+    public void setResultStatusId(Long resultStatusId) {
+        this.resultStatusId = resultStatusId;
     }
 
     public String getErrorMessage() {
@@ -44,7 +44,7 @@ public class ExecuteResult {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("isSuccess", isSuccess)
-                .add("resultStateId", resultStateId)
+                .add("resultStateId", resultStatusId)
                 .add("errorMessage", errorMessage)
                 .toString();
     }
