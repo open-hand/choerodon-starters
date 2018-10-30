@@ -21,4 +21,9 @@ public class InstanceFeignClientFallback implements InstanceFeignClient {
     public ResponseEntity<ExecuteResult> executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long instanceId, Long currentStatusId, Long transformId) {
         throw new CommonException("error.instanceFeign.executeTransform");
     }
+
+    @Override
+    public ResponseEntity<Long> queryInitStatusId(Long organizationId, Long stateMachineId) {
+        throw new CommonException("error.instanceFeign.queryInitStatusId");
+    }
 }
