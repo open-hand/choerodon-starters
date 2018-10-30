@@ -63,7 +63,7 @@ public class PropertyDataProcessor implements BeanPostProcessor {
                 JobTask jobTask = AnnotationUtils.findAnnotation(method, JobTask.class);
                 if (jobTask != null) {
                     String methodName = bean.getClass().getName() + "." + method.getName();
-                    propertyData.addJobTask(new PropertyJobTask(methodName, jobTask.maxRetryCount(), jobTask.code(), jobTask.description(), jobTask.params()));
+                    propertyData.addJobTask(new PropertyJobTask(methodName, jobTask.maxRetryCount(), jobTask.code(), jobTask.description(), jobTask.level(), jobTask.params()));
                     TimedTask timedTask = AnnotationUtils.findAnnotation(method, TimedTask.class);
                     if (timedTask != null) {
                         propertyData.addTimedTasks(new PropertyTimedTask(timedTask.name(), timedTask.description(), timedTask.oneExecution(),
