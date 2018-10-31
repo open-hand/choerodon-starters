@@ -160,6 +160,7 @@ public class ClientServiceImpl implements ClientService {
             executeResult.setErrorMessage(UPDATE_STATUS_FAIL);
         }
         executeResult.setSuccess(isSuccess);
+        executeResult.setResultStatusId(targetStatusId);
         return executeResult;
     }
 
