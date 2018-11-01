@@ -51,7 +51,8 @@ public class FeignRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
         if (SecurityContextHolder.getContext() != null
-                && SecurityContextHolder.getContext().getAuthentication() != null) {
+                && SecurityContextHolder.getContext().getAuthentication() != null
+                && SecurityContextHolder.getContext().getAuthentication().getDetails() instanceof OAuth2AuthenticationDetails) {
             OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) SecurityContextHolder
                     .getContext().getAuthentication().getDetails();
             template.header(RequestVariableHolder.HEADER_JWT,details.getTokenType() + " " + details.getTokenValue());
