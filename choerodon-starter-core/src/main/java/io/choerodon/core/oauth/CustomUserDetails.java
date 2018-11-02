@@ -127,8 +127,8 @@ public class CustomUserDetails extends User {
     }
 
     public void setClientAuthorizedGrantTypes(Collection<String> clientAuthorizedGrantTypes) {
-        this.clientAuthorizedGrantTypes = new LinkedHashSet<String>(
-                clientAuthorizedGrantTypes);
+        this.clientAuthorizedGrantTypes = clientAuthorizedGrantTypes == null ? Collections
+                .<String>emptySet() : new LinkedHashSet<String>(clientAuthorizedGrantTypes);
     }
 
     public Set<String> getClientResourceIds() {
@@ -179,7 +179,8 @@ public class CustomUserDetails extends User {
     }
 
     public void setClientAutoApproveScopes(Collection<String> clientAutoApproveScopes) {
-        this.clientAutoApproveScopes = new HashSet<String>(clientAutoApproveScopes);
+        this.clientAutoApproveScopes = clientAutoApproveScopes == null ? null
+                : new LinkedHashSet<String>(clientAutoApproveScopes);
     }
 
     @Override
