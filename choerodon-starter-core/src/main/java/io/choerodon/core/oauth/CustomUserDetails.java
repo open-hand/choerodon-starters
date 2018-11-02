@@ -153,7 +153,7 @@ public class CustomUserDetails extends User {
         return clientRegisteredRedirectUri;
     }
 
-    public void setClientRegisteredRedirectUri(Set<String> clientRegisteredRedirectUri) {
+    public void setClientRegisteredRedirectUri(Collection<String> clientRegisteredRedirectUri) {
         this.clientRegisteredRedirectUri = clientRegisteredRedirectUri == null ? null
                 : new LinkedHashSet<String>(clientRegisteredRedirectUri);
     }
