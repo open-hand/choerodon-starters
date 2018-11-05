@@ -1,5 +1,6 @@
 package io.choerodon.core.oauth;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -11,7 +12,8 @@ import org.springframework.security.core.userdetails.User;
  * @author wuguokai
  * @author Eugen
  */
-public class CustomUserDetails extends User {
+public class CustomUserDetails extends User implements Serializable {
+    private static final long serialVersionUID = -3762281463683847665L;
 
     private Long userId;
 
