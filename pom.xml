@@ -67,6 +67,7 @@
         <module>choerodon-gitlab4j-api</module>
         <module>choerodon-starter-asgard</module>
         <module>choerodon-starter-statemachine</module>
+        <module>choerodon-starter-eureka-event</module>
         <!--<module>choerodon-starter-event-producer</module>-->
         <!--<module>choerodon-starter-event-consumer</module>-->
         <!--<module>choerodon-starter-bus</module>-->
