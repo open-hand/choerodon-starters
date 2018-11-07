@@ -80,7 +80,6 @@ public class ClientProcessor implements BeanPostProcessor {
             UpdateStatus updateStatus = AnnotationUtils.getAnnotation(method, UpdateStatus.class);
             if (updateStatus != null) {
                 LOGGER.info("stateMachine client annotation updateStatus:{}", updateStatus);
-                StateMachineConfigMonitor.checkUniqueUpdateStatus();
                 Object object = stateMachineApplicationContextHelper.getContext().getBean(method.getDeclaringClass());
                 StateMachineConfigMonitor.setUpdateStatusBean(new InvokeBean(method, object, null));
             }

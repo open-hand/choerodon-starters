@@ -37,40 +37,64 @@ public class ClientEndpoint {
         this.stateMachinePropertyData = stateMachinePropertyData;
     }
 
+    /**
+     * 加载扫描的configCode
+     *
+     * @return
+     */
     @GetMapping(value = "/statemachine/load_config_code", produces = {APPLICATION_JSON_VALUE})
     public PropertyData loadConfigCode() {
         return stateMachinePropertyData;
     }
 
     /**
-     * 执行条件，验证，后置处理
+     * 执行条件
      *
-     * @param instanceId        instanceId
-     * @param targetStatusId    targetStatusId
-     * @param type              type
-     * @param conditionStrategy conditionStrategy
-     * @param configDTOS        configDTOS
-     * @return ExecuteResult
+     * @param instanceId
+     * @param targetStatusId
+     * @param conditionStrategy
+     * @param configDTOS
+     * @return
      */
-    @PostMapping(value = "v1/statemachine/execute_config")
-    public ResponseEntity<ExecuteResult> executeConfig(@RequestParam(value = "instance_id") Long instanceId,
-                                                       @RequestParam(value = "target_status_id", required = false) Long targetStatusId,
-                                                       @RequestParam(value = "type") String type,
-                                                       @RequestParam(value = "condition_strategy", required = false) String conditionStrategy,
-                                                       @RequestBody List<StateMachineConfigDTO> configDTOS) {
+    @PostMapping(value = "v1/statemachine/execute_config_condition")
+    public ResponseEntity<ExecuteResult> executeConfigCondition(@RequestParam(value = "instance_id") Long instanceId,
+                                                                @RequestParam(value = "target_status_id", required = false) Long targetStatusId,
+                                                                @RequestParam(value = "condition_strategy") String conditionStrategy,
+                                                                @RequestBody List<StateMachineConfigDTO> configDTOS) {
+        ExecuteResult executeResult = clientService.configExecuteCondition(instanceId, targetStatusId, conditionStrategy, configDTOS);
+        return new ResponseEntity<>(executeResult, HttpStatus.OK);
+    }
 
-        ExecuteResult executeResult;
-        switch (type) {
-            case StateMachineConfigType.CONDITION:
-                executeResult = clientService.configExecuteCondition(instanceId, targetStatusId, conditionStrategy, configDTOS);
-                break;
-            case StateMachineConfigType.VALIDATOR:
-                executeResult = clientService.configExecuteValidator(instanceId, targetStatusId, configDTOS);
-                break;
-            default:
-                executeResult = clientService.configExecutePostAction(instanceId, targetStatusId, configDTOS);
-                break;
-        }
+    /**
+     * 执行验证
+     *
+     * @param instanceId
+     * @param targetStatusId
+     * @param configDTOS
+     * @return
+     */
+    @PostMapping(value = "v1/statemachine/execute_config_validator")
+    public ResponseEntity<ExecuteResult> executeConfigValidator(@RequestParam(value = "instance_id") Long instanceId,
+                                                       @RequestParam(value = "target_status_id", required = false) Long targetStatusId,
+                                                       @RequestBody List<StateMachineConfigDTO> configDTOS) {
+        ExecuteResult executeResult = clientService.configExecuteValidator(instanceId, targetStatusId, configDTOS);
+        return new ResponseEntity<>(executeResult, HttpStatus.OK);
+    }
+
+    /**
+     * 执行后置动作
+     *
+     * @param instanceId
+     * @param targetStatusId
+     * @param configDTOS
+     * @return
+     */
+    @PostMapping(value = "v1/statemachine/execute_config_action")
+    public ResponseEntity<ExecuteResult> executeConfigAction(@RequestParam(value = "instance_id") Long instanceId,
+                                                       @RequestParam(value = "target_status_id") Long targetStatusId,
+                                                       @RequestParam(value = "transform_type") String transformType,
+                                                       @RequestBody List<StateMachineConfigDTO> configDTOS) {
+        ExecuteResult executeResult = clientService.configExecutePostAction(instanceId, targetStatusId, transformType, configDTOS);
         return new ResponseEntity<>(executeResult, HttpStatus.OK);
     }
 

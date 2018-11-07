@@ -127,7 +127,7 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, List<StateMachineConfigDTO> configDTOS) {
+    public ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, String transformType, List<StateMachineConfigDTO> configDTOS) {
         logger.info("stateMachine client configExecutePostposition start: instanceId:{}, configDTOS:{}", instanceId, configDTOS);
         ExecuteResult executeResult = new ExecuteResult();
         Boolean isSuccess = true;

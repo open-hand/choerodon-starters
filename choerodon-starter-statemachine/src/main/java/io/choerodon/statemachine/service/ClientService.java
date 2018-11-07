@@ -54,5 +54,5 @@ public interface ClientService {
      * @param configDTOS     configDTOS
      * @return ExecuteResult
      */
-    ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, List<StateMachineConfigDTO> configDTOS);
+    ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, String transformType, List<StateMachineConfigDTO> configDTOS);
 }
