@@ -22,9 +22,14 @@ public class StateMachineConfigMonitor {
     private static final Logger logger = LoggerFactory.getLogger(StateMachineConfigMonitor.class);
     public static final Map<String, InvokeBean> invokeBeanMap = new HashMap<>();
     public static InvokeBean updateStatusBean = null;
+    public static InvokeBean startInstanceBean = null;
 
     static void setUpdateStatusBean(InvokeBean updateStatusBean) {
         StateMachineConfigMonitor.updateStatusBean = updateStatusBean;
+    }
+
+    static void setStartInstanceBean(InvokeBean startInstanceBean) {
+        StateMachineConfigMonitor.startInstanceBean = startInstanceBean;
     }
 
 
