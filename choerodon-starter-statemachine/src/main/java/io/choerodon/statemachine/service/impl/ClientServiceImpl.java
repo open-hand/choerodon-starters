@@ -7,6 +7,7 @@ import io.choerodon.statemachine.dto.StateMachineConfigDTO;
 import io.choerodon.statemachine.dto.TransformInfo;
 import io.choerodon.statemachine.enums.StateMachineConfigType;
 import io.choerodon.statemachine.enums.TransformConditionStrategy;
+import io.choerodon.statemachine.enums.TransformType;
 import io.choerodon.statemachine.service.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,13 @@ public class ClientServiceImpl implements ClientService {
     private static final String PASS = "执行通过";
     private static final String UPDATE_STATUS_FAIL = "状态更新失败";
 
+    /**
+     * 根据条件过滤转换
+     *
+     * @param instanceId     instanceId
+     * @param transformDTOS
+     * @return
+     */
     @Override
     public List<TransformInfo> conditionFilter(Long instanceId, List<TransformInfo> transformDTOS) {
         logger.info("stateMachine client conditionFilter start: instanceId:{}, transformInfos:{}", instanceId, transformDTOS);
@@ -128,25 +136,16 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, String transformType, List<StateMachineConfigDTO> configDTOS) {
-        logger.info("stateMachine client configExecutePostposition start: instanceId:{}, configDTOS:{}", instanceId, configDTOS);
+        logger.info("stateMachine client configExecutePostAction start: instanceId:{}, configDTOS:{}", instanceId, configDTOS);
         ExecuteResult executeResult = new ExecuteResult();
         Boolean isSuccess = true;
-        //执行后置动作要先调用状态更新
-        InvokeBean updateInvokeBean = StateMachineConfigMonitor.updateStatusBean;
-        if (updateInvokeBean != null) {
-            Object object = updateInvokeBean.getObject();
-            Method method = updateInvokeBean.getMethod();
-            try {
-                method.invoke(object, instanceId, targetStatusId);
-                logger.info("stateMachine client configExecute updateStatus with method {}: instanceId:{}, targetStatusId:{}", method.getName(), instanceId, targetStatusId);
-            } catch (Exception e) {
-                logger.error("stateMachine client configExecute updateStatus invoke error {}", e);
-                isSuccess = false;
-            }
+        //执行后置动作，若是初始转换：反射startInstance，若是其他转换：反射updateStatus
+        if (transformType.equals(TransformType.INIT)) {
+            isSuccess = startInstanceInvokeBean(instanceId, targetStatusId);
         } else {
-            logger.error("stateMachine client configExecute updateStatus invokeBean not found");
-            isSuccess = false;
+            isSuccess = updateStatusInvokeBean(instanceId, targetStatusId);
         }
+
         //执行代码中配置的后置动作
         if (isSuccess) {
             for (StateMachineConfigDTO configDTO : configDTOS) {
@@ -164,6 +163,14 @@ public class ClientServiceImpl implements ClientService {
         return executeResult;
     }
 
+    /**
+     * 执行配置的config方法
+     *
+     * @param type
+     * @param configDTO
+     * @param instanceId
+     * @return
+     */
     private Boolean methodInvokeBean(String type, StateMachineConfigDTO configDTO, Long instanceId) {
         Boolean isSuccess = true;
         InvokeBean invokeBean = StateMachineConfigMonitor.invokeBeanMap.get(configDTO.getCode());
@@ -186,5 +193,54 @@ public class ClientServiceImpl implements ClientService {
             isSuccess = false;
         }
         return isSuccess;
+    }
+
+    /**
+     * 执行转换更新状态方法
+     *
+     * @param instanceId
+     * @param targetStatusId
+     * @return
+     */
+    private Boolean updateStatusInvokeBean(Long instanceId, Long targetStatusId) {
+        InvokeBean updateInvokeBean = StateMachineConfigMonitor.updateStatusBean;
+        if (updateInvokeBean != null) {
+            Object object = updateInvokeBean.getObject();
+            Method method = updateInvokeBean.getMethod();
+            try {
+                method.invoke(object, instanceId, targetStatusId);
+                logger.info("stateMachine client configExecute updateStatus with method {}: instanceId:{}, targetStatusId:{}", method.getName(), instanceId, targetStatusId);
+            } catch (Exception e) {
+                logger.error("stateMachine client configExecute updateStatus invoke error {}", e);
+                return false;
+            }
+        } else {
+            logger.error("stateMachine client configExecute updateStatus invokeBean not found");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 执行创建实例初始化方法
+     *
+     * @param instanceId
+     * @param targetStatusId
+     * @return
+     */
+    private Boolean startInstanceInvokeBean(Long instanceId, Long targetStatusId) {
+        InvokeBean startInstanceBean = StateMachineConfigMonitor.startInstanceBean;
+        if (startInstanceBean != null) {
+            Object object = startInstanceBean.getObject();
+            Method method = startInstanceBean.getMethod();
+            try {
+                method.invoke(object, instanceId, targetStatusId);
+                logger.info("stateMachine client configExecute startInstance with method {}: instanceId:{}, targetStatusId:{}", method.getName(), instanceId, targetStatusId);
+            } catch (Exception e) {
+                logger.error("stateMachine client configExecute startInstance invoke error {}", e);
+                return false;
+            }
+        }
+        return true;
     }
 }

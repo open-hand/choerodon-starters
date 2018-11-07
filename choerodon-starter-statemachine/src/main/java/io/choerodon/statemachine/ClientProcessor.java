@@ -83,6 +83,13 @@ public class ClientProcessor implements BeanPostProcessor {
                 Object object = stateMachineApplicationContextHelper.getContext().getBean(method.getDeclaringClass());
                 StateMachineConfigMonitor.setUpdateStatusBean(new InvokeBean(method, object, null));
             }
+            //扫描StartInstance注解的方法
+            StartInstance startInstance = AnnotationUtils.getAnnotation(method, StartInstance.class);
+            if (startInstance != null) {
+                LOGGER.info("stateMachine client annotation startInstance:{}", startInstance);
+                Object object = stateMachineApplicationContextHelper.getContext().getBean(method.getDeclaringClass());
+                StateMachineConfigMonitor.setStartInstanceBean(new InvokeBean(method, object, null));
+            }
         }
         return bean;
     }

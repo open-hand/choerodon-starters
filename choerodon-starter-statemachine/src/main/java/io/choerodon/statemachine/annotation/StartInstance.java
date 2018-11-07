@@ -8,14 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 更新状态
- *
  * @author shinan.chen
- * @author dinghuang123@gmail.com
- * @since 2018/10/11
+ * @date 2018/11/7
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Transactional
-public @interface UpdateStatus {
+public @interface StartInstance {
 }
