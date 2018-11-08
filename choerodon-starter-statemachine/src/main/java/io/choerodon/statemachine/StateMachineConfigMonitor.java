@@ -20,42 +20,41 @@ public class StateMachineConfigMonitor {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(StateMachineConfigMonitor.class);
-    public static final Map<String, InvokeBean> invokeBeanMap = new HashMap<>();
-    public static InvokeBean updateStatusBean = null;
-    public static InvokeBean startInstanceBean = null;
-
-    static void setUpdateStatusBean(InvokeBean updateStatusBean) {
-        StateMachineConfigMonitor.updateStatusBean = updateStatusBean;
-    }
-
-    static void setStartInstanceBean(InvokeBean startInstanceBean) {
-        StateMachineConfigMonitor.startInstanceBean = startInstanceBean;
-    }
-
+    public static final Map<String, InvokeBean> configInvokeBeanMap = new HashMap<>();
+    public static final Map<String, InvokeBean> updateStatusBeanMap = new HashMap<>();
+    public static final Map<String, InvokeBean> startInstanceBeanMap = new HashMap<>();
 
     /**
      * 校验code不能重复
      *
-     * @param codeDTO codeDTO
      */
-    static void checkUniqueCode(ConfigCodeDTO codeDTO) {
-        Set<Map.Entry<String, InvokeBean>> invokes = invokeBeanMap.entrySet();
+    static void checkConfigUniqueCode(String code) {
+        Set<Map.Entry<String, InvokeBean>> invokes = configInvokeBeanMap.entrySet();
         invokes.forEach(x -> {
-            ConfigCodeDTO configCodeDTO = x.getValue().getConfigCodeDTO();
-            if (configCodeDTO.getCode().equals(codeDTO.getCode())) {
-                logger.error("StateMachineConfigMonitor annotation code duplication: {}", codeDTO);
+            if (x.getValue().getCode().equals(code)) {
+                logger.error("StateMachineConfigMonitor annotation configCode duplication: {}", code);
                 throw new IllegalArgumentException("error.checkUniqueCode.duplication");
             }
         });
     }
 
-    /**
-     * 校验updateStatus注解不能注解多个方法
-     */
-    static void checkUniqueUpdateStatus() {
-        if (updateStatusBean != null) {
-            logger.error("StateMachineConfigMonitor annotation updateStatus duplication");
-            throw new IllegalArgumentException("error.checkUniqueUpdateStatus.duplication");
-        }
+    static void checkUpdateUniqueCode(String code) {
+        Set<Map.Entry<String, InvokeBean>> invokes = updateStatusBeanMap.entrySet();
+        invokes.forEach(x -> {
+            if (x.getValue().getCode().equals(code)) {
+                logger.error("StateMachineConfigMonitor annotation updateCode duplication: {}", code);
+                throw new IllegalArgumentException("error.checkUniqueCode.duplication");
+            }
+        });
+    }
+
+    static void checkStartUniqueCode(String code) {
+        Set<Map.Entry<String, InvokeBean>> invokes = startInstanceBeanMap.entrySet();
+        invokes.forEach(x -> {
+            if (x.getValue().getCode().equals(code)) {
+                logger.error("StateMachineConfigMonitor annotation startCode duplication: {}", code);
+                throw new IllegalArgumentException("error.checkUniqueCode.duplication");
+            }
+        });
     }
 }

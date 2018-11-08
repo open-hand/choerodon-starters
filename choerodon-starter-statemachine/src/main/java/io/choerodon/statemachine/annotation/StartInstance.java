@@ -15,4 +15,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Transactional
 public @interface StartInstance {
+    String code();
 }

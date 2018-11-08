@@ -1,23 +1,19 @@
 package io.choerodon.statemachine.service.impl;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.choerodon.statemachine.StateMachineConfigMonitor;
-import io.choerodon.statemachine.dto.ExecuteResult;
-import io.choerodon.statemachine.dto.InvokeBean;
-import io.choerodon.statemachine.dto.StateMachineConfigDTO;
-import io.choerodon.statemachine.dto.TransformInfo;
+import io.choerodon.statemachine.dto.*;
 import io.choerodon.statemachine.enums.StateMachineConfigType;
 import io.choerodon.statemachine.enums.TransformConditionStrategy;
 import io.choerodon.statemachine.enums.TransformType;
 import io.choerodon.statemachine.service.ClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author shinan.chen
@@ -41,8 +37,8 @@ public class ClientServiceImpl implements ClientService {
      * 根据条件过滤转换
      *
      * @param instanceId    instanceId
-     * @param transformDTOS transformDTOS
-     * @return List
+     * @param transformDTOS
+     * @return
      */
     @Override
     public List<TransformInfo> conditionFilter(Long instanceId, List<TransformInfo> transformDTOS) {
@@ -53,7 +49,10 @@ public class ClientServiceImpl implements ClientService {
         List<TransformInfo> resultTransforms = new ArrayList<>();
         transformDTOS.forEach(transformInfo -> {
             List<StateMachineConfigDTO> configDTOS = transformInfo.getConditions();
-            ExecuteResult result = configExecuteCondition(instanceId, transformInfo.getEndStatusId(), transformInfo.getConditionStrategy(), configDTOS);
+            InputDTO inputDTO = new InputDTO();
+            inputDTO.setInstanceId(instanceId);
+            inputDTO.setConfigs(configDTOS);
+            ExecuteResult result = configExecuteCondition(transformInfo.getEndStatusId(), transformInfo.getConditionStrategy(), inputDTO);
             if (result.getSuccess()) {
                 logger.info("stateMachine client conditionFilter transform match condition: instanceId:{}, transformId:{}", instanceId, transformInfo.getId());
                 resultTransforms.add(transformInfo);
@@ -67,14 +66,15 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行条件
      *
-     * @param instanceId        instanceId
-     * @param targetStatusId    targetStatusId
-     * @param conditionStrategy conditionStrategy
-     * @param configDTOS        configDTOS
-     * @return ExecuteResult
+     * @param targetStatusId
+     * @param conditionStrategy
+     * @param inputDTO
+     * @return
      */
     @Override
-    public ExecuteResult configExecuteCondition(Long instanceId, Long targetStatusId, String conditionStrategy, List<StateMachineConfigDTO> configDTOS) {
+    public ExecuteResult configExecuteCondition(Long targetStatusId, String conditionStrategy, InputDTO inputDTO) {
+        Long instanceId = inputDTO.getInstanceId();
+        List<StateMachineConfigDTO> configDTOS = inputDTO.getConfigs();
         logger.info("stateMachine client configExecuteCondition start: instanceId:{}, configDTOS:{}", instanceId, configDTOS);
         ExecuteResult executeResult = new ExecuteResult();
         Boolean isSuccess = true;
@@ -105,13 +105,14 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行验证
      *
-     * @param instanceId     instanceId
-     * @param targetStatusId targetStatusId
-     * @param configDTOS     configDTOS
-     * @return ExecuteResult
+     * @param targetStatusId
+     * @param inputDTO
+     * @return
      */
     @Override
-    public ExecuteResult configExecuteValidator(Long instanceId, Long targetStatusId, List<StateMachineConfigDTO> configDTOS) {
+    public ExecuteResult configExecuteValidator(Long targetStatusId, InputDTO inputDTO) {
+        Long instanceId = inputDTO.getInstanceId();
+        List<StateMachineConfigDTO> configDTOS = inputDTO.getConfigs();
         logger.info("stateMachine client configExecuteValidator start: instanceId:{}, configDTOS:{}", instanceId, configDTOS);
         ExecuteResult executeResult = new ExecuteResult();
         Boolean isSuccess = true;
@@ -130,23 +131,24 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行后置动作
      *
-     * @param instanceId     instanceId
-     * @param targetStatusId targetStatusId
-     * @param configDTOS     configDTOS
-     * @param transformType  transformType
-     * @return ExecuteResult
+     * @param targetStatusId
+     * @param transformType
+     * @param inputDTO
+     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, String transformType, List<StateMachineConfigDTO> configDTOS) {
+    public ExecuteResult configExecutePostAction(Long targetStatusId, String transformType, InputDTO inputDTO) {
+        Long instanceId = inputDTO.getInstanceId();
+        List<StateMachineConfigDTO> configDTOS = inputDTO.getConfigs();
         logger.info("stateMachine client configExecutePostAction start: instanceId:{}, configDTOS:{}", instanceId, configDTOS);
         ExecuteResult executeResult = new ExecuteResult();
         Boolean isSuccess = true;
         //执行后置动作，若是初始转换：反射startInstance，若是其他转换：反射updateStatus
         if (transformType.equals(TransformType.INIT)) {
-            isSuccess = startInstanceInvokeBean(instanceId, targetStatusId);
+            isSuccess = startInstanceInvokeBean(targetStatusId, inputDTO);
         } else {
-            isSuccess = updateStatusInvokeBean(instanceId, targetStatusId);
+            isSuccess = updateStatusInvokeBean(targetStatusId, inputDTO);
         }
 
         //执行代码中配置的后置动作
@@ -169,14 +171,14 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行配置的config方法
      *
-     * @param type type
+     * @param type       type
      * @param configDTO  configDTO
      * @param instanceId instanceId
      * @return Boolean
      */
     private Boolean methodInvokeBean(String type, StateMachineConfigDTO configDTO, Long instanceId) {
         Boolean isSuccess = true;
-        InvokeBean invokeBean = StateMachineConfigMonitor.invokeBeanMap.get(configDTO.getCode());
+        InvokeBean invokeBean = StateMachineConfigMonitor.configInvokeBeanMap.get(configDTO.getCode());
         if (invokeBean != null) {
             Object object = invokeBean.getObject();
             Method method = invokeBean.getMethod();
@@ -201,17 +203,18 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行转换更新状态方法
      *
-     * @param instanceId     instanceId
-     * @param targetStatusId targetStatusId
-     * @return Boolean
+     * @param targetStatusId
+     * @return
      */
-    private Boolean updateStatusInvokeBean(Long instanceId, Long targetStatusId) {
-        InvokeBean updateInvokeBean = StateMachineConfigMonitor.updateStatusBean;
+    private Boolean updateStatusInvokeBean(Long targetStatusId, InputDTO inputDTO) {
+        Long instanceId = inputDTO.getInstanceId();
+        String input = inputDTO.getInput();
+        InvokeBean updateInvokeBean = StateMachineConfigMonitor.updateStatusBeanMap.get(inputDTO.getInvokeCode());
         if (updateInvokeBean != null) {
             Object object = updateInvokeBean.getObject();
             Method method = updateInvokeBean.getMethod();
             try {
-                method.invoke(object, instanceId, targetStatusId);
+                method.invoke(object, instanceId, targetStatusId, input);
                 logger.info("stateMachine client configExecute updateStatus with method {}: instanceId:{}, targetStatusId:{}", method.getName(), instanceId, targetStatusId);
             } catch (Exception e) {
                 logger.error("stateMachine client configExecute updateStatus invoke error {}", e);
@@ -227,22 +230,26 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行创建实例初始化方法
      *
-     * @param instanceId     instanceId
-     * @param targetStatusId targetStatusId
-     * @return Boolean
+     * @param targetStatusId
+     * @return
      */
-    private Boolean startInstanceInvokeBean(Long instanceId, Long targetStatusId) {
-        InvokeBean startInstanceBean = StateMachineConfigMonitor.startInstanceBean;
+    private Boolean startInstanceInvokeBean(Long targetStatusId, InputDTO inputDTO) {
+        Long instanceId = inputDTO.getInstanceId();
+        String input = inputDTO.getInput();
+        InvokeBean startInstanceBean = StateMachineConfigMonitor.startInstanceBeanMap.get(inputDTO.getInvokeCode());
         if (startInstanceBean != null) {
             Object object = startInstanceBean.getObject();
             Method method = startInstanceBean.getMethod();
             try {
-                method.invoke(object, instanceId, targetStatusId);
+                method.invoke(object, instanceId, targetStatusId, input);
                 logger.info("stateMachine client configExecute startInstance with method {}: instanceId:{}, targetStatusId:{}", method.getName(), instanceId, targetStatusId);
             } catch (Exception e) {
                 logger.error("stateMachine client configExecute startInstance invoke error {}", e);
                 return false;
             }
+        } else {
+            logger.error("stateMachine client configExecute updateStatus invokeBean not found");
+            return false;
         }
         return true;
     }

@@ -18,4 +18,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Transactional
 public @interface UpdateStatus {
+    String code();
 }
