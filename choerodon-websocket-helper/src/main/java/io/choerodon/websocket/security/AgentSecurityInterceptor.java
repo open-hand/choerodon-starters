@@ -40,7 +40,7 @@ public class AgentSecurityInterceptor implements SecurityInterceptor {
                 throw new RuntimeException("No agent Token check");
             }
         }else {
-            String envId = request.getServletRequest().getParameter("envId");
+            String envId = request.getServletRequest().getParameter("clusterId");
             String token = request.getServletRequest().getParameter("token");
             String version = request.getServletRequest().getParameter("version");
             if ((envId == null ||
