@@ -43,4 +43,9 @@ public @interface NotifyBusinessType {
      * 是否手动重试
      */
     boolean isManualRetry() default false;
+
+    /**
+     * 是否允许用户配置接收通知
+     */
+    boolean isAllowConfig() default true;
 }
