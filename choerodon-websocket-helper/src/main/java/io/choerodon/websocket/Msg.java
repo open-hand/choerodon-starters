@@ -29,8 +29,8 @@ public class Msg implements Serializable{
     private String brokerFrom;
     private String message;
     private int msgType;
-    private String envId;
     private Long commandId;
+    private String clusterId;
     private byte[] bytesPayload;
 
 
@@ -149,12 +149,12 @@ public class Msg implements Serializable{
                 '}';
     }
 
-    public String getEnvId() {
-        return envId;
+    public String getClusterId() {
+        return this.clusterId;
     }
 
-    public void setEnvId(String envId) {
-        this.envId = envId;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public Long getCommandId() {
