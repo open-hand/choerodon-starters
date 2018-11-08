@@ -4,7 +4,7 @@ package io.choerodon.statemachine.enums;
  * 转换的类型
  *
  * @author shinan.chen
- * @date 2018/9/27
+ * @since 2018/9/27
  */
 public class TransformType {
     private TransformType() {
