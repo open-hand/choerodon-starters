@@ -2,7 +2,8 @@ package io.choerodon.core.notify;
 
 public enum Level {
     SITE("site"),
-    ORGANIZATION("organization");
+    ORGANIZATION("organization"),
+    PROJECT("project");
 
     private String value;
 

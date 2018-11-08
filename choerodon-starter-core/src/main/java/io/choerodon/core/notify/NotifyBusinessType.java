@@ -25,7 +25,7 @@ public @interface NotifyBusinessType {
     String description() default "";
 
     /**
-     * 层级
+     * 触发通知对应的层级
      */
     Level level();
 

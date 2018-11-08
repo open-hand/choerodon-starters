@@ -26,6 +26,11 @@ public class NoticeSendDTO {
      */
     private Map<String, Object> params;
 
+    /**
+     * 触发发送通知的组织或项目id，如果是site层，则不传或传0
+     */
+    private Long sourceId;
+
     public String getCode() {
         return code;
     }
@@ -56,6 +61,14 @@ public class NoticeSendDTO {
 
     public void setFromUser(User fromUser) {
         this.fromUser = fromUser;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 
     public static class User {
