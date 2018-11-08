@@ -1,10 +1,10 @@
 package io.choerodon.statemachine.service;
 
+import java.util.List;
+
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.StateMachineConfigDTO;
 import io.choerodon.statemachine.dto.TransformInfo;
-
-import java.util.List;
 
 /**
  * 状态机客户端回调service
@@ -52,6 +52,7 @@ public interface ClientService {
      * @param instanceId     instanceId
      * @param targetStatusId targetStatusId
      * @param configDTOS     configDTOS
+     * @param transformType  transformType
      * @return ExecuteResult
      */
     ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, String transformType, List<StateMachineConfigDTO> configDTOS);

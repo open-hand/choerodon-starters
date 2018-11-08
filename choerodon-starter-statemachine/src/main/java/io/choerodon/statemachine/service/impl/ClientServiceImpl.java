@@ -1,5 +1,14 @@
 package io.choerodon.statemachine.service.impl;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.choerodon.statemachine.StateMachineConfigMonitor;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InvokeBean;
@@ -9,14 +18,6 @@ import io.choerodon.statemachine.enums.StateMachineConfigType;
 import io.choerodon.statemachine.enums.TransformConditionStrategy;
 import io.choerodon.statemachine.enums.TransformType;
 import io.choerodon.statemachine.service.ClientService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author shinan.chen
@@ -39,9 +40,9 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 根据条件过滤转换
      *
-     * @param instanceId     instanceId
-     * @param transformDTOS
-     * @return
+     * @param instanceId    instanceId
+     * @param transformDTOS transformDTOS
+     * @return List
      */
     @Override
     public List<TransformInfo> conditionFilter(Long instanceId, List<TransformInfo> transformDTOS) {
@@ -67,6 +68,7 @@ public class ClientServiceImpl implements ClientService {
      * 执行条件
      *
      * @param instanceId        instanceId
+     * @param targetStatusId    targetStatusId
      * @param conditionStrategy conditionStrategy
      * @param configDTOS        configDTOS
      * @return ExecuteResult
@@ -131,6 +133,7 @@ public class ClientServiceImpl implements ClientService {
      * @param instanceId     instanceId
      * @param targetStatusId targetStatusId
      * @param configDTOS     configDTOS
+     * @param transformType  transformType
      * @return ExecuteResult
      */
     @Override
@@ -166,10 +169,10 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行配置的config方法
      *
-     * @param type
-     * @param configDTO
-     * @param instanceId
-     * @return
+     * @param type type
+     * @param configDTO  configDTO
+     * @param instanceId instanceId
+     * @return Boolean
      */
     private Boolean methodInvokeBean(String type, StateMachineConfigDTO configDTO, Long instanceId) {
         Boolean isSuccess = true;
@@ -198,9 +201,9 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行转换更新状态方法
      *
-     * @param instanceId
-     * @param targetStatusId
-     * @return
+     * @param instanceId     instanceId
+     * @param targetStatusId targetStatusId
+     * @return Boolean
      */
     private Boolean updateStatusInvokeBean(Long instanceId, Long targetStatusId) {
         InvokeBean updateInvokeBean = StateMachineConfigMonitor.updateStatusBean;
@@ -224,9 +227,9 @@ public class ClientServiceImpl implements ClientService {
     /**
      * 执行创建实例初始化方法
      *
-     * @param instanceId
-     * @param targetStatusId
-     * @return
+     * @param instanceId     instanceId
+     * @param targetStatusId targetStatusId
+     * @return Boolean
      */
     private Boolean startInstanceInvokeBean(Long instanceId, Long targetStatusId) {
         InvokeBean startInstanceBean = StateMachineConfigMonitor.startInstanceBean;

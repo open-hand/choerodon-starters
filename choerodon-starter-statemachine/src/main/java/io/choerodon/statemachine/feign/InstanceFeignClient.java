@@ -1,10 +1,11 @@
 package io.choerodon.statemachine.feign;
 
-import io.choerodon.statemachine.dto.ExecuteResult;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+
+import io.choerodon.statemachine.dto.ExecuteResult;
 
 /**
  * @author peng.jiang, dinghuang123@gmail.com
@@ -19,6 +20,9 @@ public interface InstanceFeignClient {
      * 创建状态机实例
      *
      * @param organizationId organizationId
+     * @param serviceCode    serviceCode
+     * @param stateMachineId stateMachineId
+     * @param instanceId     instanceId
      * @return ExecuteResult
      */
     @RequestMapping(value = "/v1/organizations/{organization_id}/instances/start_instance", method = RequestMethod.GET)
@@ -49,9 +53,9 @@ public interface InstanceFeignClient {
     /**
      * 获取状态机的初始状态
      *
-     * @param organizationId
-     * @param stateMachineId
-     * @return
+     * @param organizationId organizationId
+     * @param stateMachineId organizationId
+     * @return Long
      */
     @GetMapping(value = "/v1/organizations/{organization_id}/instances/query_init_status_id")
     ResponseEntity<Long> queryInitStatusId(@PathVariable("organization_id") Long organizationId,
