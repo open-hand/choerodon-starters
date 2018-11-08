@@ -3,7 +3,7 @@ package io.choerodon.statemachine.service;
 import java.util.List;
 
 import io.choerodon.statemachine.dto.ExecuteResult;
-import io.choerodon.statemachine.dto.StateMachineConfigDTO;
+import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.dto.TransformInfo;
 
 /**
@@ -28,32 +28,29 @@ public interface ClientService {
     /**
      * 执行条件
      *
-     * @param instanceId        instanceId
-     * @param targetStatusId    targetStatusId
-     * @param conditionStrategy conditionStrategy
-     * @param configDTOS        configDTOS
-     * @return ExecuteResult
+     * @param targetStatusId
+     * @param conditionStrategy
+     * @param inputDTO
+     * @return
      */
-    ExecuteResult configExecuteCondition(Long instanceId, Long targetStatusId, String conditionStrategy, List<StateMachineConfigDTO> configDTOS);
+    ExecuteResult configExecuteCondition(Long targetStatusId, String conditionStrategy, InputDTO inputDTO);
 
     /**
      * 执行验证
      *
-     * @param instanceId     instanceId
-     * @param targetStatusId targetStatusId
-     * @param configDTOS     configDTOS
-     * @return ExecuteResult
+     * @param targetStatusId
+     * @param inputDTO
+     * @return
      */
-    ExecuteResult configExecuteValidator(Long instanceId, Long targetStatusId, List<StateMachineConfigDTO> configDTOS);
+    ExecuteResult configExecuteValidator(Long targetStatusId, InputDTO inputDTO);
 
     /**
      * 执行后置动作，单独出来，才能生效回归
      *
-     * @param instanceId     instanceId
-     * @param targetStatusId targetStatusId
-     * @param configDTOS     configDTOS
-     * @param transformType  transformType
-     * @return ExecuteResult
+     * @param targetStatusId
+     * @param transformType
+     * @param inputDTO
+     * @return
      */
-    ExecuteResult configExecutePostAction(Long instanceId, Long targetStatusId, String transformType, List<StateMachineConfigDTO> configDTOS);
+    ExecuteResult configExecutePostAction(Long targetStatusId, String transformType, InputDTO inputDTO);
 }

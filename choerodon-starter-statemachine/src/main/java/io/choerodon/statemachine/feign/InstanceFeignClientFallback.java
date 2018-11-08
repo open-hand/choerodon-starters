@@ -2,6 +2,7 @@ package io.choerodon.statemachine.feign;
 
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.statemachine.dto.InputDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,12 @@ import org.springframework.stereotype.Component;
 public class InstanceFeignClientFallback implements InstanceFeignClient {
 
     @Override
-    public ResponseEntity<ExecuteResult> startInstance(Long organizationId, String serviceCode, Long stateMachineId, Long instanceId) {
+    public ResponseEntity<ExecuteResult> startInstance(Long organizationId, String serviceCode, Long stateMachineId, InputDTO inputDTO) {
         throw new CommonException("error.instanceFeign.startInstance");
     }
 
     @Override
-    public ResponseEntity<ExecuteResult> executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long instanceId, Long currentStatusId, Long transformId) {
+    public ResponseEntity<ExecuteResult> executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long currentStatusId, Long transformId, InputDTO inputDTO) {
         throw new CommonException("error.instanceFeign.executeTransform");
     }
 

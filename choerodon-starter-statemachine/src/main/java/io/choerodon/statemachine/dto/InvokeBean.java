@@ -15,12 +15,12 @@ public class InvokeBean {
 
     private Object object;
 
-    private ConfigCodeDTO configCodeDTO;
+    private String code;
 
-    public InvokeBean(Method method, Object object, ConfigCodeDTO configCodeDTO) {
+    public InvokeBean(Method method, Object object, String code) {
         this.method = method;
         this.object = object;
-        this.configCodeDTO = configCodeDTO;
+        this.code = code;
     }
 
     public Method getMethod() {
@@ -39,12 +39,12 @@ public class InvokeBean {
         this.object = object;
     }
 
-    public ConfigCodeDTO getConfigCodeDTO() {
-        return configCodeDTO;
+    public String getCode() {
+        return code;
     }
 
-    public void setConfigCodeDTO(ConfigCodeDTO configCodeDTO) {
-        this.configCodeDTO = configCodeDTO;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class InvokeBean {
         return MoreObjects.toStringHelper(this)
                 .add("method", method)
                 .add("object", object)
-                .add("configCodeDTO", configCodeDTO)
+                .add("code", code)
                 .toString();
     }
 }
