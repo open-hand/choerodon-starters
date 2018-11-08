@@ -41,7 +41,7 @@ public class NotifyTemplateProcessor implements BeanPostProcessor {
         NotifyBusinessType business = AnnotationUtils.findAnnotation(bean.getClass(), NotifyBusinessType.class);
         if (business != null) {
             businessTypeScanData.add(new NotifyBusinessTypeScanData(business.code(), business.name(), business.description(),
-                    business.level().getValue(), business.retryCount(), business.isSendInstantly(), business.isManualRetry()));
+                    business.level().getValue(), business.retryCount(), business.isSendInstantly(), business.isManualRetry(), business.isAllowConfig()));
         }
         return bean;
     }
