@@ -40,6 +40,60 @@ Microservices can be monitored after being referenced.
 
 - ``io.micrometer 1.0.2``
 
+## Disable Hitoa
+
+If you don't want this function, you can disable this by set following properties:
+
+```yaml
+hitoa:
+  enabled: false
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: false
+    binders:
+      jvm:
+        enabled: false
+      logback:
+        enabled: false
+      uptime:
+        enabled: false
+      processor:
+        enabled: false
+      files:
+        enabled: false
+```
+
+And the endpoint `/premetheus`won't be found any more and the beans will not be created.
+
+If you want to set just one property to disable it, maybe you should just copy those above to your application and make them read the property from a certain system environment variable like this:
+
+```yaml
+hitoa:
+  enabled: ${enabled:true}
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: ${enabled:true}
+    binders:
+      jvm:
+        enabled: ${enabled:true}
+      logback:
+        enabled: ${enabled:true}
+      uptime:
+        enabled: ${enabled:true}
+      processor:
+        enabled: ${enabled:true}
+      files:
+        enabled: ${enabled:true}
+```
+
+And the property `hitoa.enabled` is to disable Hitoa configuration and the others are to disable the beans
+
+and configurations from the dependency `micrometer-spring-legacy`.
+
 ## Reporting Issues
 
 If you find any shortcomings or bugs, please describe them in the [Issue](https://github.com/choerodon/choerodon/issues/new?template=issue_template.md).
