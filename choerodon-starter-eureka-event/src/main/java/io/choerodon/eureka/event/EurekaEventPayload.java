@@ -118,7 +118,6 @@ public class EurekaEventPayload {
                 ", version='" + version + '\'' +
                 ", instanceAddress='" + instanceAddress + '\'' +
                 ", createTime=" + createTime +
-                ", apiData='" + apiData + '\'' +
                 '}';
     }
 }
