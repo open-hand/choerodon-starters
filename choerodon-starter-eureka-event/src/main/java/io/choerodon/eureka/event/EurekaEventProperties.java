@@ -13,7 +13,7 @@ public class EurekaEventProperties {
 
     private Integer maxCacheSize = 300;
 
-    private String[] skipServices = new String[]{"register-server", "api-gateway", "gateway-helper", "oauth-server", "config-server"};
+    private String[] skipServices = new String[]{"**register-server", "**gateway**", "zipkin**", "hystrix**", "oauth**", "config**"};
 
     public Integer getRetryTime() {
         return retryTime;
