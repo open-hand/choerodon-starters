@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.transaction.annotation.Isolation;
 
 @Target(ElementType.METHOD)
@@ -63,4 +64,10 @@ public @interface JobTask {
      * @return 方法描述
      */
     String description() default "";
+
+    /**
+     * 方法层级
+     * @return 方法层级
+     */
+    ResourceLevel level() default ResourceLevel.SITE;
 }

@@ -2,7 +2,8 @@ package io.choerodon.swagger;
 
 import io.choerodon.swagger.exclude.EnableHandSwagger2;
 import io.choerodon.swagger.notify.NotifyTemplateProcessor;
-import io.choerodon.swagger.swagger.CustomSwagger2Controller;
+import io.choerodon.swagger.swagger.CustomSwaggerOperationPlugin;
+import io.choerodon.swagger.swagger.OperationCustomPageRequestReader;
 import io.choerodon.swagger.swagger.extra.ExtraDataProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -66,10 +67,10 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public CustomSwagger2Controller customSwagger2Controller(JsonSerializer jsonSerializer,
-                                                             DocumentationCache documentationCache,
-                                                             ServiceModelToSwagger2Mapper mapper) {
-        return new CustomSwagger2Controller(jsonSerializer, extraDataProcessor(),
+    public CustomController customSwagger2Controller(JsonSerializer jsonSerializer,
+                                                     DocumentationCache documentationCache,
+                                                     ServiceModelToSwagger2Mapper mapper) {
+        return new CustomController(jsonSerializer, extraDataProcessor(),
                 notifyTemplateProcessor(), documentationCache, mapper);
     }
 

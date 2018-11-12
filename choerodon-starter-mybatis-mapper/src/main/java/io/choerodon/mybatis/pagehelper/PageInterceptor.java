@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
 /**
  * Mybatis - 通用分页拦截器
  * 项目地址 : http://git.oschina.net/free/Mybatis_PageHelper
@@ -73,6 +72,12 @@ public class PageInterceptor implements Interceptor {
 
     public PageInterceptor(Dialect dialect) {
         this.dialect = dialect;
+    }
+
+    public PageInterceptor(Dialect dialect, Field additionalParametersField, Cache<CacheKey, MappedStatement> msCountMap) {
+        this.dialect = dialect;
+        this.additionalParametersField = additionalParametersField;
+        this.msCountMap = msCountMap;
     }
 
     @Override

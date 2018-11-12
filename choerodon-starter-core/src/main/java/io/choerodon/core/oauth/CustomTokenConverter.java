@@ -1,5 +1,6 @@
 package io.choerodon.core.oauth;
 
+import java.util.Collection;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,12 +98,28 @@ public class CustomTokenConverter extends DefaultAccessTokenConverter {
         if (map.containsKey(USER_ID)) {
             CustomUserDetails user = new CustomUserDetails(authentication.getName(),
                     "unknown password", authentication.getAuthorities());
-            user.setUserId((long) ((Integer) map.get(USER_ID)));
-            user.setLanguage((String) map.get("language"));
-            user.setTimeZone((String) map.get("timeZone"));
-            user.setEmail((String) map.get("email"));
-            user.setAdmin((Boolean) map.get("admin"));
             user.setOrganizationId((long) ((Integer) map.get(ORGANIZATION_ID)));
+            if (((Map<String, Object>) map).get(USER_ID) != null) {
+                user.setUserId((long) (Integer) map.get(USER_ID));
+                user.setLanguage((String) map.get("language"));
+                user.setAdmin((Boolean) map.get("admin"));
+                user.setTimeZone((String) map.get("timeZone"));
+                user.setOrganizationId((long) ((Integer) map.get(ORGANIZATION_ID)));
+                if (map.get("email") != null) {
+                    user.setEmail((String) map.get("email"));
+                }
+            }
+            if (((Map<String, Object>) map).get("clientId") != null) {
+                user.setClientId((long) (Integer) map.get("clientId"));
+                user.setClientName((String) map.get("clientName"));
+                user.setClientAccessTokenValiditySeconds((Integer) map.get("clientAccessTokenValiditySeconds"));
+                user.setClientRefreshTokenValiditySeconds((Integer) map.get("clientRefreshTokenValiditySeconds"));
+                user.setClientAuthorizedGrantTypes((Collection<String>) map.get("clientAuthorizedGrantTypes"));
+                user.setClientAutoApproveScopes((Collection<String>) map.get("clientAutoApproveScopes"));
+                user.setClientRegisteredRedirectUri((Collection<String>) map.get("clientRegisteredRedirectUri"));
+                user.setClientResourceIds((Collection<String>) map.get("clientResourceIds"));
+                user.setClientScope((Collection<String>) map.get("clientScope"));
+            }
             try {
                 if (map.get(ADDITION_INFO) != null) {
                     user.setAdditionInfo((Map) map.get(ADDITION_INFO));

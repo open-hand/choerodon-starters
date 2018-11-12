@@ -1,7 +1,5 @@
 package io.choerodon.oauth.core.password.record;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO;
 import io.choerodon.oauth.core.password.domain.BasePasswordHistoryDO;
@@ -12,10 +10,16 @@ import io.choerodon.oauth.core.password.mapper.BasePasswordHistoryMapper;
  * @author wuguokai
  */
 public class PasswordRecord {
-    @Autowired
+
     private BasePasswordHistoryMapper basePasswordHistoryMapper;
-    @Autowired
+
     private BaseLoginAttemptTimesMapper baseLoginAttemptTimesMapper;
+
+    public PasswordRecord(BaseLoginAttemptTimesMapper baseLoginAttemptTimesMapper,
+                          BasePasswordHistoryMapper basePasswordHistoryMapper) {
+        this.baseLoginAttemptTimesMapper = baseLoginAttemptTimesMapper;
+        this.basePasswordHistoryMapper = basePasswordHistoryMapper;
+    }
 
     public void updatePassword(Long userId, String oldPassword) {
         BaseLoginAttemptTimesDO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(userId);

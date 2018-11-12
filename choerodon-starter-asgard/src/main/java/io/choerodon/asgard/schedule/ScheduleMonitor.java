@@ -41,7 +41,7 @@ public class ScheduleMonitor {
 
     private final Executor executor;
 
-    private final ScheduleMonitorClient scheduleMonitorClient;
+    private ScheduleMonitorClient scheduleMonitorClient;
 
     private final AsgardApplicationContextHelper applicationContextHelper;
 
@@ -72,28 +72,37 @@ public class ScheduleMonitor {
         msgQueue = Collections.synchronizedSet(new LinkedHashSet<>(1 << 5));
     }
 
+
+    public void setScheduleMonitorClient(ScheduleMonitorClient scheduleMonitorClient) {
+        this.scheduleMonitorClient = scheduleMonitorClient;
+    }
+
     @PostConstruct
     public void start() {
         final Set<String> pollMethods = invokeBeanMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
         try {
             final String instance = InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
             log.info("scheduleMonitor prepare to start schedule consumer, methods {}, instance {}", pollMethods, instance);
-            scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                if (msgQueue.isEmpty()) {
-                    try {
-                        List<ScheduleInstanceConsumerDTO> pollMessages = scheduleMonitorClient.pollBatch(pollMethods, instance);
-                        log.debug("scheduleMonitor polled messages, size {} data {}", pollMessages.size(), pollMessages);
-                        msgQueue.addAll(pollMessages);
-                        msgQueue.forEach(t -> executor.execute(new ScheduleMonitor.InvokeTask(t)));
-                    } catch (Exception e) {
-                        log.warn("scheduleMonitor poll error {}", e.getMessage());
-                    }
-                } else {
-                    log.debug("scheduleMonitor skip poll, dbRecordNotEmpty {}, msgQueue {}", msgQueue);
-                }
-            }, 20000, pollIntervalMs, TimeUnit.MILLISECONDS);
+            scheduledExecutorService.scheduleWithFixedDelay(() ->
+                invokeRunner(pollMethods, instance)
+            , 20000, pollIntervalMs, TimeUnit.MILLISECONDS);
         } catch (UnknownHostException e) {
             log.error("scheduleMonitor can't get localhost, failed to start schedule consumer. {}", e.getCause());
+        }
+    }
+
+    public void invokeRunner(final Set<String> pollMethods, final String instance) {
+        if (msgQueue.isEmpty()) {
+            try {
+                List<ScheduleInstanceConsumerDTO> pollMessages = scheduleMonitorClient.pollBatch(pollMethods, instance);
+                log.debug("scheduleMonitor polled messages, size {} data {}", pollMessages.size(), pollMessages);
+                msgQueue.addAll(pollMessages);
+                msgQueue.forEach(t -> executor.execute(new ScheduleMonitor.InvokeTask(t)));
+            } catch (Exception e) {
+                log.warn("scheduleMonitor poll error {}", e.getMessage());
+            }
+        } else {
+            log.debug("scheduleMonitor skip poll, dbRecordNotEmpty {}, msgQueue {}", msgQueue);
         }
     }
 
@@ -159,7 +168,8 @@ public class ScheduleMonitor {
             if (StringUtils.isEmpty(jsonMap)) {
                 return new HashMap<>();
             }
-            return objectMapper.readValue(jsonMap, new TypeReference<Map<String, Object>>() {});
+            return objectMapper.readValue(jsonMap, new TypeReference<Map<String, Object>>() {
+            });
         }
     }
 

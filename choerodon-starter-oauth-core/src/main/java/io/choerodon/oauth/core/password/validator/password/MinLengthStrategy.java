@@ -16,7 +16,7 @@ public class MinLengthStrategy implements PasswordStrategy {
     @Override
     public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
         Integer min = (Integer) policyMap.getPasswordConfig().get(TYPE);
-        if (min != null && min != 0 && password.length()<min) {
+        if (min != null && min != 0 && password.length() < min) {
             throw new CommonException(ERROR_MESSAGE, min);
         }
         return null;

@@ -27,7 +27,7 @@ public class AgentSessionListener extends AbstractSessionListener {
         logger.debug("agent session created :" +session);
         //新建一个agent session 额外做一些操作
         EnvSession envSession = new EnvSession();
-        envSession.setEnvId(Long.parseLong((String) session.getWebSocketSession().getAttributes().get("envId")));
+        envSession.setClusterId(Long.parseLong((String) session.getWebSocketSession().getAttributes().get("clusterId")));
         envSession.setVersion((String) session.getWebSocketSession().getAttributes().get("version"));
         envSession.setRegisterKey(session.getRegisterKey());
         optionalListener.onConn(envSession);
