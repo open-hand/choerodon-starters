@@ -24,7 +24,7 @@ public class Controller {
     //public static final String SOCKET_LEADER_KEY ="controller_broker";
     private static final String BROKERS_KEY = "brokers";
     private static final String COMMANDS_KEY = "commands";
-    private static final String AGENT_SESSION = "agent-sessions";
+    private static final String AGENT_SESSION = "cluster-sessions";
     private static final String COMMAND_TIMEOUT = "command_not_send";
     private RedisTemplate<String,String> stringRedisTemplate;
     private RedisTemplate<Object,Object> redisTemplate;
