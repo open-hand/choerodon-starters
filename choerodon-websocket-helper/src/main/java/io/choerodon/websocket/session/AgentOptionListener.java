@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class AgentOptionListener implements OptionalListener {
     private static final Logger logger = LoggerFactory.getLogger(AgentOptionListener.class);
-    private static final String AGENT_SESSION = "agent-sessions";
+    private static final String AGENT_SESSION = "cluster-sessions";
 
     private RedisTemplate<Object,Object> redisTemplate;
     private SessionRepository sessionRepository;
