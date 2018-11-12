@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: Config-client-test-service
+#  datasource:
+#    password: sa
+#    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
+#    username: sa
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.cloud.netflix.hystrix.HystrixAutoConfiguration
+  cloud:
+    server:
+     consul:
+      watch:
+        enabled: true
+    bus:
+      enabled: false
+  sleuth:
+    stream:
+      enabled: false
+#  h2:
+#    console:
+#      enabled: true
+#hystrix:
+#  stream:
+#    queue:
+#      enabled: false
+data:
+  dir: src/main/resources

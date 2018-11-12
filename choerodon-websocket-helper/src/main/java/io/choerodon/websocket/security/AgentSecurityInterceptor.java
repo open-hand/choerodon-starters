@@ -40,16 +40,16 @@ public class AgentSecurityInterceptor implements SecurityInterceptor {
                 throw new RuntimeException("No agent Token check");
             }
         }else {
-            String envId = request.getServletRequest().getParameter("envId");
+            String clusterId = request.getServletRequest().getParameter("clusterId");
             String token = request.getServletRequest().getParameter("token");
             String version = request.getServletRequest().getParameter("version");
-            if ((envId == null ||
-                    envId.trim().isEmpty()) ||
+            if ((clusterId == null ||
+                    clusterId.trim().isEmpty()) ||
                     (token == null || token.trim().isEmpty()) ||
                     version == null || version.trim().isEmpty()){
-                throw new RuntimeException("envId or token or version null!");
+                throw new RuntimeException("clusterId or token or version null!");
             }
-            boolean success = agentTokenInterceptor.checkToken(request.getServletRequest().getParameter("envId"),
+            boolean success = agentTokenInterceptor.checkToken(request.getServletRequest().getParameter("clusterId"),
                     request.getServletRequest().getParameter("token"));
             if(!success){
                 throw new HandshakeFailureException("agent token check failed");

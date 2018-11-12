@@ -14,7 +14,7 @@ The toolkit is used if there is a database operation in the Choerodon microservi
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-mybatis-mapper</artifactId>
-    <version>0.6.4.RELEASE</version>
+    <version>0.7.0.RELEASE</version>
 </dependency>
 ```
 

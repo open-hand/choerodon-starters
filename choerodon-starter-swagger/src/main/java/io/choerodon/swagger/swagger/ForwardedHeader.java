@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @author Oliver Gierke
  */
-class ForwardedHeader {
+public class ForwardedHeader {
 
   public static final String NAME = "Forwarded";
   private static final ForwardedHeader NO_HEADER = new ForwardedHeader(Collections.<String, String> emptyMap());

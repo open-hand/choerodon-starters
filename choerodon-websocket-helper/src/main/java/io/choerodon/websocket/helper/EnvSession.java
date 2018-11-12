@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class EnvSession implements Serializable{
     private String registerKey;
-    private Long envId;
+    private Long clusterId;
     private String version;
 
     public String getRegisterKey() {
@@ -18,12 +18,12 @@ public class EnvSession implements Serializable{
         this.registerKey = registerKey;
     }
 
-    public Long getEnvId() {
-        return envId;
+    public Long getClusterId() {
+        return clusterId;
     }
 
-    public void setEnvId(Long envId) {
-        this.envId = envId;
+    public void setClusterId(Long clusterId) {
+        this.clusterId = clusterId;
     }
 
     public String getVersion() {

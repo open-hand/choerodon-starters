@@ -1,10 +1,10 @@
 package io.choerodon.oauth.core.password;
 
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
 
 /**
  * @author wuguokai
@@ -47,7 +47,7 @@ public class PasswordPolicyMap {
         return enableSecurity;
     }
 
-    public static PasswordPolicyMap parse(PasswordStrategyStore store, BasePasswordPolicyDO policy) {
+    public static PasswordPolicyMap parse(BasePasswordPolicyDO policy) {
         boolean enablePassword = policy.getEnablePassword();
         boolean enableSecurity = policy.getEnableSecurity();
         Map<String, Object> passwordMap = new LinkedHashMap<>();
@@ -74,19 +74,13 @@ public class PasswordPolicyMap {
             if (e.getValue() == null) {
                 continue;
             }
-            Object o = e.getValue();
-            if (o != null) {
-                passwordConfig.put(e.getKey(), o);
-            }
+            passwordConfig.put(e.getKey(), e.getValue());
         }
         for (Map.Entry<String, Object> e : loginMap.entrySet()) {
             if (e.getValue() == null) {
                 continue;
             }
-            Object o = e.getValue();
-            if (o != null) {
-                loginConfig.put(e.getKey(), o);
-            }
+            loginConfig.put(e.getKey(), e.getValue());
         }
         return new PasswordPolicyMap(passwordConfig, loginConfig, enablePassword, enableSecurity);
     }

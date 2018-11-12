@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +16,10 @@ import org.springframework.context.annotation.Configuration;
  * 18-3-9
  */
 
-
+@ConditionalOnProperty(
+        value = {"hitoa.enabled"},
+        matchIfMissing = true
+)
 @Configuration
 public class HitoaAutoConfiguration {
 

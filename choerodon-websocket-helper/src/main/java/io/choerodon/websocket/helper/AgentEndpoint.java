@@ -13,7 +13,7 @@ import java.util.Map;
  * @author crcokitwood
  */
 
-@ConfigurationProperties(prefix = "endpoints.agent")
+@ConfigurationProperties(prefix = "endpoints.clusters")
 public class AgentEndpoint  extends AbstractEndpoint<Map<Object, Object>> {
 
     private static final String AGENT_SESSION = "agent-sessions";
@@ -21,7 +21,7 @@ public class AgentEndpoint  extends AbstractEndpoint<Map<Object, Object>> {
 
 
     public AgentEndpoint(RedisTemplate<Object,Object> redisTemplate) {
-        super("agent", false);
+        super("clusters", false);
         this.redisTemplate = redisTemplate;
     }
 

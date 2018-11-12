@@ -27,7 +27,7 @@ public class NotRecentStrategy implements PasswordStrategy {
 
     @Override
     public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
-        Integer count = (Integer) policyMap.getPasswordConfig().get(TYPE);
+            Integer count = (Integer) policyMap.getPasswordConfig().get(TYPE);
         List<String> passwordHistoryList = passwordHistoryMapper.selectPasswordByUser(userDO.getId(), count);
         passwordHistoryList.forEach(p -> {
             if (ENCODER.matches(password, p)) {

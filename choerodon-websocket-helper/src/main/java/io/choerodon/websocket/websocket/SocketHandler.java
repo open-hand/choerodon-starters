@@ -66,7 +66,7 @@ public class SocketHandler extends AbstractWebSocketHandler {
         msg.setMsgType(msgType);
         logger.info("receive {} msg of {},",msg.getType(),msg.getKey());
         if (msg.getMsgType() == Msg.AGENT) {
-            msg.setEnvId((String) session.getAttributes().get("envId"));
+            msg.setClusterId((String) session.getAttributes().get("clusterId"));
         }
         msg.setBrokerFrom(sessionId+session.getAttributes().get("key").toString());
         sockHandlerDelegate.onMsgReceived(msg);
