@@ -10,7 +10,7 @@ import java.util.Set;
  * @author crockitwood
  */
 public class EnvListener {
-    public static final String AGENT_SESSION = "agent-sessions";
+    public static final String AGENT_SESSION = "cluster-sessions";
     private RedisTemplate<Object, Object> redisTemplate;
 
     public EnvListener(RedisTemplate<Object, Object> redisTemplate) {
