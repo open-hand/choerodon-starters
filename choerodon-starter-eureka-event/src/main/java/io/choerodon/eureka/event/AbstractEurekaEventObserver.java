@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.RemoteAccessException;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 import rx.schedulers.Schedulers;
@@ -19,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractEurekaEventObserver implements Observer, EurekaEventService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEurekaEventObserver.class);
+
+    private final AntPathMatcher matcher = new AntPathMatcher();
 
     private final LinkedList<EurekaEventPayload> eventCache = new SynchronizedLinkedList<>(new LinkedList<>());
 
@@ -99,7 +102,7 @@ public abstract class AbstractEurekaEventObserver implements Observer, EurekaEve
     public void update(Observable o, Object arg) {
         if (arg instanceof EurekaEventPayload) {
             EurekaEventPayload payload = (EurekaEventPayload) arg;
-            if (Arrays.stream(properties.getSkipServices()).anyMatch(t -> t.equals(payload.getAppName()))) {
+            if (Arrays.stream(properties.getSkipServices()).anyMatch(t -> matcher.match(t, payload.getAppName()))) {
                 LOGGER.info("Skip event that is skipServices, {}", payload);
                 return;
             }
