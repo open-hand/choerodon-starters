@@ -62,7 +62,7 @@ class FeignRequestInterceptorSpec extends Specification {
         headers.setAccessible(true)
 
         then: "校验方法"
-        thrown(NullPointerException)
+        noExceptionThrown()
     }
 
 }
