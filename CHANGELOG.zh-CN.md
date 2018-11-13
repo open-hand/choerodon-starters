@@ -2,6 +2,30 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+## [0.7.0] - 2018-11-13
+
+### 新增
+
+- 添加了单元测试
+- 添加了发送业务类型扫描功能；邮件、短信的相关类及注解移到`core`包
+- 自定义`UserDetails`中添加`Client`信息
+- 添加`choerodon-starter-eureka-event` 模块
+
+### 修改
+
+- 将`test`，`spock`的依赖移到父模块中
+- 定时任务增加层级
+
+### 修复
+
+- `FeignRequestInterceptor` 类型强转失败
+
+### 移除
+
+- 移除`choerodon-starter-hitoa`,`choerodon-starter-oauth-resource`的`cglib`依赖
+- 移除模块`choerodon-starter-bus`
+- 移除模块`choerodon-starter-config-monitor`
+
 ## [0.6.4] - 2018-09-29
 
 ### 新增
