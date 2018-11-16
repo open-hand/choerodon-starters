@@ -1,23 +1,27 @@
 package io.choerodon.websocket.websocket;
 
-import io.choerodon.websocket.security.SecurityCheckManager;
+import java.util.Map;
+import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.server.HandshakeFailureException;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Map;
-import java.util.UUID;
+import io.choerodon.websocket.security.SecurityCheckManager;
 
 /**
  * @author jiatong.li
  */
 public class RequestParametersInterceptor extends HttpSessionHandshakeInterceptor {
     private static final String SESSION_ID = "SESSION_ID";
-
+    Logger logger = LoggerFactory.getLogger(RequestParametersInterceptor.class);
     private SecurityCheckManager securityCheckManager;
 
 
@@ -32,7 +36,7 @@ public class RequestParametersInterceptor extends HttpSessionHandshakeIntercepto
         super.beforeHandshake(serverHttpRequest, serverHttpResponse, wsHandler, attributes);
         HttpSession httpSession = getRequestSession(serverHttpRequest);
         if (httpSession == null) {
-            throw new RuntimeException("Can not get HttpSession");
+            throw new HandshakeFailureException("Can not get HttpSession");
         }
         ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) serverHttpRequest;
         HttpServletRequest request = servletRequest.getServletRequest();
@@ -48,7 +52,12 @@ public class RequestParametersInterceptor extends HttpSessionHandshakeIntercepto
         );
         String uuid = UUID.randomUUID().toString().replaceAll("-","");
         attributes.put(SESSION_ID,uuid);
-        securityCheckManager.check(servletRequest);
+        try {
+            securityCheckManager.check(servletRequest);
+        } catch (HandshakeFailureException e) {
+            logger.warn("handshake failed: {}", e.getMessage());
+            return false;
+        }
         return true;
     }
 
