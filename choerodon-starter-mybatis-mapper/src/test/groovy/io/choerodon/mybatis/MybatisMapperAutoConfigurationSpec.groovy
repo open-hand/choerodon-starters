@@ -2,14 +2,12 @@ package io.choerodon.mybatis
 
 import org.apache.ibatis.session.Configuration
 import org.apache.ibatis.session.SqlSessionFactory
-import org.springframework.cloud.sleuth.SpanAccessor
 import org.springframework.core.env.Environment
 import spock.lang.Specification
 
 import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.DatabaseMetaData
-
 /**
  * Created by superlee on 2018/10/16.
  */
@@ -44,21 +42,6 @@ class MybatisMapperAutoConfigurationSpec extends Specification {
 
         then:
         true
-
-    }
-
-    def "ZipkinInterceptor"() {
-        given:
-        def sqlSessionFactory = Mock(SqlSessionFactory)
-        sqlSessionFactory.getConfiguration() >> Mock(Configuration)
-        def spanAccessor = Mock(SpanAccessor)
-        def mybatisMapperAutoConfiguration = new MybatisMapperAutoConfiguration()
-
-        when:
-        def value = mybatisMapperAutoConfiguration.zipkinInterceptor(sqlSessionFactory, spanAccessor)
-
-        then:
-        value == ""
 
     }
 
