@@ -20,7 +20,6 @@ import org.apache.ibatis.type.JdbcType;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.sleuth.SpanAccessor;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -116,20 +115,6 @@ public class MybatisMapperAutoConfiguration implements EnvironmentAware {
             connection.close();
         }
         return dialect;
-    }
-
-    /**
-     * 配置zipkin插件，统计sql时长
-     *
-     * @param sqlSessionFactory sqlSessionFactory
-     * @param spanAccessor      spanAccessor
-     * @return ""
-     */
-    @Bean
-    public String zipkinInterceptor(SqlSessionFactory sqlSessionFactory, SpanAccessor spanAccessor) {
-        ZipkinInterceptor zipkinInterceptor = new ZipkinInterceptor(spanAccessor);
-        sqlSessionFactory.getConfiguration().addInterceptor(zipkinInterceptor);
-        return "";
     }
 
     /**
