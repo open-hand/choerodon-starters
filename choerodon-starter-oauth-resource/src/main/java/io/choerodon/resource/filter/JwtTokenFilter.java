@@ -57,7 +57,6 @@ public class JwtTokenFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        boolean debug = LOGGER.isDebugEnabled();
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         for (PublicPermission publicPermission : publicPermissions) {
             if (MATCHER.match(publicPermission.path, httpRequest.getRequestURI()) &&
@@ -85,20 +84,15 @@ public class JwtTokenFilter implements Filter {
                 }
 
                 Authentication authResult = this.authenticate(authentication);
-                if (debug) {
-                    LOGGER.debug("Authentication success: {}", authResult);
-                }
+                LOGGER.debug("Authentication success: {}", authResult);
                 SecurityContextHolder.getContext().setAuthentication(authResult);
             }
+            chain.doFilter(request, response);
         } catch (OAuth2Exception e) {
             SecurityContextHolder.clearContext();
-            if (debug) {
-                LOGGER.debug("Authentication request failed: " + e);
-            }
-            return;
+            LOGGER.debug("Authentication request failed: ", e);
+            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token.");
         }
-
-        chain.doFilter(request, response);
     }
 
     @Override
