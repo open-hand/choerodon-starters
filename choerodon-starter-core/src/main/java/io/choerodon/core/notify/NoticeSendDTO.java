@@ -11,25 +11,24 @@ public class NoticeSendDTO {
     private String code;
 
     /**
-     * 发送消息的用户
+     * 触发发送通知的组织或项目id，如果是site层，则不传或传0
      */
-    private User fromUser;
+    private Long sourceId;
+
+    /**
+     * 发送者(目前用于发送站内信的发送者字段)
+     */
+    private Long fromUserId;
 
     /**
      * 目标用户
      */
-    private List<User> targetUsers;
-    /**
-     * 模版渲染参数
-     * key:模版中的${}字段名
-     * value:渲染的值
-     */
-    private Map<String, Object> params;
+    private List<Long> targetUsersIds;
 
     /**
-     * 触发发送通知的组织或项目id，如果是site层，则不传或传0
+     * 模版渲染参数(标题和内容渲染都在此参数中)
      */
-    private Long sourceId;
+    private Map<String, Object> params;
 
     public String getCode() {
         return code;
@@ -47,22 +46,6 @@ public class NoticeSendDTO {
         this.params = params;
     }
 
-    public List<User> getTargetUsers() {
-        return targetUsers;
-    }
-
-    public void setTargetUsers(List<User> targetUsers) {
-        this.targetUsers = targetUsers;
-    }
-
-    public User getFromUser() {
-        return fromUser;
-    }
-
-    public void setFromUser(User fromUser) {
-        this.fromUser = fromUser;
-    }
-
     public Long getSourceId() {
         return sourceId;
     }
@@ -71,72 +54,19 @@ public class NoticeSendDTO {
         this.sourceId = sourceId;
     }
 
-    public static class User {
+    public Long getFromUserId() {
+        return fromUserId;
+    }
 
-        private Long id;
+    public void setFromUserId(Long fromUserId) {
+        this.fromUserId = fromUserId;
+    }
 
-        private String loginName;
+    public List<Long> getTargetUsersIds() {
+        return targetUsersIds;
+    }
 
-        private String realName;
-
-        private String imageUrl;
-
-        private String email;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getLoginName() {
-            return loginName;
-        }
-
-        public void setLoginName(String loginName) {
-            this.loginName = loginName;
-        }
-
-        public String getRealName() {
-            return realName;
-        }
-
-        public void setRealName(String realName) {
-            this.realName = realName;
-        }
-
-        public String getImageUrl() {
-            return imageUrl;
-        }
-
-        public void setImageUrl(String imageUrl) {
-            this.imageUrl = imageUrl;
-        }
-
-        public User(Long id, String loginName, String realName, String imageUrl, String email) {
-            this.id = id;
-            this.loginName = loginName;
-            this.realName = realName;
-            this.imageUrl = imageUrl;
-            this.email = email;
-        }
-
-        public User(Long id, String email) {
-            this.id = id;
-            this.email = email;
-        }
-
-        public User() {
-        }
+    public void setTargetUsersIds(List<Long> targetUsersIds) {
+        this.targetUsersIds = targetUsersIds;
     }
 }
