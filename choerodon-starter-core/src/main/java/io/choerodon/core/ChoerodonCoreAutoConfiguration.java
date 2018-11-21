@@ -1,6 +1,8 @@
 package io.choerodon.core;
 
+import io.choerodon.core.config.RefreshConfigEndpoint;
 import io.choerodon.core.convertor.ApplicationContextHelper;
+import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,4 +17,10 @@ public class ChoerodonCoreAutoConfiguration {
     public ApplicationContextHelper applicationContextHelper() {
         return new ApplicationContextHelper();
     }
+
+    @Bean
+    public RefreshConfigEndpoint endpoint(ContextRefresher contextRefresher) {
+        return new RefreshConfigEndpoint(contextRefresher);
+    }
+
 }
