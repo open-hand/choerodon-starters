@@ -14,7 +14,7 @@ class NotRecentStrategySpec extends Specification {
         given: 'mock mapper'
         def encode = new BCryptPasswordEncoder()
         def mapper = Mock(BasePasswordHistoryMapper) {
-            selectPasswordByUser(_, _) >> [encode.encode('abcd')]
+            selectPasswordByUser(_) >> [encode.encode('abcd')]
         }
         def passMap = new HashMap()
         passMap.put(PasswordPolicyType.NOT_RECENT.getValue(), 5)
