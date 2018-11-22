@@ -27,13 +27,19 @@ public class NotRecentStrategy implements PasswordStrategy {
 
     @Override
     public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
-            Integer count = (Integer) policyMap.getPasswordConfig().get(TYPE);
-        List<String> passwordHistoryList = passwordHistoryMapper.selectPasswordByUser(userDO.getId(), count);
-        passwordHistoryList.forEach(p -> {
-            if (ENCODER.matches(password, p)) {
-                throw new CommonException(ERROR_MESSAGE, count);
+        Integer recentPasswordCount = (Integer) policyMap.getPasswordConfig().get(TYPE);
+        if (recentPasswordCount > 0) {
+            List<String> passwordHistoryList = passwordHistoryMapper.selectPasswordByUser(userDO.getId());
+            int count = 0;
+            for (String recentPassword : passwordHistoryList) {
+                if (ENCODER.matches(password, recentPassword)) {
+                    throw new CommonException(ERROR_MESSAGE, recentPasswordCount);
+                }
+                if (++count >= recentPasswordCount) {
+                    break;
+                }
             }
-        });
+        }
         return null;
     }
 
