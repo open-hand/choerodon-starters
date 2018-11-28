@@ -148,8 +148,16 @@ public class ConvertHelper {
 
     private static boolean isConvertorI(final Type t, final Class source, final Class destin) {
         Type rawType = ((ParameterizedType) t).getRawType();
-        if (rawType == null || !ConvertorI.class.getTypeName().equals(rawType.getTypeName())) {
+        if (rawType == null ) {
             return false;
+        }
+        if (!ConvertorI.class.getTypeName().equals(rawType.getTypeName())) {
+            Type[] superInterfaces = ((Class) rawType).genericInfo.getSuperInterfaces();
+            for (Type t : superInterfaces) {
+                if (!(t instanceof ParameterizedType && isConvertorI(t, source, destin))) {
+                    return false;
+                }
+            }
         }
         Type[] genericType2 = ((ParameterizedType) t).getActualTypeArguments();
         int num = 0;
