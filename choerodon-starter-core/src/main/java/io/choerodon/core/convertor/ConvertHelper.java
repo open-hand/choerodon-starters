@@ -152,9 +152,9 @@ public class ConvertHelper {
             return false;
         }
         if (!ConvertorI.class.getTypeName().equals(rawType.getTypeName())) {
-            Type[] superInterfaces = ((Class) rawType).genericInfo.getSuperInterfaces();
-            for (Type t : superInterfaces) {
-                if (!(t instanceof ParameterizedType && isConvertorI(t, source, destin))) {
+            Type[] superInterfaces = ((Class) rawType).getGenericInterfaces();
+            for (Type type : superInterfaces) {
+                if (!ConvertorI.class.getTypeName().equals(((ParameterizedType) type).getRawType().getTypeName())) {
                     return false;
                 }
             }
