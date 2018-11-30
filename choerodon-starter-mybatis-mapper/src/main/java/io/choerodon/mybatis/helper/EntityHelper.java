@@ -26,10 +26,12 @@ package io.choerodon.mybatis.helper;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.choerodon.mybatis.MapperException;
 import io.choerodon.mybatis.annotation.MultiLanguage;
 import io.choerodon.mybatis.annotation.MultiLanguageField;
+import io.choerodon.mybatis.code.DbType;
 import io.choerodon.mybatis.code.IdentityDialect;
 import io.choerodon.mybatis.code.Style;
 import io.choerodon.mybatis.domain.Config;
@@ -38,7 +40,6 @@ import io.choerodon.mybatis.domain.EntityField;
 import io.choerodon.mybatis.domain.EntityTable;
 import io.choerodon.mybatis.util.SimpleTypeUtil;
 import io.choerodon.mybatis.util.StringUtil;
-
 
 
 /**
@@ -54,8 +55,8 @@ public class EntityHelper {
     /**
      * 实体类 => 表对象
      */
-    private static final Map<Class<?>, EntityTable> entityClassTableMap = new HashMap<>();
-    private static final Map<String, EntityTable> mapperClassTableMap = new HashMap<>();
+    private static final Map<Class<?>, EntityTable> entityClassTableMap = new ConcurrentHashMap<>();
+    private static final Map<String, EntityTable> mapperClassTableMap = new ConcurrentHashMap<>();
 
     private EntityHelper() {
     }
@@ -190,13 +191,13 @@ public class EntityHelper {
         }
         if (entityTable == null) {
             entityTable = new EntityTable(entityClass);
-            //可以通过stye控制
+            //可以通过style控制
             entityTable.setName(StringUtil.convertByStyle(entityClass.getSimpleName(), style));
         }
         if (entityClass.isAnnotationPresent(MultiLanguage.class)) {
             entityTable.setMultiLanguage(true);
             String tableName = entityTable.getName();
-            if(StringUtil.tableNameAllUpperCase(tableName)) {
+            if (StringUtil.tableNameAllUpperCase(tableName)) {
                 entityTable.setMultiLanguageTableName(tableName + MULTI_LANGUAGE_TABLE_SUFFIX_UPPER_CASE);
             } else {
                 entityTable.setMultiLanguageTableName(tableName + MULTI_LANGUAGE_TABLE_SUFFIX_LOW_CASE);
@@ -217,7 +218,7 @@ public class EntityHelper {
             if (config.isUseSimpleType() && !SimpleTypeUtil.isSimpleType(field.getJavaType())) {
                 continue;
             }
-            processField(entityTable, style, field);
+            processField(entityTable, style, field, config);
         }
         //当pk.size=0的时候使用所有列作为主键
         if (entityTable.getEntityClassPkColumns().isEmpty()) {
@@ -234,8 +235,9 @@ public class EntityHelper {
      * @param entityTable entityTable
      * @param style       style
      * @param field       field
+     * @param config      config
      */
-    private static void processField(EntityTable entityTable, Style style, EntityField field) {
+    private static void processField(EntityTable entityTable, Style style, EntityField field, Config config) {
         //排除字段
         if (field.isAnnotationPresent(Transient.class)) {
             return;
@@ -245,6 +247,11 @@ public class EntityHelper {
         entityColumn.setField(field);
         if (field.isAnnotationPresent(Id.class)) {
             entityColumn.setId(true);
+            //sqlserver数据库例外主键，设置为不可插入
+            DbType dbType = config.getDbType();
+            if (DbType.SQLSERVER.equals(dbType)) {
+                entityColumn.setInsertable(false);
+            }
         }
         if (field.isAnnotationPresent(MultiLanguageField.class)) {
             entityColumn.setMultiLanguage(true);

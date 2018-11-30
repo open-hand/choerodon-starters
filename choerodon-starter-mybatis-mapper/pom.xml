@@ -54,6 +54,10 @@
             <artifactId>ojdbc7</artifactId>
             <version>12.1.0.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
