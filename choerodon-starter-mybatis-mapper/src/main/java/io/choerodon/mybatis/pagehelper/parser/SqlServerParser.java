@@ -27,6 +27,7 @@ package io.choerodon.mybatis.pagehelper.parser;
 import java.util.*;
 
 import io.choerodon.mybatis.MapperException;
+import io.choerodon.mybatis.pagehelper.exception.PageException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
@@ -103,10 +104,10 @@ public class SqlServerParser {
         try {
             stmt = CCJSqlParserUtil.parse(sql);
         } catch (Exception e) {
-            throw new MapperException("不支持该SQL转换为分页查询!");
+            throw new PageException("不支持该SQL转换为分页查询!",e);
         }
         if (!(stmt instanceof Select)) {
-            throw new MapperException("分页语句必须是Select查询!");
+            throw new PageException("分页语句必须是Select查询!");
         }
         //获取分页查询的select
         Select pageSelect = getPageSelect((Select) stmt);

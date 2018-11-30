@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author wuguokai
  */
-public class DefaultExecutor extends AbstractExector {
+public class DefaultExecutor extends AbstractExecutor {
     DefaultExecutor(ApplicationContext applicationContext) {
         super(applicationContext);
     }
