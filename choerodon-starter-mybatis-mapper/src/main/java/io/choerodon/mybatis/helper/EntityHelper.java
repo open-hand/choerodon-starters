@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.choerodon.mybatis.MapperException;
+import io.choerodon.mybatis.annotation.ColumnType;
 import io.choerodon.mybatis.annotation.MultiLanguage;
 import io.choerodon.mybatis.annotation.MultiLanguageField;
 import io.choerodon.mybatis.code.DbType;
@@ -40,6 +41,8 @@ import io.choerodon.mybatis.domain.EntityField;
 import io.choerodon.mybatis.domain.EntityTable;
 import io.choerodon.mybatis.util.SimpleTypeUtil;
 import io.choerodon.mybatis.util.StringUtil;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.UnknownTypeHandler;
 
 
 /**
@@ -215,7 +218,12 @@ public class EntityHelper {
         }
         for (EntityField field : fields) {
             //如果启用了简单类型，就做简单类型校验，如果不是简单类型，直接跳过
-            if (config.isUseSimpleType() && !SimpleTypeUtil.isSimpleType(field.getJavaType())) {
+            //3.5.0 如果启用了枚举作为简单类型，就不会自动忽略枚举类型
+            //4.0 如果标记了 Column 或 ColumnType 注解，也不忽略
+            if (config.isUseSimpleType()
+                    && !field.isAnnotationPresent(Column.class)
+                    && !field.isAnnotationPresent(ColumnType.class)
+                    && !SimpleTypeUtil.isSimpleType(field.getJavaType())) {
                 continue;
             }
             processField(entityTable, style, field, config);
@@ -264,6 +272,23 @@ public class EntityHelper {
             entityColumn.setUpdatable(column.updatable());
             entityColumn.setInsertable(column.insertable());
         }
+        //ColumnType
+        if (field.isAnnotationPresent(ColumnType.class)) {
+            ColumnType columnType = field.getAnnotation(ColumnType.class);
+            //是否为 blob 字段
+            entityColumn.setBlob(columnType.isBlob());
+            //column可以起到别名的作用
+            if (StringUtil.isEmpty(columnName) && StringUtil.isNotEmpty(columnType.column())) {
+                columnName = columnType.column();
+            }
+            if (columnType.jdbcType() != JdbcType.UNDEFINED) {
+                entityColumn.setJdbcType(columnType.jdbcType());
+            }
+            if (columnType.typeHandler() != UnknownTypeHandler.class) {
+                entityColumn.setTypeHandler(columnType.typeHandler());
+            }
+        }
+
         //表名
         if (StringUtil.isEmpty(columnName)) {
             columnName = StringUtil.convertByStyle(field.getName(), style);
