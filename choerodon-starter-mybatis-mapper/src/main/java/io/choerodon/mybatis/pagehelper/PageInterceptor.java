@@ -117,7 +117,7 @@ public class PageInterceptor implements Interceptor {
                 //判断是否需要进行分页查询
                 DoPage doPage =
                         new DoPage(ms, parameter, rowBounds, resultHandler,
-                                executor, cacheKey, boundSql, boundSql, additionalParameters).invoke();
+                                executor, cacheKey, boundSql, sqlWithOrderBy, additionalParameters).invoke();
                 resultList = doPage.getResultList();
                 parameter = doPage.getParameter();
                 return dialect.afterPage(resultList, parameter, rowBounds);
@@ -161,6 +161,7 @@ public class PageInterceptor implements Interceptor {
 
     @Override
     public void setProperties(Properties properties) {
+        dialect.setProperties(properties);
         msCountMap = CacheFactory.createCache(properties.getProperty("msCountCache"), "ms", properties);
         try {
             additionalParametersField = BoundSql.class.getDeclaredField("additionalParameters");

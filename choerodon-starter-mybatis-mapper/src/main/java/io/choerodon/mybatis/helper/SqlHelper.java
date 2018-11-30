@@ -530,11 +530,11 @@ public class SqlHelper {
         StringBuilder sql = new StringBuilder();
         sql.append("<set>");
         //获取全部列
-        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
+        Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
         //当某个列有主键策略时，不需要考虑他的属性是否为空，因为如果为空，一定会根据主键策略给他生成一个值
         boolean modifyAudit = entityClass.isAnnotationPresent(ModifyAudit.class);
         boolean versionAudit = entityClass.isAnnotationPresent(VersionAudit.class);
-        for (EntityColumn column : columnList) {
+        for (EntityColumn column : columnSet) {
             String columnName = column.getProperty();
             //如果启用监控，插入时更新值
             if (fillSelfMaintainFileds(sql, modifyAudit, versionAudit, column, columnName)) {

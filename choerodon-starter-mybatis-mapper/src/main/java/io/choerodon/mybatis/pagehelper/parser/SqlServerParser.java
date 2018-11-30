@@ -26,7 +26,7 @@ package io.choerodon.mybatis.pagehelper.parser;
 
 import java.util.*;
 
-import io.choerodon.mybatis.MapperException;
+import io.choerodon.mybatis.pagehelper.exception.PageException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
@@ -75,7 +75,7 @@ public class SqlServerParser {
     //静态方法处理
     static {
         TOP100_PERCENT = new Top();
-        TOP100_PERCENT.setRowCount(100);
+        TOP100_PERCENT.setExpression(new LongValue(100));
         TOP100_PERCENT.setPercentage(true);
     }
 
@@ -102,11 +102,11 @@ public class SqlServerParser {
         Statement stmt;
         try {
             stmt = CCJSqlParserUtil.parse(sql);
-        } catch (Exception e) {
-            throw new MapperException("不支持该SQL转换为分页查询!");
+        } catch (Throwable e) {
+            throw new PageException("不支持该SQL转换为分页查询!", e);
         }
         if (!(stmt instanceof Select)) {
-            throw new MapperException("分页语句必须是Select查询!");
+            throw new PageException("分页语句必须是Select查询!");
         }
         //获取分页查询的select
         Select pageSelect = getPageSelect((Select) stmt);
@@ -134,7 +134,7 @@ public class SqlServerParser {
         }
         //这里的selectBody一定是PlainSelect
         if (((PlainSelect) selectBody).getTop() != null) {
-            throw new MapperException("被分页的语句已经包含了Top，不能再通过分页插件进行分页查询!");
+            throw new PageException("被分页的语句已经包含了Top，不能再通过分页插件进行分页查询!");
         }
         //获取查询列
         List<SelectItem> selectItems = getSelectItems((PlainSelect) selectBody);
@@ -157,11 +157,12 @@ public class SqlServerParser {
         fromInnerItem.setAlias(PAGE_TABLE_ALIAS);
         innerSelectBody.setFromItem(fromInnerItem);
 
-
+        //新建一个select
+        Select newSelect = new Select();
         PlainSelect newSelectBody = new PlainSelect();
         //设置top
         Top top = new Top();
-        top.setRowCount(Long.MAX_VALUE);
+        top.setExpression(new LongValue(Long.MAX_VALUE));
         newSelectBody.setTop(top);
         //设置order by
         List<OrderByElement> orderByElements = new ArrayList<>();
@@ -181,8 +182,7 @@ public class SqlServerParser {
         fromItem.setSelectBody(innerSelectBody); //中层子查询
         fromItem.setAlias(PAGE_TABLE_ALIAS);
         newSelectBody.setFromItem(fromItem);
-        //新建一个select
-        Select newSelect = new Select();
+
         newSelect.setSelectBody(newSelectBody);
         if (isNotEmptyList(select.getWithItemsList())) {
             newSelect.setWithItemsList(select.getWithItemsList());
@@ -200,7 +200,7 @@ public class SqlServerParser {
         //获取最后一个plainSelect
         SelectBody setSelectBody = setOperationList.getSelects().get(setOperationList.getSelects().size() - 1);
         if (!(setSelectBody instanceof PlainSelect)) {
-            throw new MapperException("目前无法处理该SQL，您可以将该SQL发送给abel533@gmail.com协助作者解决!");
+            throw new PageException("目前无法处理该SQL，您可以将该SQL发送给abel533@gmail.com协助作者解决!");
         }
         PlainSelect plainSelect = (PlainSelect) setSelectBody;
         PlainSelect selectBody = new PlainSelect();
@@ -228,22 +228,7 @@ public class SqlServerParser {
      */
     protected List<SelectItem> getSelectItems(PlainSelect plainSelect) {
         //设置selectItems
-        List<SelectItem> selectItems = new ArrayList<>();
-        dealWithSelectItem(plainSelect, selectItems);
-        // SELECT *, 1 AS alias FROM TEST
-        // 应该为
-        // SELECT * FROM (SELECT *, 1 AS alias FROM TEST)
-        // 不应该为
-        // SELECT *, alias FROM (SELECT *, 1 AS alias FROM TEST)
-        for (SelectItem selectItem : selectItems) {
-            if (selectItem instanceof AllColumns) {
-                return Collections.singletonList(selectItem);
-            }
-        }
-        return selectItems;
-    }
-
-    private void dealWithSelectItem(PlainSelect plainSelect, List<SelectItem> selectItems) {
+        List<SelectItem> selectItems = new ArrayList<SelectItem>();
         for (SelectItem selectItem : plainSelect.getSelectItems()) {
             //别名需要特殊处理
             if (selectItem instanceof SelectExpressionItem) {
@@ -272,28 +257,17 @@ public class SqlServerParser {
                 selectItems.add(selectItem);
             }
         }
-    }
-
-    private boolean dealWithSelectItem(PlainSelect plainSelect, Map<String, SelectExpressionItem> selectMap,
-                                       Set<String> aliases, boolean allColumns, Set<String> allColumnsTables) {
-        for (SelectItem item : plainSelect.getSelectItems()) {
-            if (item instanceof SelectExpressionItem) {
-                SelectExpressionItem expItem = (SelectExpressionItem) item;
-                selectMap.put(expItem.getExpression().toString(), expItem);
-
-                Alias alias = expItem.getAlias();
-                if (alias != null) {
-                    aliases.add(alias.getName());
-                }
-
-            } else if (item instanceof AllColumns) {
-                allColumns = true;
-
-            } else if (item instanceof AllTableColumns) {
-                allColumnsTables.add(((AllTableColumns) item).getTable().getName());
+        // SELECT *, 1 AS alias FROM TEST
+        // 应该为
+        // SELECT * FROM (SELECT *, 1 AS alias FROM TEST)
+        // 不应该为
+        // SELECT *, alias FROM (SELECT *, 1 AS alias FROM TEST)
+        for (SelectItem selectItem : selectItems) {
+            if (selectItem instanceof AllColumns) {
+                return Collections.singletonList(selectItem);
             }
         }
-        return allColumns;
+        return selectItems;
     }
 
     /**
@@ -322,8 +296,8 @@ public class SqlServerParser {
 
     /**
      * 处理selectBody去除Order by
-     * @param level level
-     * @param selectBody selectBody
+     *
+     * @param selectBody
      */
     protected void processSelectBody(SelectBody selectBody, int level) {
         if (selectBody instanceof PlainSelect) {
@@ -335,7 +309,7 @@ public class SqlServerParser {
             }
         } else {
             SetOperationList operationList = (SetOperationList) selectBody;
-            if (operationList.getSelects() != null && !operationList.getSelects().isEmpty()) {
+            if (operationList.getSelects() != null && operationList.getSelects().size() > 0) {
                 List<SelectBody> plainSelects = operationList.getSelects();
                 for (SelectBody plainSelect : plainSelects) {
                     processSelectBody(plainSelect, level + 1);
@@ -346,17 +320,21 @@ public class SqlServerParser {
 
     /**
      * 处理PlainSelect类型的selectBody
-     * @param level  level
-     * @param plainSelect plainSelect
+     *
+     * @param plainSelect
      */
     protected void processPlainSelect(PlainSelect plainSelect, int level) {
-        if (level > 1 && isNotEmptyList(plainSelect.getOrderByElements()) && plainSelect.getTop() == null) {
-            plainSelect.setTop(TOP100_PERCENT);
+        if (level > 1) {
+            if (isNotEmptyList(plainSelect.getOrderByElements())) {
+                if (plainSelect.getTop() == null) {
+                    plainSelect.setTop(TOP100_PERCENT);
+                }
+            }
         }
         if (plainSelect.getFromItem() != null) {
             processFromItem(plainSelect.getFromItem(), level + 1);
         }
-        if (plainSelect.getJoins() != null && !plainSelect.getJoins().isEmpty()) {
+        if (plainSelect.getJoins() != null && plainSelect.getJoins().size() > 0) {
             List<Join> joins = plainSelect.getJoins();
             for (Join join : joins) {
                 if (join.getRightItem() != null) {
@@ -368,14 +346,18 @@ public class SqlServerParser {
 
     /**
      * 处理子查询
-     * @param level level
-     * @param fromItem fromItem
+     *
+     * @param fromItem
      */
     protected void processFromItem(FromItem fromItem, int level) {
         if (fromItem instanceof SubJoin) {
             SubJoin subJoin = (SubJoin) fromItem;
-            if (subJoin.getJoin() != null && subJoin.getJoin().getRightItem() != null) {
-                processFromItem(subJoin.getJoin().getRightItem(), level + 1);
+            if (subJoin.getJoinList() != null && subJoin.getJoinList().size() > 0) {
+                for (Join join : subJoin.getJoinList()) {
+                    if (join.getRightItem() != null) {
+                        processFromItem(join.getRightItem(), level + 1);
+                    }
+                }
             }
             if (subJoin.getLeft() != null) {
                 processFromItem(subJoin.getLeft(), level + 1);
@@ -385,8 +367,9 @@ public class SqlServerParser {
             if (subSelect.getSelectBody() != null) {
                 processSelectBody(subSelect.getSelectBody(), level + 1);
             }
-        } else if (!(fromItem instanceof ValuesList)
-                && fromItem instanceof LateralSubSelect) {
+        } else if (fromItem instanceof ValuesList) {
+
+        } else if (fromItem instanceof LateralSubSelect) {
             LateralSubSelect lateralSubSelect = (LateralSubSelect) fromItem;
             if (lateralSubSelect.getSubSelect() != null) {
                 SubSelect subSelect = lateralSubSelect.getSubSelect();
@@ -401,15 +384,14 @@ public class SqlServerParser {
     /**
      * List不空
      *
-     * @param list list
-     * @return boolean boolean
+     * @param list
+     * @return
      */
     public boolean isNotEmptyList(List<?> list) {
-        if (list == null) {
+        if (list == null || list.size() == 0) {
             return false;
-        } else {
-            return !list.isEmpty();
         }
+        return true;
     }
 
     /**
@@ -453,15 +435,31 @@ public class SqlServerParser {
         OrderByElement orderByElement;
 
         // 非 `*` 且 非 `t.*` 查询列集合
-        Map<String, SelectExpressionItem> selectMap = new HashMap<>();
+        Map<String, SelectExpressionItem> selectMap = new HashMap<String, SelectExpressionItem>();
         // 别名集合
-        Set<String> aliases = new HashSet<>();
+        Set<String> aliases = new HashSet<String>();
         // 是否包含 `*` 查询列
         boolean allColumns = false;
         // `t.*` 查询列的表名集合
-        Set<String> allColumnsTables = new HashSet<>();
+        Set<String> allColumnsTables = new HashSet<String>();
 
-        allColumns = dealWithSelectItem(plainSelect, selectMap, aliases, allColumns, allColumnsTables);
+        for (SelectItem item : plainSelect.getSelectItems()) {
+            if (item instanceof SelectExpressionItem) {
+                SelectExpressionItem expItem = (SelectExpressionItem) item;
+                selectMap.put(expItem.getExpression().toString(), expItem);
+
+                Alias alias = expItem.getAlias();
+                if (alias != null) {
+                    aliases.add(alias.getName());
+                }
+
+            } else if (item instanceof AllColumns) {
+                allColumns = true;
+
+            } else if (item instanceof AllTableColumns) {
+                allColumnsTables.add(((AllTableColumns) item).getTable().getName());
+            }
+        }
 
         // 开始遍历 OrderByElement 列表
         int aliasNo = 1;
@@ -469,21 +467,50 @@ public class SqlServerParser {
             orderByElement = iterator.next();
             Expression expression = orderByElement.getExpression();
             SelectExpressionItem selectExpressionItem = selectMap.get(expression.toString());
-            if (selectExpressionItem != null) {
-                // OrderByElement 在查询列表中
+            if (selectExpressionItem != null) { // OrderByElement 在查询列表中
                 Alias alias = selectExpressionItem.getAlias();
-                dealWithAlias(iterator, orderByElement, expression, alias);
+                if (alias != null) { // 查询列含有别名时用查询列别名
+                    iterator.set(cloneOrderByElement(orderByElement, alias.getName()));
 
-            } else {
-                // OrderByElement 不在查询列表中，需要自动生成一个查询列
-                if (expression instanceof Column) {
-                    // OrderByElement 为普通列
-                    String table = ((Column) expression).getTable().getName();
-                    if (dealWithTableName(plainSelect, aliases, allColumns,
-                            allColumnsTables, (Column) expression, table)) {
-                        continue;
+                } else { // 查询列不包含别名
+                    if (expression instanceof Column) {
+                        // 查询列为普通列，这时因为列在嵌套查询外时名称中不包含表名，故去除排序列的表名引用
+                        // 例（仅为解释此处逻辑，不代表最终分页结果）：
+                        // SELECT TEST.A FROM TEST ORDER BY TEST.A
+                        // -->
+                        // SELECT A FROM (SELECT TEST.A FROM TEST) ORDER BY A
+                        ((Column) expression).setTable(null);
+
+                    } else {
+                        // 查询列不为普通列时（例如函数列）不支持分页
+                        // 此种情况比较难预测，简单的增加新列容易产生不可预料的结果
+                        // 而为列增加别名是非常简单的，故此要求排序复杂列必须使用别名
+                        throw new PageException("列 \"" + expression + "\" 需要定义别名");
                     }
                 }
+
+            } else { // OrderByElement 不在查询列表中，需要自动生成一个查询列
+                if (expression instanceof Column) { // OrderByElement 为普通列
+                    String table = ((Column) expression).getTable().getName();
+                    if (table == null) { // 表名为空
+                        if (allColumns ||
+                                (allColumnsTables.size() == 1 && plainSelect.getJoins() == null) ||
+                                aliases.contains(((Column) expression).getColumnName())) {
+                            // 包含`*`查询列 或者 只有一个 `t.*`列且为单表查询 或者 其实排序列是一个别名
+                            // 此时排序列其实已经包含在查询列表中了，不需做任何操作
+                            continue;
+                        }
+
+                    } else { //表名不为空
+                        if (allColumns || allColumnsTables.contains(table)) {
+                            // 包含`*`查询列 或者 包含特定的`t.*`列
+                            // 此时排序列其实已经包含在查询列表中了，只需去除排序列的表名引
+                            ((Column) expression).setTable(null);
+                            continue;
+                        }
+                    }
+                }
+
                 // 将排序列加入查询列中
                 String aliasName = PAGE_COLUMN_ALIAS_PREFIX + aliasNo++;
 
@@ -497,55 +524,6 @@ public class SqlServerParser {
         }
 
         return orderByElements;
-    }
-
-    private boolean dealWithTableName(PlainSelect plainSelect, Set<String> aliases, boolean allColumns,
-                                      Set<String> allColumnsTables, Column expression, String table) {
-        if (table == null) {
-            // 表名为空
-            if (allColumns
-                    || (allColumnsTables.size() == 1 && plainSelect.getJoins() == null)
-                    || aliases.contains(expression.getColumnName())) {
-                // 包含`*`查询列 或者 只有一个 `t.*`列且为单表查询 或者 其实排序列是一个别名
-                // 此时排序列其实已经包含在查询列表中了，不需做任何操作
-                return true;
-            }
-
-        } else {
-            //表名不为空
-            if (allColumns || allColumnsTables.contains(table)) {
-                // 包含`*`查询列 或者 包含特定的`t.*`列
-                // 此时排序列其实已经包含在查询列表中了，只需去除排序列的表名引
-                expression.setTable(null);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void dealWithAlias(ListIterator<OrderByElement> iterator,
-                               OrderByElement orderByElement, Expression expression, Alias alias) {
-        if (alias != null) {
-            // 查询列含有别名时用查询列别名
-            iterator.set(cloneOrderByElement(orderByElement, alias.getName()));
-
-        } else {
-            // 查询列不包含别名
-            if (expression instanceof Column) {
-                // 查询列为普通列，这时因为列在嵌套查询外时名称中不包含表名，故去除排序列的表名引用
-                // 例（仅为解释此处逻辑，不代表最终分页结果）：
-                // SELECT TEST.A FROM TEST ORDER BY TEST.A
-                // -->
-                // SELECT A FROM (SELECT TEST.A FROM TEST) ORDER BY A
-                ((Column) expression).setTable(null);
-
-            } else {
-                // 查询列不为普通列时（例如函数列）不支持分页
-                // 此种情况比较难预测，简单的增加新列容易产生不可预料的结果
-                // 而为列增加别名是非常简单的，故此要求排序复杂列必须使用别名
-                throw new MapperException("列 \"" + expression + "\" 需要定义别名");
-            }
-        }
     }
 
 }

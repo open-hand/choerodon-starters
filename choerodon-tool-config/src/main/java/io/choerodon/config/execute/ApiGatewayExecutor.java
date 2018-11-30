@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  *
  * @author wuguokai
  */
-public class ApiGatewayExecutor extends AbstractExector {
+public class ApiGatewayExecutor extends AbstractExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiGatewayExecutor.class);
     private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 

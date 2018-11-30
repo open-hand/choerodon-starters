@@ -29,7 +29,6 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.RowBounds;
 
 
-
 /**
  * SelectKeyGenerator
  *
@@ -71,37 +70,31 @@ public class SelectKeyGenerator implements KeyGenerator {
                     // Do not close keyExecutor.
                     // The transaction will be closed by parent executor.
                     Executor keyExecutor = configuration.newExecutor(executor.getTransaction(), ExecutorType.SIMPLE);
-                    List<Object> values =
-                            keyExecutor.query(keyStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
-                    dealWithValues(keyProperties, configuration, metaParam, values);
+                    List<Object> values = keyExecutor.query(keyStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
+                    if (values.size() == 0) {
+                        throw new ExecutorException("SelectKey returned no data.");
+                    } else if (values.size() > 1) {
+                        throw new ExecutorException("SelectKey returned more than one value.");
+                    } else {
+                        MetaObject metaResult = configuration.newMetaObject(values.get(0));
+                        if (keyProperties.length == 1) {
+                            if (metaResult.hasGetter(keyProperties[0])) {
+                                setValue(metaParam, keyProperties[0], metaResult.getValue(keyProperties[0]));
+                            } else {
+                                // no getter for the property - maybe just a single value object
+                                // so try that
+                                setValue(metaParam, keyProperties[0], values.get(0));
+                            }
+                        } else {
+                            handleMultipleProperties(keyProperties, metaParam, metaResult);
+                        }
+                    }
                 }
             }
         } catch (ExecutorException e) {
             throw e;
         } catch (Exception e) {
             throw new ExecutorException("Error selecting key or setting result to parameter object. Cause: " + e, e);
-        }
-    }
-
-    private void dealWithValues(String[] keyProperties, Configuration configuration,
-                                MetaObject metaParam, List<Object> values) {
-        if (values.isEmpty()) {
-            throw new ExecutorException("SelectKey returned no data.");
-        } else if (values.size() > 1) {
-            throw new ExecutorException("SelectKey returned more than one value.");
-        } else {
-            MetaObject metaResult = configuration.newMetaObject(values.get(0));
-            if (keyProperties.length == 1) {
-                if (metaResult.hasGetter(keyProperties[0])) {
-                    setValue(metaParam, keyProperties[0], metaResult.getValue(keyProperties[0]));
-                } else {
-                    // no getter for the property - maybe just a single value object
-                    // so try that
-                    setValue(metaParam, keyProperties[0], values.get(0));
-                }
-            } else {
-                handleMultipleProperties(keyProperties, metaParam, metaResult);
-            }
         }
     }
 
@@ -116,8 +109,7 @@ public class SelectKeyGenerator implements KeyGenerator {
             }
         } else {
             if (keyColumns.length != keyProperties.length) {
-                throw new ExecutorException("If SelectKey has key columns, "
-                        + "the number must match the number of key properties.");
+                throw new ExecutorException("If SelectKey has key columns, the number must match the number of key properties.");
             }
             for (int i = 0; i < keyProperties.length; i++) {
                 setValue(metaParam, keyProperties[i], metaResult.getValue(keyColumns[i]));
@@ -135,8 +127,7 @@ public class SelectKeyGenerator implements KeyGenerator {
             }
             metaParam.setValue(property, value);
         } else {
-            throw new ExecutorException("No setter found for the keyProperty '"
-                    + property + "' in " + metaParam.getOriginalObject().getClass().getName() + ".");
+            throw new ExecutorException("No setter found for the keyProperty '" + property + "' in " + metaParam.getOriginalObject().getClass().getName() + ".");
         }
     }
 }

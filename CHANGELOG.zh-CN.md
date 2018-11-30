@@ -2,6 +2,19 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+## [0.8.0] 
+
+### 新增
+
+- tool-liquibase和tool-config添加sqlserve驱动
+
+### 修改
+- PageHelper中jsqlparser由0.9.5升级为1.2版本
+
+### 修复
+- 修复mybatis-mapper在sqlserver数据库下插入报错的问题
+- 修复sqlserver下分页插件报空指针异常的问题
+
 ## [0.7.0] - 2018-11-13
 
 ### 新增

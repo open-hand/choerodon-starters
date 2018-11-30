@@ -77,11 +77,9 @@ public class BaseInsertProvider extends MapperTemplate {
         boolean versionAudit = entityClass.isAnnotationPresent(VersionAudit.class);
         StringBuilder sql = new StringBuilder();
         //获取全部列
-        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
-        //Identity列只能有一个
-        Boolean hasIdentityKey = false;
+        Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
         //先处理cache或bind节点
-        dealCacheOrBindNode(ms, entityClass, sql, columnList, hasIdentityKey);
+        processKey(ms, entityClass, sql, columnSet);
         //如果启用监控，添加一个线程变量bind
         if (modifyAudit || versionAudit) {
             sql.append(SqlHelper.getAuditBind());
@@ -89,8 +87,8 @@ public class BaseInsertProvider extends MapperTemplate {
         sql.append(SqlHelper.insertIntoTable(entityClass, tableName(entityClass)));
         sql.append(SqlHelper.insertColumns(entityClass, false, false, false));
         sql.append("<trim prefix=\"VALUES(\" suffix=\")\" suffixOverrides=\",\">");
-        for (EntityColumn column : columnList) {
-            if (createSelfMaintenanceFileds(modifyAudit, versionAudit, sql, column)
+        for (EntityColumn column : columnSet) {
+            if (createSelfMaintenanceFields(modifyAudit, versionAudit, sql, column)
                     || !column.isInsertable()) {
                 continue;
             }
@@ -149,18 +147,16 @@ public class BaseInsertProvider extends MapperTemplate {
         boolean versionAudit = entityClass.isAnnotationPresent(VersionAudit.class);
         StringBuilder sql = new StringBuilder();
         //获取全部列
-        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
-        //Identity列只能有一个
-        Boolean hasIdentityKey = false;
+        Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
         //先处理cache或bind节点
-        dealCacheOrBindNode(ms, entityClass, sql, columnList, hasIdentityKey);
+        processKey(ms, entityClass, sql, columnSet);
         //如果启用监控，添加一个线程变量bind
         if (modifyAudit || versionAudit) {
             sql.append(SqlHelper.getAuditBind());
         }
         sql.append(SqlHelper.insertIntoTable(entityClass, tableName(entityClass)));
         sql.append("<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
-        for (EntityColumn column : columnList) {
+        for (EntityColumn column : columnSet) {
             //如果启用监控，插入时更新值
             if (connectSql(modifyAudit, versionAudit, sql, column)) {
                 continue;
@@ -173,7 +169,7 @@ public class BaseInsertProvider extends MapperTemplate {
         }
         sql.append(TRIM);
         sql.append("<trim prefix=\"VALUES(\" suffix=\")\" suffixOverrides=\",\">");
-        appendSql(modifyAudit, versionAudit, sql, columnList);
+        appendSql(modifyAudit, versionAudit, sql, columnSet);
         sql.append(TRIM);
         return sql.toString();
     }
@@ -181,7 +177,7 @@ public class BaseInsertProvider extends MapperTemplate {
     private void appendSql(boolean modifyAudit, boolean versionAudit, StringBuilder sql, Set<EntityColumn> columnList) {
         for (EntityColumn column : columnList) {
             //如果启用监控，插入时更新值
-            if (createSelfMaintenanceFileds(modifyAudit, versionAudit, sql, column)
+            if (createSelfMaintenanceFields(modifyAudit, versionAudit, sql, column)
                     || !column.isInsertable()) {
                 continue;
             }
@@ -233,13 +229,13 @@ public class BaseInsertProvider extends MapperTemplate {
         return !column.isInsertable();
     }
 
-    private void dealCacheOrBindNode(MappedStatement ms,
-                                     Class<?> entityClass,
-                                     StringBuilder sql,
-                                     Set<EntityColumn> columnList,
-                                     Boolean hasIdentityKey) {
+    private void processKey(MappedStatement ms,
+                            Class<?> entityClass,
+                            StringBuilder sql,
+                            Set<EntityColumn> columnList) {
+        //Identity列只能有一个
+        Boolean hasIdentityKey = false;
         for (EntityColumn column : columnList) {
-            if (column.isInsertable()) {
                 if (column.isIdentity()
                         && !StringUtil.isNotEmpty(column.getSequenceName())) {
                     //这种情况下,如果原先的字段有值,需要先缓存起来,否则就一定会使用自动增长
@@ -247,8 +243,13 @@ public class BaseInsertProvider extends MapperTemplate {
                     sql.append(SqlHelper.getBindCache(column));
                     //如果是Identity列，就需要插入selectKey
                     //如果已经存在Identity列，抛出异常
-                    if (dealWithIdentityColumn(ms, entityClass, hasIdentityKey, column)) {
-                        continue;
+                    if (hasIdentityKey) {
+                        //jdbc类型只需要添加一次
+                        if (column.getGenerator() != null && column.getGenerator().equals("JDBC")) {
+                            continue;
+                        }
+                        throw new MapperException(ms.getId() + "对应的实体类"
+                                + entityClass.getCanonicalName() + "中包含多个MySql的自动增长列,最多只能有一个!");
                     }
                     //插入selectKey
                     newSelectKeyMappedStatement(ms, column);
@@ -258,7 +259,6 @@ public class BaseInsertProvider extends MapperTemplate {
                     //uuid的情况，直接插入bind节点
                     sql.append(SqlHelper.getBindValue(column, getUuid()));
                 }
-            }
         }
     }
 
@@ -275,7 +275,7 @@ public class BaseInsertProvider extends MapperTemplate {
         return false;
     }
 
-    private boolean createSelfMaintenanceFileds(boolean modifyAudit, boolean versionAudit, StringBuilder sql,
+    private boolean createSelfMaintenanceFields(boolean modifyAudit, boolean versionAudit, StringBuilder sql,
                                                 EntityColumn column) {
         //如果启用监控，插入时更新值
         if (modifyAudit && SqlHelper.MODIFY_AUDIT_FIELDS.contains(column.getProperty())) {
