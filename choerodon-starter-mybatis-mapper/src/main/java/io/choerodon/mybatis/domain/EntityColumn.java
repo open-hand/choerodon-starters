@@ -55,6 +55,9 @@ public class EntityColumn {
 
     private boolean multiLanguage = false;
 
+    //字段是否为 blob
+    private boolean blob;
+
     public EntityColumn() {
     }
 
@@ -180,6 +183,14 @@ public class EntityColumn {
 
     public void setUpdatable(boolean updatable) {
         this.updatable = updatable;
+    }
+
+    public boolean isBlob() {
+        return blob;
+    }
+
+    public void setBlob(boolean blob) {
+        this.blob = blob;
     }
 
     /**
