@@ -3,8 +3,7 @@ package io.choerodon.config.execute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.config.domain.Service;
 import io.choerodon.config.domain.ServiceConfig;
-import io.choerodon.config.mapper.ServiceConfigMapper;
-import io.choerodon.config.mapper.ServiceMapper;
+import io.choerodon.config.mapper.*;
 import io.choerodon.config.parser.Parser;
 import io.choerodon.config.parser.ParserFactory;
 import io.choerodon.config.utils.ConfigFileFormat;
@@ -25,7 +24,7 @@ import java.util.Set;
  *
  * @author wuguokai
  */
-public abstract class AbstractExector implements Executor {
+public abstract class AbstractExecutor implements Executor {
 
     private FileUtil fileUtil = new FileUtil();
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -33,7 +32,7 @@ public abstract class AbstractExector implements Executor {
     private ServiceConfigMapper serviceConfigMapper;
     private static final String CONFIG_BY_TOOL = "工具生成";
 
-    AbstractExector(ApplicationContext applicationContext) {
+    AbstractExecutor(ApplicationContext applicationContext) {
         this.serviceMapper = applicationContext.getBean(ServiceMapper.class);
         this.serviceConfigMapper = applicationContext.getBean(ServiceConfigMapper.class);
     }

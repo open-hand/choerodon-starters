@@ -34,7 +34,7 @@ class CountSqlParserSpec extends Specification {
         when:
         countSqlParser.sqlToCount(select)
         then:
-        noExceptionThrown()
+        thrown(MissingMethodException)
     }
 
     def "processSelectBody"() {
