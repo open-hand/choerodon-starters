@@ -12,7 +12,7 @@ Add maven dependency.
 <dependency>
      <artifactId>choerodon-websocket-helper</artifactId>
      <groupId>io.choerodon</groupId>
-     <version>0.8.0.RELEASE</version>
+     <version>0.8.1.RELEASE</version>
  </dependency>
 
 ```
