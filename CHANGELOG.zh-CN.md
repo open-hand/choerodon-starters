@@ -7,13 +7,22 @@
 ### 新增
 
 - tool-liquibase和tool-config添加sqlserve驱动
+- 添加通知服务更新配置接口
+- 添加ColumnType注解，支持自定义JdbcType
 
 ### 修改
 - PageHelper中jsqlparser由0.9.5升级为1.2版本
+- ConvertHelper中增加对扩展ConvertorI接口的支持
 
 ### 修复
 - 修复mybatis-mapper在sqlserver数据库下插入报错的问题
 - 修复sqlserver下分页插件报空指针异常的问题
+- 修复JWT的密匙不合法时请求直接返回200而不是401的bug
+
+### 移除
+
+- 删除zipkin相关依赖和类
+- 移除starter包里的limit相关sql
 
 ## [0.7.0] - 2018-11-13
 
