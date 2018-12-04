@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "choerodon")
 public class CommonProperties {
 
-    private  Long serviceAccountId = 2L;
+    private  Long serviceAccountId = 0L;
 
     private  String oauthJwtKey = "choerodon";
 
