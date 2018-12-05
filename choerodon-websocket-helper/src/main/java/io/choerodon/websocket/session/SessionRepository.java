@@ -22,10 +22,16 @@ public interface SessionRepository {
     Session removeById(String id);
 
     /**
+     * 获取所有Agent session
+     * @return 所有Agent session
+     */
+    List<Session> allExecutors();
+
+    /**
      * 获取所有session
      * @return 所有session
      */
-    List<Session> allExecutors();
+    List<Session> allSessions();
     /**
      * 获取Session通过id
      * @param Id session uuid
