@@ -203,7 +203,7 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 
 	@Scheduled(initialDelay = 10*1000,fixedRate = 10*1000)
 	public void sendPing(){
-		List<Session> sessions = sessionRepository.allExecutors();
+		List<Session> sessions = sessionRepository.allSessions();
 		for (Session session : sessions){
 			try {
 				session.getWebSocketSession().sendMessage(new PingMessage());

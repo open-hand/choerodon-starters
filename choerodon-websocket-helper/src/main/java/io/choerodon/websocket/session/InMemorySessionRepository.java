@@ -43,6 +43,11 @@ public class InMemorySessionRepository implements SessionRepository {
     }
 
     @Override
+    public List<Session> allSessions() {
+        return new ArrayList<>(sessionMap.values());
+    }
+
+    @Override
     public Session getById(String id) {
         Session session = sessionMap.get(id);
         if(session == null){
