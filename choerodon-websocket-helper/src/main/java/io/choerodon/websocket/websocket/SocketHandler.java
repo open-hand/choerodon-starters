@@ -96,11 +96,11 @@ public class SocketHandler extends AbstractWebSocketHandler {
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
 //                byte[] newBytes = new byte[bytesArray.length-1];
 //                System.arraycopy(bytesArray, 1, newBytes, 0, bytesArray.length-1);
-                if (bytesArray[0] == 63 ) {
-                    byte[] newByteArray = new byte[bytesArray.length-1];
-                    System.arraycopy(bytesArray, 1, newByteArray, 0, newByteArray.length);
-                    bytesArray = newByteArray;
-                }
+//                if (bytesArray[0] == 63 ) {
+//                    byte[] newByteArray = new byte[bytesArray.length-1];
+//                    System.arraycopy(bytesArray, 1, newByteArray, 0, newByteArray.length);
+//                    bytesArray = newByteArray;
+//                }
                 msg.setPayload(new String(bytesArray, "utf-8"));
 
             } else {
