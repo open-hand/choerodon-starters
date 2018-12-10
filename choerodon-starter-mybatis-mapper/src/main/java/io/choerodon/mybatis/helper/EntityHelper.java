@@ -255,11 +255,6 @@ public class EntityHelper {
         entityColumn.setField(field);
         if (field.isAnnotationPresent(Id.class)) {
             entityColumn.setId(true);
-            //sqlserver数据库例外主键，设置为不可插入
-            DbType dbType = config.getDbType();
-            if (DbType.SQLSERVER.equals(dbType)) {
-                entityColumn.setInsertable(false);
-            }
         }
         if (field.isAnnotationPresent(MultiLanguageField.class)) {
             entityColumn.setMultiLanguage(true);
@@ -306,7 +301,7 @@ public class EntityHelper {
             }
         }
         //主键策略 - Oracle序列，MySql自动增长，UUID
-        primaryKeyStrategy(entityTable, field, entityColumn);
+        primaryKeyStrategy(entityTable, field, entityColumn, config);
         if (entityColumn.isMultiLanguage()) {
             entityTable.getMultiLanguageColumns().add(entityColumn);
         } else if (entityColumn.isId()) {
@@ -315,7 +310,7 @@ public class EntityHelper {
         entityTable.getEntityClassColumns().add(entityColumn);
     }
 
-    private static void primaryKeyStrategy(EntityTable entityTable, EntityField field, EntityColumn entityColumn) {
+    private static void primaryKeyStrategy(EntityTable entityTable, EntityField field, EntityColumn entityColumn, Config config) {
         if (field.isAnnotationPresent(SequenceGenerator.class)) {
             SequenceGenerator sequenceGenerator = field.getAnnotation(SequenceGenerator.class);
             if (sequenceGenerator.sequenceName().equals("")) {
@@ -327,6 +322,10 @@ public class EntityHelper {
             if (generatedValue.generator().equals("UUID")) {
                 entityColumn.setUuid(true);
             } else if (generatedValue.generator().equals("JDBC")) {
+                DbType dbType = config.getDbType();
+                if (DbType.SQLSERVER.equals(dbType)) {
+                    entityColumn.setInsertable(false);
+                }
                 entityColumn.setIdentity(true);
                 entityColumn.setGenerator("JDBC");
                 entityTable.setKeyProperties(entityColumn.getProperty());
@@ -334,6 +333,10 @@ public class EntityHelper {
             } else {
                 //允许通过generator来设置获取id的sql,例如mysql=CALL IDENTITY(),hsqldb=SELECT SCOPE_IDENTITY()
                 //允许通过拦截器参数设置公共的generator
+                DbType dbType = config.getDbType();
+                if (DbType.SQLSERVER.equals(dbType)) {
+                    entityColumn.setInsertable(false);
+                }
                 dealByGeneratedValueStrategy(entityTable, entityColumn, generatedValue);
             }
         }
