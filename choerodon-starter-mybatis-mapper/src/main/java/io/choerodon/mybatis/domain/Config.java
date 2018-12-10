@@ -173,7 +173,7 @@ public class Config {
         if (StringUtil.isNotEmpty(this.uuid)) {
             return this.uuid;
         }
-        return "@java.util.uuid@randomUUID().toString().replace(\"-\", \"\")";
+        return "@java.util.UUID@randomUUID().toString().replace(\"-\", \"\")";
     }
 
     /**
