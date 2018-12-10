@@ -16,10 +16,11 @@ public interface InsertListMapper<T> {
 
     /**
      * 批量插入，支持数据库自增字段，支持回写
-     *
+     * 由于这个方法只支持mysql数据库，所以计划在0.8.2版本移除
      * @param recordList
      * @return
      */
+    @Deprecated
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @InsertProvider(type = SpecialProvider.class, method = "dynamicSql")
     int insertList(List<T> recordList);
