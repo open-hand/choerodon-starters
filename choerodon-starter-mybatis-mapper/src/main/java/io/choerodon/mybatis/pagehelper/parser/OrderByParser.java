@@ -1,18 +1,26 @@
-package io.choerodon.mybatis.pagehelper;
+package io.choerodon.mybatis.pagehelper.parser;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import io.choerodon.mybatis.MapperException;
 import io.choerodon.mybatis.domain.EntityColumn;
 import io.choerodon.mybatis.helper.EntityHelper;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.select.*;
+import net.sf.jsqlparser.statement.select.Select;
 import org.apache.ibatis.mapping.MappedStatement;
 
 import io.choerodon.mybatis.helper.MapperTemplate;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.mybatis.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -21,6 +29,8 @@ import io.choerodon.mybatis.util.StringUtil;
  * @author superleader8@gmail.com
  */
 public class OrderByParser {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderByParser.class);
 
     /**
      * Sort对象转sql
@@ -83,5 +93,42 @@ public class OrderByParser {
             }
         }
         throw new MapperException("无法获取Mapper<T>泛型类型:" + msId);
+    }
+
+    public boolean containOrderBy(String sql) {
+        try {
+            Statement stmt = CCJSqlParserUtil.parse(sql);
+            Select select = (Select) stmt;
+            SelectBody selectBody = select.getSelectBody();
+            return hasOrderBy(selectBody);
+        } catch (JSQLParserException e) {
+            //保守策略，如果解析失败，认为不包含order by，抛给数据库判断sql是否正确
+            LOGGER.warn("JSQLParser can not parse the sql: {}, exception: {}", sql, e);
+            return false;
+        }
+    }
+
+    private boolean hasOrderBy(SelectBody selectBody) {
+        if (selectBody instanceof PlainSelect) {
+            PlainSelect plainSelect = (PlainSelect) selectBody;
+            List<OrderByElement> orderByElements = plainSelect.getOrderByElements();
+            if (orderByElements != null && !orderByElements.isEmpty()) {
+                return true;
+            }
+        } else if (selectBody instanceof WithItem) {
+            WithItem withItem = (WithItem) selectBody;
+            if (withItem.getSelectBody() != null) {
+                hasOrderBy(withItem.getSelectBody());
+            }
+        } else {
+            SetOperationList operationList = (SetOperationList) selectBody;
+            if (operationList.getSelects() != null && operationList.getSelects().size() > 0) {
+                List<SelectBody> plainSelects = operationList.getSelects();
+                for (SelectBody plainSelect : plainSelects) {
+                    hasOrderBy(plainSelect);
+                }
+            }
+        }
+        return false;
     }
 }
