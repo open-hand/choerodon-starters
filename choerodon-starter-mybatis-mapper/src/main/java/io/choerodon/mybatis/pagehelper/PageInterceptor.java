@@ -33,6 +33,8 @@ import java.util.Properties;
 import io.choerodon.mybatis.pagehelper.cache.Cache;
 import io.choerodon.mybatis.pagehelper.cache.CacheFactory;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.mybatis.pagehelper.exception.PageException;
+import io.choerodon.mybatis.pagehelper.parser.OrderByParser;
 import io.choerodon.mybatis.pagehelper.util.MappedStatementUtils;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
@@ -249,6 +251,9 @@ public class PageInterceptor implements Interceptor {
             //转换sort对象为sql字符串
             String orderBySql = orderByParser.sortToString(sort, ms);
             String sql = boundSql.getSql();
+            if (orderByParser.containOrderBy(sql)) {
+                throw new PageException("the select sql can not contains order by while using doPageAndSort or doSort");
+            }
             sql = sql + " order by " + orderBySql;
             sqlWithOrderBy = new BoundSql(ms.getConfiguration(), sql, boundSql.getParameterMappings(), parameter);
         }
