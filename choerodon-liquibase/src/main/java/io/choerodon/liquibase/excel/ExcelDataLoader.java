@@ -1,7 +1,9 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.addition.AdditionDataSource;
+import io.choerodon.liquibase.exception.LiquibaseException;
 import liquibase.exception.CustomChangeException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,14 +66,14 @@ public class ExcelDataLoader {
      *
      * @throws SQLException 异常
      */
-    public void processData() throws SQLException {
+    public void processData() {
         try {
             dbAdaptor.initConnection();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new LiquibaseException(e);
         }
 
-        long t0 = System.currentTimeMillis();
+        long begin = System.currentTimeMillis();
 
         try {
             processTableCopy();
@@ -81,9 +83,9 @@ public class ExcelDataLoader {
             logger.info("SUCCESS");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new LiquibaseException(e);
         } finally {
-            logger.info("data process finish, time:{}ms", (System.currentTimeMillis() - t0));
+            logger.info("data process finish, time: {} ms", (System.currentTimeMillis() - begin));
         }
 
     }
@@ -95,7 +97,7 @@ public class ExcelDataLoader {
         while (true) {
             round++;
             logger.info("---- begin round {} ----", round);
-            long t1 = System.currentTimeMillis();
+            long begin = System.currentTimeMillis();
             int roundProcessCount = 0;
             for (TableData tableData : tablesCopy) {
                 roundProcessCount += processTable(tableData);
@@ -105,13 +107,12 @@ public class ExcelDataLoader {
             roundSummary(tablesCopy);
 
             logger.info("---- total process {},time:{}ms ----", roundProcessCount,
-                    (System.currentTimeMillis() - t1));
+                    (System.currentTimeMillis() - begin));
             if (tablesCopy.isEmpty()) {
                 break;
             }
             if (roundProcessCount == 0 && dbAdaptor.weakInsert(tablesCopy) == 0) {
-                int cc = errorLog(tablesCopy);
-                throw new RuntimeException(cc + " rows can not process.");
+                throw new LiquibaseException(errorLog(tablesCopy) + " rows can not process.");
             }
         }
     }
@@ -125,7 +126,7 @@ public class ExcelDataLoader {
                 String tableName = entry.getKey();
                 Set<String> columnSet = entry.getValue();
                 //如果只有表名没有列集合，跳过整张表
-                if (columnSet == null || columnSet.isEmpty()) {
+                if ((columnSet == null || columnSet.isEmpty())) {
                     if (tableName.equalsIgnoreCase(tableData.getName())) {
                         updateExclusionMap.remove(tableName);
                         logger.info("skip update table : {}", tableData.getName());
@@ -176,17 +177,17 @@ public class ExcelDataLoader {
 
     private int errorLog(List<TableData> tablesCopy) {
         logger.error("**** can not process rows below ****");
-        int cc = 0;
+        int count = 0;
         for (TableData tableData : tablesCopy) {
             logger.error("{} :", tableData.getName());
             for (TableData.TableRow tableRow : tableData.getTableRows()) {
                 if (tableRow.isProcessFlag()) {
                     logger.error("    {}", tableRow);
-                    cc++;
+                    count++;
                 }
             }
         }
-        return cc;
+        return count;
     }
 
     /**
@@ -222,7 +223,7 @@ public class ExcelDataLoader {
         for (String cellNum : relatedCells) {
             TableData.TableCellValue relatedTableCellValue = findCell(cellNum, tableCellValue);
             if (relatedTableCellValue == null) {
-                throw new IllegalStateException("invalid reference:" + cellNum);
+                throw new LiquibaseException("invalid reference:" + cellNum);
             }
             if (relatedTableCellValue.isValuePresent()) {
                 ready++;
@@ -255,7 +256,7 @@ public class ExcelDataLoader {
             }
         }
         if (idx == 0 || idx >= cellNum.length()) {
-            throw new IllegalArgumentException(cellNum + " is not a value CellNum.");
+            throw new LiquibaseException(cellNum + " is not a value CellNum.");
         }
         int col = toColIndex(cellNum.substring(0, idx));
         int row = Integer.parseInt(cellNum.substring(idx));
@@ -282,7 +283,6 @@ public class ExcelDataLoader {
      * @throws CustomChangeException 异常
      */
     public void execute(InputStream inputStream, AdditionDataSource ad) throws CustomChangeException {
-        logger.info("begin process excel : {}", filePath);
         try {
             ExcelSeedDataReader dataReader = new ExcelSeedDataReader(inputStream);
             tables = dataReader.load();
@@ -291,7 +291,12 @@ public class ExcelDataLoader {
             processData();
             dbAdaptor.closeConnection(true);
         } catch (Exception e) {
-            dbAdaptor.closeConnection(false);
+            if (dbAdaptor != null) {
+                dbAdaptor.closeConnection(false);
+            }
+            if (e.getCause() instanceof InvalidFormatException) {
+                logger.warn("invalid input stream, maybe your excel is not save and close");
+            }
             throw new CustomChangeException(e);
         }
     }

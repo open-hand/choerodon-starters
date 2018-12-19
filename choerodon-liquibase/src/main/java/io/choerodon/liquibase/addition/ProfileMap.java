@@ -1,14 +1,19 @@
 package io.choerodon.liquibase.addition;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 /**
  * 读取环境变量
+ *
  * @author dongfan117@gmail.com
  */
 public class ProfileMap implements EnvironmentAware {
+    private static final Logger logger = LoggerFactory.getLogger(ProfileMap.class);
+
     private RelaxedPropertyResolver springDatasourceProperty;
     private RelaxedPropertyResolver dataProperty;
     private RelaxedPropertyResolver additionDatasourceProperty;
@@ -29,13 +34,12 @@ public class ProfileMap implements EnvironmentAware {
      * @return
      */
     public String getValue(String key) {
-        String value = "";
         try {
-            value = env.getProperty(key);
+            return env.getProperty(key);
         } catch (Exception e) {
-            return null;
+            logger.warn("can not get value of key: {} from environment, return false", key);
+            return "false";
         }
-        return value;
     }
 
     public String getAdditionValue(String key) {

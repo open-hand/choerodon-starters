@@ -19,11 +19,11 @@ import org.liquibase.groovy.delegate.DatabaseChangeLogDelegate
 class ChoerodonLiquibaseChangeLogParser
         implements ChangeLogParser {
 
-    private LiquibaseHelper liquibaseHelper;
+    private LiquibaseHelper liquibaseHelper
 
-    public ChoerodonLiquibaseChangeLogParser(LiquibaseHelper liquibaseHelper) {
-        super();
-        this.liquibaseHelper = liquibaseHelper;
+    ChoerodonLiquibaseChangeLogParser(LiquibaseHelper liquibaseHelper) {
+        super()
+        this.liquibaseHelper = liquibaseHelper
     }
 
 
@@ -43,7 +43,7 @@ class ChoerodonLiquibaseChangeLogParser
             changeLog.setChangeLogParameters(changeLogParameters)
 
             def binding = new Binding()
-            binding.setProperty("helper", liquibaseHelper);
+            binding.setProperty("helper", liquibaseHelper)
             def shell = new GroovyShell(binding)
 
             // Parse the script, give it the local changeLog instance, give it access
@@ -89,8 +89,8 @@ class ChoerodonLiquibaseChangeLogParser
     }
 
     private def processDatabaseChangeLogRootElement(databaseChangeLog, resourceAccessor, args) {
-        def delegate;
-        def closure;
+        def delegate
+        def closure
 
         switch (args.size()) {
             case 0:

@@ -250,7 +250,7 @@ class TableDataSpec extends Specification {
         TableData data = tables.get(0)
 
         when: "调用方法"
-        data.makeReady()
+        data.validate()
 
         then: "校验结果"
         noExceptionThrown()
