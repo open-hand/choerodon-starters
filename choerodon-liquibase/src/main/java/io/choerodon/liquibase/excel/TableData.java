@@ -1,5 +1,6 @@
 package io.choerodon.liquibase.excel;
 
+import io.choerodon.liquibase.exception.LiquibaseException;
 import liquibase.util.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -150,7 +151,7 @@ public class TableData {
     /**
      * 检查合法
      */
-    public void makeReady() {
+    public void validate() {
         int genCount = 0;
         int uniqueCount = 0;
         for (Column column : columns) {
@@ -161,11 +162,15 @@ public class TableData {
             }
         }
         if (genCount > 1) {
-            throw new IllegalStateException("table has more than one generated column :"
+            throw new LiquibaseException("table has more than one generated column :"
+                    + getName());
+        }
+        if (genCount == 0) {
+            throw new LiquibaseException("table has no generated column :"
                     + getName());
         }
         if (uniqueCount == 0) {
-            throw new IllegalStateException("table has no unique check column :"
+            throw new LiquibaseException("table has no unique check column :"
                     + getName());
         }
     }
@@ -213,7 +218,7 @@ public class TableData {
                 String localLang = name.substring(sem + 1);
                 name = name.substring(0, sem);
                 if (StringUtils.isEmpty(localLang)) {
-                    throw new IllegalStateException("invalid tl language :" + name);
+                    throw new LiquibaseException("invalid tl language :" + name);
                 }
                 this.lang = localLang;
             }
@@ -252,7 +257,7 @@ public class TableData {
 
         /**
          * 是否是当前TD
-         * @return
+         * @return boolean
          */
         public boolean present() {
             for (TableCellValue tableCellValue : tableCellValues) {
