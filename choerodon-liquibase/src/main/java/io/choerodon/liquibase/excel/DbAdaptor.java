@@ -209,6 +209,8 @@ public class DbAdaptor {
      * 调用此方法之前,需要确保所有值已就绪。
      *
      * @param tableRow 要更新的TableRow
+     * @param excludedColumns 要排除的列的集合
+     * @param logInfo 日志集合
      * @return update count
      * @throws SQLException SQL异常
      */
@@ -435,6 +437,7 @@ public class DbAdaptor {
      * 插入不存在的行,暂时不理会不能确定的值.
      *
      * @param tables getTable()
+     * @return insert count
      * @throws SQLException 异常
      */
     public int weakInsert(List<TableData> tables) throws SQLException {

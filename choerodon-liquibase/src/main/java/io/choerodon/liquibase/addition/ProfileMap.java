@@ -31,7 +31,7 @@ public class ProfileMap implements EnvironmentAware {
      * 获取环境变量.
      *
      * @param key key
-     * @return
+     * @return true or false as string
      */
     public String getValue(String key) {
         try {
