@@ -1,5 +1,6 @@
 package io.choerodon.liquibase.excel;
 
+import io.choerodon.liquibase.exception.LiquibaseException;
 import liquibase.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -25,6 +26,12 @@ public class ExcelSeedDataReader {
      * excel左侧3列跳过
      */
     private static final int SKIP_COL = 3;
+
+    /**
+     * excel sheet的开始页数，第0页是readme，跳过
+     */
+    private static final int SHEET_BEGIN_NUMBER = 1;
+
     private InputStream inputStream;
     private Workbook workBook;
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -42,12 +49,12 @@ public class ExcelSeedDataReader {
         try {
             workBook = WorkbookFactory.create(inputStream);
             List<TableData> tablesAll = new ArrayList<>();
-            for (int i = 1; i < workBook.getNumberOfSheets(); i++) {
+            for (int i = SHEET_BEGIN_NUMBER; i < workBook.getNumberOfSheets(); i++) {
                 tablesAll.addAll(getSheetData(i));
             }
             return tablesAll;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new LiquibaseException(e);
         }
     }
 
@@ -105,13 +112,12 @@ public class ExcelSeedDataReader {
         List<TableData> tables = new ArrayList<>();
         int numOfRows = sheet.getLastRowNum() + 1;
         TableData currentTable = null;
-        for (int rn = SKIP_LINE; rn < numOfRows; rn++) {
-            Row row = sheet.getRow(rn);
+        for (int rowNum = SKIP_LINE; rowNum < numOfRows; rowNum++) {
+            Row row = sheet.getRow(rowNum);
             if (row == null) {
                 if (addCurrentTable(tables, currentTable)) {
                     currentTable = null;
                 }
-
                 continue;
             }
 
@@ -122,8 +128,6 @@ public class ExcelSeedDataReader {
             if (StringUtils.isNotEmpty(getCellValue(row.getCell(SKIP_COL)))) {
                 addCurrentTable(tables, currentTable);
                 currentTable = getCurrentTable(sheet, row);
-
-                continue;
             } else {
                 // data
                 if (isAllEmpty(row, SKIP_COL + 1)) {
@@ -138,7 +142,7 @@ public class ExcelSeedDataReader {
 
     private boolean addCurrentTable(List<TableData> tables, TableData currentTable) {
         if (currentTable != null) {
-            currentTable.makeReady();
+            currentTable.validate();
             tables.add(currentTable);
             return true;
         }

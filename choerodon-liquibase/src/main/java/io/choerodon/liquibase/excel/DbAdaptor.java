@@ -1,6 +1,7 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.addition.AdditionDataSource;
+import io.choerodon.liquibase.exception.LiquibaseException;
 import io.choerodon.liquibase.helper.LiquibaseHelper;
 import liquibase.util.StringUtils;
 import org.slf4j.Logger;
@@ -92,7 +93,13 @@ public class DbAdaptor {
                     c.rollback();
                 }
             } catch (SQLException e) {
-                logger.error(e.getMessage());
+                logger.error("commit or rollback exception: {}", e);
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    logger.error("close connect exception: {}", e);
+                }
             }
         }
     }
@@ -178,7 +185,7 @@ public class DbAdaptor {
                 }
                 Long pk = rs.getLong(1);
                 if (rs.next()) {
-                    throw new IllegalStateException("check unique found more than one,row:"
+                    throw new LiquibaseException("check unique found more than one, row:"
                             + tableRow);
                 }
                 logger.info("[{}] check exists: == row:{} ,result :{}", tableRow.getTable().getName(), tableRow, pk);
@@ -477,7 +484,7 @@ public class DbAdaptor {
         } while (count > 0);
         for (TableData.TableRow tableRow : tempList) {
             if (!tableRow.isProcessFlag()) {
-                throw new RuntimeException("can not insert :" + tableRow);
+                throw new LiquibaseException("can not insert :" + tableRow);
             }
         }
 
@@ -679,7 +686,7 @@ public class DbAdaptor {
                 }
                 return sdfL.parse(value);
             } catch (ParseException e) {
-                throw new RuntimeException(e);
+                throw new LiquibaseException(e);
             }
         }
         if ("DECIMAL".equalsIgnoreCase(type) || "NUMBER".equalsIgnoreCase(type)
@@ -727,8 +734,9 @@ public class DbAdaptor {
     }
 
     protected Long getSeqNextVal(String tableName) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("select "
-                + tableName + "_s.nextval from dual")) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("select ").append(tableName).append("_s.nextval from dual");
+        try (PreparedStatement ps = connection.prepareStatement(builder.toString())) {
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
                 return rs.getLong(1);
