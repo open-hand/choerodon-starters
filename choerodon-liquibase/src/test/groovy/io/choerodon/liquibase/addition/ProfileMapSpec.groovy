@@ -30,7 +30,7 @@ class ProfileMapSpec extends Specification {
         value == expectValue
         where:
         username << [null, "", "data.name"]
-        expectValue << [null, null, "mysql"]
+        expectValue << ["false", null, "mysql"]
     }
 
     def "GetAdditionValue"() {
