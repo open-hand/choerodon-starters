@@ -63,8 +63,6 @@ public class ExcelDataLoader {
 
     /**
      * 处理数据
-     *
-     * @throws SQLException 异常
      */
     public void processData() {
         try {
@@ -280,6 +278,7 @@ public class ExcelDataLoader {
      * 根据数据流和数据源处理将excel 中的数据初始化到数据库中
      *
      * @param inputStream 输入流
+     * @param ad          数据源
      * @throws CustomChangeException 异常
      */
     public void execute(InputStream inputStream, AdditionDataSource ad) throws CustomChangeException {
