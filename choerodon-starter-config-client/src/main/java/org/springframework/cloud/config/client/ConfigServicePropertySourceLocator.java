@@ -76,7 +76,7 @@ public class ConfigServicePropertySourceLocator implements PropertySourceLocator
                 : this.restTemplate;
         Exception error = null;
         String errorBody = null;
-        LOGGER.info("Fetching config from server at: " + properties.getRawUri());
+        LOGGER.info("Fetching config from server at: {}", properties.getRawUri());
         try {
             String[] labels = new String[]{""};
             if (StringUtils.hasText(properties.getLabel())) {
@@ -115,7 +115,7 @@ public class ConfigServicePropertySourceLocator implements PropertySourceLocator
                                                     Function.identity()));
                                     zuulProperties.setRoutes(zuulMap);
                                 } catch (Exception e) {
-                                    LOGGER.warn("some error happened when refresh zuulProperties, cause: {}", e.toString());
+                                    LOGGER.warn("some error happened when refresh zuulProperties, cause: {}", e);
                                 }
                                 try {
                                     HelperZuulRoutesProperties helperZuulRoutesProperties = beanFactory.getBean(HelperZuulRoutesProperties.class);
@@ -125,13 +125,13 @@ public class ConfigServicePropertySourceLocator implements PropertySourceLocator
                                     }
                                     helperZuulRoutesProperties.setRoutes(zuulRouteMap);
                                 } catch (BeansException e) {
-                                    LOGGER.warn("some error happened when refresh helperZuulRoutesProperties, cause: {}", e.toString());
+                                    LOGGER.warn("some error happened when refresh helperZuulRoutesProperties, cause: {}", e);
                                 }
                                 try {
                                     RouterOperator routerOperator = beanFactory.getBean(RouterOperator.class);
                                     routerOperator.refreshRoutes();
                                 } catch (BeansException e) {
-                                    LOGGER.info("some error happened when RouterOperator refreshRoutes, cause: {}", e.toString());
+                                    LOGGER.info("routerOperator bean is not exist");
                                 }
                             }
                             composite.addPropertySource(new MapPropertySource(source
@@ -311,7 +311,10 @@ public class ConfigServicePropertySourceLocator implements PropertySourceLocator
 
     private static ZuulProperties.ZuulRoute beanCopy(ZuulRoute route) {
         ZuulProperties.ZuulRoute zuulRoute = new ZuulProperties.ZuulRoute();
-        org.springframework.beans.BeanUtils.copyProperties(route, zuulRoute);
+        org.springframework.beans.BeanUtils.copyProperties(route, zuulRoute, "sensitiveHeaders");
+        if (route.getSensitiveHeaders() != null && !route.getSensitiveHeaders().isEmpty()) {
+            zuulRoute.setSensitiveHeaders(route.getSensitiveHeaders());
+        }
         return zuulRoute;
     }
 
