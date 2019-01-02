@@ -1,4 +1,4 @@
-package io.choerodon.asgard;
+package io.choerodon.asgard.common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,9 +9,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 
-public class InstanceCommonUtils {
+public class InstanceResultUtils {
 
-    private InstanceCommonUtils() {
+    private InstanceResultUtils() {
     }
 
     public static String resultToJson(final Object result, final ObjectMapper objectMapper) throws IOException {

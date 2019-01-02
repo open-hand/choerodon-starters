@@ -1,45 +1,87 @@
 package io.choerodon.asgard.saga.dto;
 
-import javax.validation.constraints.NotNull;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
 public class StartInstanceDTO {
 
     private String sagaCode;
 
     private String input;
 
-    @NotNull
     private String refType = "";
 
-    @NotNull
     private String refId = "";
 
     private String level;
 
     private Long sourceId;
 
-    public StartInstanceDTO(String input) {
+    private String uuid;
+
+    public String getSagaCode() {
+        return sagaCode;
+    }
+
+    public void setSagaCode(String sagaCode) {
+        this.sagaCode = sagaCode;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
         this.input = input;
     }
 
-    public StartInstanceDTO(String input, String refType, String refId) {
-        this.input = input;
+    public String getRefType() {
+        return refType;
+    }
+
+    public void setRefType(String refType) {
         this.refType = refType;
+    }
+
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
         this.refId = refId;
     }
 
-    public StartInstanceDTO(String input, String refType, String refId, String level, Long sourceId) {
-        this.input = input;
-        this.refType = refType;
-        this.refId = refId;
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
         this.level = level;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public String toString() {
+        return "StartInstanceDTO{" +
+                "sagaCode='" + sagaCode + '\'' +
+                ", input='" + input + '\'' +
+                ", refType='" + refType + '\'' +
+                ", refId='" + refId + '\'' +
+                ", level='" + level + '\'' +
+                ", sourceId=" + sourceId +
+                ", uuid='" + uuid + '\'' +
+                '}';
     }
 }

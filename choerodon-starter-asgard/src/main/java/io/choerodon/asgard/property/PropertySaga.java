@@ -1,12 +1,5 @@
 package io.choerodon.asgard.property;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
 public class PropertySaga {
 
     private String code;
@@ -22,4 +15,35 @@ public class PropertySaga {
         this.description = description;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getInputSchema() {
+        return inputSchema;
+    }
+
+    public void setInputSchema(String inputSchema) {
+        this.inputSchema = inputSchema;
+    }
+
+    public String getInputSchemaSource() {
+        return inputSchemaSource;
+    }
+
+    public void setInputSchemaSource(String inputSchemaSource) {
+        this.inputSchemaSource = inputSchemaSource;
+    }
 }

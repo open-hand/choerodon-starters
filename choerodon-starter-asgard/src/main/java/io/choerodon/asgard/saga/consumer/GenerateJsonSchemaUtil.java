@@ -1,4 +1,4 @@
-package io.choerodon.asgard.saga;
+package io.choerodon.asgard.saga.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,11 +10,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class GenerateJsonExampleUtil {
+public class GenerateJsonSchemaUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateJsonExampleUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateJsonSchemaUtil.class);
 
-    private GenerateJsonExampleUtil() {
+    private GenerateJsonSchemaUtil() {
     }
 
     public static String generate(final Class<?> claz, final ObjectMapper mapper, final boolean emptyIsNull) {
@@ -22,7 +22,7 @@ public class GenerateJsonExampleUtil {
         try {
             value = mapper.writeValueAsString(createExampleInstance(claz));
         } catch (JsonProcessingException e) {
-            LOGGER.trace("GenerateJsonExampleUtil jsonProcessingException {}", e.getMessage());
+            LOGGER.trace("GenerateJsonSchemaUtil jsonProcessingException {}", e.getMessage());
         }
         if (emptyIsNull && StringUtils.isEmpty(value)) {
             return null;
@@ -30,7 +30,7 @@ public class GenerateJsonExampleUtil {
         return value;
     }
 
-    public static Object createExampleInstance(final Class<?> claz) {
+    static Object createExampleInstance(final Class<?> claz) {
         if (claz == null) {
             return null;
         }
@@ -97,7 +97,7 @@ public class GenerateJsonExampleUtil {
         if (Character.isUpperCase(s.charAt(0)))
             return s;
         else
-            return (new StringBuilder()).append(Character.toUpperCase(s.charAt(0))).append(s.substring(1)).toString();
+            return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
 }
