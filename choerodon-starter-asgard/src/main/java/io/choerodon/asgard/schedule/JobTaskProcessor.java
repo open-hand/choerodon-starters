@@ -25,26 +25,26 @@ public class JobTaskProcessor implements BeanPostProcessor {
             for (Method method : methods) {
                 JobTask jobTask = AnnotationUtils.findAnnotation(method, JobTask.class);
                 if (jobTask != null) {
-                    boolean validParam = false;
-                    Type param = method.getGenericParameterTypes()[0];
-                    if (param instanceof ParameterizedType) {
-                        ParameterizedType parameterizedType = (ParameterizedType)param;
-                        if (parameterizedType.getRawType().equals(Map.class) ) {
-                            Type[] args = parameterizedType.getActualTypeArguments();
-                            Class<?> returnType = method.getReturnType();
-                            if (args[0].equals(String.class) && args[1].equals(Object.class)
-                                    && (returnType.equals(void.class) || returnType.equals(Map.class))) {
-                                validParam = true;
-                            }
-                        }
-                    }
-                    if (!validParam) {
+                    if (!validParam(method, method.getGenericParameterTypes()[0])) {
                         throw new InvalidJobTaskMethodException(method);
                     }
-                    ScheduleMonitor.addInvokeBean(jobTask.code(), new JobTaskInvokeBean(method, bean, jobTask));
+                    ScheduleConsumer.addInvokeBean(jobTask.code(), new JobTaskInvokeBean(method, bean, jobTask));
                 }
             }
         }
         return bean;
+    }
+
+    private boolean validParam(final Method method, final Type param) {
+        if (param instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) param;
+            if (parameterizedType.getRawType().equals(Map.class)) {
+                Type[] args = parameterizedType.getActualTypeArguments();
+                Class<?> returnType = method.getReturnType();
+                return args[0].equals(String.class) && args[1].equals(Object.class)
+                        && (returnType.equals(void.class) || returnType.equals(Map.class));
+            }
+        }
+        return false;
     }
 }

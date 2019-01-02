@@ -1,25 +1,14 @@
 package io.choerodon.asgard.property;
 
-import java.lang.reflect.InvocationTargetException;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.ValueConstants;
-
-import io.choerodon.asgard.saga.SagaMonitor;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.annotation.JobParam;
 import io.choerodon.asgard.schedule.exception.JobParamDefaultValueParseException;
 import io.choerodon.asgard.schedule.exception.NotSupportParamTypeException;
+import org.springframework.web.bind.annotation.ValueConstants;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import java.lang.reflect.InvocationTargetException;
+
 public class PropertyJobParam {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SagaMonitor.class);
 
     private String name;
 
@@ -29,7 +18,7 @@ public class PropertyJobParam {
 
     private String description;
 
-    public PropertyJobParam(final JobParam jobParam) {
+    PropertyJobParam(final JobParam jobParam) {
         this.name = jobParam.name();
         this.type = getParamTypeByClass(jobParam.type()).getValue();
         if (!ValueConstants.DEFAULT_NONE.equals(jobParam.defaultValue())) {
@@ -40,7 +29,7 @@ public class PropertyJobParam {
             }
 
         }
-        this.description=jobParam.description();
+        this.description = jobParam.description();
     }
 
     private ParamType getParamTypeByClass(final Class<?> claz) {
@@ -62,4 +51,35 @@ public class PropertyJobParam {
         throw new NotSupportParamTypeException(claz);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
