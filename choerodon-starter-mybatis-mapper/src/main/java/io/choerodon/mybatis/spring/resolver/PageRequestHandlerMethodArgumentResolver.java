@@ -187,9 +187,6 @@ public class PageRequestHandlerMethodArgumentResolver implements PageRequestArgu
     private int parseAndApplyBoundaries(String parameter, int upper, boolean shiftIndex) {
         try {
             int parsed = Integer.parseInt(parameter) - (oneIndexedParameters && shiftIndex ? 1 : 0);
-            if (parsed < 0) {
-                return 0;
-            }
             return parsed > upper ? upper : parsed;
         } catch (NumberFormatException e) {
             return 0;
