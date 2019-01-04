@@ -7,7 +7,9 @@ import io.choerodon.asgard.property.PropertyEndpoint;
 import io.choerodon.asgard.saga.SagaProperties;
 import io.choerodon.asgard.saga.consumer.SagaConsumer;
 import io.choerodon.asgard.saga.consumer.SagaTaskProcessor;
-import io.choerodon.asgard.saga.feign.*;
+import io.choerodon.asgard.saga.feign.SagaClient;
+import io.choerodon.asgard.saga.feign.SagaClientCallback;
+import io.choerodon.asgard.saga.feign.SagaConsumerClient;
 import io.choerodon.asgard.saga.producer.ProducerBackCheckEndpoint;
 import io.choerodon.asgard.saga.producer.TransactionalProducer;
 import io.choerodon.asgard.saga.producer.TransactionalProducerImpl;
@@ -170,6 +172,9 @@ public class AsgardAutoConfiguration {
 
     static class SagaProducer {
 
+        @Value("${spring.application.name}")
+        private String service;
+
         @ConditionalOnMissingBean
         @ConditionalOnProperty(prefix = "choerodon.saga.producer", name = "consistencyType", havingValue = "memory", matchIfMissing = true)
         @Bean
@@ -194,7 +199,7 @@ public class AsgardAutoConfiguration {
         public TransactionalProducer transactionalProducer(PlatformTransactionManager transactionManager,
                                                            SagaProducerConsistencyHandler consistencyHandler,
                                                            SagaClient sagaClient) {
-            return new TransactionalProducerImpl(transactionManager, consistencyHandler, sagaClient);
+            return new TransactionalProducerImpl(transactionManager, consistencyHandler, sagaClient, service);
         }
     }
 
