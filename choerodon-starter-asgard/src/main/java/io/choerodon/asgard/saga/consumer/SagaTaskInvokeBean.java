@@ -1,15 +1,15 @@
-package io.choerodon.asgard.saga;
+package io.choerodon.asgard.saga.consumer;
 
 import io.choerodon.asgard.saga.annotation.SagaTask;
 
 import java.lang.reflect.Method;
 
-class SagaTaskInvokeBean {
+public class SagaTaskInvokeBean {
 
-    final Method method;
-    final Object object;
-    final SagaTask sagaTask;
-    final String key;
+    public final Method method;
+    public final Object object;
+    public final SagaTask sagaTask;
+    public final String key;
 
     SagaTaskInvokeBean(Method method, Object object, SagaTask sagaTask, String key) {
         this.method = method;

@@ -14,11 +14,15 @@ public @interface JobTask {
 
     /**
      * 最大重试次数
+     *
+     * @return 最大重试次数
      */
     int maxRetryCount() default 1;
 
     /**
      * 方法执行参数
+     *
+     * @return 方法执行参数
      */
     JobParam[] params() default {};
 
