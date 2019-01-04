@@ -2,19 +2,6 @@ package io.choerodon.asgard.saga.producer.consistency;
 
 /**
  * 保证数据一致性的处理器
- * String uuid = generateUUID()
- * try{
- * feign.preCreate(uuid,...)
- * 业务代码A
- * sagaProducerConsistencyHandler.beforeTransactionCommit
- * 事务提交
- * }catch (Exception e) {
- * sagaProducerConsistencyHandler.beforeTransactionCancel
- * 事务回滚
- * feign.cancel(uuid)
- * }
- * <p>
- * feign.confirm(uuid)
  */
 public interface SagaProducerConsistencyHandler {
 
@@ -25,6 +12,7 @@ public interface SagaProducerConsistencyHandler {
     /**
      * 提供给asgard-service回查使用
      * @param uuid 回查的id
+     * @return uuid
      */
     String asgardServiceBackCheck(String uuid);
 
