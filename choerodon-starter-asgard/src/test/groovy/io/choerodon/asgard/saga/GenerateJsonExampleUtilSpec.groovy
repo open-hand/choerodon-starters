@@ -2,6 +2,7 @@ package io.choerodon.asgard.saga
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.choerodon.asgard.preoperty.saga.Test
+import io.choerodon.asgard.saga.consumer.GenerateJsonSchemaUtil
 import spock.lang.Specification
 
 class GenerateJsonExampleUtilSpec extends Specification {
@@ -11,7 +12,7 @@ class GenerateJsonExampleUtilSpec extends Specification {
         def objectMapper = new ObjectMapper()
 
         when: '调用generate方法'
-        String json = GenerateJsonExampleUtil.generate(Test, objectMapper, true)
+        String json = GenerateJsonSchemaUtil.generate(Test, objectMapper, true)
 
         then: '验证结果'
         Test test = objectMapper.readValue(json, Test)
