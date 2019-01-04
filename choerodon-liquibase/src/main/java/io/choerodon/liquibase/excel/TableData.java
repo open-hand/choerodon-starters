@@ -165,10 +165,6 @@ public class TableData {
             throw new LiquibaseException("table has more than one generated column :"
                     + getName());
         }
-        if (genCount == 0) {
-            throw new LiquibaseException("table has no generated column :"
-                    + getName());
-        }
         if (uniqueCount == 0) {
             throw new LiquibaseException("table has no unique check column :"
                     + getName());
