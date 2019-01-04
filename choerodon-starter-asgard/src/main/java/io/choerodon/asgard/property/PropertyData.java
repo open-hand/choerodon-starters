@@ -58,4 +58,30 @@ public class PropertyData {
         return timedTasks;
     }
 
+    public void setSagas(List<PropertySaga> sagas) {
+        this.sagas = sagas;
+    }
+
+    public void setSagaTasks(List<PropertySagaTask> sagaTasks) {
+        this.sagaTasks = sagaTasks;
+    }
+
+    public void setJobTasks(List<PropertyJobTask> jobTasks) {
+        this.jobTasks = jobTasks;
+    }
+
+    public void setTimedTasks(List<PropertyTimedTask> timedTasks) {
+        this.timedTasks = timedTasks;
+    }
+
+    @Override
+    public String toString() {
+        return "PropertyData{" +
+                "service='" + service + '\'' +
+                ", sagas=" + sagas +
+                ", sagaTasks=" + sagaTasks +
+                ", jobTasks=" + jobTasks +
+                ", timedTasks=" + timedTasks +
+                '}';
+    }
 }

@@ -1,10 +1,12 @@
 package io.choerodon.core.oauth;
 
-import java.io.Serializable;
-import java.util.*;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * 定制的userDetail对象
@@ -47,9 +49,16 @@ public class CustomUserDetails extends User implements Serializable {
 
     private transient Map<String, Object> additionInfo;
 
-    public CustomUserDetails(String username, String password,
+    public CustomUserDetails(String username,
+                             String password,
                              Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
+    }
+
+    @JsonCreator
+    public CustomUserDetails(@JsonProperty("username") String username,
+                             @JsonProperty("password") String password) {
+        super(username, password, Collections.emptyList());
     }
 
     public String getLanguage() {

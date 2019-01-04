@@ -33,6 +33,9 @@ public class PropertySagaTask {
         this.maxRetryCount = maxRetryCount;
     }
 
+    public PropertySagaTask() {
+    }
+
     public String getCode() {
         return code;
     }
@@ -119,5 +122,22 @@ public class PropertySagaTask {
 
     public void setOutputSchemaSource(String outputSchemaSource) {
         this.outputSchemaSource = outputSchemaSource;
+    }
+
+    @Override
+    public String toString() {
+        return "PropertySagaTask{" +
+                "code='" + code + '\'' +
+                ", description='" + description + '\'' +
+                ", sagaCode='" + sagaCode + '\'' +
+                ", seq=" + seq +
+                ", maxRetryCount=" + maxRetryCount +
+                ", timeoutSeconds=" + timeoutSeconds +
+                ", timeoutPolicy='" + timeoutPolicy + '\'' +
+                ", concurrentLimitNum=" + concurrentLimitNum +
+                ", concurrentLimitPolicy='" + concurrentLimitPolicy + '\'' +
+                ", outputSchema='" + outputSchema + '\'' +
+                ", outputSchemaSource='" + outputSchemaSource + '\'' +
+                '}';
     }
 }

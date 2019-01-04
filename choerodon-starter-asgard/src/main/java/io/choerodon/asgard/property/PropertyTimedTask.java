@@ -59,6 +59,9 @@ public class PropertyTimedTask {
         }
     }
 
+    public PropertyTimedTask() {
+    }
+
     private Object getValueByType(Class<?> type, String value) {
         try {
             return type.getConstructor(String.class).newInstance(value);

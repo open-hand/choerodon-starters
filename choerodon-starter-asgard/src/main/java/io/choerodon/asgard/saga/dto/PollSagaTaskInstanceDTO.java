@@ -13,12 +13,15 @@ public class PollSagaTaskInstanceDTO {
 
     private Set<Long> runningIds;
 
-    public PollSagaTaskInstanceDTO(String instance, String service, Integer maxPollSize) {
+    public PollSagaTaskInstanceDTO(String instance, String service, Integer maxPollSize, Set<Long> runningIds) {
         this.instance = instance;
         this.service = service;
         this.maxPollSize = maxPollSize;
+        this.runningIds = runningIds;
     }
 
+    public PollSagaTaskInstanceDTO() {
+    }
 
     public String getInstance() {
         return instance;

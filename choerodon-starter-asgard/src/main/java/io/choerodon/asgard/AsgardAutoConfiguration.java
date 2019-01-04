@@ -1,14 +1,13 @@
-package io.choerodon.asgard.common;
+package io.choerodon.asgard;
 
+import io.choerodon.asgard.common.ApplicationContextHelper;
 import io.choerodon.asgard.property.PropertyData;
 import io.choerodon.asgard.property.PropertyDataProcessor;
 import io.choerodon.asgard.property.PropertyEndpoint;
 import io.choerodon.asgard.saga.SagaProperties;
 import io.choerodon.asgard.saga.consumer.SagaConsumer;
-import io.choerodon.asgard.saga.feign.SagaClient;
-import io.choerodon.asgard.saga.feign.SagaClientCallback;
-import io.choerodon.asgard.saga.feign.SagaConsumerClient;
-import io.choerodon.asgard.saga.feign.SagaConsumerClientCallback;
+import io.choerodon.asgard.saga.consumer.SagaTaskProcessor;
+import io.choerodon.asgard.saga.feign.*;
 import io.choerodon.asgard.saga.producer.ProducerBackCheckEndpoint;
 import io.choerodon.asgard.saga.producer.TransactionalProducer;
 import io.choerodon.asgard.saga.producer.TransactionalProducerImpl;
@@ -16,11 +15,10 @@ import io.choerodon.asgard.saga.producer.consistency.SagaProducerConsistencyHand
 import io.choerodon.asgard.saga.producer.consistency.SagaProducerDbConsistencyHandler;
 import io.choerodon.asgard.saga.producer.consistency.SagaProducerMemoryConsistencyHandler;
 import io.choerodon.asgard.saga.producer.consistency.SagaProducerStore;
-import io.choerodon.asgard.schedule.ScheduleProperties;
 import io.choerodon.asgard.schedule.JobTaskProcessor;
 import io.choerodon.asgard.schedule.ScheduleConsumer;
+import io.choerodon.asgard.schedule.ScheduleProperties;
 import io.choerodon.asgard.schedule.feign.ScheduleConsumerClient;
-import io.choerodon.asgard.schedule.feign.ScheduleConsumerClientCallback;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -83,11 +81,6 @@ public class AsgardAutoConfiguration {
 
         public ScheduleConsumerConfig(ScheduleProperties scheduleProperties) {
             this.scheduleProperties = scheduleProperties;
-        }
-
-        @Bean
-        public ScheduleConsumerClientCallback scheduleMonitorClientCallback() {
-            return new ScheduleConsumerClientCallback();
         }
 
         @Value("${spring.application.name}")
@@ -156,9 +149,10 @@ public class AsgardAutoConfiguration {
         }
 
         @Bean
-        public SagaConsumerClientCallback sagaMonitorClientCallback(SagaConsumerClient consumerClient) {
-            return new SagaConsumerClientCallback(consumerClient);
+        public SagaTaskProcessor sagaTaskProcessor() {
+            return new SagaTaskProcessor();
         }
+
 
         @Bean
         public SagaConsumer sagaMonitor(SagaConsumerClient sagaConsumerClient,

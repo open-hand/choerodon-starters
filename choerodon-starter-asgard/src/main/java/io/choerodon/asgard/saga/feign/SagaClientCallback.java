@@ -6,11 +6,7 @@ import io.choerodon.asgard.saga.exception.SagaProducerException;
 
 public class SagaClientCallback implements SagaClient {
 
-    /**
-     * @deprecated feign调用一致性低
-     */
     @Override
-    @Deprecated
     public SagaInstanceDTO startSaga(String code, StartInstanceDTO dto) {
         throw new SagaProducerException("error.saga.start");
     }

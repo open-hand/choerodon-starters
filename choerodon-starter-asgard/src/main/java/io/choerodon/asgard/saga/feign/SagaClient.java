@@ -8,17 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-@FeignClient(name = "${choerodon.saga.service:go-asgard-service}", fallback = SagaClientCallback.class)
+@FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
 public interface SagaClient {
 
     /**
      *      
-     *
-     * @deprecated feign调用一致性低，请使用{@link io.choerodon.asgard.saga.producer.TransactionalProducer#apply(Consumer)}
-     * 或者{@link io.choerodon.asgard.saga.producer.TransactionalProducer#applyAndReturn(Function)}
+     * <p>
      * A服务接口:
      * ```java
      * try {
@@ -48,7 +43,6 @@ public interface SagaClient {
      * 3. B执行成功，请求返回时异常。B事务已经提交，feign调用B服务接口异常，A事务回滚，数据不一致。
      * 4. B调用超时。可能为B没有接收到网络请求，也可能B执行成功，请求返回时异常，也可能B收到请求响应缓慢。一致性状态不确定，都有可能。
      **/
-    @Deprecated
     @PostMapping("/v1/sagas/instances/{code}")
     SagaInstanceDTO startSaga(@PathVariable("code") String code,
                               @RequestBody StartInstanceDTO dto);
