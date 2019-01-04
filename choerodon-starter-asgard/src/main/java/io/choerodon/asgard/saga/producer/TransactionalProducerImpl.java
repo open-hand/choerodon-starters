@@ -22,12 +22,16 @@ public class TransactionalProducerImpl implements TransactionalProducer {
 
     private SagaClient sagaClient;
 
+    private String service;
+
     public TransactionalProducerImpl(PlatformTransactionManager transactionManager,
                                      SagaProducerConsistencyHandler consistencyHandler,
-                                     SagaClient sagaClient) {
+                                     SagaClient sagaClient,
+                                     String service) {
         this.transactionManager = transactionManager;
         this.consistencyHandler = consistencyHandler;
         this.sagaClient = sagaClient;
+        this.service = service;
     }
 
     private String generateUUID() {
@@ -58,7 +62,7 @@ public class TransactionalProducerImpl implements TransactionalProducer {
         T result;
         String uuid = generateUUID();
         TransactionStatus status = transactionManager.getTransaction(definition);
-        builder.withUuid(uuid);
+        builder.withUuid(uuid).withService(service);
         try {
             sagaClient.preCreateSaga(builder.preBuild());
             result = function.apply(builder);
@@ -80,7 +84,7 @@ public class TransactionalProducerImpl implements TransactionalProducer {
                       TransactionDefinition definition) {
         String uuid = generateUUID();
         TransactionStatus status = transactionManager.getTransaction(definition);
-        builder.withUuid(uuid);
+        builder.withUuid(uuid).withService(service);
         try {
             sagaClient.preCreateSaga(builder.preBuild());
             consumer.accept(builder);

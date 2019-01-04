@@ -63,6 +63,11 @@ public final class StartSagaBuilder {
         return this;
     }
 
+    StartSagaBuilder withService(String service) {
+        startInstanceDTO.setService(service);
+        return this;
+    }
+
     StartSagaBuilder withUuid(String uuid) {
         startInstanceDTO.setUuid(uuid);
         return this;
