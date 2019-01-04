@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "${choerodon.saga.service:go-asgard-service}", fallback = ScheduleConsumerClientCallback.class)
+@FeignClient(name = "${choerodon.saga.service:asgard-service}")
 public interface ScheduleConsumerClient {
 
-    @PostMapping("/v1/schedules/tasks/instances/poll/batch")
+    @PostMapping("/v1/schedules/tasks/instances/poll")
     List<ScheduleInstanceConsumerDTO> pollBatch(@RequestBody PollScheduleInstanceDTO pollScheduleInstanceDTO);
 
 

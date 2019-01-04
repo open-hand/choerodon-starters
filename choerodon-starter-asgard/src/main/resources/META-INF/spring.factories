@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.choerodon.asgard.common.AsgardAutoConfiguration
+io.choerodon.asgard.AsgardAutoConfiguration

@@ -10,6 +10,9 @@ public class PropertySaga {
 
     private String inputSchemaSource;
 
+    public PropertySaga() {
+    }
+
     public PropertySaga(String code, String description) {
         this.code = code;
         this.description = description;
@@ -45,5 +48,15 @@ public class PropertySaga {
 
     public void setInputSchemaSource(String inputSchemaSource) {
         this.inputSchemaSource = inputSchemaSource;
+    }
+
+    @Override
+    public String toString() {
+        return "PropertySaga{" +
+                "code='" + code + '\'' +
+                ", description='" + description + '\'' +
+                ", inputSchema='" + inputSchema + '\'' +
+                ", inputSchemaSource='" + inputSchemaSource + '\'' +
+                '}';
     }
 }

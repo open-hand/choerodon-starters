@@ -83,7 +83,6 @@ public class SagaTaskInstanceDTO {
                 ", sagaCode='" + sagaCode + '\'' +
                 ", input='" + input + '\'' +
                 ", objectVersionNumber=" + objectVersionNumber +
-                ", userDetails=" + userDetails +
                 '}';
     }
 }

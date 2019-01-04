@@ -32,6 +32,9 @@ public class PropertyJobParam {
         this.description = jobParam.description();
     }
 
+    public PropertyJobParam() {
+    }
+
     private ParamType getParamTypeByClass(final Class<?> claz) {
         if (claz.equals(String.class)) {
             return ParamType.STRING;

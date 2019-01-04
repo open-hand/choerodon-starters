@@ -32,6 +32,9 @@ public class PropertyJobTask {
         }
     }
 
+    public PropertyJobTask() {
+    }
+
     public String getMethod() {
         return method;
     }
@@ -78,5 +81,17 @@ public class PropertyJobTask {
 
     public void setParams(List<PropertyJobParam> params) {
         this.params = params;
+    }
+
+    @Override
+    public String toString() {
+        return "PropertyJobTask{" +
+                "method='" + method + '\'' +
+                ", maxRetryCount=" + maxRetryCount +
+                ", code='" + code + '\'' +
+                ", description='" + description + '\'' +
+                ", level='" + level + '\'' +
+                ", params=" + params +
+                '}';
     }
 }

@@ -1,6 +1,8 @@
 package io.choerodon.asgard.saga.consumer;
 
-import io.choerodon.asgard.common.*;
+import io.choerodon.asgard.common.AbstractAsgardConsumer;
+import io.choerodon.asgard.common.ApplicationContextHelper;
+import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.SagaProperties;
 import io.choerodon.asgard.saga.annotation.SagaTask;
@@ -50,52 +52,22 @@ public class SagaConsumer extends AbstractAsgardConsumer {
     @Override
     public void scheduleRunning(String instance) {
         consumerClient.pollBatch(getPollDTO()).forEach(t -> {
-            LOGGER.debug("sagaConsumer polled message: {}", t);
+            LOGGER.trace("SagaConsumer polled sagaTaskInstances: {}", t);
             runningTasks.add(t.getId());
             CompletableFuture.supplyAsync(() -> invoke(t), executor)
                     .exceptionally(ex -> {
-                        if (ex instanceof UpdateStatusException) {
-                            LOGGER.debug("sagaConsumer update status failed, prepare to retry, instanceId: {}", ((UpdateStatusException) ex).id);
-                            CompletableFuture.supplyAsync(() -> retryUpdateStatusFailed(((UpdateStatusException) ex).id), executor)
-                                    .thenAccept(j -> LOGGER.debug("sagaConsumer auto update status success, id: {}", ((UpdateStatusException) ex).id));
-                        }
+                        LOGGER.warn("@SagaTask method code: {}, id: {} supplyAsync failed", t.getTaskCode(), t.getId(), ex);
                         return null;
                     })
-                    .thenAccept(i -> runningTasks.remove(i.getId()));
+                    .thenAccept(i -> LOGGER.trace("@SagaTask method code: {}, id: {} supplyAsync completed", t.getTaskCode(), t.getId()));
         });
     }
 
     private PollSagaTaskInstanceDTO getPollDTO() {
         if (pollDTO == null) {
-            pollDTO = new PollSagaTaskInstanceDTO(instance, service, this.properties.getConsumer().getMaxPollSize());
+            pollDTO = new PollSagaTaskInstanceDTO(instance, service, this.properties.getConsumer().getMaxPollSize(), runningTasks);
         }
         return pollDTO;
-    }
-
-    private Long retryUpdateStatusFailed(Long id) {
-        while (true) {
-            try {
-                Thread.sleep(200);
-                SagaTaskInstanceDTO dto = consumerClient.queryStatus(id);
-                if (dto == null) {
-                    LOGGER.error("error.sagaConsumer.retryUpdateStatusFailed, id: {}", id);
-                    return id;
-                }
-                consumerClient.retryUpdateStatus(id, UpdateStatusDTO.UpdateStatusDTOBuilder.newInstance()
-                        .withStatus(SagaDefinition.TaskInstanceStatus.FAILED.name())
-                        .withExceptionMessage("sagaConsumer update status failed")
-                        .withId(id)
-                        .withObjectVersionNumber(dto.getObjectVersionNumber()).build());
-                break;
-            } catch (QueryStatusException | UpdateStatusException e) {
-                LOGGER.info("error.sagaConsumer.retryUpdate id: {}", id);
-            } catch (InterruptedException e) {
-                runningTasks.remove(id);
-                Thread.currentThread().interrupt();
-                LOGGER.error("error.sagaConsumer.retryUpdateThreadInterrupted", e);
-            }
-        }
-        return id;
     }
 
 
@@ -117,24 +89,66 @@ public class SagaConsumer extends AbstractAsgardConsumer {
                             .withOutput(resultToJson(result, objectMapper))
                             .withId(data.getId())
                             .withObjectVersionNumber(data.getObjectVersionNumber()).build());
+            runningTasks.remove(data.getId());
             platformTransactionManager.commit(status);
         } catch (Exception e) {
-            try {
-                platformTransactionManager.rollback(status);
-            } finally {
-                String errorMsg = getErrorInfoFromException(e);
-                LOGGER.info("error.sagaConsumer.invoke {}", errorMsg);
-                consumerClient.updateStatus(data.getId(),
-                        UpdateStatusDTO.UpdateStatusDTOBuilder.newInstance()
-                                .withStatus(SagaDefinition.TaskInstanceStatus.FAILED.name())
-                                .withExceptionMessage(errorMsg)
-                                .withId(data.getId())
-                                .withObjectVersionNumber(data.getObjectVersionNumber()).build());
-            }
+            LOGGER.info("@SagaTask method code: {}, id: {} invoke error", data.getTaskCode(), data.getId(), e);
+            String errorMsg = getErrorInfoFromException(e);
+            invokeError(platformTransactionManager, status, data, errorMsg);
         } finally {
             afterInvoke();
         }
         return data;
     }
 
+    private void invokeError(final PlatformTransactionManager platformTransactionManager,
+                             final TransactionStatus status,
+                             final SagaTaskInstanceDTO data,
+                             final String errorMsg) {
+        try {
+            platformTransactionManager.rollback(status);
+        } catch (Exception e) {
+            LOGGER.warn("@SagaTask method code: {}, id: {} transaction rollback error", data.getTaskCode(), data.getId(), e);
+        } finally {
+            try {
+                consumerClient.updateStatus(data.getId(),
+                        UpdateStatusDTO.UpdateStatusDTOBuilder.newInstance()
+                                .withStatus(SagaDefinition.TaskInstanceStatus.FAILED.name())
+                                .withExceptionMessage(errorMsg)
+                                .withId(data.getId())
+                                .withObjectVersionNumber(data.getObjectVersionNumber()).build());
+                runningTasks.remove(data.getId());
+            } catch (Exception ex) {
+                CompletableFuture.supplyAsync(() -> this.retryUpdateStatusFailed(data.getId(), errorMsg), executor);
+            }
+        }
+    }
+
+    private Long retryUpdateStatusFailed(final Long id, final String errorMsg) {
+        while (true) {
+            try {
+                Thread.sleep(1000);
+                SagaTaskInstanceDTO dto = consumerClient.queryStatus(id);
+                if (dto == null) {
+                    runningTasks.remove(id);
+                    LOGGER.error("@SagaTask method id: {} queryStatus failed", id);
+                    return id;
+                }
+                consumerClient.updateStatus(id, UpdateStatusDTO.UpdateStatusDTOBuilder.newInstance()
+                        .withStatus(SagaDefinition.TaskInstanceStatus.FAILED.name())
+                        .withExceptionMessage(errorMsg)
+                        .withId(id)
+                        .withObjectVersionNumber(dto.getObjectVersionNumber()).build());
+                runningTasks.remove(id);
+                break;
+            } catch (InterruptedException e) {
+                runningTasks.remove(id);
+                Thread.currentThread().interrupt();
+                LOGGER.error("@SagaTask method id: {} retry to updateStatus failed, thread is Interrupted", id, e);
+            } catch (Exception e) {
+                LOGGER.debug("@SagaTask method id: {} auto retry to updateStatus failed", id, e);
+            }
+        }
+        return id;
+    }
 }

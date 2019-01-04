@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.choerodon.asgard.common.AbstractAsgardConsumer;
 import io.choerodon.asgard.common.ApplicationContextHelper;
 import io.choerodon.asgard.common.UpdateStatusDTO;
-import io.choerodon.asgard.common.UpdateStatusException;
 import io.choerodon.asgard.schedule.annotation.JobTask;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
@@ -19,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,8 +49,8 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
 
     private PollScheduleInstanceDTO getPollScheduleInstanceDTO() {
         if (pollScheduleInstanceDTO == null) {
-            pollScheduleInstanceDTO = new PollScheduleInstanceDTO(invokeBeanMap.entrySet().stream().map(Map.Entry::getKey)
-                    .collect(Collectors.toSet()), instance, service);
+            Set<String> pollMethods = invokeBeanMap.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
+            pollScheduleInstanceDTO = new PollScheduleInstanceDTO(pollMethods, instance, service, runningTasks);
         }
         return pollScheduleInstanceDTO;
     }
@@ -59,16 +59,13 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
     @Override
     protected void scheduleRunning(String instance) {
         scheduleConsumerClient.pollBatch(getPollScheduleInstanceDTO()).forEach(t -> {
-            LOGGER.debug("scheduleConsumer polled message: {}", t);
+            LOGGER.trace("ScheduleConsumer polled scheduleTaskInstances: {}", t);
             runningTasks.add(t.getId());
             CompletableFuture.supplyAsync(() -> invoke(t), executor)
                     .exceptionally(ex -> {
-                        if (ex instanceof UpdateStatusException) {
-                            LOGGER.info("schedule update status failed, prepare to retry, instanceId: {}", ((UpdateStatusException) ex).id);
-                        }
+                        LOGGER.warn("@JobTask method: {}, id: {} supplyAsync failed", t.getMethod(), t.getId(), ex);
                         return null;
-                    })
-                    .thenAccept(i -> runningTasks.remove(i.getId()));
+                    });
         });
     }
 
@@ -87,19 +84,35 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
             scheduleConsumerClient.updateStatus(data.getId(), new UpdateStatusDTO(data.getId(), QuartzDefinition.InstanceStatus.COMPLETED.name(),
                     resultToJson(result, objectMapper), null, data.getObjectVersionNumber()));
             platformTransactionManager.commit(status);
+            runningTasks.remove(data.getId());
         } catch (Exception e) {
-            try {
-                platformTransactionManager.rollback(status);
-            } finally {
-                String errorMsg = getErrorInfoFromException(e);
-                LOGGER.info("error.scheduleConsumer.invoke {}", errorMsg);
-                scheduleConsumerClient.updateStatus(data.getId(), new UpdateStatusDTO(data.getId(),
-                        QuartzDefinition.InstanceStatus.FAILED.name(), null, errorMsg, data.getObjectVersionNumber()));
-            }
+            String errorMsg = getErrorInfoFromException(e);
+            LOGGER.info("@JobTask method: {}, id: {} invoke error", data.getMethod(), data.getId(), e);
+            invokeError(platformTransactionManager, status, data, errorMsg);
         } finally {
             afterInvoke();
         }
         return data;
+    }
+
+    private void invokeError(final PlatformTransactionManager platformTransactionManager,
+                             final TransactionStatus status,
+                             final ScheduleInstanceConsumerDTO data,
+                             final String errorMsg) {
+        try {
+            platformTransactionManager.rollback(status);
+        } catch (Exception e) {
+            LOGGER.warn("@JobTask method: {}, id: {} transaction rollback error", data.getMethod(), data.getId(), e);
+        } finally {
+            try {
+                scheduleConsumerClient.updateStatus(data.getId(), new UpdateStatusDTO(data.getId(),
+                        QuartzDefinition.InstanceStatus.FAILED.name(), null, errorMsg, data.getObjectVersionNumber()));
+                runningTasks.remove(data.getId());
+            } catch (Exception ex) {
+                LOGGER.warn("@JobTask method: {}, id: {} updateStatusFailed error, error message: {}", data.getMethod(), data.getId(), ex.getMessage());
+                runningTasks.remove(data.getId());
+            }
+        }
     }
 
     private Map<String, Object> getInputMap(final String jsonMap) throws IOException {

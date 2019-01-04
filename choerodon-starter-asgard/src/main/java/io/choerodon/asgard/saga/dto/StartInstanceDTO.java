@@ -16,6 +16,27 @@ public class StartInstanceDTO {
 
     private String uuid;
 
+    public StartInstanceDTO() {
+    }
+
+    public StartInstanceDTO(String input) {
+        this.input = input;
+    }
+
+    public StartInstanceDTO(String input, String refType, String refId) {
+        this.input = input;
+        this.refType = refType;
+        this.refId = refId;
+    }
+
+    public StartInstanceDTO(String input, String refType, String refId, String level, Long sourceId) {
+        this.input = input;
+        this.refType = refType;
+        this.refId = refId;
+        this.level = level;
+        this.sourceId = sourceId;
+    }
+
     public String getSagaCode() {
         return sagaCode;
     }

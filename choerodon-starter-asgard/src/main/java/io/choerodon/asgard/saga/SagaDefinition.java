@@ -33,7 +33,7 @@ public class SagaDefinition {
         FAILED,
         COMPLETED,
         QUEUE,
-        WAITING_TO_BE_PULLED,
+        WAIT_TO_BE_PULLED,
     }
 
     public enum SagaInputSchemaSource {

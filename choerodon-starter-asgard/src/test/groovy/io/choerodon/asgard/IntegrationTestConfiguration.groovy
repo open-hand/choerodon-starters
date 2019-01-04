@@ -1,7 +1,6 @@
 package io.choerodon.asgard
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.choerodon.asgard.common.AsgardAutoConfiguration
 import io.choerodon.core.oauth.CustomUserDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
