@@ -20,6 +20,7 @@ public class SagaDefinition {
     }
 
     public enum InstanceStatus {
+        UN_CONFIRMED,
         RUNNING,
         ROLLBACK,
         FAILED,
