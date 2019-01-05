@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
 public interface SagaClient {
 
+    /**
+     * @deprecated 过期，请使用TransactionalProducer
+     */
+    @Deprecated
     @PostMapping("/v1/sagas/instances/{code}")
     SagaInstanceDTO startSaga(@PathVariable("code") String code,
                               @RequestBody StartInstanceDTO dto);
@@ -21,7 +25,7 @@ public interface SagaClient {
 
 
     @PostMapping("/v1/sagas/instances/{uuid}/confirm")
-    void confirmSaga(@PathVariable("uuid") String uuid, @RequestBody String json);
+    void confirmSaga(@PathVariable("uuid") String uuid, @RequestBody StartInstanceDTO dto);
 
 
     @PutMapping("/v1/sagas/instances/{uuid}/cancel")
