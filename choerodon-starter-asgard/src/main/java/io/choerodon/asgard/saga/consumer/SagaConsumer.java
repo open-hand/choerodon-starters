@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +22,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static io.choerodon.asgard.common.InstanceResultUtils.getErrorInfoFromException;
+import static io.choerodon.asgard.common.InstanceResultUtils.getLoggerException;
 import static io.choerodon.asgard.common.InstanceResultUtils.resultToJson;
 
 public class SagaConsumer extends AbstractAsgardConsumer {
@@ -92,7 +94,7 @@ public class SagaConsumer extends AbstractAsgardConsumer {
             runningTasks.remove(data.getId());
             platformTransactionManager.commit(status);
         } catch (Exception e) {
-            LOGGER.info("@SagaTask method code: {}, id: {} invoke error", data.getTaskCode(), data.getId(), e);
+            LOGGER.info("@SagaTask method code: {}, id: {} invoke error", data.getTaskCode(), data.getId(), getLoggerException(e));
             String errorMsg = getErrorInfoFromException(e);
             invokeError(platformTransactionManager, status, data, errorMsg);
         } finally {
@@ -100,6 +102,8 @@ public class SagaConsumer extends AbstractAsgardConsumer {
         }
         return data;
     }
+
+
 
     private void invokeError(final PlatformTransactionManager platformTransactionManager,
                              final TransactionStatus status,
