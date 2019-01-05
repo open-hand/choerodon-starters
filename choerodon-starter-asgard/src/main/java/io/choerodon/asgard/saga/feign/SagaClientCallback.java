@@ -6,6 +6,10 @@ import io.choerodon.asgard.saga.exception.SagaProducerException;
 
 public class SagaClientCallback implements SagaClient {
 
+    /**
+     * @deprecated 过期，请使用TransactionalProducer
+     */
+    @Deprecated
     @Override
     public SagaInstanceDTO startSaga(String code, StartInstanceDTO dto) {
         throw new SagaProducerException("error.saga.start");
@@ -17,7 +21,7 @@ public class SagaClientCallback implements SagaClient {
     }
 
     @Override
-    public void confirmSaga(String uuid, String json) {
+    public void confirmSaga(String uuid, StartInstanceDTO dto) {
         throw new SagaProducerException("error.saga.confirm, uuid: " + uuid);
     }
 

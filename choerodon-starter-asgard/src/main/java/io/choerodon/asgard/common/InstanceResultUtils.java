@@ -45,4 +45,11 @@ public class InstanceResultUtils {
         }
     }
 
+    public static Throwable getLoggerException(Exception e) {
+        if (e instanceof InvocationTargetException) {
+            return ((InvocationTargetException) e).getTargetException();
+        }
+        return e;
+    }
+
 }
