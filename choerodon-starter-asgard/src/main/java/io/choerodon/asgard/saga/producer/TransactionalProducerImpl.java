@@ -52,7 +52,7 @@ public class TransactionalProducerImpl implements TransactionalProducer {
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         def.setIsolationLevel(ISOLATION_DEFAULT);
-        apply(builder, consumer);
+        apply(builder, consumer, def);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class TransactionalProducerImpl implements TransactionalProducer {
         try {
             sagaClient.preCreateSaga(builder.preBuild());
             result = function.apply(builder);
-            consistencyHandler.beforeTransactionCommit(uuid);
+            consistencyHandler.beforeTransactionCommit(uuid, builder.confirmBuild());
             transactionManager.commit(status);
         } catch (Exception e) {
             consistencyHandler.beforeTransactionCancel(uuid);
@@ -74,7 +74,7 @@ public class TransactionalProducerImpl implements TransactionalProducer {
             sagaClient.cancelSaga(uuid);
             throw e;
         }
-        sagaClient.confirmSaga(uuid, builder.getPayloadJson());
+        sagaClient.confirmSaga(uuid, builder.confirmBuild());
         return result;
     }
 
@@ -88,7 +88,7 @@ public class TransactionalProducerImpl implements TransactionalProducer {
         try {
             sagaClient.preCreateSaga(builder.preBuild());
             consumer.accept(builder);
-            consistencyHandler.beforeTransactionCommit(uuid);
+            consistencyHandler.beforeTransactionCommit(uuid, builder.confirmBuild());
             transactionManager.commit(status);
         } catch (Exception e) {
             consistencyHandler.beforeTransactionCancel(uuid);
@@ -96,6 +96,6 @@ public class TransactionalProducerImpl implements TransactionalProducer {
             sagaClient.cancelSaga(uuid);
             throw e;
         }
-        sagaClient.confirmSaga(uuid, builder.getPayloadJson());
+        sagaClient.confirmSaga(uuid, builder.confirmBuild());
     }
 }

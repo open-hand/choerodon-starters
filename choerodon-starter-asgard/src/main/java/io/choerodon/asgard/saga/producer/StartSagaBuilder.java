@@ -58,8 +58,8 @@ public final class StartSagaBuilder {
         return this;
     }
 
-    public StartSagaBuilder withSourceId(String sourceId) {
-        startInstanceDTO.setRefId(sourceId);
+    public StartSagaBuilder withSourceId(Long sourceId) {
+        startInstanceDTO.setSourceId(sourceId);
         return this;
     }
 
@@ -80,13 +80,20 @@ public final class StartSagaBuilder {
         if (startInstanceDTO.getLevel() == null) {
             startInstanceDTO.setLevel(ResourceLevel.SITE.value());
         }
+        if (startInstanceDTO.getSourceId() == null) {
+            startInstanceDTO.setSourceId(0L);
+        }
         return startInstanceDTO;
     }
 
-    String getPayloadJson() {
+    StartInstanceDTO confirmBuild() {
         if (startInstanceDTO.getInput() == null) {
             throw new SagaProducerException("error.startSaga.inputIsNull");
         }
-        return startInstanceDTO.getInput();
+        if (startInstanceDTO.getRefId() == null || startInstanceDTO.getRefType() == null) {
+            throw new SagaProducerException("error.startSaga.refTypeOrRefIdIsNull");
+        }
+        return startInstanceDTO;
     }
+
 }

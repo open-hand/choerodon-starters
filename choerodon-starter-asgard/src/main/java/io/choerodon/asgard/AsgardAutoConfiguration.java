@@ -16,7 +16,6 @@ import io.choerodon.asgard.saga.producer.TransactionalProducerImpl;
 import io.choerodon.asgard.saga.producer.consistency.SagaProducerConsistencyHandler;
 import io.choerodon.asgard.saga.producer.consistency.SagaProducerDbConsistencyHandler;
 import io.choerodon.asgard.saga.producer.consistency.SagaProducerMemoryConsistencyHandler;
-import io.choerodon.asgard.saga.producer.consistency.SagaProducerStore;
 import io.choerodon.asgard.schedule.JobTaskProcessor;
 import io.choerodon.asgard.schedule.ScheduleConsumer;
 import io.choerodon.asgard.schedule.ScheduleProperties;
@@ -175,18 +174,24 @@ public class AsgardAutoConfiguration {
         @Value("${spring.application.name}")
         private String service;
 
+        @Bean(name = "clearCacheScheduledService")
+        public ScheduledExecutorService sagaScheduledExecutorService() {
+            return Executors.newScheduledThreadPool(1);
+        }
+
+
         @ConditionalOnMissingBean
         @ConditionalOnProperty(prefix = "choerodon.saga.producer", name = "consistencyType", havingValue = "memory", matchIfMissing = true)
         @Bean
         public SagaProducerMemoryConsistencyHandler memoryConsistencyHandler() {
-            return new SagaProducerMemoryConsistencyHandler();
+            return new SagaProducerMemoryConsistencyHandler(sagaScheduledExecutorService());
         }
 
         @ConditionalOnMissingBean
         @ConditionalOnProperty(prefix = "choerodon.saga.producer", name = "consistencyType", havingValue = "db", matchIfMissing = false)
         @Bean
         public SagaProducerDbConsistencyHandler dbConsistencyHandler(DataSource dataSource) {
-            return new SagaProducerDbConsistencyHandler(new SagaProducerStore(dataSource));
+            return new SagaProducerDbConsistencyHandler(sagaScheduledExecutorService(), dataSource);
         }
 
         @Bean

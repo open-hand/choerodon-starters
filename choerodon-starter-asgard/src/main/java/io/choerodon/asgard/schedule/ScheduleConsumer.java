@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import static io.choerodon.asgard.common.InstanceResultUtils.getErrorInfoFromException;
+import static io.choerodon.asgard.common.InstanceResultUtils.getLoggerException;
 import static io.choerodon.asgard.common.InstanceResultUtils.resultToJson;
 
 public class ScheduleConsumer extends AbstractAsgardConsumer {
@@ -87,7 +88,7 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
             runningTasks.remove(data.getId());
         } catch (Exception e) {
             String errorMsg = getErrorInfoFromException(e);
-            LOGGER.info("@JobTask method: {}, id: {} invoke error", data.getMethod(), data.getId(), e);
+            LOGGER.info("@JobTask method: {}, id: {} invoke error", data.getMethod(), data.getId(), getLoggerException(e));
             invokeError(platformTransactionManager, status, data, errorMsg);
         } finally {
             afterInvoke();
