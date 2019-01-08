@@ -232,21 +232,26 @@ public class LiquibaseExecutor {
         Map<String, Set<String>> updateExclusionMap = processExclusion();
         ResourceAccessor accessor = new CusFileSystemResourceAccessor(dir);
         Set<String> fileNameSet = accessor.list(null, File.separator, true, false, true);
+        List<String> nameList = new ArrayList<>(fileNameSet);
+        Collections.sort(nameList);
+
         if (additionDataSource.isDrop()) {
             Liquibase liquibase = new Liquibase("drop", accessor, new JdbcConnection(additionDataSource.getDataSource().getConnection()));
             liquibase.dropAll();
         }
         Liquibase liquibase = new Liquibase("clearCheckSums", accessor, new JdbcConnection(additionDataSource.getDataSource().getConnection()));
         liquibase.clearCheckSums();
+
         //执行groovy脚本
-        for (String file : fileNameSet) {
+        for (String file : nameList) {
             if (file.endsWith(SUFFIX_GROOVY)) {
                 liquibase = new Liquibase(file, accessor, new JdbcConnection(additionDataSource.getDataSource().getConnection()));
                 liquibase.update(new Contexts());
             }
         }
+
         //初始化数据
-        for (String file : fileNameSet) {
+        for (String file : nameList) {
             if (file.endsWith(SUFFIX_XLSX)) {
                 ExcelDataLoader loader = new ExcelDataLoader();
                 Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
