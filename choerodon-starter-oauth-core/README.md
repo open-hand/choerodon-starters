@@ -10,7 +10,7 @@ Projects that use the jar package for password and login policy's management nee
 <dependency>
 	<groupId>io.choerodon</groupId>
 	<artifactId>choerodon-starter-oauth-core</artifactId>
-	<version>0.9.0.RELEASE</version>
+	<version>0.9.1.RELEASE</version>
 </dependency>
 ```
 
