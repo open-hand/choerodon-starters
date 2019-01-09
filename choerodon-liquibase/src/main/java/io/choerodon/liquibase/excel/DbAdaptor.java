@@ -167,7 +167,7 @@ public class DbAdaptor {
         List<TableCellValue> params = new ArrayList<>();
         for (TableData.TableCellValue tableCellValue : tableRow.getTableCellValues()) {
             if (tableCellValue.getColumn().isUnique()) {
-                list.add(tableCellValue.getColumn().getName() + "=?");
+                list.add(tableCellValue.getColumn().getName() + (StringUtils.isEmpty(tableCellValue.getValue()) ? " IS " : " = ") + "?");
                 params.add(tableCellValue);
             }
         }
