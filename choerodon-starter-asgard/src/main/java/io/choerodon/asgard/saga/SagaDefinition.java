@@ -8,6 +8,11 @@ public class SagaDefinition {
         ALERT_ONLY
     }
 
+    public enum ConsistencyPolicy {
+        ROLL_BACK,
+        CONTINUE,
+    }
+
     public enum ConcurrentLimitPolicy {
         NONE,
         TYPE,
@@ -15,6 +20,7 @@ public class SagaDefinition {
     }
 
     public enum InstanceStatus {
+        UN_CONFIRMED,
         RUNNING,
         ROLLBACK,
         FAILED,
@@ -27,7 +33,8 @@ public class SagaDefinition {
         ROLLBACK,
         FAILED,
         COMPLETED,
-        QUEUE
+        QUEUE,
+        WAIT_TO_BE_PULLED,
     }
 
     public enum SagaInputSchemaSource {
