@@ -2,9 +2,9 @@ package io.choerodon.asgard.saga.exception;
 
 import java.lang.reflect.Method;
 
-public class SagaTaskMethodParameterError extends RuntimeException {
+public class SagaTaskMethodParameterException extends RuntimeException {
 
-    public SagaTaskMethodParameterError(Method method) {
+    public SagaTaskMethodParameterException(Method method) {
         super("@SagaTask method's parameter can only be one string, method: " + method.toString());
     }
 

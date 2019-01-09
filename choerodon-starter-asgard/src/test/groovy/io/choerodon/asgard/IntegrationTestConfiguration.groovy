@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct
 /**
  * @author dongfan117@gmail.com
  */
-@Import(ChoerodonAsgardAutoConfiguration)
+@Import(AsgardAutoConfiguration)
 @TestConfiguration
 class IntegrationTestConfiguration {
 
