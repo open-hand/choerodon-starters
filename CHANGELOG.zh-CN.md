@@ -7,6 +7,17 @@
 ### 新增
 
 - 分页查询page为负数，不分页查询，将全部的查询结果放到一个page对象里
+- asgard中添加新的使用`TransactionalProducer`创建saga的方式
+- asgard中saga和schedule的消费端可以追踪`CustomUserDetails`
+- asgard中saga和schedule线程池添加了`maxSize`配置，用于配置线程池最大数量
+
+### 修改
+
+- groovy初始化建表按groovy的名称顺序建表
+
+### 修复
+
+- 修复excel初始化数据时，如果唯一标识可以为空，会插入重复数据的问题
 
 ## [0.8.1] - 2018-12-14
 
