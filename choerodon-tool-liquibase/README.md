@@ -9,7 +9,7 @@ According to the groovy files and xlsx files in the project, it automatically pe
 * Get the jar：
 
 ```
-curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.9.1.RELEASE/choerodon-tool-liquibase-0.9.1.RELEASE.jar -o choerodon-tool-liquibase.jar
+curl https://oss.sonatype.org/content/groups/public/io/choerodon/choerodon-tool-liquibase/0.9.2.RELEASE/choerodon-tool-liquibase-0.9.2.RELEASE.jar -o choerodon-tool-liquibase.jar
 ```
 
 * Example:
