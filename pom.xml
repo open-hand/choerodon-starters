@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>0.9.1.RELEASE</version>
+    <version>0.9.2.RELEASE</version>
     <packaging>pom</packaging>
     <url>https://github.com/choerodon/choerodon-starters</url>
     <developers>
@@ -52,26 +52,22 @@
         </developer>
     </developers>
     <modules>
-        <module>choerodon-starter-mybatis-mapper</module>
-        <module>choerodon-starter-oauth-resource</module>
-        <module>choerodon-starter-swagger</module>
-        <module>choerodon-starter-feign-replay</module>
-        <module>choerodon-starter-config-client</module>
-        <module>choerodon-tool-config</module>
-        <module>choerodon-liquibase</module>
-        <module>choerodon-tool-liquibase</module>
-        <module>choerodon-starter-core</module>
-        <module>choerodon-starter-hitoa</module>
-        <module>choerodon-starter-oauth-core</module>
-        <module>choerodon-websocket-helper</module>
         <module>choerodon-gitlab4j-api</module>
+        <module>choerodon-liquibase</module>
         <module>choerodon-starter-asgard</module>
-        <module>choerodon-starter-statemachine</module>
+        <module>choerodon-starter-config-client</module>
+        <module>choerodon-starter-core</module>
         <module>choerodon-starter-eureka-event</module>
-        <!--<module>choerodon-starter-event-producer</module>-->
-        <!--<module>choerodon-starter-event-consumer</module>-->
-        <!--<module>choerodon-starter-bus</module>-->
-        <!--<module>choerodon-starter-config-monitor</module>-->
+        <module>choerodon-starter-feign-replay</module>
+        <module>choerodon-starter-hitoa</module>
+        <module>choerodon-starter-mybatis-mapper</module>
+        <module>choerodon-starter-oauth-core</module>
+        <module>choerodon-starter-oauth-resource</module>
+        <module>choerodon-starter-statemachine</module>
+        <module>choerodon-starter-swagger</module>
+        <module>choerodon-tool-config</module>
+        <module>choerodon-tool-liquibase</module>
+        <module>choerodon-websocket-helper</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
