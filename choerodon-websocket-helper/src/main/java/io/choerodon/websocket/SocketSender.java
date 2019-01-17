@@ -62,10 +62,7 @@ public class SocketSender {
                         realSession.sendMessage(new TextMessage(msg.getPayload()));
                     } else if (msg.getMsgType() == Msg.FRONT_PIP_EXEC) {
                         byte[] old = msg.getPayload().getBytes();
-                        byte[] bytes = new byte[old.length+1];
-                        bytes[0] = 0x0;
-                        System.arraycopy(old, 0, bytes, 1, old.length);
-                        realSession.sendMessage(new BinaryMessage(bytes));
+                        realSession.sendMessage(new BinaryMessage(old));
                     } else {
                         realSession.sendMessage(new TextMessage(OBJECT_MAPPER.writeValueAsString(msg.simpleMsg())));
                     }

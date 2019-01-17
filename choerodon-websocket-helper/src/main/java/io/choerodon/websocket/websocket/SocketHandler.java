@@ -13,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author jiatong.li
@@ -94,15 +95,7 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-//                byte[] newBytes = new byte[bytesArray.length-1];
-//                System.arraycopy(bytesArray, 1, newBytes, 0, bytesArray.length-1);
-//                if (bytesArray[0] == 63 ) {
-//                    byte[] newByteArray = new byte[bytesArray.length-1];
-//                    System.arraycopy(bytesArray, 1, newByteArray, 0, newByteArray.length);
-//                    bytesArray = newByteArray;
-//                }
-                msg.setPayload(new String(bytesArray, "utf-8"));
-
+                msg.setPayload(new String(bytesArray, StandardCharsets.UTF_8));
             } else {
                 msg.setBytesPayload(bytesArray);
             }
