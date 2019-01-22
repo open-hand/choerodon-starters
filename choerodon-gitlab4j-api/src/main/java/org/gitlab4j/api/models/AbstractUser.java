@@ -63,6 +63,7 @@ public class AbstractUser {
     private String websiteUrl;
     private String webUrl;
     private Boolean skipConfirmation;
+    private Boolean skipReconfirmation;
     private String externUid;
 
     public String getAvatarUrl() {
@@ -319,5 +320,13 @@ public class AbstractUser {
 
     public void setExternUid(String externUid) {
         this.externUid = externUid;
+    }
+
+    public Boolean getSkipReconfirmation() {
+        return skipReconfirmation;
+    }
+
+    public void setSkipReconfirmation(Boolean skipReconfirmation) {
+        this.skipReconfirmation = skipReconfirmation;
     }
 }
