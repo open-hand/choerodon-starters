@@ -707,6 +707,7 @@ public class UserApi extends AbstractApi {
                 .withParam("admin", user.getIsAdmin(), false)
                 .withParam("can_create_group", user.getCanCreateGroup(), false)
                 .withParam("external", user.getExternal(), false))
-                .withParam("skip_confirmation",user.getSkipConfirmation(),false);
+                .withParam("skip_confirmation",user.getSkipConfirmation(),false)
+                .withParam("skip_reconfirmation",user.getSkipReconfirmation(),false);
     }
 }
