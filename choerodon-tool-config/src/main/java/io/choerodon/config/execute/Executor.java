@@ -1,5 +1,7 @@
 package io.choerodon.config.execute;
 
+import io.choerodon.config.utils.InitConfigProperties;
+
 import java.io.IOException;
 
 /**
@@ -9,6 +11,6 @@ import java.io.IOException;
  */
 public interface Executor {
 
-    void execute(String serviceName, String serviceVersion, String configFile) throws IOException;
+    void execute(InitConfigProperties properties, String configFile) throws IOException;
 
 }
