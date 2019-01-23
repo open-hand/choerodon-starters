@@ -110,7 +110,7 @@ public class MybatisMapperAutoConfiguration implements EnvironmentAware {
             //配置JdbcTypeForNull, oracle数据库必须配置，解决插入null的时候报错问题
             sqlSessionFactory.getConfiguration().setJdbcTypeForNull(JdbcType.NULL);
         } catch (SQLException e) {
-            logger.info("[sql exception]" + e);
+            logger.info("[sql exception]", e);
         } finally {
             connection.close();
         }
@@ -121,8 +121,6 @@ public class MybatisMapperAutoConfiguration implements EnvironmentAware {
      * 自动识别使用的数据库类型
      * 在mapper.xml中databaseId的值就是跟这里对应，
      * 如果没有databaseId选择则说明该sql适用所有数据库
-     *
-     * @return
      */
     @Bean
     public DatabaseIdProvider getDatabaseIdProvider() {
