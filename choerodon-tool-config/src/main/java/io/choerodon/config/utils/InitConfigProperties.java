@@ -67,7 +67,7 @@ public class InitConfigProperties {
 
         private String profile = "default";
 
-        private String updatePolicy = "add";
+        private String updatePolicy = UPDATE_POLICY_NOT;
 
         public String getFile() {
             return file;
