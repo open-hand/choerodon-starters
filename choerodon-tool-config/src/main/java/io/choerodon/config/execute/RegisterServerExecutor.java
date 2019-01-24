@@ -5,6 +5,7 @@ import io.choerodon.config.utils.InitConfigException;
 import io.choerodon.config.utils.InitConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,7 +31,9 @@ public class RegisterServerExecutor extends AbstractExecutor {
                     .setYaml(readFile(configFile))
                     .setUpdatePolicy(updatePolicy);
             ResponseEntity<Void> response = restTemplate.postForEntity(getCreateConfigMapUrl(properties.getRegister().getHost()), dto, Void.class);
-            if (!response.getStatusCode().is2xxSuccessful()) {
+            if (response.getStatusCode() == HttpStatus.NOT_MODIFIED) {
+                LOGGER.warn("该服务配置的configMap已存在！");
+            } else if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new InitConfigException("Create configMap error, statusCode: " + response.getStatusCodeValue());
             }
             LOGGER.info("配置初始化完成");
