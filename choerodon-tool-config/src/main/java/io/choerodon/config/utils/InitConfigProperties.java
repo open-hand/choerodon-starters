@@ -5,9 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties
 public class InitConfigProperties {
 
-    public static final String TYPE_CONFIG_SERVER = "config-server";
+    public static final String TYPE_CONFIG_SERVER = "db";
 
-    public static final String TYPE_REGISTER_SERVER = "register-server";
+    public static final String TYPE_REGISTER_SERVER = "k8s";
 
     public static final String UPDATE_POLICY_NOT = "not";
 
@@ -119,6 +119,9 @@ public class InitConfigProperties {
         private String namespace;
 
         public String getName() {
+            if (this.name == null) {
+                throw new InitConfigException("you must set 'service.name' value");
+            }
             return name;
         }
 
@@ -135,6 +138,9 @@ public class InitConfigProperties {
         }
 
         public String getNamespace() {
+            if (this.namespace == null) {
+                throw new InitConfigException("you must set 'service.namespace' value when configType is 'k8s'");
+            }
             return namespace;
         }
 
@@ -145,9 +151,12 @@ public class InitConfigProperties {
 
 
     public static class Register {
-        private String host = "http://register-server:8000/";
+        private String host;
 
         public String getHost() {
+            if (this.host == null) {
+                throw new InitConfigException("you must set 'register.host' value when configType is 'k8s'");
+            }
             return host;
         }
 
