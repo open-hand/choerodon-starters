@@ -235,17 +235,18 @@ public class LiquibaseExecutor {
         List<String> nameList = new ArrayList<>(fileNameSet);
         Collections.sort(nameList);
 
+        JdbcConnection jdbcConnection = new JdbcConnection(additionDataSource.getDataSource().getConnection());
         if (additionDataSource.isDrop()) {
-            Liquibase liquibase = new Liquibase("drop", accessor, new JdbcConnection(additionDataSource.getDataSource().getConnection()));
+            Liquibase liquibase = new Liquibase("drop", accessor, jdbcConnection);
             liquibase.dropAll();
         }
-        Liquibase liquibase = new Liquibase("clearCheckSums", accessor, new JdbcConnection(additionDataSource.getDataSource().getConnection()));
+        Liquibase liquibase = new Liquibase("clearCheckSums", accessor, jdbcConnection);
         liquibase.clearCheckSums();
 
         //执行groovy脚本
         for (String file : nameList) {
             if (file.endsWith(SUFFIX_GROOVY)) {
-                liquibase = new Liquibase(file, accessor, new JdbcConnection(additionDataSource.getDataSource().getConnection()));
+                liquibase = new Liquibase(file, accessor, jdbcConnection);
                 liquibase.update(new Contexts());
             }
         }
