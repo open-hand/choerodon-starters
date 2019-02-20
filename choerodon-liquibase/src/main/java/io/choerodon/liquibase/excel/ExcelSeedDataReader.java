@@ -133,7 +133,7 @@ public class ExcelSeedDataReader {
                 if (isAllEmpty(row, SKIP_COL + 1)) {
                     continue;
                 }
-                currentTable = getTableData(currentTable, row);
+                processTableRow(currentTable, row);
             }
         }
         addCurrentTable(tables, currentTable);
@@ -180,7 +180,7 @@ public class ExcelSeedDataReader {
         return currentTable;
     }
 
-    private TableData getTableData(TableData currentTable, Row row) {
+    private TableData processTableRow(TableData currentTable, Row row) {
         TableData.TableRow tableRow = new TableData.TableRow();
         tableRow.setTable(currentTable);
         tableRow.setLineNumber(row.getRowNum() + 1);
@@ -224,10 +224,20 @@ public class ExcelSeedDataReader {
     }
 
     private void addTableCellValue(Cell cell, TableData.TableRow tableRow, TableData currentTable) {
-        TableData.TableCellValue tableCellValue = new TableData.TableCellValue(cell, tableRow,
-                currentTable.getColumns()
-                        .get(tableRow.getTableCellValues().size()));
-        tableCellValue.setValue(getCellValue(cell));
+        int indexOfTitleColumn = tableRow.getTableCellValues().size();
+        TableData.Column currentTitleColumn = currentTable.getColumns().get(indexOfTitleColumn);
+        String value = getCellValue(cell);
+        if (currentTitleColumn.isGen()) {
+            //判断值是否能转为long
+            try {
+                Long.parseLong(value);
+                tableRow.setGeneratedColumnInserted(true);
+            } catch (NumberFormatException e) {
+                //do nothing
+            }
+        }
+        TableData.TableCellValue tableCellValue = new TableData.TableCellValue(cell, tableRow, currentTitleColumn);
+        tableCellValue.setValue(value);
         tableRow.getTableCellValues().add(tableCellValue);
     }
 
