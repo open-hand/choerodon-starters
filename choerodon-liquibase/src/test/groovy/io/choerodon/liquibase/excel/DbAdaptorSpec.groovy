@@ -342,21 +342,6 @@ class DbAdaptorSpec extends Specification {
         noExceptionThrown()
     }
 
-    def "convert normally"() {
-        when: "调用方法"
-        dbAdaptor.convertDataType(value, type)
-
-        then: "校验结果"
-        noExceptionThrown()
-
-        where: "多次测试"
-        value        | type
-        "124"        | "DECIMAL"
-        "123.122"    | "NUMBER"
-        "2017-10-22" | "DATE"
-        ""           | "NUMBER"
-    }
-
     def "convertDataType with exception"() {
         when: "调用方法"
         dbAdaptor.convertDataType("2017-1", "DATE")
