@@ -12,6 +12,10 @@
 ### 修改
 
 - 优化了liquibase初始化数据库每个groovy表都要建立jdbc连接的问题
+
+### 修复
+
+- 修复了sqlserver数据库，如果#列为空报incorrect syntax的错误
  
 
 ## [0.9.1]
