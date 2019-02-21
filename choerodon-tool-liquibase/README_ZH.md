@@ -108,7 +108,7 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_label.groovy') {
 对于日期类型，使用括号在列旁标识类型，日期类型格式为标准iso date formatter，即`yyyy-mm-dd`或`yyyy-mm-ddThh:mm:ss.ffffff`。其他的三种类型用法和日期一样，用括号标明类型即可。
 
 * 引用： 如上图H8`=TEST_DATE!E8`即为引用，一般用于插入数据，自动生成id的方式引用id，`=TEST_DATE`为sheet页名
-
+* 多语言： 多语言表的多语言字段，使用`:`分割，左侧为列名，右侧为语言代码，即可初始化多语言表（tableName+_tl）
 # starter版本和dbtools版本映射
 
 | starter version | dbtools version|
