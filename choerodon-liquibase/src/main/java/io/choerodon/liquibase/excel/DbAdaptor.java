@@ -166,8 +166,14 @@ public class DbAdaptor {
         List<TableCellValue> params = new ArrayList<>();
         for (TableData.TableCellValue tableCellValue : tableRow.getTableCellValues()) {
             if (tableCellValue.getColumn().isUnique()) {
-                list.add(tableCellValue.getColumn().getName() + (StringUtils.isEmpty(tableCellValue.getValue()) ? " IS " : " = ") + "?");
-                params.add(tableCellValue);
+                String value = tableCellValue.getValue();
+                String tableName = tableCellValue.getColumn().getName();
+                if (StringUtils.isEmpty(value)) {
+                    list.add(tableName + " IS NULL");
+                } else {
+                    list.add(tableName + " = ?");
+                    params.add(tableCellValue);
+                }
             }
         }
         sb.append(StringUtils.join(list, " AND "));
