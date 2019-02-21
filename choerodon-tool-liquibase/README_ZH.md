@@ -111,6 +111,8 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_label.groovy') {
 * 多语言： 多语言表的多语言字段，使用`:`分割，左侧为列名，右侧为语言代码，即可初始化多语言表（tableName+_tl）
 # starter版本和dbtools版本映射
 
+# starter版本和dbtools版本映射
+
 | starter version | dbtools version|
 |:-----:|:-----:|
 |0.9.0|0.6.1|
