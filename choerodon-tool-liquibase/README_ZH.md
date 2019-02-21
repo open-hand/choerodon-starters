@@ -109,7 +109,6 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_label.groovy') {
 
 * 引用： 如上图H8`=TEST_DATE!E8`即为引用，一般用于插入数据，自动生成id的方式引用id，`=TEST_DATE`为sheet页名
 * 多语言： 多语言表的多语言字段，使用`:`分割，左侧为列名，右侧为语言代码，即可初始化多语言表（tableName+_tl）
-# starter版本和dbtools版本映射
 
 # starter版本和dbtools版本映射
 
