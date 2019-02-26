@@ -84,14 +84,6 @@ public class ClientProcessor implements BeanPostProcessor {
                 StateMachineConfigMonitor.checkUpdateUniqueCode(updateStatus.code());
                 StateMachineConfigMonitor.updateStatusBeanMap.put(updateStatus.code(),new InvokeBean(method, object, updateStatus.code()));
             }
-            //扫描StartInstance注解的方法
-            StartInstance startInstance = AnnotationUtils.getAnnotation(method, StartInstance.class);
-            if (startInstance != null) {
-                LOGGER.info("stateMachine client annotation startInstance:{}", startInstance);
-                Object object = stateMachineApplicationContextHelper.getContext().getBean(method.getDeclaringClass());
-                StateMachineConfigMonitor.checkStartUniqueCode(startInstance.code());
-                StateMachineConfigMonitor.startInstanceBeanMap.put(startInstance.code(),new InvokeBean(method, object, startInstance.code()));
-            }
         }
         return bean;
     }
