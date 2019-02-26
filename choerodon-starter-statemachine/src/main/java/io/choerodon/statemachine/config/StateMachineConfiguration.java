@@ -2,8 +2,10 @@ package io.choerodon.statemachine.config;
 
 import io.choerodon.statemachine.ClientProcessor;
 import io.choerodon.statemachine.StateMachineApplicationContextHelper;
+import io.choerodon.statemachine.client.StateMachineClient;
 import io.choerodon.statemachine.dto.PropertyData;
 import io.choerodon.statemachine.endpoint.ClientEndpoint;
+import io.choerodon.statemachine.feign.InstanceFeignClient;
 import io.choerodon.statemachine.service.ClientService;
 import io.choerodon.statemachine.service.impl.ClientServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,5 +48,10 @@ public class StateMachineConfiguration {
     @Bean("ClientProcessor")
     public ClientProcessor clientProcessor(StateMachineApplicationContextHelper stateMachineApplicationContextHelper, PropertyData stateMachinePropertyData) {
         return new ClientProcessor(stateMachineApplicationContextHelper, stateMachinePropertyData);
+    }
+
+    @Bean
+    public StateMachineClient stateMachineClient(InstanceFeignClient instanceFeignClient, ClientService clientService) {
+        return new StateMachineClient(instanceFeignClient, clientService);
     }
 }

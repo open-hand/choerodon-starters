@@ -2,6 +2,7 @@ package io.choerodon.statemachine.feign;
 
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
+import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -52,10 +53,22 @@ public interface InstanceFeignClient {
      * 获取状态机的初始状态
      *
      * @param organizationId organizationId
-     * @param stateMachineId organizationId
+     * @param stateMachineId stateMachineId
      * @return Long
      */
     @GetMapping(value = "/v1/organizations/{organization_id}/instances/query_init_status_id")
     ResponseEntity<Long> queryInitStatusId(@PathVariable("organization_id") Long organizationId,
                                            @RequestParam("state_machine_id") Long stateMachineId);
+
+    /**
+     * 创建实例时，获取状态机的初始转换
+     *
+     * @param organizationId organizationId
+     * @param stateMachineId stateMachineId
+     * @return Long
+     */
+    @GetMapping(value = "/v1/organizations/{organization_id}/instances/query_init_transform")
+    ResponseEntity<StateMachineTransformDTO> queryInitTransform(@PathVariable("organization_id") Long organizationId,
+                                                                @RequestParam("state_machine_id") Long stateMachineId);
+
 }

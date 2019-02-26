@@ -1,7 +1,5 @@
 package io.choerodon.statemachine.dto;
 
-import com.google.common.base.MoreObjects;
-
 /**
  * @author peng.jiang@hand-china.com
  * @author dinghuang123@gmail.com
@@ -10,19 +8,20 @@ import com.google.common.base.MoreObjects;
 public class StateMachineConfigDTO {
 
     private Long id;
-
-    private Long transfId;
-
+    private Long transformId;
     private Long stateMachineId;
-
     private String code;
-
     private String type;
+    private Long organizationId;
 
     /**
-     * 条件描述
+     * code名称
      */
-    private String description;
+    private String codeName;
+    /**
+     * code描述
+     */
+    private String codeDescription;
 
     public Long getId() {
         return id;
@@ -32,12 +31,12 @@ public class StateMachineConfigDTO {
         this.id = id;
     }
 
-    public Long getTransfId() {
-        return transfId;
+    public Long getTransformId() {
+        return transformId;
     }
 
-    public void setTransfId(Long transfId) {
-        this.transfId = transfId;
+    public void setTransformId(Long transformId) {
+        this.transformId = transformId;
     }
 
     public Long getStateMachineId() {
@@ -64,23 +63,27 @@ public class StateMachineConfigDTO {
         this.type = type;
     }
 
-    public String getDescription() {
-        return description;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("transfId", transfId)
-                .add("stateMachineId", stateMachineId)
-                .add("code", code)
-                .add("type", type)
-                .add("description", description)
-                .toString();
+    public String getCodeName() {
+        return codeName;
+    }
+
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
+    public String getCodeDescription() {
+        return codeDescription;
+    }
+
+    public void setCodeDescription(String codeDescription) {
+        this.codeDescription = codeDescription;
     }
 }
