@@ -1,10 +1,7 @@
 package io.choerodon.websocket.helper;
 
-
-
-
-import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Map;
@@ -13,20 +10,18 @@ import java.util.Map;
  * @author crcokitwood
  */
 
-@ConfigurationProperties(prefix = "endpoints.clusters")
-public class AgentEndpoint  extends AbstractEndpoint<Map<Object, Object>> {
+@Endpoint(id = "endpoints.clusters")
+public class AgentEndpoint {
 
     private static final String AGENT_SESSION = "cluster-sessions";
-    private RedisTemplate<Object,Object> redisTemplate;
+    private RedisTemplate<Object, Object> redisTemplate;
 
 
-    public AgentEndpoint(RedisTemplate<Object,Object> redisTemplate) {
-        super("clusters", false);
+    public AgentEndpoint(RedisTemplate<Object, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-
-    @Override
+    @ReadOperation
     public Map<Object, Object> invoke() {
         return redisTemplate.opsForHash().entries(AGENT_SESSION);
     }

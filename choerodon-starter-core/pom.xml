@@ -6,7 +6,7 @@
     <parent>
         <artifactId>choerodon-starter-parent</artifactId>
         <groupId>io.choerodon</groupId>
-        <version>0.9.3.RELEASE</version>
+        <version>0.10.0.SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -23,6 +23,7 @@
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
+            <version>${spring-security-oauth2.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
