@@ -14,7 +14,7 @@ References in `pom.xml` of microservices.
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-hitoa</artifactId>
-     <version>0.9.3.RELEASE</version>
+     <version>0.10.0.SNAPSHOT</version>
 </dependency>
 ```
 
