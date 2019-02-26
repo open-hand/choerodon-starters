@@ -17,11 +17,6 @@
     <dependencies>
         <dependency>
             <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-spring-legacy</artifactId>
-            <version>${io.micrometer.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <version>${io.micrometer.version}</version>
         </dependency>
