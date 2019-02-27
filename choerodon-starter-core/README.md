@@ -24,7 +24,7 @@ If the project uses the toolkit, it only needs to introduce the following the de
 <dependency>
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-core</artifactId>
-    <version>0.10.0-SNAPSHOT</version>
+    <version>0.10.0.RELEASE</version>
 </dependency>
 ```
 
