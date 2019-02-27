@@ -21,7 +21,7 @@ The toolkit of swagger, configures ``Docket`` of swagger, and customizes some sw
     <dependency>
       <groupId>io.choerodon</groupId>
       <artifactId>choerodon-starter-swagger</artifactId>
-       <version>0.10.0.SNAPSHOT</version>
+       <version>0.10.0-SNAPSHOT</version>
     </dependency>
   ```
 - Using the paged interface, add the ``@CustomPageRequest`` annotation so that swagger ui displays the paging request correctly:
