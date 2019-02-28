@@ -60,6 +60,7 @@
         <module>choerodon-starter-eureka-event</module>
         <module>choerodon-starter-feign-replay</module>
         <module>choerodon-starter-hitoa</module>
+        <module>choerodon-starter-mybatis</module>
         <module>choerodon-starter-mybatis-mapper</module>
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-starter-oauth-resource</module>
