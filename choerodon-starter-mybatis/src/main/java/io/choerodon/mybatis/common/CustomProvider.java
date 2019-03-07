@@ -1,5 +1,7 @@
 package io.choerodon.mybatis.common;
 
+import java.util.Set;
+
 public interface CustomProvider {
     /**
      * 获取当前语言，使用建议使用ThreadLocal实现
@@ -11,4 +13,7 @@ public interface CustomProvider {
      * @return 当前语言
      */
     Long currentPrincipal();
+
+    Set<String> getSupportedLanguages();
+
 }

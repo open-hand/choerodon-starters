@@ -1,6 +1,7 @@
 package io.choerodon.mybatis.interceptor;
 
 import io.choerodon.mybatis.common.AuditDomainSetter;
+import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.util.OGNL;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -28,14 +29,14 @@ public class AuditInterceptor implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         Object parameter = invocation.getArgs()[1];
         MappedStatement statement = (MappedStatement) invocation.getArgs()[0];
-        if (parameter instanceof AuditDomainSetter){
+        if (parameter instanceof BaseDTO){
             switch (statement.getSqlCommandType()){
                 case INSERT:
-                    ((AuditDomainSetter) parameter).setCreatedBy(OGNL.principal());
-                    ((AuditDomainSetter) parameter).setCreationDate(new Date());
+                    ((BaseDTO) parameter).setCreatedBy(OGNL.principal());
+                    ((BaseDTO) parameter).setCreationDate(new Date());
                 case UPDATE:
-                    ((AuditDomainSetter) parameter).setLastUpdatedBy(OGNL.principal());
-                    ((AuditDomainSetter) parameter).setLastUpdateDate(new Date());
+                    ((BaseDTO) parameter).setLastUpdatedBy(OGNL.principal());
+                    ((BaseDTO) parameter).setLastUpdateDate(new Date());
             }
         }
         return invocation.proceed();

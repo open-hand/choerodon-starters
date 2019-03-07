@@ -24,8 +24,8 @@
 
 package io.choerodon.mybatis.provider;
 
-import io.choerodon.mybatis.entity.MultiLanguageEntityTable;
-import io.choerodon.mybatis.mapperhelper.MultiLanguageHelper;
+import io.choerodon.mybatis.entity.CustomEntityTable;
+import io.choerodon.mybatis.mapperhelper.CustomHelper;
 import org.apache.ibatis.mapping.MappedStatement;
 import tk.mybatis.mapper.entity.EntityTable;
 import tk.mybatis.mapper.mapperhelper.EntityHelper;
@@ -54,13 +54,13 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
     public String selectOne(MappedStatement ms) {
         Class<?> entityClass = getEntityClass(ms);
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
-        if (entityTable instanceof MultiLanguageEntityTable && ((MultiLanguageEntityTable) entityTable).isMultiLanguage()) {
+        if (entityTable instanceof CustomEntityTable && ((CustomEntityTable) entityTable).isMultiLanguage()) {
             //修改返回值类型为实体类型
             setResultType(ms, entityClass);
             StringBuilder sql = new StringBuilder();
-            sql.append(MultiLanguageHelper.selectAllColumns_TL(entityClass));
-            sql.append(MultiLanguageHelper.fromTable_TL(entityClass, tableName(entityClass)));
-            sql.append(MultiLanguageHelper.whereAllIfColumns_TL(entityClass, isNotEmpty(), false));
+            sql.append(CustomHelper.selectAllColumns_TL(entityClass));
+            sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
+            sql.append(CustomHelper.whereAllIfColumns_TL(entityClass, isNotEmpty(), false));
             return sql.toString();
         } else {
             return super.selectOne(ms);
@@ -77,14 +77,14 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
     public String select(MappedStatement ms) {
         Class<?> entityClass = getEntityClass(ms);
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
-        if (entityTable instanceof MultiLanguageEntityTable && ((MultiLanguageEntityTable) entityTable).isMultiLanguage()) {
+        if (entityTable instanceof CustomEntityTable && ((CustomEntityTable) entityTable).isMultiLanguage()) {
             //修改返回值类型为实体类型
             setResultType(ms, entityClass);
             StringBuilder sql = new StringBuilder();
-            sql.append(MultiLanguageHelper.selectAllColumns_TL(entityClass));
-            sql.append(MultiLanguageHelper.fromTable_TL(entityClass, tableName(entityClass)));
-            sql.append(MultiLanguageHelper.whereAllIfColumns_TL(entityClass, isNotEmpty(), false));
-            sql.append(MultiLanguageHelper.orderByDefault_TL(entityClass));
+            sql.append(CustomHelper.selectAllColumns_TL(entityClass));
+            sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
+            sql.append(CustomHelper.whereAllIfColumns_TL(entityClass, isNotEmpty(), false));
+            sql.append(CustomHelper.orderByDefault_TL(entityClass));
             return sql.toString();
         } else {
             return super.select(ms);
@@ -100,13 +100,13 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
     public String selectByPrimaryKey(MappedStatement ms) {
         final Class<?> entityClass = getEntityClass(ms);
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
-        if (entityTable instanceof MultiLanguageEntityTable && ((MultiLanguageEntityTable) entityTable).isMultiLanguage()) {
+        if (entityTable instanceof CustomEntityTable && ((CustomEntityTable) entityTable).isMultiLanguage()) {
             //将返回值修改为实体类型
             setResultType(ms, entityClass);
             StringBuilder sql = new StringBuilder();
-            sql.append(MultiLanguageHelper.selectAllColumns_TL(entityClass));
-            sql.append(MultiLanguageHelper.fromTable_TL(entityClass, tableName(entityClass)));
-            sql.append(MultiLanguageHelper.wherePKColumns(entityClass, null, false, true));
+            sql.append(CustomHelper.selectAllColumns_TL(entityClass));
+            sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
+            sql.append(CustomHelper.wherePKColumns(entityClass, null, false, true));
             return sql.toString();
         } else {
             return super.selectByPrimaryKey(ms);
@@ -123,13 +123,13 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
     public String selectAll(MappedStatement ms) {
         final Class<?> entityClass = getEntityClass(ms);
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
-        if (entityTable instanceof MultiLanguageEntityTable && ((MultiLanguageEntityTable) entityTable).isMultiLanguage()) {
+        if (entityTable instanceof CustomEntityTable && ((CustomEntityTable) entityTable).isMultiLanguage()) {
             //修改返回值类型为实体类型
             setResultType(ms, entityClass);
             StringBuilder sql = new StringBuilder();
-            sql.append(MultiLanguageHelper.selectAllColumns_TL(entityClass));
-            sql.append(MultiLanguageHelper.fromTable_TL(entityClass, tableName(entityClass)));
-            sql.append(MultiLanguageHelper.orderByDefault_TL(entityClass));
+            sql.append(CustomHelper.selectAllColumns_TL(entityClass));
+            sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
+            sql.append(CustomHelper.orderByDefault_TL(entityClass));
             return sql.toString();
         } else {
             return super.selectAll(ms);
@@ -149,7 +149,7 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
     public String selectByExample(MappedStatement ms) {
         Class<?> entityClass = getEntityClass(ms);
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
-        if (entityTable instanceof MultiLanguageEntityTable && ((MultiLanguageEntityTable) entityTable).isMultiLanguage()) {
+        if (entityTable instanceof CustomEntityTable && ((CustomEntityTable) entityTable).isMultiLanguage()) {
             //将返回值修改为实体类型
             setResultType(ms, entityClass);
             StringBuilder sql = new StringBuilder("SELECT ");
@@ -158,10 +158,10 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
             }
             sql.append("<if test=\"distinct\">distinct</if>");
             //支持查询指定列
-            sql.append(MultiLanguageHelper.exampleSelectColumns_TL(entityClass));
-            sql.append(MultiLanguageHelper.fromTable_TL(entityClass, tableName(entityClass)));
+            sql.append(CustomHelper.exampleSelectColumns_TL(entityClass));
+            sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
             sql.append(SqlHelper.exampleWhereClause());
-            sql.append(MultiLanguageHelper.exampleOrderBy_TL(entityClass));
+            sql.append(CustomHelper.exampleOrderBy_TL(entityClass));
             sql.append(SqlHelper.exampleForUpdate());
             return sql.toString();
         } else {

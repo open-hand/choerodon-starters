@@ -30,5 +30,6 @@ public interface Mapper<T> extends
         RowBoundsMapper<T>,
         MultiLanguageSelectMapper<T>,
         UpdateByPrimaryKeyExampleMapper<T>,
+        SelectOptionsMapper<T>,
         Marker {
 }

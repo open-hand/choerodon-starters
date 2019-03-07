@@ -24,35 +24,64 @@
 
 package io.choerodon.mybatis.provider;
 
+import io.choerodon.mybatis.entity.BaseConstants;
+import io.choerodon.mybatis.entity.BaseDTO;
+import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.mapperhelper.CustomHelper;
 import org.apache.ibatis.mapping.MappedStatement;
 import tk.mybatis.mapper.mapperhelper.MapperHelper;
 import tk.mybatis.mapper.mapperhelper.MapperTemplate;
-import tk.mybatis.mapper.mapperhelper.SqlHelper;
 
+import java.util.Map;
 
-public class UpdateByPrimaryKeyExampleProvider extends MapperTemplate {
+/**
+ * BaseSelectProvider实现类，基础方法实现类
+ *
+ * @author liuzh
+ */
+public class SelectOptionsProvider extends MapperTemplate {
 
-    public UpdateByPrimaryKeyExampleProvider(Class<?> mapperClass, MapperHelper mapperHelper) {
+    public SelectOptionsProvider() {
+        super(null, null);
+    }
+
+    public SelectOptionsProvider(Class<?> mapperClass, MapperHelper mapperHelper) {
         super(mapperClass, mapperHelper);
     }
 
-    /*
-    * 通过options选取更新字段并根据主键更新。
-    * */
-    public String updateByPrimaryKeyExample(MappedStatement ms){
+    private void initResultType(MappedStatement ms){
         Class<?> entityClass = getEntityClass(ms);
-        StringBuilder sql = new StringBuilder();
-        if (isCheckExampleEntityClass()) {
-            sql.append(SqlHelper.exampleCheck(entityClass));
-        }
-        //安全更新，Example 必须包含条件
-        if (getConfig().isSafeUpdate()) {
-            sql.append(SqlHelper.exampleHasAtLeastOneCriteriaCheck("example"));
-        }
-        sql.append(SqlHelper.updateTable(entityClass, tableName(entityClass), "example"));
-        sql.append(CustomHelper.updateSetColumnsExample(entityClass));
-        sql.append(CustomHelper.wherePKColumns(entityClass,"record", true, false));
-        return sql.toString();
+        setResultType(ms, entityClass);
+    }
+
+    public void selectOptions(MappedStatement ms) {
+        initResultType(ms);
+    }
+
+    public void selectOptionsByPrimaryKey(MappedStatement ms) {
+        initResultType(ms);
+    }
+
+    /**
+     * 按照主键查询SQL.
+     *
+     * @param dto record
+     * @return sql
+     */
+    public String selectOptionsByPrimaryKey(BaseDTO dto) {
+        return CustomHelper.buildSelectByPrimaryKeySQL(dto);
+    }
+
+
+    /**
+     * 动态查询SQL.
+     *
+     * @param parameter parameter
+     * @return sql
+     */
+    public String selectOptions(Map<String,Object> parameter) {
+        BaseDTO dto = (BaseDTO)parameter.get(BaseConstants.OPTIONS_DTO);
+        Criteria criteria = (Criteria)parameter.get(BaseConstants.OPTIONS_CRITERIA);
+        return CustomHelper.buildSelectSelectiveSql(dto, criteria);
     }
 }

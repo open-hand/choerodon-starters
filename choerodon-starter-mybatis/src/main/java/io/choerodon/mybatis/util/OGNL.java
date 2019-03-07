@@ -1,9 +1,11 @@
 package io.choerodon.mybatis.util;
 
 import io.choerodon.mybatis.common.CustomProvider;
-import io.choerodon.mybatis.entity.MultiLanguageEntityColumn;
+import io.choerodon.mybatis.entity.CustomEntityColumn;
 import tk.mybatis.mapper.entity.EntityColumn;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.Set;
 
 public class OGNL {
     public static CustomProvider customProvider = null;
@@ -11,7 +13,7 @@ public class OGNL {
         if(example instanceof Example){
             Class<?> entityClass = ((Example) example).getEntityClass();
             for(EntityColumn entityColumn : ((Example) example).getPropertyMap().values()){
-                if(entityColumn.getColumn().equals(column) && entityColumn instanceof MultiLanguageEntityColumn && ((MultiLanguageEntityColumn) entityColumn).isMultiLanguage()){
+                if(entityColumn.getColumn().equals(column) && entityColumn instanceof CustomEntityColumn && ((CustomEntityColumn) entityColumn).isMultiLanguage()){
                     return true;
                 }
             }
@@ -21,7 +23,12 @@ public class OGNL {
     public static String language(){
         return customProvider.currentLanguage();
     }
+
     public static Long principal(){
         return customProvider.currentPrincipal();
+    }
+
+    public static Set<String> getSupportedLanguages(){
+        return customProvider.getSupportedLanguages();
     }
 }
