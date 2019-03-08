@@ -232,7 +232,7 @@ public class CustomHelper {
     }
 
     public static String getWhereHolder(Where where, EntityColumn column) {
-        return column.getColumn() + formatComparisonSQL(where.comparison().sql(), column.getColumnHolder());
+        return column.getColumn() + formatComparisonSQL(where.comparison().sql(), column.getColumnHolder(), true);
     }
 
     /**
@@ -613,7 +613,7 @@ public class CustomHelper {
                         } else {
                             sb.append(table.getAlias()).append(".");
                         }
-                        sb.append(columnName).append(formatComparisonSQL(comparison.sql(), column.getColumnHolder("dto")));
+                        sb.append(columnName).append(formatComparisonSQL(comparison.sql(), column.getColumnHolder("dto"), false));
                     }
                 }
             } catch (IllegalAccessException | InvocationTargetException e) {
@@ -629,7 +629,7 @@ public class CustomHelper {
      * @param placeHolder
      * @return
      */
-    private static String formatComparisonSQL(String format,String placeHolder){
+    private static String formatComparisonSQL(String format,String placeHolder, boolean replace){
         String result = null;
         if (format.contains("{0}")) {
             MessageFormat mf = new MessageFormat(format);
@@ -637,7 +637,12 @@ public class CustomHelper {
         } else {
             result = format + placeHolder;
         }
-        return result.replace("<", "&lt;").replace(">", "&gt;");
+        if(replace){
+            return result.replace("<", "&lt;").replace(">", "&gt;");
+        } else {
+            return result;
+        }
+
     }
 
 }
