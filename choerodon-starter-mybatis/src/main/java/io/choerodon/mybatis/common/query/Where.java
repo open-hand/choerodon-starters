@@ -18,4 +18,11 @@ public @interface Where {
     Comparison comparison() default Comparison.EQUAL;
     
     String expression() default "";
+
+    /**
+     * don't use this field as where.
+     *
+     * default false
+     */
+    boolean exclude() default false;
 }

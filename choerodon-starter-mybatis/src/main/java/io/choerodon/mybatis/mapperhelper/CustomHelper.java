@@ -139,6 +139,54 @@ public class CustomHelper {
      * @param useVersion
      * @return
      */
+    public static String whereAllIfColumns(Class<?> entityClass, boolean empty, boolean useVersion) {
+        StringBuilder sql = new StringBuilder();
+        boolean hasLogicDelete = false;
+
+        sql.append("<where>");
+        //获取全部列
+        Set<EntityColumn> columnSet = EntityHelper.getColumns(entityClass);
+        EntityColumn logicDeleteColumn = SqlHelper.getLogicDeleteColumn(entityClass);
+        //当某个列有主键策略时，不需要考虑他的属性是否为空，因为如果为空，一定会根据主键策略给他生成一个值
+        for (EntityColumn column : columnSet) {
+            if (!useVersion || !column.getEntityField().isAnnotationPresent(Version.class)) {
+                // 逻辑删除，后面拼接逻辑删除字段的未删除条件
+                if (logicDeleteColumn != null && logicDeleteColumn == column) {
+                    hasLogicDelete = true;
+                    continue;
+                }
+                Where where = column.getEntityField().getAnnotation(Where.class);
+                if (where != null && where.exclude()){
+                    continue;
+                }
+                String whereSql = null;
+                if (where != null){
+                    whereSql = getWhereHolder(where, column);
+                } else {
+                    whereSql = column.getColumnEqualsHolder();
+                }
+                sql.append(SqlHelper.getIfNotNull(column, " AND " + whereSql, empty));
+            }
+        }
+        if (useVersion) {
+            sql.append(SqlHelper.whereVersion(entityClass));
+        }
+        if (hasLogicDelete) {
+            sql.append(SqlHelper.whereLogicDelete(entityClass, false));
+        }
+
+        sql.append("</where>");
+        return sql.toString();
+    }
+
+    /**
+     * where所有列的条件，会判断是否!=null
+     *
+     * @param entityClass
+     * @param empty
+     * @param useVersion
+     * @return
+     */
     public static String whereAllIfColumns_TL(Class<?> entityClass, boolean empty, boolean useVersion) {
         StringBuilder sql = new StringBuilder();
         boolean hasLogicDelete = false;
@@ -155,10 +203,20 @@ public class CustomHelper {
                     hasLogicDelete = true;
                     continue;
                 }
-                if(column instanceof CustomEntityColumn && ((CustomEntityColumn) column).isMultiLanguage()){
-                    sql.append(SqlHelper.getIfNotNull(column, " AND t." + column.getColumnEqualsHolder(), empty));
+                Where where = column.getEntityField().getAnnotation(Where.class);
+                if (where != null && where.exclude()){
+                    continue;
+                }
+                String whereSql = null;
+                if (where != null){
+                    whereSql = getWhereHolder(where, column);
                 } else {
-                    sql.append(SqlHelper.getIfNotNull(column, " AND b." + column.getColumnEqualsHolder(), empty));
+                    whereSql = column.getColumnEqualsHolder();
+                }
+                if(column instanceof CustomEntityColumn && ((CustomEntityColumn) column).isMultiLanguage()){
+                    sql.append(SqlHelper.getIfNotNull(column, " AND t." + whereSql, empty));
+                } else {
+                    sql.append(SqlHelper.getIfNotNull(column, " AND b." + whereSql, empty));
                 }
             }
         }
@@ -171,6 +229,10 @@ public class CustomHelper {
 
         sql.append("</where>");
         return sql.toString();
+    }
+
+    public static String getWhereHolder(Where where, EntityColumn column) {
+        return column.getColumn() + formatComparisonSQL(where.comparison().sql(), column.getColumnHolder());
     }
 
     /**
@@ -568,12 +630,14 @@ public class CustomHelper {
      * @return
      */
     private static String formatComparisonSQL(String format,String placeHolder){
+        String result = null;
         if (format.contains("{0}")) {
             MessageFormat mf = new MessageFormat(format);
-            return mf.format(new String[]{placeHolder});
+            result = mf.format(new String[]{placeHolder});
         } else {
-            return format + placeHolder;
+            result = format + placeHolder;
         }
+        return result.replace("<", "&lt;").replace(">", "&gt;");
     }
 
 }
