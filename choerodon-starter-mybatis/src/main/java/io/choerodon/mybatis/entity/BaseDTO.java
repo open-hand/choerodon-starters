@@ -136,6 +136,7 @@ public class BaseDTO implements Serializable, BaseConstants {
      */
     @JsonIgnore
     @Column
+    @Transient
     private Long requestId = -1L;
 
     /**
@@ -143,6 +144,7 @@ public class BaseDTO implements Serializable, BaseConstants {
      */
     @JsonIgnore
     @Column
+    @Transient
     private Long programId = -1L;
 
     /**
