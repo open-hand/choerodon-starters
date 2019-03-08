@@ -54,16 +54,19 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
     public String selectOne(MappedStatement ms) {
         Class<?> entityClass = getEntityClass(ms);
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
+        //修改返回值类型为实体类型
+        setResultType(ms, entityClass);
+        StringBuilder sql = new StringBuilder();
         if (entityTable instanceof CustomEntityTable && ((CustomEntityTable) entityTable).isMultiLanguage()) {
-            //修改返回值类型为实体类型
-            setResultType(ms, entityClass);
-            StringBuilder sql = new StringBuilder();
             sql.append(CustomHelper.selectAllColumns_TL(entityClass));
             sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
             sql.append(CustomHelper.whereAllIfColumns_TL(entityClass, isNotEmpty(), false));
             return sql.toString();
         } else {
-            return super.selectOne(ms);
+            sql.append(SqlHelper.selectAllColumns(entityClass));
+            sql.append(SqlHelper.fromTable(entityClass, tableName(entityClass)));
+            sql.append(CustomHelper.whereAllIfColumns(entityClass, isNotEmpty(), false));
+            return sql.toString();
         }
     }
 
@@ -77,17 +80,21 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
     public String select(MappedStatement ms) {
         Class<?> entityClass = getEntityClass(ms);
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
+        //修改返回值类型为实体类型
+        setResultType(ms, entityClass);
+        StringBuilder sql = new StringBuilder();
         if (entityTable instanceof CustomEntityTable && ((CustomEntityTable) entityTable).isMultiLanguage()) {
-            //修改返回值类型为实体类型
-            setResultType(ms, entityClass);
-            StringBuilder sql = new StringBuilder();
             sql.append(CustomHelper.selectAllColumns_TL(entityClass));
             sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
             sql.append(CustomHelper.whereAllIfColumns_TL(entityClass, isNotEmpty(), false));
             sql.append(CustomHelper.orderByDefault_TL(entityClass));
             return sql.toString();
         } else {
-            return super.select(ms);
+            sql.append(SqlHelper.selectAllColumns(entityClass));
+            sql.append(SqlHelper.fromTable(entityClass, tableName(entityClass)));
+            sql.append(CustomHelper.whereAllIfColumns(entityClass, isNotEmpty(), false));
+            sql.append(SqlHelper.orderByDefault(entityClass));
+            return sql.toString();
         }
     }
 
