@@ -933,6 +933,25 @@ public class ProjectApi extends AbstractApi implements Constants {
     }
 
     /**
+     * Adds a user to a project team. This is an idempotent method and can be called multiple times
+     * with the same parameters. Adding team membership to a user that is already a member does not
+     * affect the existing membership.
+     *
+     * POST /projects/:id/members
+     *
+     * @param projectId the project ID to add the team member to
+     * @param userId the user ID of the member to add
+     * @param accessLevel the access level for the new member
+     * @return the added member
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member updateMember(Integer projectId, Integer userId, Integer accessLevel) throws GitLabApiException {
+        GitLabApiForm formData = new GitLabApiForm().withParam("user_id", userId, true).withParam("access_level", accessLevel, true);
+        Response response = put(Response.Status.OK, formData.asMap(),"projects", projectId, "members",userId);
+        return (response.readEntity(Member.class));
+    }
+
+    /**
      * Removes user from project team.
      *
      * DELETE /projects/:id/members/:user_id
