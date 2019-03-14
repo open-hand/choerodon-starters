@@ -622,8 +622,14 @@ public class DbAdaptor {
             }
         }
         if (allIsUpperCase) {
+            if(tableName.endsWith("_B")){
+                tableName = tableName.substring(0, tableName.length() - 2);
+            }
             return tableName + "_TL";
         } else {
+            if(tableName.endsWith("_b")){
+                tableName = tableName.substring(0, tableName.length() - 2);
+            }
             return tableName + "_tl";
         }
     }
