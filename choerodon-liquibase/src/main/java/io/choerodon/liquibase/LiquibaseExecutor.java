@@ -42,6 +42,9 @@ public class LiquibaseExecutor {
     private static final String SUFFIX_XLSX = ".xlsx";
     private static final String SUFFIX_GROOVY = ".groovy";
     private static final String SUFFIX_SQL = ".sql";
+    private static final String SUFFIX_JAR = ".jar";
+    private static final String PREFIX_SCRIPT_DB = "script/db/";
+    private static final String PREFIX_SPRING_BOOT_CLASSES = "BOOT-INF/classes/";
 
     @Value("${data.dir:#{null}}")
     private String defaultDir;
@@ -85,7 +88,7 @@ public class LiquibaseExecutor {
             logger.info("数据库初始化任务完成");
             successful = true;
         } catch (Exception e) {
-            logger.error("数据库初始化任务失败, message: {}, exception: {}", e.getMessage(), e);
+            logger.error("数据库初始化任务失败, message: {}, exception: ", e.getMessage(), e);
         }
         return successful;
 
@@ -195,33 +198,40 @@ public class LiquibaseExecutor {
         ChangeLogParserFactory.getInstance().register(new ChoerodonLiquibaseChangeLogParser(liquibaseHelper));
     }
 
+    private void extraJarStream(InputStream inputStream, String dir) throws IOException {
+        JarEntry entry = null;
+        JarInputStream jarInputStream = new JarInputStream(inputStream);
+        while ((entry = jarInputStream.getNextJarEntry()) != null) {
+            String name = entry.getName();
+            if ((name.endsWith(SUFFIX_GROOVY)
+                    || name.endsWith(SUFFIX_XLSX)
+                    || name.endsWith(SUFFIX_SQL)) && name.contains(PREFIX_SCRIPT_DB)) {
+                if(name.startsWith(PREFIX_SPRING_BOOT_CLASSES)){
+                    name = name.substring(PREFIX_SPRING_BOOT_CLASSES.length());
+                }
+                File file = new File(dir + name);
+                if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+                    throw new IOException("create dir fail: " + file.getParentFile().getAbsolutePath());
+                }
+                try (FileOutputStream outputStream = new FileOutputStream(file)) {
+                    StreamUtils.copy(jarInputStream, outputStream);
+                }
+            } else if (name.endsWith(SUFFIX_JAR)) {
+                extraJarStream(jarInputStream, dir);
+            }
+        }
+    }
+
     private void extra(String jar, String dir) throws IOException {
         logger.info("Jar拆解");
         boolean isUrl = jar.startsWith("https://") || jar.startsWith("http://") || jar.startsWith("file://");
         try (InputStream inputStream = isUrl ? new URL(jar).openStream() : new FileInputStream(jar)) {
-            JarEntry entry = null;
             File temp = new File(dir);
             FileUtils.deleteDirectory(temp);
             if (!temp.mkdir()) {
                 throw new IOException("create dir fail.");
             }
-            try (JarInputStream jarInputStream = new JarInputStream(inputStream)) {
-                while ((entry = jarInputStream.getNextJarEntry()) != null) {
-                    String name = entry.getName();
-                    File file = new File(dir + name);
-                    if (entry.isDirectory()) {
-                        if (!file.mkdirs()) {
-                            throw new IOException("create dir fail.");
-                        }
-                    } else if (name.endsWith(SUFFIX_GROOVY)
-                            || name.endsWith(SUFFIX_XLSX)
-                            || name.endsWith(SUFFIX_SQL)) {
-                        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-                            StreamUtils.copy(jarInputStream, outputStream);
-                        }
-                    }
-                }
-            }
+            extraJarStream(inputStream, dir);
         }
         logger.info("Jar拆解完成");
     }
