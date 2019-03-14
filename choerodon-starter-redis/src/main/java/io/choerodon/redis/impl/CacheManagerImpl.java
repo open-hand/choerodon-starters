@@ -5,23 +5,26 @@ package io.choerodon.redis.impl;
 
 import io.choerodon.redis.Cache;
 import io.choerodon.redis.CacheManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author shengyang.zhou@hand-china.com
  */
 @Component("cacheManager")
-public class CacheManagerImpl implements CacheManager {
-    private HashMap<String, Cache> cacheMap = new HashMap<>();
+public class CacheManagerImpl implements CacheManager, ApplicationListener {
 
-    @Autowired
-    private List<Cache> caches;
+    private HashMap<String, Cache> cacheMap = new HashMap<>();
+    private List<Cache> caches = new ArrayList<>();;
 
     public void setCaches(List<Cache> caches) {
         this.caches = caches;
@@ -50,17 +53,29 @@ public class CacheManagerImpl implements CacheManager {
         cacheMap.put(cache.getName(), cache);
     }
 
-    @PostConstruct
-    public void initCache() throws Exception {
+    public void contextInitialized(ApplicationContext applicationContext) {
         cacheMap.forEach((name, cache) -> {
             cache.init();
         });
-        caches.forEach(cache -> {
-            if (StringUtils.isEmpty(cache.getName())) {
-                throw new RuntimeException(cache + " cacheName is empty");
-            }
-            cacheMap.put(cache.getName(), cache);
-            cache.init();
-        });
+        Map<String, Cache> cacheBeans = applicationContext.getBeansOfType(Cache.class);
+        if (cacheBeans != null) {
+            cacheBeans.forEach((k, v) -> {
+                if (!caches.contains(v)) {
+                    if (StringUtils.isEmpty(v.getName())) {
+                        throw new RuntimeException(v + " cacheName is empty");
+                    }
+                    addCache(v);
+                    v.init();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ContextRefreshedEvent) {
+            ApplicationContext applicationContext = ((ContextRefreshedEvent) event).getApplicationContext();
+            contextInitialized(applicationContext);
+        }
     }
 }
