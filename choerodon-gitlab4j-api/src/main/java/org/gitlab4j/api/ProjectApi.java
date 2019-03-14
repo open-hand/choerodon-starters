@@ -46,17 +46,24 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
+import org.gitlab4j.api.GitLabApi.ApiVersion;
+import org.gitlab4j.api.models.Event;
+import org.gitlab4j.api.models.Issue;
+import org.gitlab4j.api.models.Member;
+import org.gitlab4j.api.models.Project;
+import org.gitlab4j.api.models.ProjectHook;
+import org.gitlab4j.api.models.ProjectUser;
+import org.gitlab4j.api.models.Snippet;
+import org.gitlab4j.api.models.Variable;
+import org.gitlab4j.api.models.Visibility;
 
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-
-import org.gitlab4j.api.GitLabApi.ApiVersion;
-import org.gitlab4j.api.models.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides an entry point to all the GitLab API project calls.
@@ -926,6 +933,25 @@ public class ProjectApi extends AbstractApi implements Constants {
     }
 
     /**
+     * Adds a user to a project team. This is an idempotent method and can be called multiple times
+     * with the same parameters. Adding team membership to a user that is already a member does not
+     * affect the existing membership.
+     *
+     * POST /projects/:id/members
+     *
+     * @param projectId the project ID to add the team member to
+     * @param userId the user ID of the member to add
+     * @param accessLevel the access level for the new member
+     * @return the added member
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member updateMember(Integer projectId, Integer userId, Integer accessLevel) throws GitLabApiException {
+        GitLabApiForm formData = new GitLabApiForm().withParam("user_id", userId, true).withParam("access_level", accessLevel, true);
+        Response response = put(Response.Status.OK, formData.asMap(),"projects", projectId, "members",userId);
+        return (response.readEntity(Member.class));
+    }
+
+    /**
      * Removes user from project team.
      *
      * DELETE /projects/:id/members/:user_id
@@ -1510,6 +1536,24 @@ public class ProjectApi extends AbstractApi implements Constants {
         return (response.readEntity(Map.class));
     }
 
+
+    /**
+     * Update a new project variable
+     * <p>
+     * POST /projects/:id/variables
+     *
+     * @param id The ID of a project or urlencoded NAMESPACE/PROJECT_NAME of the project owned by the authenticated user
+     * @return get project variable.
+     * @throws GitLabApiException if any exception occurs
+     */
+    public  Map<String,Object> updateVariable(Integer id, String key, String value, boolean protecteds) throws GitLabApiException {
+        Form formData = new Form();
+        formData.param("key", key);
+        formData.param("value", value);
+        formData.param("protected", String.valueOf(protecteds));
+        Response response = put(Response.Status.OK, formData.asMap(), "projects", id, "variables", key);
+        return (response.readEntity(Map.class));
+    }
 
     /**
      * Create a new project variable
