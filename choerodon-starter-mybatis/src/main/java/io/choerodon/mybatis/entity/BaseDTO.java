@@ -157,17 +157,17 @@ public class BaseDTO implements Serializable, BaseConstants {
      * 1 where xxx
      */
     @Version
-    @Column(updatable = false)
+    @Column
     private Long objectVersionNumber;
 
     //// 下面是标准 WHO 字段////
 
     @JsonIgnore
-    @Column(updatable = false)
+    @Column
     private Long createdBy;
 
     @JsonIgnore
-    @Column(updatable = false)
+    @Column
     private Date creationDate;
 
     @JsonIgnore

@@ -1,5 +1,6 @@
 package io.choerodon.mybatis.common;
 
+import io.choerodon.mybatis.entity.BaseConstants;
 import io.choerodon.mybatis.provider.UpdateByPrimaryKeyExampleProvider;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.UpdateProvider;
@@ -14,6 +15,6 @@ public interface UpdateByPrimaryKeyExampleMapper<T> {
      * @return
      */
     @UpdateProvider(type = UpdateByPrimaryKeyExampleProvider.class, method = "dynamicSQL")
-    int updateByPrimaryKeyExample(@Param("record") T record, @Param("example") Object example);
+    int updateByPrimaryKeyExample(@Param(BaseConstants.OPTIONS_DTO) T record, @Param("example") Object example);
 
 }

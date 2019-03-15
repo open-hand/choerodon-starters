@@ -24,6 +24,7 @@
 
 package io.choerodon.mybatis.provider;
 
+import io.choerodon.mybatis.entity.BaseConstants;
 import io.choerodon.mybatis.mapperhelper.CustomHelper;
 import org.apache.ibatis.mapping.MappedStatement;
 import tk.mybatis.mapper.mapperhelper.MapperHelper;
@@ -51,8 +52,8 @@ public class UpdateByPrimaryKeyExampleProvider extends MapperTemplate {
             sql.append(SqlHelper.exampleHasAtLeastOneCriteriaCheck("example"));
         }
         sql.append(SqlHelper.updateTable(entityClass, tableName(entityClass), "example"));
-        sql.append(CustomHelper.updateSetColumnsExample(entityClass));
-        sql.append(CustomHelper.wherePKColumns(entityClass,"record", true, false));
+        sql.append(CustomHelper.updateSetColumnsExample(entityClass, BaseConstants.OPTIONS_DTO));
+        sql.append(CustomHelper.wherePKColumns(entityClass,BaseConstants.OPTIONS_DTO, true, false));
         return sql.toString();
     }
 }

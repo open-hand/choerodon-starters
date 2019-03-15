@@ -31,30 +31,24 @@ public class OvnInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object[] args = invocation.getArgs();
+        MappedStatement mappedStatement = (MappedStatement) args[0];
         Object domain = args[1];
-
-        Object result = null;
-        result = invocation.proceed();
-        if(domain instanceof MapperMethod.ParamMap){
+        if(domain instanceof Map){
             Map map = ((Map) domain);
             if (map.containsKey(BaseConstants.OPTIONS_DTO)) {
                 domain = ((Map) domain).get(BaseConstants.OPTIONS_DTO);
             }
         }
-        MappedStatement mappedStatement = (MappedStatement) args[0];
         if (!(domain instanceof BaseDTO)) {
-            return result;
+            return invocation.proceed();
         }
         BaseDTO baseDTO = (BaseDTO) domain;
-        Long ovn = baseDTO.getObjectVersionNumber();
         if (mappedStatement.getSqlCommandType() == SqlCommandType.INSERT) {
             baseDTO.setObjectVersionNumber(1L);
-            return result;
         }
-        if (ovn == null) {
-            return result;
-        }
-        if (mappedStatement.getSqlCommandType() == SqlCommandType.UPDATE) {
+        Object result = invocation.proceed();
+        Long ovn = baseDTO.getObjectVersionNumber();
+        if (ovn != null && mappedStatement.getSqlCommandType() == SqlCommandType.UPDATE){
             baseDTO.setObjectVersionNumber(ovn + 1L);
         }
         return result;
