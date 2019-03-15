@@ -301,22 +301,23 @@ public class CustomHelper {
 
 
     /**
-     * update set列，不考虑乐观锁注解 @Version
      * @return
      */
-    public static String updateSetColumnsExample(Class<?> entityClass) {
+    public static String updateSetColumnsExample(Class<?> entityClass, String entityName) {
         StringBuilder sql = new StringBuilder();
         sql.append("<choose>");
         sql.append("<when test=\"example.updateColumns != null\">");
         sql.append("<set>");
         sql.append("<foreach collection=\"example.updateColumns\" item=\"updateColumn\" separator=\",\">");
-        sql.append("${updateColumn.column}=#{record.${updateColumn.property}}");
+        sql.append("${updateColumn.column}=#{");
+        sql.append(entityName);
+        sql.append(".${updateColumn.property}}");
         sql.append("</foreach>");
-        sql.append(updateSetVersion(entityClass, "record", false));
+        sql.append(updateSetVersion(entityClass, entityName, false));
         sql.append("</set>");
         sql.append("</when>");
         sql.append("<otherwise>");
-        sql.append(SqlHelper.updateSetColumns(entityClass, "record", false, false));
+        sql.append(SqlHelper.updateSetColumns(entityClass, entityName, false, false));
         sql.append("</otherwise>");
         sql.append("</choose>");
         return sql.toString();
