@@ -137,6 +137,7 @@ public class MybatisMapperAutoConfiguration implements EnvironmentAware {
         properties.setProperty("PostgreSQL", "postgresql");
         properties.setProperty("Sybase", "sybase");
         properties.setProperty("Hana", "hana");
+        properties.setProperty("SQL Server", "sqlserver");
         databaseIdProvider.setProperties(properties);
         return databaseIdProvider;
     }
