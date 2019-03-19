@@ -2,11 +2,11 @@
  * #{copyright}#
  */
 
-package io.choerodon.redis.impl;
+package io.choerodon.message.impl;
 
-import io.choerodon.redis.IMessageConsumer;
-import io.choerodon.redis.IQueueMessageListener;
-import io.choerodon.redis.ITopicMessageListener;
+import io.choerodon.message.IMessageConsumer;
+import io.choerodon.message.IQueueMessageListener;
+import io.choerodon.message.ITopicMessageListener;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -162,7 +162,7 @@ public class MethodReflectUtils {
      * @return proper method name
      */
     public static String getTopicMethodName(String mn, Object target) {
-        if (!StringUtils.isEmpty(mn)) {
+        if (StringUtils.isEmpty(mn)) {
             if (target instanceof ITopicMessageListener) {
                 mn = ITopicMessageListener.DEFAULT_METHOD_NAME;
             } else {

@@ -2,7 +2,7 @@
  * #{copyright}#
  */
 
-package io.choerodon.redis;
+package io.choerodon.message;
 
 import org.springframework.data.redis.serializer.RedisSerializer;
 
@@ -27,7 +27,7 @@ public interface ITopicMessageListener<T> {
     /**
      * 消息反序列化.
      * <p>
-     * 
+     *
      * @return 可以返回 null,表示使用默认的 StringRedisSerializer
      */
     RedisSerializer<T> getRedisSerializer();
