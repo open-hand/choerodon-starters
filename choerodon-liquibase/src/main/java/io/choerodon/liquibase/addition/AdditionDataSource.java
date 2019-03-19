@@ -4,6 +4,9 @@ import io.choerodon.liquibase.helper.LiquibaseHelper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 多数据源配置
@@ -18,9 +21,8 @@ public class AdditionDataSource {
     private boolean drop;
     private DataSource dataSource;
     private LiquibaseHelper liquibaseHelper;
-
-    public AdditionDataSource() {
-    }
+    private Set<String> tables;
+    private static Map<String, AdditionDataSource> tablesMap = new HashMap<>();
 
     /**
      * 构造函数
@@ -36,6 +38,10 @@ public class AdditionDataSource {
     }
 
     public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource) {
+        this(url, username, password, dir, drop, dataSource, null);
+    }
+
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource, Set<String> tables) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -43,6 +49,14 @@ public class AdditionDataSource {
         this.drop = drop;
         this.dataSource = dataSource;
         this.liquibaseHelper = new LiquibaseHelper(this.url);
+        this.tables = tables;
+        if (tables != null){
+            tables.forEach(t -> tablesMap.put(t, this));
+        }
+    }
+
+    public static Map<String, AdditionDataSource> getTablesMap() {
+        return tablesMap;
     }
 
     public String getUrl() {
@@ -90,6 +104,14 @@ public class AdditionDataSource {
             dataSource = new DriverManagerDataSource(url, username, password);
         }
         return dataSource;
+    }
+
+    public Set<String> getTables() {
+        return tables;
+    }
+
+    public void setTables(Set<String> tables) {
+        this.tables = tables;
     }
 
     public LiquibaseHelper getLiquibaseHelper() {
