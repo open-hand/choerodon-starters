@@ -1,9 +1,9 @@
 package io.choerodon.redis;
 
+import io.choerodon.message.impl.redis.QueueListenerContainer;
+import io.choerodon.message.impl.redis.TopicListenerContainer;
 import io.choerodon.redis.impl.CustomJedisConnectionFactory;
-import io.choerodon.redis.impl.QueueListenerContainer;
 import io.choerodon.redis.impl.RedisNodeAutoConfig;
-import io.choerodon.redis.impl.TopicListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

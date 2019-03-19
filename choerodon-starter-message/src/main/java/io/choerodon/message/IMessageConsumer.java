@@ -2,7 +2,7 @@
  * #{copyright}#
  */
 
-package io.choerodon.redis;
+package io.choerodon.message;
 
 /**
  * 

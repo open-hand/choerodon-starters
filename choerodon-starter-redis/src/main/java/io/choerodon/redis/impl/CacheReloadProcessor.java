@@ -4,13 +4,13 @@
 
 package io.choerodon.redis.impl;
 
+import io.choerodon.message.IMessagePublisher;
+import io.choerodon.message.IQueueMessageListener;
+import io.choerodon.message.ITopicMessageListener;
+import io.choerodon.message.annotation.QueueMonitor;
+import io.choerodon.message.annotation.TopicMonitor;
 import io.choerodon.redis.Cache;
 import io.choerodon.redis.CacheManager;
-import io.choerodon.redis.IMessagePublisher;
-import io.choerodon.redis.IQueueMessageListener;
-import io.choerodon.redis.ITopicMessageListener;
-import io.choerodon.redis.annotation.QueueMonitor;
-import io.choerodon.redis.annotation.TopicMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

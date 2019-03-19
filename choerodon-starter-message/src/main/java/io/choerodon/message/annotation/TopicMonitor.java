@@ -2,7 +2,7 @@
  * #{copyright}#
  */
 
-package io.choerodon.redis.annotation;
+package io.choerodon.message.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

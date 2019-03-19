@@ -2,10 +2,11 @@
  * #{copyright}#
  */
 
-package io.choerodon.redis.impl;
+package io.choerodon.message.impl.redis;
 
-import io.choerodon.redis.IQueueMessageListener;
-import io.choerodon.redis.annotation.QueueMonitor;
+import io.choerodon.message.IQueueMessageListener;
+import io.choerodon.message.annotation.QueueMonitor;
+import io.choerodon.message.impl.MethodReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
