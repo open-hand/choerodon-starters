@@ -16,7 +16,7 @@ public class LiquibaseConfig {
 
     @Bean
     LiquibaseExecutor getLiquibaseExecutor() {
-        return new LiquibaseExecutor(dataSource, getProfileMap());
+        return new LiquibaseExecutor(dataSource);
     }
 
     @Bean

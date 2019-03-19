@@ -46,6 +46,7 @@ public class DbAdaptor {
     private Logger logger = LoggerFactory.getLogger(getClass());
     private DataSource dataSource;
     private Connection connection;
+    private Map<String, Connection> connectionMap = new HashMap<>();
     private ExcelDataLoader dataProcessor;
     private boolean useSeq = false;
     private boolean override = true;
@@ -76,6 +77,11 @@ public class DbAdaptor {
     public void initConnection() throws SQLException {
         connection = dataSource.getConnection();
         connection.setAutoCommit(false);
+        for (String table: AdditionDataSource.getTablesMap().keySet()){
+            Connection connection = AdditionDataSource.getTablesMap().get(table).getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            connectionMap.put(table, connection);
+        }
     }
 
     /**
@@ -98,6 +104,25 @@ public class DbAdaptor {
                     connection.close();
                 } catch (SQLException e) {
                     logger.error("close connect exception: {}", e);
+                }
+            }
+        }
+        for (Connection connection:connectionMap.values()){
+            if(connection != null){
+                try (Connection c = connection) {
+                    if (commit) {
+                        c.commit();
+                    } else {
+                        c.rollback();
+                    }
+                } catch (SQLException e) {
+                    logger.error("commit or rollback exception: {}", e);
+                } finally {
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        logger.error("close connect exception: {}", e);
+                    }
                 }
             }
         }
@@ -177,6 +202,10 @@ public class DbAdaptor {
             }
         }
         sb.append(StringUtils.join(list, " AND "));
+        Connection connection = this.connection;
+        if(connectionMap.containsKey(tableRow.getTable().getName())){
+            connection = connectionMap.get(tableRow.getTable().getName());
+        }
         try (PreparedStatement ps = connection.prepareStatement(sb.toString())) {
             int index = 1;
             for (TableCellValue tableCellValue : params) {
@@ -253,6 +282,10 @@ public class DbAdaptor {
         }
         //更新表的sql
         String sql = prepareTableUpdateSql(tableRow, uniques, normals);
+        Connection connection = this.connection;
+        if(connectionMap.containsKey(tableRow.getTable().getName())){
+            connection = connectionMap.get(tableRow.getTable().getName());
+        }
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int index = 1;
             for (TableCellValue tableCellValue : normals) {
@@ -382,6 +415,10 @@ public class DbAdaptor {
         TableData table = tableRow.getTable();
         String tableName = table.getName();
         long maxId = table.getMaxId();
+        Connection connection = this.connection;
+        if(connectionMap.containsKey(tableRow.getTable().getName())){
+            connection = connectionMap.get(tableRow.getTable().getName());
+        }
         try (PreparedStatement ps = connection.prepareStatement(sql,
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             int count = 1;
@@ -540,6 +577,10 @@ public class DbAdaptor {
         if (genTableCellValue != null) {
             sb.append(genTableCellValue.getColumn().getName()).append("=?");
         }
+        Connection connection = this.connection;
+        if(connectionMap.containsKey(tableRow.getTable().getName())){
+            connection = connectionMap.get(tableRow.getTable().getName());
+        }
         try (PreparedStatement ps = connection.prepareStatement(sb.toString())) {
             ps.setLong(1, value);
             if (genTableCellValue != null) {
@@ -597,6 +638,10 @@ public class DbAdaptor {
         sb.append(" AND LANG=?");
 
         String sql = sb.toString();
+        Connection connection = this.connection;
+        if(connectionMap.containsKey(tableRow.getTable().getName())){
+            connection = connectionMap.get(tableRow.getTable().getName());
+        }
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setObject(1, genTableCellValue.getValue());
             ps.setObject(2, lang);
@@ -690,6 +735,10 @@ public class DbAdaptor {
         sb.append("?)");
 
         String sql = sb.toString();
+        Connection connection = this.connection;
+        if(connectionMap.containsKey(tableRow.getTable().getName())){
+            connection = connectionMap.get(tableRow.getTable().getName());
+        }
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int nn = 1;
             for (TableData.TableCellValue tableCellValue : values) {
@@ -754,6 +803,10 @@ public class DbAdaptor {
     protected Long getSeqNextVal(String tableName) throws SQLException {
         StringBuilder builder = new StringBuilder();
         builder.append("select ").append(tableName).append("_s.nextval from dual");
+        Connection connection = this.connection;
+        if(connectionMap.containsKey(tableName)){
+            connection = connectionMap.get(tableName);
+        }
         try (PreparedStatement ps = connection.prepareStatement(builder.toString())) {
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
@@ -770,17 +823,21 @@ public class DbAdaptor {
         StringBuilder builder = new StringBuilder();
         String alterSql = builder.append("alter sequence ").append(tableName).append("_s increment by ").toString();
         String sql = alterSql + step;
-        execUpdateSequence(sql);
+        execUpdateSequence(sql, tableName);
 
         getSeqNextVal(tableName);
 
         sql = alterSql + defaultStep;
-        execUpdateSequence(sql);
+        execUpdateSequence(sql, tableName);
     }
 
-    private void execUpdateSequence(String sql) throws SQLException {
+    private void execUpdateSequence(String sql, String table) throws SQLException {
         PreparedStatement statement = null;
         try {
+            Connection connection = this.connection;
+            if(connectionMap.containsKey(table)){
+                connection = connectionMap.get(table);
+            }
             statement = connection.prepareStatement(sql);
             statement.executeUpdate();
         } catch (SQLException e) {

@@ -16,6 +16,7 @@ import liquibase.resource.ResourceAccessor;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -71,12 +72,11 @@ public class LiquibaseExecutor {
     private String dsPassword;
 
     private DataSource defaultDataSource;
+    @Autowired
     private ProfileMap profileMap;
 
-    public LiquibaseExecutor(DataSource defaultDataSource,
-                             ProfileMap profileMap) {
+    public LiquibaseExecutor(DataSource defaultDataSource) {
         this.defaultDataSource = defaultDataSource;
-        this.profileMap = profileMap;
     }
 
 
@@ -149,8 +149,8 @@ public class LiquibaseExecutor {
                 String password = profileMap.getAdditionValue(dataSourceName + ".password");
                 String dir = profileMap.getAdditionValue(dataSourceName + ".dir");
                 boolean drop = Boolean.parseBoolean(profileMap.getAdditionValue(dataSourceName + ".drop"));
-
-                AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop);
+                Set<String> tables = Arrays.stream(profileMap.getAdditionValue(dataSourceName + ".tables").split(",")).collect(Collectors.toSet());
+                AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop, null, tables);
                 additionDataSources.add(ads);
             }
         }
@@ -174,13 +174,12 @@ public class LiquibaseExecutor {
                 catalog = connection.getCatalog();
             }
             logger.info("{} 初始化", catalog);
+            load(TEMP_DIR_NAME, additionDataSourceList.get(0));
             for (AdditionDataSource addition : additionDataSourceList) {
                 logger.info("{} 初始化", catalog);
                 if (!StringUtils.isEmpty(addition.getDir())) {
                     String dir = getDirInJar(fileList, addition.getDir());
                     load(dir, addition);
-                } else {
-                    load(TEMP_DIR_NAME, addition);
                 }
             }
         }
