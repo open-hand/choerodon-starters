@@ -144,10 +144,8 @@ public class ClientServiceImpl implements ClientService {
         logger.info("stateMachine client configExecutePostAction start: instanceId:{}, configDTOS:{}", instanceId, configDTOS);
         ExecuteResult executeResult = new ExecuteResult();
         Boolean isSuccess = true;
-        //执行后置动作，若是初始转换：反射startInstance，若是其他转换：反射updateStatus
-        if (transformType.equals(TransformType.INIT)) {
-            isSuccess = startInstanceInvokeBean(targetStatusId, inputDTO);
-        } else {
+        //执行后置动作，若非初始转换：反射updateStatus
+        if (!transformType.equals(TransformType.INIT)) {
             isSuccess = updateStatusInvokeBean(targetStatusId, inputDTO);
         }
 
@@ -218,33 +216,6 @@ public class ClientServiceImpl implements ClientService {
                 logger.info("stateMachine client configExecute updateStatus with method {}: instanceId:{}, targetStatusId:{}", method.getName(), instanceId, targetStatusId);
             } catch (Exception e) {
                 logger.error("stateMachine client configExecute updateStatus invoke error {}", e);
-                return false;
-            }
-        } else {
-            logger.error("stateMachine client configExecute updateStatus invokeBean not found");
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 执行创建实例初始化方法
-     *
-     * @param targetStatusId
-     * @return
-     */
-    private Boolean startInstanceInvokeBean(Long targetStatusId, InputDTO inputDTO) {
-        Long instanceId = inputDTO.getInstanceId();
-        String input = inputDTO.getInput();
-        InvokeBean startInstanceBean = StateMachineConfigMonitor.startInstanceBeanMap.get(inputDTO.getInvokeCode());
-        if (startInstanceBean != null) {
-            Object object = startInstanceBean.getObject();
-            Method method = startInstanceBean.getMethod();
-            try {
-                method.invoke(object, instanceId, targetStatusId, input);
-                logger.info("stateMachine client configExecute startInstance with method {}: instanceId:{}, targetStatusId:{}", method.getName(), instanceId, targetStatusId);
-            } catch (Exception e) {
-                logger.error("stateMachine client configExecute startInstance invoke error {}", e);
                 return false;
             }
         } else {

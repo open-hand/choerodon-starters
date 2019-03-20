@@ -2,6 +2,8 @@ package io.choerodon.liquibase.addition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
@@ -10,12 +12,12 @@ import org.springframework.core.env.Environment;
  *
  * @author dongfan117@gmail.com
  */
-public class ProfileMap implements EnvironmentAware {
+public class ProfileMap {
     private static final Logger logger = LoggerFactory.getLogger(ProfileMap.class);
 
     private Environment env;
 
-    @Override
+    @Autowired
     public void setEnvironment(Environment env) {
         this.env = env;
     }

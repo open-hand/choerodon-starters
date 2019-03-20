@@ -1,5 +1,10 @@
 package io.choerodon.liquibase.helper;
 
+import io.choerodon.liquibase.LiquibaseExecutor;
+import org.springframework.util.StringUtils;
+
+import java.io.File;
+
 /**
  * Created by hailuoliu@choerodon.io on 2018/7/11.
  */
@@ -26,6 +31,8 @@ public class LiquibaseHelper {
             this.currentDbType = DbType.SQLSERVER;
         } else if (this.url.startsWith("jdbc:sap")) {
             this.currentDbType = DbType.HANA;
+        } else if (this.url.startsWith("jdbc:postgresql")) {
+            this.currentDbType = DbType.POSTGRESQL;
         }
         return currentDbType;
     }
@@ -50,17 +57,43 @@ public class LiquibaseHelper {
         return this.url.startsWith("jdbc:sqlserver");
     }
 
+    public boolean isPostgresql() {
+        return this.url.startsWith("jdbc:postgresql");
+    }
+
+    public boolean isHana() {
+        return this.url.startsWith("jdbc:sap");
+    }
+
+    public String dataPath(String path) {
+        return path;
+    }
+
     public enum DbType {
-        MYSQL(true, false), ORACLE(false, true), HANA(false, true), SQLSERVER(true, false), H2(true, false), DB2(false, true);
+        MYSQL("mysql", true, false),
+        ORACLE("oracle", false, true),
+        HANA("hana",false, true),
+        SQLSERVER("sqlserver",true, false),
+        H2("h2",true, false),
+        DB2("db2",false, true),
+        POSTGRESQL("postgresql",false, true);
 
         private boolean supportAutoIncrement;
 
         private boolean supportSequence;
 
+        private final String value;
 
-        DbType(boolean supportAutoIncrement, boolean supportSequence) {
+
+        DbType(String value, boolean supportAutoIncrement, boolean supportSequence) {
+            this.value = value;
             this.supportAutoIncrement = supportAutoIncrement;
             this.supportSequence = supportSequence;
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
 
         public boolean isSupportAutoIncrement() {

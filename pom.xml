@@ -60,6 +60,7 @@
         <module>choerodon-starter-eureka-event</module>
         <module>choerodon-starter-feign-replay</module>
         <module>choerodon-starter-hitoa</module>
+        <module>choerodon-starter-mybatis</module>
         <module>choerodon-starter-mybatis-mapper</module>
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-starter-oauth-resource</module>
@@ -68,6 +69,8 @@
         <module>choerodon-tool-config</module>
         <module>choerodon-tool-liquibase</module>
         <module>choerodon-websocket-helper</module>
+        <module>choerodon-starter-redis</module>
+        <module>choerodon-starter-message</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
