@@ -21,6 +21,11 @@ public class InputDTO {
         this.input = input;
     }
 
+    public InputDTO(Long instanceId, String input) {
+        this.instanceId = instanceId;
+        this.input = input;
+    }
+
     public String getInvokeCode() {
         return invokeCode;
     }
