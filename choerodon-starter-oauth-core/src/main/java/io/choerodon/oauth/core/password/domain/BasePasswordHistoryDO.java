@@ -1,5 +1,6 @@
 package io.choerodon.oauth.core.password.domain;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -19,6 +20,7 @@ public class BasePasswordHistoryDO extends AuditDomain {
     @GeneratedValue
     private Long id;
     private Long userId;
+    @Column(name = "hash_password")
     private String password;
 
     public Long getId() {
