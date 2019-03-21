@@ -3,8 +3,12 @@ package io.choerodon.liquibase.utils;
 import liquibase.util.StringUtils;
 
 import java.sql.JDBCType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * @author superlee
@@ -22,6 +26,11 @@ public class CellDataConverter {
 
     private CellDataConverter() {}
 
+
+    public static final SimpleDateFormat sdf_l = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SimpleDateFormat sdf_s = new java.text.SimpleDateFormat("yyyy-MM-dd");
+
+
     /**
      * 根据jdbc type转为对应的java类型数据
      * @param value
@@ -34,9 +43,25 @@ public class CellDataConverter {
         }
         if (JDBCType.DATE.getName().equalsIgnoreCase(type)) {
             if (value.length() <= ISO_DATE_FORMATTER_LENGTH) {
-                return LocalDate.parse(value);
+                try {
+                    return LocalDate.parse(value);
+                }catch (DateTimeParseException e){
+                    try {
+                        return sdf_s.parse(value);
+                    } catch (ParseException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
             }
-            return LocalDateTime.parse(value);
+            try {
+                return LocalDateTime.parse(value);
+            }catch (DateTimeParseException e){
+                try {
+                    return sdf_l.parse(value);
+                } catch (ParseException e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
         }
         if (JDBCType.DECIMAL.getName().equalsIgnoreCase(type)
                 || JDBCType.NUMERIC.getName().equalsIgnoreCase(type)

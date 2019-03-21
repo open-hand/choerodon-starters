@@ -609,6 +609,8 @@ public class DbAdaptor {
             ps.setString(nn, (String) object);
         } else if (object instanceof Long) {
             ps.setLong(nn, (Long) object);
+        } else if(object instanceof java.util.Date){
+            ps.setDate(nn, new Date(((java.util.Date) object).getTime()));
         } else if (object instanceof LocalDate) {
             ps.setDate(nn, Date.valueOf((LocalDate) object));
         } else if (object instanceof LocalDateTime) {

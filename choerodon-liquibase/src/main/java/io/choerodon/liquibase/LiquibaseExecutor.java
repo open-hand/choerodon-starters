@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
  * 入口方法，LiquibaseExecutor，启动加载
  *
  * @author dongfan117@gmail.com
- * @see org.springframework.boot.CommandLineRunner
  */
 public class LiquibaseExecutor {
     private static final Logger logger = LoggerFactory.getLogger(LiquibaseExecutor.class);
     private static final String TEMP_DIR_NAME = "temp/";
     private static final String SUFFIX_XLSX = ".xlsx";
     private static final String SUFFIX_GROOVY = ".groovy";
+    private static final String FINAL_SUFFIX_GROOVY = "-final.groovy";
     private static final String SUFFIX_SQL = ".sql";
     private static final String SUFFIX_JAR = ".jar";
     private static final String PREFIX_SCRIPT_DB = "script/db/";
@@ -254,7 +254,7 @@ public class LiquibaseExecutor {
 
         //执行groovy脚本
         for (String file : nameList) {
-            if (file.endsWith(SUFFIX_GROOVY)) {
+            if (file.endsWith(SUFFIX_GROOVY) && !file.endsWith(FINAL_SUFFIX_GROOVY)) {
                 liquibase = new Liquibase(file, accessor, jdbcConnection);
                 liquibase.update(new Contexts());
             }
@@ -268,6 +268,14 @@ public class LiquibaseExecutor {
                 loader.setUpdateExclusionMap(updateExclusionMap);
                 logger.info("begin to process excel : {}", file);
                 loader.execute(inputStream.iterator().next(), additionDataSource);
+            }
+        }
+
+        //执行final groovy脚本
+        for (String file : nameList) {
+            if (file.endsWith(FINAL_SUFFIX_GROOVY)) {
+                liquibase = new Liquibase(file, accessor, jdbcConnection);
+                liquibase.update(new Contexts());
             }
         }
     }
