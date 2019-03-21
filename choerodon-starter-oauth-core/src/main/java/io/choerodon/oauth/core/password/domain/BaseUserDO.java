@@ -1,5 +1,6 @@
 package io.choerodon.oauth.core.password.domain;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -26,6 +27,7 @@ public class BaseUserDO extends AuditDomain {
     private String loginName;
     private String email;
     private Long organizationId;
+    @Column(name = "hash_password")
     private String password;
     private String realName;
     private String phone;
