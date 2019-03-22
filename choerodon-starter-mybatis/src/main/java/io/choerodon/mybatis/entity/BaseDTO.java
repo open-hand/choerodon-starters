@@ -183,67 +183,67 @@ public class BaseDTO implements Serializable, BaseConstants {
      * 扩展属性分类.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attributeCategory;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute1;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute2;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute3;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute4;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute5;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute6;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute7;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column(insertable = false)
     private String attribute8;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute9;
 
+    @Column
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
     private String attribute10;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute11;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute12;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute13;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute14;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute15;
 
     public String get__id() {

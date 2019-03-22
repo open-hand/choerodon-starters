@@ -29,7 +29,7 @@ public interface Mapper<T> extends
         UpdateByExampleSelectiveMapper<T>,
         RowBoundsMapper<T>,
         MultiLanguageSelectMapper<T>,
-        UpdateByPrimaryKeyExampleMapper<T>,
+        UpdateByPrimaryKeyOptionsMapper<T>,
         SelectOptionsMapper<T>,
         Marker {
 }
