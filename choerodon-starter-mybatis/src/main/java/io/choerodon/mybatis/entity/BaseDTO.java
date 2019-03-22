@@ -178,10 +178,6 @@ public class BaseDTO implements Serializable, BaseConstants {
     @Column
     private Date lastUpdateDate;
 
-    @JsonIgnore
-    @Column
-    private Long lastUpdateLogin;
-
     //// 下面是扩展属性字段////
 
     /**
@@ -332,14 +328,6 @@ public class BaseDTO implements Serializable, BaseConstants {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
-    }
-
-    public Long getLastUpdateLogin() {
-        return lastUpdateLogin;
-    }
-
-    public void setLastUpdateLogin(Long lastUpdateLogin) {
-        this.lastUpdateLogin = lastUpdateLogin;
     }
 
     public Long getCreatedBy() {
