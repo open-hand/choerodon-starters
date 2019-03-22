@@ -36,7 +36,6 @@ public class BaseDTO implements Serializable, BaseConstants {
     public static final String FIELD_CREATION_DATE = "creationDate";
     public static final String FIELD_LAST_UPDATED_BY = "lastUpdatedBy";
     public static final String FIELD_LAST_UPDATE_DATE = "lastUpdateDate";
-    public static final String FIELD_LAST_UPDATE_LOGIN = "lastUpdateLogin";
     public static final String FIELD_LANG = "lang";
     public static final String FIELD_ATTRIBUTE_CATEGORY = "attributeCategory";
     public static final String FIELD_ATTRIBUTE1 = "attribute1";
