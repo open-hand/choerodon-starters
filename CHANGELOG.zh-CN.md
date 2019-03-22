@@ -2,6 +2,19 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+# [0.10.0]
+
+### 新增
+- spring-boot升级到2.0.6.RELEASE
+- spring-cloud升级至Finchley.SR2
+- 添加mybatis模块
+- 添加redis模块
+- 添加hap的message模块
+
+### 修改
+- 状态机添加创建实例接口
+- 修改liquibase初始化工具满足hap需求
+
 ## [0.9.2]
 
 ### 新增
