@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 
 /**
- * @Author jialong.zuo@hand-china.com on 2017/6/1.
+ * @author jialong.zuo@hand-china.com on 2017/6/1.
  */
 @Component(value = "hashStringRedisCacheResolve")
 public class HashStringRedisCacheResolve extends CacheResolve {
