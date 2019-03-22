@@ -22,7 +22,7 @@ public @interface QueueMonitor {
      * <p>
      * ITopicMessageListener:onTopicMessage<br>
      * OTHERS:onMessage
-     * 
+     * @return String
      */
     String method() default "";
 
