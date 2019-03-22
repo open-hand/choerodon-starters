@@ -71,6 +71,7 @@
         <module>choerodon-websocket-helper</module>
         <module>choerodon-starter-redis</module>
         <module>choerodon-starter-message</module>
+        <module>choerodon-starter-freemarker</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
