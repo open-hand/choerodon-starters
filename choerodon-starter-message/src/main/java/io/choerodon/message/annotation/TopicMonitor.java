@@ -23,7 +23,7 @@ public @interface TopicMonitor {
      * <p>
      * IQueueMessageListener:onQueueMessage<br>
      * OTHERS:onMessage
-     *
+     * @return String
      */
     String method() default "";
 }
