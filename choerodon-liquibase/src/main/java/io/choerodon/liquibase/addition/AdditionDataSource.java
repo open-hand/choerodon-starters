@@ -24,6 +24,9 @@ public class AdditionDataSource {
     private Set<String> tables;
     private static Map<String, AdditionDataSource> tablesMap = new HashMap<>();
 
+    public AdditionDataSource(){
+
+    }
     /**
      * 构造函数
      *

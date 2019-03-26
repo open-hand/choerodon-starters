@@ -133,7 +133,11 @@ public class ExcelSeedDataReader {
                 if (isAllEmpty(row, SKIP_COL + 1)) {
                     continue;
                 }
-                processTableRow(currentTable, row);
+                if(currentTable != null){
+                    processTableRow(currentTable, row);
+                } else {
+                    logger.warn("跳过无法找到表名的数据:{}", row);
+                }
             }
         }
         addCurrentTable(tables, currentTable);
@@ -180,17 +184,14 @@ public class ExcelSeedDataReader {
         return currentTable;
     }
 
-    private TableData processTableRow(TableData currentTable, Row row) {
+    private void processTableRow(TableData currentTable, Row row) {
         TableData.TableRow tableRow = new TableData.TableRow();
         tableRow.setTable(currentTable);
         tableRow.setLineNumber(row.getRowNum() + 1);
         for (int j = SKIP_COL + 1; j < row.getLastCellNum(); j++) {
             Cell cell = row.getCell(j);
-            if (currentTable != null) {
-                addTableCellValue(cell, tableRow, currentTable);
-            }
-            if ((currentTable != null)
-                    && tableRow.getTableCellValues().size() == currentTable.getColumns().size()) {
+            addTableCellValue(cell, tableRow, currentTable);
+            if (tableRow.getTableCellValues().size() == currentTable.getColumns().size()) {
                 // 丢弃多余的数据(如果有，不继续读了)
                 break;
             }
@@ -205,7 +206,6 @@ public class ExcelSeedDataReader {
             }
             currentTable.getTableRows().add(tableRow);
         }
-        return currentTable;
     }
 
     private boolean tableRowIsEmpty(TableData.TableRow tableRow) {

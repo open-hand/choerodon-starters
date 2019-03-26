@@ -9,22 +9,27 @@ import io.choerodon.mybatis.common.query.WhereField;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author njq.niu@hand-china.com
  */
 public class Criteria {
 
-    private List<Selection> selectFields;
+    private Set<Selection> selectFields;
 
-    private List<SortField> sortFields;
+    private Set<SortField> sortFields;
 
-    private List<WhereField> whereFields;
+    private Set<WhereField> whereFields;
 
-    private List<String> excludeSelectFields;
+    private Set<String> excludeSelectFields;
 
-    private List<String> updateFields;
+    private Set<String> updateFields;
 
     public Criteria() {
     }
@@ -39,7 +44,7 @@ public class Criteria {
     }
 
     public Criteria sort(String field, SortType sortType) {
-        if (sortFields == null) sortFields = new ArrayList<>();
+        if (sortFields == null) sortFields = new HashSet<>();
         if (!containField(sortFields, field))
             sortFields.add(new SortField(field, sortType));
         return this;
@@ -47,8 +52,8 @@ public class Criteria {
 
     public Criteria select(String... fields) {
         excludeSelectFields = null;
-        if (selectFields == null) selectFields = new ArrayList<>(50);
-        if (fields.length > 0 && !selectFields.contains(BaseDTO.FIELD_OBJECT_VERSION_NUMBER)) {
+        if (selectFields == null) selectFields = new HashSet<>(50);
+        if (fields.length > 0) {
             selectFields.add(new Selection(BaseDTO.FIELD_OBJECT_VERSION_NUMBER));
         }
         for (String field : fields) {
@@ -64,7 +69,7 @@ public class Criteria {
      */
     public Criteria selectExtensionAttribute() {
         excludeSelectFields = null;
-        if (selectFields == null) selectFields = new ArrayList<>(50);
+        if (selectFields == null) selectFields = new HashSet<>(50);
         selectFields.addAll(Arrays.asList(new Selection(BaseDTO.FIELD_ATTRIBUTE1),new Selection(BaseDTO.FIELD_ATTRIBUTE2),new Selection(BaseDTO.FIELD_ATTRIBUTE3),
                 new Selection(BaseDTO.FIELD_ATTRIBUTE4),new Selection(BaseDTO.FIELD_ATTRIBUTE5),new Selection(BaseDTO.FIELD_ATTRIBUTE6),
                 new Selection(BaseDTO.FIELD_ATTRIBUTE7),new Selection(BaseDTO.FIELD_ATTRIBUTE8),new Selection(BaseDTO.FIELD_ATTRIBUTE9),
@@ -75,7 +80,7 @@ public class Criteria {
 
     public Criteria unSelect(String... fields) {
         selectFields = null;
-        if (excludeSelectFields == null) excludeSelectFields = new ArrayList<>(50);
+        if (excludeSelectFields == null) excludeSelectFields = new HashSet<>(50);
         for (String field : fields) {
             if (!excludeSelectFields.contains(field))
                 excludeSelectFields.add(field);
@@ -95,25 +100,21 @@ public class Criteria {
     }
 
     public Criteria where(WhereField... fields) {
-        if (whereFields == null) whereFields = new ArrayList<>(15);
-        for (WhereField field : fields) {
-            if (!whereFields.contains(field))
-                whereFields.add(field);
-        }
+        if (whereFields == null) whereFields = new HashSet<>(15);
+        Collections.addAll(whereFields, fields);
         return this;
     }
 
     public Criteria where(String... fields) {
-        if (whereFields == null) whereFields = new ArrayList<>(15);
+        if (whereFields == null) whereFields = new HashSet<>(15);
         for (String field : fields) {
-            if (!whereFields.contains(field))
-                whereFields.add(new WhereField(field));
+            whereFields.add(new WhereField(field));
         }
         return this;
     }
 
 
-    private boolean containField(List<? extends SQLField> list, String field) {
+    private boolean containField(Set<? extends SQLField> list, String field) {
         boolean found = false;
         for (SQLField sqlField : list) {
             if (sqlField.getField().equals(field)) {
@@ -126,16 +127,12 @@ public class Criteria {
 
     public void update(String... fields) {
         if (updateFields == null) {
-            updateFields = new ArrayList<>(50);
+            updateFields = new HashSet<>(50);
         }
         if (fields.length > 0 && !updateFields.contains(BaseDTO.FIELD_LAST_UPDATE_DATE)) {
             updateFields.addAll(Arrays.asList(BaseDTO.FIELD_LAST_UPDATE_DATE, BaseDTO.FIELD_LAST_UPDATED_BY, BaseDTO.FIELD_LAST_UPDATE_LOGIN));
         }
-        for (String field : fields) {
-            if (!updateFields.contains(field)) {
-                updateFields.add(field);
-            }
-        }
+        Collections.addAll(updateFields, fields);
     }
 
 
@@ -144,7 +141,7 @@ public class Criteria {
      */
     public void updateExtensionAttribute(){
         if (updateFields == null) {
-            updateFields = new ArrayList<>(50);
+            updateFields = new HashSet<>(50);
         }
         updateFields.addAll(Arrays.asList(BaseDTO.FIELD_ATTRIBUTE1,BaseDTO.FIELD_ATTRIBUTE2,BaseDTO.FIELD_ATTRIBUTE3,BaseDTO.FIELD_ATTRIBUTE4,
                 BaseDTO.FIELD_ATTRIBUTE5,BaseDTO.FIELD_ATTRIBUTE6,BaseDTO.FIELD_ATTRIBUTE7,BaseDTO.FIELD_ATTRIBUTE8,BaseDTO.FIELD_ATTRIBUTE9,
@@ -152,39 +149,39 @@ public class Criteria {
                 BaseDTO.FIELD_ATTRIBUTE15,BaseDTO.FIELD_ATTRIBUTE_CATEGORY));
     }
 
-    public List<String> getUpdateFields() {
+    public Set<String> getUpdateFields() {
         return updateFields;
     }
 
-    public List<Selection> getSelectFields() {
+    public Set<Selection> getSelectFields() {
         return selectFields;
     }
 
-    public void setSelectFields(List<Selection> selectFields) {
+    public void setSelectFields(Set<Selection> selectFields) {
         this.selectFields = selectFields;
     }
 
-    public List<SortField> getSortFields() {
+    public Set<SortField> getSortFields() {
         return sortFields;
     }
 
-    public void setSortFields(List<SortField> sortFields) {
+    public void setSortFields(Set<SortField> sortFields) {
         this.sortFields = sortFields;
     }
 
-    public List<WhereField> getWhereFields() {
+    public Set<WhereField> getWhereFields() {
         return whereFields;
     }
 
-    public void setWhereFields(List<WhereField> whereFields) {
+    public void setWhereFields(Set<WhereField> whereFields) {
         this.whereFields = whereFields;
     }
 
-    public List<String> getExcludeSelectFields() {
+    public Set<String> getExcludeSelectFields() {
         return excludeSelectFields;
     }
 
-    public void setExcludeSelectFields(List<String> excludeSelectFields) {
+    public void setExcludeSelectFields(Set<String> excludeSelectFields) {
         this.excludeSelectFields = excludeSelectFields;
     }
 }

@@ -9,12 +9,9 @@ import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.entity.CustomEntityColumn;
 import io.choerodon.mybatis.entity.CustomEntityTable;
-import io.choerodon.mybatis.mapperhelper.MultipleJdbc3KeyGenerator;
 import io.choerodon.mybatis.util.OGNL;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
-import org.apache.ibatis.executor.keygen.KeyGenerator;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.Interceptor;
@@ -22,7 +19,6 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
-import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +55,6 @@ public class MultiLanguageInterceptor implements Interceptor {
         Object target = invocation.getTarget();
         if (target instanceof Executor) {
             MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
-            //如果是Jdbc3KeyGenerator，就设置为MultipleJdbc3KeyGenerator
-            MetaObject msObject = SystemMetaObject.forObject(mappedStatement);
-            KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
-            if (keyGenerator instanceof Jdbc3KeyGenerator) {
-                msObject.setValue("keyGenerator", new MultipleJdbc3KeyGenerator());
-            }
             Object domain = invocation.getArgs()[1];
             Criteria criteria = null;
             if(domain instanceof MapperMethod.ParamMap){
@@ -94,7 +84,7 @@ public class MultiLanguageInterceptor implements Interceptor {
 
     private void proceedMultiLanguage(BaseDTO parameterObject, Invocation invocation, MappedStatement mappedStatement,Criteria criteria)
             throws Exception {
-        List<String> updateFields = criteria !=null ? criteria.getUpdateFields():null;
+        Set<String> updateFields = criteria !=null ? criteria.getUpdateFields():null;
         Class<?> clazz = parameterObject.getClass();
         MultiLanguage multiLanguageTable = clazz.getAnnotation(MultiLanguage.class);
         if (multiLanguageTable == null) {
@@ -224,7 +214,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         }
     }
 
-    private void proceedUpdateMultiLanguage(String tableName, BaseDTO parameterObject, Executor executor,List<String> updateFields)
+    private void proceedUpdateMultiLanguage(String tableName, BaseDTO parameterObject, Executor executor,Set<String> updateFields)
             throws Exception {
         Class<?> clazz = parameterObject.getClass();
         List<String> sets = new ArrayList<>();
@@ -281,7 +271,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         }
     }
 
-    private void proceedUpdateMultiLanguage2(String tableName, BaseDTO parameterObject, Executor executor,List<String> updateFields)
+    private void proceedUpdateMultiLanguage2(String tableName, BaseDTO parameterObject, Executor executor,Set<String> updateFields)
             throws Exception {
 
         Class<?> clazz = parameterObject.getClass();

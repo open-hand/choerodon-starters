@@ -25,6 +25,9 @@ public abstract class CacheResolve {
             JoinLov joinCode = (JoinLov) cacheEntity;
              field = resultMap.getClass().getDeclaredField(joinCode.joinKey());
         }
+        if (field == null){
+            return null;
+        }
         field.setAccessible(true);
         return field.get(resultMap);
     }
