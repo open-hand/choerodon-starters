@@ -9,25 +9,18 @@ import java.util.Set;
 
 public class OGNL {
     public static CustomProvider customProvider = null;
-    public static boolean isMultiLanguageColumn(Object example, String column){
-        if(example instanceof Example){
-            Class<?> entityClass = ((Example) example).getEntityClass();
-            for(EntityColumn entityColumn : ((Example) example).getPropertyMap().values()){
-                if(entityColumn.getColumn().equals(column) && entityColumn instanceof CustomEntityColumn && ((CustomEntityColumn) entityColumn).isMultiLanguage()){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     public static String language(){
+        if (customProvider == null){
+            return "zh_CN";
+        }
         return customProvider.currentLanguage();
     }
-
     public static Long principal(){
+        if (customProvider == null){
+            return -1L;
+        }
         return customProvider.currentPrincipal();
     }
-
     public static Set<String> getSupportedLanguages(){
         return customProvider.getSupportedLanguages();
     }

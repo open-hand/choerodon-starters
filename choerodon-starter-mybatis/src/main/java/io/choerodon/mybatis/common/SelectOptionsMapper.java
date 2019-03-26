@@ -1,6 +1,5 @@
 package io.choerodon.mybatis.common;
 
-import io.choerodon.mybatis.entity.BaseConstants;
 import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.provider.SelectOptionsProvider;
 import org.apache.ibatis.annotations.Param;
@@ -12,6 +11,11 @@ import java.util.List;
  * @author njq.niu@hand-china.com
  */
 public interface SelectOptionsMapper<T> {
+    /**
+     * options 方式查询
+     */
+    String OPTIONS_DTO = "dto";
+    String OPTIONS_CRITERIA = "criteria";
 
     /**
      * 按照主键有条件查询.
@@ -31,5 +35,5 @@ public interface SelectOptionsMapper<T> {
      * @return list
      */
     @SelectProvider(type = SelectOptionsProvider.class, method = "selectOptions")
-    List<T> selectOptions(@Param(BaseConstants.OPTIONS_DTO) T record, @Param(BaseConstants.OPTIONS_CRITERIA) Criteria criteria);
+    List<T> selectOptions(@Param(OPTIONS_DTO) T record, @Param(OPTIONS_CRITERIA) Criteria criteria);
 }

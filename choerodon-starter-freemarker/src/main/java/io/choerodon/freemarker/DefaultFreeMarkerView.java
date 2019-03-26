@@ -20,7 +20,6 @@ import java.util.Map;
 
 /**
  * @author njq.niu@hand-china.com
- * @date 2016年1月31日
  */
 public class DefaultFreeMarkerView extends FreeMarkerView {
 

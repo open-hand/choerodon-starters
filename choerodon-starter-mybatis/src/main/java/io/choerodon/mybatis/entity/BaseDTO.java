@@ -26,8 +26,12 @@ import java.util.regex.Pattern;
  *
  * @author shengyang.zhou@hand-china.com
  */
-public class BaseDTO implements Serializable, BaseConstants {
+public class BaseDTO implements Serializable {
 
+    /**
+     * 基本常量 - 是 标记.
+     */
+    public static final String YES = "Y";
 
     public static final String FIELD_REQUEST_ID = "requestId";
     public static final String FIELD_PROGRAM_ID = "programId";

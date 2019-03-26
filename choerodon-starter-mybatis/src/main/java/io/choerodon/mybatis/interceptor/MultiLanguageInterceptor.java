@@ -4,7 +4,7 @@
 package io.choerodon.mybatis.interceptor;
 
 import io.choerodon.mybatis.annotation.MultiLanguage;
-import io.choerodon.mybatis.entity.BaseConstants;
+import io.choerodon.mybatis.common.SelectOptionsMapper;
 import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.entity.CustomEntityColumn;
@@ -59,9 +59,9 @@ public class MultiLanguageInterceptor implements Interceptor {
             Criteria criteria = null;
             if(domain instanceof MapperMethod.ParamMap){
                 Map map = ((Map) domain);
-                if (map.containsKey(BaseConstants.OPTIONS_CRITERIA)) {
-                    criteria = (Criteria) ((Map) domain).get(BaseConstants.OPTIONS_CRITERIA);
-                    domain = ((Map) domain).get(BaseConstants.OPTIONS_DTO);
+                if (map.containsKey(SelectOptionsMapper.OPTIONS_CRITERIA)) {
+                    criteria = (Criteria) ((Map) domain).get(SelectOptionsMapper.OPTIONS_CRITERIA);
+                    domain = ((Map) domain).get(SelectOptionsMapper.OPTIONS_DTO);
                 }
             }
             if (domain instanceof BaseDTO){

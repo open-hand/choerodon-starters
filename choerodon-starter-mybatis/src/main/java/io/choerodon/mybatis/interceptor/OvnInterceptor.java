@@ -3,9 +3,8 @@
  */
 package io.choerodon.mybatis.interceptor;
 
-import io.choerodon.mybatis.entity.BaseConstants;
+import io.choerodon.mybatis.common.SelectOptionsMapper;
 import io.choerodon.mybatis.entity.BaseDTO;
-import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
@@ -35,8 +34,8 @@ public class OvnInterceptor implements Interceptor {
         Object domain = args[1];
         if(domain instanceof Map){
             Map map = ((Map) domain);
-            if (map.containsKey(BaseConstants.OPTIONS_DTO)) {
-                domain = ((Map) domain).get(BaseConstants.OPTIONS_DTO);
+            if (map.containsKey(SelectOptionsMapper.OPTIONS_DTO)) {
+                domain = ((Map) domain).get(SelectOptionsMapper.OPTIONS_DTO);
             }
         }
         if (!(domain instanceof BaseDTO)) {

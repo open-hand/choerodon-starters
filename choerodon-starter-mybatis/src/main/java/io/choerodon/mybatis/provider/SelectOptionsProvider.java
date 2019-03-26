@@ -24,7 +24,7 @@
 
 package io.choerodon.mybatis.provider;
 
-import io.choerodon.mybatis.entity.BaseConstants;
+import io.choerodon.mybatis.common.SelectOptionsMapper;
 import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.mapperhelper.CustomHelper;
@@ -80,8 +80,8 @@ public class SelectOptionsProvider extends MapperTemplate {
      * @return sql
      */
     public String selectOptions(Map<String,Object> parameter) {
-        BaseDTO dto = (BaseDTO)parameter.get(BaseConstants.OPTIONS_DTO);
-        Criteria criteria = (Criteria)parameter.get(BaseConstants.OPTIONS_CRITERIA);
+        BaseDTO dto = (BaseDTO)parameter.get(SelectOptionsMapper.OPTIONS_DTO);
+        Criteria criteria = (Criteria)parameter.get(SelectOptionsMapper.OPTIONS_CRITERIA);
         return CustomHelper.buildSelectSelectiveSql(dto, criteria);
     }
 }
