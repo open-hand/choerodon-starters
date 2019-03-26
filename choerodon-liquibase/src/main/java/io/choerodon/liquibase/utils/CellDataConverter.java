@@ -3,8 +3,12 @@ package io.choerodon.liquibase.utils;
 import liquibase.util.StringUtils;
 
 import java.sql.JDBCType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * @author superlee
@@ -34,9 +38,25 @@ public class CellDataConverter {
         }
         if (JDBCType.DATE.getName().equalsIgnoreCase(type)) {
             if (value.length() <= ISO_DATE_FORMATTER_LENGTH) {
-                return LocalDate.parse(value);
+                try {
+                    return LocalDate.parse(value);
+                }catch (DateTimeParseException e){
+                    try {
+                        return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);
+                    } catch (ParseException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
             }
-            return LocalDateTime.parse(value);
+            try {
+                return LocalDateTime.parse(value);
+            }catch (DateTimeParseException e){
+                try {
+                    return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(value);
+                } catch (ParseException e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
         }
         if (JDBCType.DECIMAL.getName().equalsIgnoreCase(type)
                 || JDBCType.NUMERIC.getName().equalsIgnoreCase(type)

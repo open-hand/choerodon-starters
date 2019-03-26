@@ -2,7 +2,6 @@ package io.choerodon.redis;
 
 import io.choerodon.message.impl.redis.QueueListenerContainer;
 import io.choerodon.message.impl.redis.TopicListenerContainer;
-import io.choerodon.redis.impl.CustomJedisConnectionFactory;
 import io.choerodon.redis.impl.RedisNodeAutoConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -49,20 +48,20 @@ public class RedisAutoConfiguration {
 
     @Bean(value = "v2redisConnectionFactory")
     public JedisConnectionFactory v2redisConnectionFactory() throws Exception {
-        CustomJedisConnectionFactory cacheObject;
+        JedisConnectionFactory cacheObject;
         if(useCluster){
-            cacheObject = new CustomJedisConnectionFactory(redisClusterConfiguration());
+            cacheObject = new JedisConnectionFactory(redisClusterConfiguration());
         }else if (useSentinel) {
-            cacheObject = new CustomJedisConnectionFactory(redisSentinelConfiguration());
+            cacheObject = new JedisConnectionFactory(redisSentinelConfiguration());
         } else {
-            cacheObject = new CustomJedisConnectionFactory();
+            cacheObject = new JedisConnectionFactory();
             cacheObject.setHostName(hostName);
             cacheObject.setPort(port);
         }
         if(!StringUtils.isEmpty(password)) {
             cacheObject.setPassword(password);
         }
-        cacheObject.setPoolDb(database);
+        cacheObject.setDatabase(database);
         cacheObject.setUsePool(true);
         cacheObject.setPoolConfig(jedisPoolConfig());
         cacheObject.afterPropertiesSet();

@@ -74,13 +74,15 @@ public class DbAdaptor {
         this.override = override;
     }
 
+    //这里的连接不在这个方法关闭，而在closeConnection方法中关闭
+    @SuppressWarnings("squid:S2095")
     public void initConnection() throws SQLException {
         connection = dataSource.getConnection();
         connection.setAutoCommit(false);
         for (String table: AdditionDataSource.getTablesMap().keySet()){
-            Connection connection = AdditionDataSource.getTablesMap().get(table).getDataSource().getConnection();
-            connection.setAutoCommit(false);
-            connectionMap.put(table, connection);
+            Connection conn = AdditionDataSource.getTablesMap().get(table).getDataSource().getConnection();
+            conn.setAutoCommit(false);
+            connectionMap.put(table, conn);
         }
     }
 

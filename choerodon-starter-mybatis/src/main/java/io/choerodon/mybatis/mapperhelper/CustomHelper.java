@@ -378,10 +378,11 @@ public class CustomHelper {
      * @param dto
      * @return sql
      */
+    @SuppressWarnings("squid:S3599")//这里的DBI调用为Mybatis推荐方式，忽略这个警告
     public static String buildSelectSelectiveSql(BaseDTO dto, Criteria criteria) {
         CustomEntityTable table = (CustomEntityTable) EntityHelper.getEntityTable(dto.getClass());
         List<Selection> selectFields = new ArrayList<>(50);
-        List<Selection> selections = criteria.getSelectFields();
+        Set<Selection> selections = criteria.getSelectFields();
         if (selections == null || selections.isEmpty()) {
             for (EntityColumn column : table.getAllColumns()) {
                 if (criteria.getExcludeSelectFields() == null || !criteria.getExcludeSelectFields().contains(column.getProperty())) {
@@ -435,7 +436,7 @@ public class CustomHelper {
                     WHERE(whereSql);
 
                 // ORDER BY
-                List<SortField> sortFields = criteria.getSortFields();
+                Set<SortField> sortFields = criteria.getSortFields();
                 if(sortFields != null && !sortFields.isEmpty()) {
                     for (SortField sortField : sortFields) {
                         for (EntityColumn sortColumn : table.getEntityClassColumns()) {
@@ -574,7 +575,7 @@ public class CustomHelper {
      */
     private static String generateWhereClauseSQL(BaseDTO dto, Criteria criteria) {
         StringBuilder sb = new StringBuilder();
-        List<WhereField> whereFields = criteria.getWhereFields();
+        Set<WhereField> whereFields = criteria.getWhereFields();
         CustomEntityTable table = (CustomEntityTable) EntityHelper.getEntityTable(dto.getClass());
 
         for (EntityColumn column : table.getEntityClassColumns()) {
