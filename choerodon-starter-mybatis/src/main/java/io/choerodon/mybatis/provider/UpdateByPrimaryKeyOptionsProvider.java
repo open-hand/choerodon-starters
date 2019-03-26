@@ -32,28 +32,22 @@ import tk.mybatis.mapper.mapperhelper.MapperTemplate;
 import tk.mybatis.mapper.mapperhelper.SqlHelper;
 
 
-public class UpdateByPrimaryKeyExampleProvider extends MapperTemplate {
+public class UpdateByPrimaryKeyOptionsProvider extends MapperTemplate {
 
-    public UpdateByPrimaryKeyExampleProvider(Class<?> mapperClass, MapperHelper mapperHelper) {
+    public UpdateByPrimaryKeyOptionsProvider(Class<?> mapperClass, MapperHelper mapperHelper) {
         super(mapperClass, mapperHelper);
     }
 
     /*
-    * 通过options选取更新字段并根据主键更新。
-    * */
-    public String updateByPrimaryKeyExample(MappedStatement ms){
+     * 通过options选取更新字段并根据主键更新。
+     * */
+    public String updateByPrimaryKeyOptions(MappedStatement ms){
         Class<?> entityClass = getEntityClass(ms);
         StringBuilder sql = new StringBuilder();
-        if (isCheckExampleEntityClass()) {
-            sql.append(SqlHelper.exampleCheck(entityClass));
-        }
-        //安全更新，Example 必须包含条件
-        if (getConfig().isSafeUpdate()) {
-            sql.append(SqlHelper.exampleHasAtLeastOneCriteriaCheck("example"));
-        }
-        sql.append(SqlHelper.updateTable(entityClass, tableName(entityClass), "example"));
-        sql.append(CustomHelper.updateSetColumnsExample(entityClass, BaseConstants.OPTIONS_DTO));
-        sql.append(CustomHelper.wherePKColumns(entityClass,BaseConstants.OPTIONS_DTO, true, false));
+        sql.append(SqlHelper.updateTable(entityClass, tableName(entityClass)));
+        sql.append(CustomHelper.updateSetColumnsWithOption(entityClass));
+        sql.append(CustomHelper.wherePKColumns(entityClass, BaseConstants.OPTIONS_DTO, true, false));
         return sql.toString();
     }
+
 }

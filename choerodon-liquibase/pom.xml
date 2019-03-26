@@ -5,14 +5,14 @@
     <parent>
         <artifactId>choerodon-starter-parent</artifactId>
         <groupId>io.choerodon</groupId>
-        <version>0.9.3.RELEASE</version>
+        <version>0.10.0.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>choerodon-liquibase</artifactId>
 
     <properties>
-        <choerodon.starters.version>0.9.3.RELEASE</choerodon.starters.version>
+        <choerodon.starters.version>0.10.0.RELEASE</choerodon.starters.version>
         <powermock.version>1.7.4</powermock.version>
     </properties>
 
@@ -30,12 +30,12 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.14</version>
+            <version>3.16</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.14</version>
+            <version>3.16</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -61,6 +61,12 @@
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -141,6 +147,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

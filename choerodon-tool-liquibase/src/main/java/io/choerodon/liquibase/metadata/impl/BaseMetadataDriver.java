@@ -1,12 +1,13 @@
 package io.choerodon.liquibase.metadata.impl;
 
+import com.zaxxer.hikari.pool.HikariProxyConnection;
 import io.choerodon.liquibase.metadata.IMetadataDriver;
 import io.choerodon.liquibase.metadata.dto.MetadataColumn;
 import io.choerodon.liquibase.metadata.dto.MetadataTable;
-import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import oracle.jdbc.driver.OracleConnection;
+import org.springframework.beans.BeanUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -60,10 +61,7 @@ public class BaseMetadataDriver implements IMetadataDriver {
         Connection connection = null;
         ResultSet columnsResult = null;
         try {
-            connection = (((DataSourceProxy) source).getPooledConnection().getConnection());
-            if (DB_TYPE_ORACLE.equalsIgnoreCase(source.getConnection().getMetaData().getDatabaseProductName())) {
-                ((OracleConnection) connection).setRemarksReporting(true);
-            }
+            connection = source.getConnection();
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             columnsResult = databaseMetaData.getColumns(connection.getCatalog(), connection.getSchema(), null, null);
             while (columnsResult.next()) {

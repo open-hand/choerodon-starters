@@ -2,20 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <artifactId>choerodon-starter-oauth-core</artifactId>
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <artifactId>choerodon-starter-parent</artifactId>
         <groupId>io.choerodon</groupId>
         <version>0.10.0.RELEASE</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-    </properties>
+    <artifactId>choerodon-starter-freemarker</artifactId>
 
     <dependencies>
         <dependency>
@@ -24,17 +18,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
+            <artifactId>spring-context-support</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-mybatis-mapper</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
         </dependency>
     </dependencies>
 

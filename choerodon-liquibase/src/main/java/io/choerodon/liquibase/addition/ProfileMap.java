@@ -3,8 +3,6 @@ package io.choerodon.liquibase.addition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 /**
@@ -15,16 +13,10 @@ import org.springframework.core.env.Environment;
 public class ProfileMap {
     private static final Logger logger = LoggerFactory.getLogger(ProfileMap.class);
 
-    private RelaxedPropertyResolver springDatasourceProperty;
-    private RelaxedPropertyResolver dataProperty;
-    private RelaxedPropertyResolver additionDatasourceProperty;
     private Environment env;
 
     @Autowired
     public void setEnvironment(Environment env) {
-        this.springDatasourceProperty = new RelaxedPropertyResolver(env, "spring.datasource.");
-        this.dataProperty = new RelaxedPropertyResolver(env, "data");
-        this.additionDatasourceProperty = new RelaxedPropertyResolver(env, "custom.datasource");
         this.env = env;
     }
 
@@ -55,27 +47,4 @@ public class ProfileMap {
         return getValue("data." + key);
     }
 
-    public RelaxedPropertyResolver getSpringDatasourceProperty() {
-        return springDatasourceProperty;
-    }
-
-    public void setSpringDatasourceProperty(RelaxedPropertyResolver springDatasourceProperty) {
-        this.springDatasourceProperty = springDatasourceProperty;
-    }
-
-    public RelaxedPropertyResolver getDataProperty() {
-        return dataProperty;
-    }
-
-    public void setDataProperty(RelaxedPropertyResolver dataProperty) {
-        this.dataProperty = dataProperty;
-    }
-
-    public RelaxedPropertyResolver getAdditionDatasourceProperty() {
-        return additionDatasourceProperty;
-    }
-
-    public void setAdditionDatasourceProperty(RelaxedPropertyResolver additionDatasourceProperty) {
-        this.additionDatasourceProperty = additionDatasourceProperty;
-    }
 }

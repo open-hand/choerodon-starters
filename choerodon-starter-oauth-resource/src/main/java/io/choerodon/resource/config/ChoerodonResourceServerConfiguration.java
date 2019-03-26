@@ -42,8 +42,10 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v1/**").antMatchers("/prometheus");
+    public void configure(WebSecurity web) {
+        web
+                .ignoring()
+                .antMatchers("/v1/**", "/v2/choerodon/**", "/choerodon/**", "/actuator/**", "/prometheus");
     }
 
     @Override

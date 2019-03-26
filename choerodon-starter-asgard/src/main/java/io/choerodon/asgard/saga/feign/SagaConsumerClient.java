@@ -3,7 +3,7 @@ package io.choerodon.asgard.saga.feign;
 import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
