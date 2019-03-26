@@ -36,7 +36,6 @@ public class BaseDTO implements Serializable, BaseConstants {
     public static final String FIELD_CREATION_DATE = "creationDate";
     public static final String FIELD_LAST_UPDATED_BY = "lastUpdatedBy";
     public static final String FIELD_LAST_UPDATE_DATE = "lastUpdateDate";
-    public static final String FIELD_LAST_UPDATE_LOGIN = "lastUpdateLogin";
     public static final String FIELD_LANG = "lang";
     public static final String FIELD_ATTRIBUTE_CATEGORY = "attributeCategory";
     public static final String FIELD_ATTRIBUTE1 = "attribute1";
@@ -178,77 +177,73 @@ public class BaseDTO implements Serializable, BaseConstants {
     @Column
     private Date lastUpdateDate;
 
-    @JsonIgnore
-    @Column
-    private Long lastUpdateLogin;
-
     //// 下面是扩展属性字段////
 
     /**
      * 扩展属性分类.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attributeCategory;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute1;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute2;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute3;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute4;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute5;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute6;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute7;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column(insertable = false)
     private String attribute8;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute9;
 
+    @Column
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
     private String attribute10;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute11;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute12;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute13;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute14;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Column(insertable = false, updatable = false)
+    @Column
     private String attribute15;
 
     public String get__id() {
@@ -332,14 +327,6 @@ public class BaseDTO implements Serializable, BaseConstants {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
-    }
-
-    public Long getLastUpdateLogin() {
-        return lastUpdateLogin;
-    }
-
-    public void setLastUpdateLogin(Long lastUpdateLogin) {
-        this.lastUpdateLogin = lastUpdateLogin;
     }
 
     public Long getCreatedBy() {

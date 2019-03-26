@@ -65,8 +65,8 @@ public class ExcelSeedDataReader {
     private String getCellValueByType(Cell cell) {
         String cellValue = "";
         DataFormatter formatter = new DataFormatter();
-        switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_NUMERIC:
+        switch (cell.getCellTypeEnum()) {
+            case NUMERIC:
                 if (DateUtil.isCellDateFormatted(cell)) {
                     cellValue = formatter.formatCellValue(cell);
                 } else {
@@ -83,19 +83,19 @@ public class ExcelSeedDataReader {
                     }
                 }
                 break;
-            case Cell.CELL_TYPE_STRING:
+            case STRING:
                 cellValue = cell.getStringCellValue();
                 break;
-            case Cell.CELL_TYPE_BOOLEAN:
+            case BOOLEAN:
                 cellValue = String.valueOf(cell.getBooleanCellValue());
                 break;
-            case Cell.CELL_TYPE_FORMULA:
+            case FORMULA:
                 cellValue = String.valueOf(cell.getCellFormula());
                 break;
-            case Cell.CELL_TYPE_BLANK:
+            case BLANK:
                 cellValue = "";
                 break;
-            case Cell.CELL_TYPE_ERROR:
+            case ERROR:
                 cellValue = "";
                 break;
             default:

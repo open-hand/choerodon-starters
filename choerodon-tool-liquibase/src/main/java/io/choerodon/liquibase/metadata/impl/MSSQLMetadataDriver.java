@@ -2,7 +2,6 @@ package io.choerodon.liquibase.metadata.impl;
 
 import io.choerodon.liquibase.metadata.dto.MetadataColumn;
 import io.choerodon.liquibase.metadata.dto.MetadataTable;
-import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,7 +33,7 @@ public class MSSQLMetadataDriver extends BaseMetadataDriver {
         Connection connection = null;
         ResultSet columnsResult = null;
         try {
-            connection = (((DataSourceProxy) source).getPooledConnection().getConnection());
+            connection = source.getConnection();
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             columnsResult = databaseMetaData.getColumns(connection.getCatalog(), connection.getSchema(), null, null);
             Map<String, Map<String, String>> tableColumnDescriptions = getTableColumnDescriptions();

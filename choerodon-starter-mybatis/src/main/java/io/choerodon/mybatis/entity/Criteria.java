@@ -130,7 +130,7 @@ public class Criteria {
             updateFields = new HashSet<>(50);
         }
         if (fields.length > 0 && !updateFields.contains(BaseDTO.FIELD_LAST_UPDATE_DATE)) {
-            updateFields.addAll(Arrays.asList(BaseDTO.FIELD_LAST_UPDATE_DATE, BaseDTO.FIELD_LAST_UPDATED_BY, BaseDTO.FIELD_LAST_UPDATE_LOGIN));
+            updateFields.addAll(Arrays.asList(BaseDTO.FIELD_LAST_UPDATE_DATE, BaseDTO.FIELD_LAST_UPDATED_BY));
         }
         Collections.addAll(updateFields, fields);
     }

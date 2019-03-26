@@ -233,6 +233,9 @@ public class TableData {
                 }
                 this.lang = localLang;
             }
+            if (name.endsWith("_DATE")){
+                type = "DATE";
+            }
             int lb = name.indexOf('(');
             if (lb > 0) {
                 type = name.substring(lb + 1, name.indexOf(')')).trim().toUpperCase();

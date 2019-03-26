@@ -8,6 +8,7 @@ import io.choerodon.mybatis.common.query.Selection;
 import io.choerodon.mybatis.common.query.SortField;
 import io.choerodon.mybatis.common.query.Where;
 import io.choerodon.mybatis.common.query.WhereField;
+import io.choerodon.mybatis.entity.BaseConstants;
 import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.entity.CustomEntityColumn;
@@ -48,6 +49,37 @@ public class CustomHelper {
             sql.append(entityColumn.getColumn()).append(",");
         }
         return sql.substring(0, sql.length() - 1);
+    }
+
+    public static String updateSetColumnsWithOption(Class<?> entityClass) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("<set>");
+        // 获取全部列
+        Set<EntityColumn> columnList = EntityHelper.getColumns(entityClass);
+        // 当某个列有主键策略时，不需要考虑他的属性是否为空，因为如果为空，一定会根据主键策略给他生成一个值
+        for (EntityColumn column : columnList) {
+            if (!column.isId() && column.isUpdatable()) {
+                if (column.getEntityField().isAnnotationPresent(Version.class)) {
+                    continue;
+                }
+                sql.append(getIfNotNullWithOptions(column, column.getColumnEqualsHolder(BaseConstants.OPTIONS_DTO) + ","));
+            }
+        }
+        sql.append(updateSetVersion(entityClass, BaseConstants.OPTIONS_DTO, false));
+        sql.append("</set>");
+        return sql.toString();
+    }
+
+    public static String getIfNotNullWithOptions(EntityColumn column, String contents) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("<if test=\"");
+        sql.append("null== criteria || null == criteria.updateFields || criteria.updateFields.isEmpty() || ");
+        sql.append("criteria.updateFields").append(".contains('");
+        sql.append(column.getProperty()).append("')");
+        sql.append("\">");
+        sql.append(contents);
+        sql.append("</if>");
+        return sql.toString();
     }
 
     public static String selectAllColumns_TL(Class<?> entityClass) {
@@ -299,30 +331,6 @@ public class CustomHelper {
         return sql.toString();
     }
 
-
-    /**
-     * @return
-     */
-    public static String updateSetColumnsExample(Class<?> entityClass, String entityName) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("<choose>");
-        sql.append("<when test=\"example.updateColumns != null\">");
-        sql.append("<set>");
-        sql.append("<foreach collection=\"example.updateColumns\" item=\"updateColumn\" separator=\",\">");
-        sql.append("${updateColumn.column}=#{");
-        sql.append(entityName);
-        sql.append(".${updateColumn.property}}");
-        sql.append("</foreach>");
-        sql.append(updateSetVersion(entityClass, entityName, false));
-        sql.append("</set>");
-        sql.append("</when>");
-        sql.append("<otherwise>");
-        sql.append(SqlHelper.updateSetColumns(entityClass, entityName, false, false));
-        sql.append("</otherwise>");
-        sql.append("</choose>");
-        return sql.toString();
-    }
-
     /**
      * 乐观锁字段条件
      *
@@ -341,7 +349,6 @@ public class CustomHelper {
                 hasVersion = true;
                 Version version = column.getEntityField().getAnnotation(Version.class);
                 String versionClass = version.nextVersion().getCanonicalName();
-                result.append(", ");
                 result.append("<bind name=\"").append(column.getProperty()).append("Version\" value=\"");
                 //version = ${@tk.mybatis.mapper.version@nextVersionClass("versionClass", version)}
                 result.append("@tk.mybatis.mapper.version.VersionUtil@nextVersion(")
