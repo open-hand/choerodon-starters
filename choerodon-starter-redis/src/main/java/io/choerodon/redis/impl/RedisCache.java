@@ -289,6 +289,8 @@ public class RedisCache<T> implements Cache<T>, BeanNameAware {
     /**
      * when loadOnStartUp is true,every row in resultset will be passed to this.
      * method
+     *
+     * @param row row
      */
     protected void handleRow(Object row) {
         try {

@@ -21,8 +21,10 @@ import org.springframework.stereotype.Component;
 /**
  * 用来接收<b>队列</b>消息, reload一个Cache.
  * <p>
- * 在集群环境中,只会有一个节点收到消息,避免重复的reload.<br/>
- * 当reload完毕后,发出一个广播消息,频道[topic:cache.reload] ,消息 [cacheName].<br>
+ * 在集群环境中,只会有一个节点收到消息,避免重复的reload.
+ * <p>
+ * 当reload完毕后,发出一个广播消息,频道[topic:cache.reload] ,消息 [cacheName].
+ * <p>
  * 同时订阅这个消息,并对相应的cache 执行onCacheReload()(这个操作会在集群中的每个节点上执行)
  * 
  * @author shengyang.zhou@hand-china.com
