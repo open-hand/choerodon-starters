@@ -1,5 +1,6 @@
 package io.choerodon.mybatis.mapperhelper;
 
+import io.choerodon.mybatis.common.SelectOptionsMapper;
 import io.choerodon.mybatis.common.query.Comparison;
 import io.choerodon.mybatis.common.query.JoinColumn;
 import io.choerodon.mybatis.common.query.JoinOn;
@@ -8,11 +9,11 @@ import io.choerodon.mybatis.common.query.Selection;
 import io.choerodon.mybatis.common.query.SortField;
 import io.choerodon.mybatis.common.query.Where;
 import io.choerodon.mybatis.common.query.WhereField;
-import io.choerodon.mybatis.entity.BaseConstants;
 import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.entity.CustomEntityColumn;
 import io.choerodon.mybatis.entity.CustomEntityTable;
+import io.choerodon.mybatis.util.OGNL;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.annotation.Version;
@@ -62,10 +63,10 @@ public class CustomHelper {
                 if (column.getEntityField().isAnnotationPresent(Version.class)) {
                     continue;
                 }
-                sql.append(getIfNotNullWithOptions(column, column.getColumnEqualsHolder(BaseConstants.OPTIONS_DTO) + ","));
+                sql.append(getIfNotNullWithOptions(column, column.getColumnEqualsHolder(SelectOptionsMapper.OPTIONS_DTO) + ","));
             }
         }
-        sql.append(updateSetVersion(entityClass, BaseConstants.OPTIONS_DTO, false));
+        sql.append(updateSetVersion(entityClass, SelectOptionsMapper.OPTIONS_DTO, false));
         sql.append("</set>");
         return sql.toString();
     }
@@ -92,6 +93,7 @@ public class CustomHelper {
 
     public static String fromTable_TL(Class<?> entityClass, String defaultTableName) {
         StringBuilder sql = new StringBuilder();
+        sql.append("<bind name=\"__current_locale\" value=\"@io.choerodon.mybatis.util.OGNL@language()\" />");
         sql.append(" FROM ");
         String tableName = entityClass.getAnnotation(Table.class).name();
         EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
@@ -105,7 +107,7 @@ public class CustomHelper {
         for (EntityColumn column: entityTable.getEntityClassPKColumns()) {
             sql.append("b.").append(column.getColumn()).append("=t.").append(column.getColumn()).append(" AND ");
         }
-        sql.append("t.LANG='${@io.choerodon.mybatis.util.OGNL@language()}') ");
+        sql.append("t.LANG=#{__current_locale}) ");
         return sql.toString();
     }
 
@@ -291,7 +293,7 @@ public class CustomHelper {
     public static String exampleSelectColumns_TL(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
         sql.append("<choose>");
-        sql.append("<when test=\"@tk.mybatis.mapper.util.OGNL@hasSelectColumns(_parameter)\">");
+        sql.append("<when test=\"@tk.mybatis.mybatis.util.OGNL@hasSelectColumns(_parameter)\">");
         sql.append("<foreach collection=\"_parameter.selectColumns\" item=\"selectColumn\" separator=\",\">");
         sql.append("<choose>");
         sql.append("<when test=\"@io.choerodon.mybatis.util.OGNL@isMultiLanguageColumn(_parameter, selectColumn)\">");
@@ -350,7 +352,6 @@ public class CustomHelper {
                 Version version = column.getEntityField().getAnnotation(Version.class);
                 String versionClass = version.nextVersion().getCanonicalName();
                 result.append("<bind name=\"").append(column.getProperty()).append("Version\" value=\"");
-                //version = ${@tk.mybatis.mapper.version@nextVersionClass("versionClass", version)}
                 result.append("@tk.mybatis.mapper.version.VersionUtil@nextVersion(")
                         .append("@").append(versionClass).append("@class, ");
                 if (StringUtil.isNotEmpty(entityName)) {
@@ -566,7 +567,11 @@ public class CustomHelper {
                     sb.append(localTable.getAlias(joinKey)).append(".").append(columnName);
                 } else {
                     sb.append(localTable.getAlias(joinKey)).append(".").append(columnName);
-                    sb.append(" = ").append(joinOn.joinExpression());
+                    if("__current_locale".equals(joinOn.joinExpression())){
+                        sb.append(" = '").append(OGNL.language()).append('\'');
+                    } else {
+                        sb.append(" = ").append(joinOn.joinExpression());
+                    }
                 }
             }
         }

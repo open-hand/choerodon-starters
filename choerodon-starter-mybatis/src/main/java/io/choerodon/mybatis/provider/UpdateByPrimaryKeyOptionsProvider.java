@@ -24,7 +24,7 @@
 
 package io.choerodon.mybatis.provider;
 
-import io.choerodon.mybatis.entity.BaseConstants;
+import io.choerodon.mybatis.common.SelectOptionsMapper;
 import io.choerodon.mybatis.mapperhelper.CustomHelper;
 import org.apache.ibatis.mapping.MappedStatement;
 import tk.mybatis.mapper.mapperhelper.MapperHelper;
@@ -46,7 +46,7 @@ public class UpdateByPrimaryKeyOptionsProvider extends MapperTemplate {
         StringBuilder sql = new StringBuilder();
         sql.append(SqlHelper.updateTable(entityClass, tableName(entityClass)));
         sql.append(CustomHelper.updateSetColumnsWithOption(entityClass));
-        sql.append(CustomHelper.wherePKColumns(entityClass, BaseConstants.OPTIONS_DTO, true, false));
+        sql.append(CustomHelper.wherePKColumns(entityClass, SelectOptionsMapper.OPTIONS_DTO, true, false));
         return sql.toString();
     }
 

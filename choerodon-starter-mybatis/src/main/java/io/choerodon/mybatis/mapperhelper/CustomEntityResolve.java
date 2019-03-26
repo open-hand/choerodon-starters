@@ -7,14 +7,11 @@ import io.choerodon.mybatis.common.query.JoinColumn;
 import io.choerodon.mybatis.common.query.JoinOn;
 import io.choerodon.mybatis.common.query.JoinTable;
 import io.choerodon.mybatis.common.query.Where;
-import io.choerodon.mybatis.entity.BaseConstants;
 import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.entity.CustomEntityColumn;
 import io.choerodon.mybatis.entity.CustomEntityTable;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
-import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.UnknownTypeHandler;
 import tk.mybatis.mapper.MapperException;
@@ -209,7 +206,7 @@ public class CustomEntityResolve implements EntityResolve {
 
                             @Override
                             public String joinExpression() {
-                                return BaseConstants.PLACEHOLDER_LOCALE;
+                                return "__current_locale";
                             }
                         };
 

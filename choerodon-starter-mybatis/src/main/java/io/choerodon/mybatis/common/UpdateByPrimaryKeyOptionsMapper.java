@@ -1,6 +1,5 @@
 package io.choerodon.mybatis.common;
 
-import io.choerodon.mybatis.entity.BaseConstants;
 import io.choerodon.mybatis.entity.Criteria;
 import io.choerodon.mybatis.provider.UpdateByPrimaryKeyOptionsProvider;
 import org.apache.ibatis.annotations.Param;
@@ -16,6 +15,6 @@ public interface UpdateByPrimaryKeyOptionsMapper<T> {
      * @return
      */
     @UpdateProvider(type = UpdateByPrimaryKeyOptionsProvider.class, method = "dynamicSQL")
-    int updateByPrimaryKeyOptions(@Param(BaseConstants.OPTIONS_DTO) T record, @Param(BaseConstants.OPTIONS_CRITERIA) Criteria criteria);
+    int updateByPrimaryKeyOptions(@Param(SelectOptionsMapper.OPTIONS_DTO) T record, @Param(SelectOptionsMapper.OPTIONS_CRITERIA) Criteria criteria);
 
 }

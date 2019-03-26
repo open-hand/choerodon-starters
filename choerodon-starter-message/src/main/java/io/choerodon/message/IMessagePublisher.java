@@ -28,8 +28,9 @@ public interface IMessagePublisher {
      * @param message
      *            message :String ,Number, Map, Object...
      *
-     * @deprecated  use {@link #message(String,Object)
+     * @deprecated  use {@link #message(String,Object)}
      */
+    @Deprecated
     void rPush(String list, Object message);
 
     /**
