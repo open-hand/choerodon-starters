@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 
 @Configuration
 @ComponentScan
+@PropertySource("classpath:default-choerodon-redis-config.properties")
 public class RedisAutoConfiguration {
 
     @Value("${redis.cluster:}")
@@ -109,23 +111,6 @@ public class RedisAutoConfiguration {
     @Bean(value = "mapSerializer")
     public Jackson2JsonRedisSerializer mapSerializer() {
         return new Jackson2JsonRedisSerializer(HashMap.class);
-    }
-
-    @Bean
-    public TopicListenerContainer container() throws Exception {
-        TopicListenerContainer container = new TopicListenerContainer();
-        container.setConnectionFactory(v2redisConnectionFactory());
-        container.setRecoveryInterval(10000L);
-        return container;
-    }
-
-    @Bean
-    public QueueListenerContainer queueListenerContainer() throws Exception {
-        QueueListenerContainer container = new QueueListenerContainer();
-        container.setConnectionFactory(v2redisConnectionFactory());
-        container.setRecoveryInterval(5000L);
-        container.setStringRedisSerializer(stringRedisSerializer());
-        return container;
     }
 
     @Bean(value = "redisNodes")
