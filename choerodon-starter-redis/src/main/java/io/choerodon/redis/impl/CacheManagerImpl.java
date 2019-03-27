@@ -24,16 +24,7 @@ import java.util.Map;
 public class CacheManagerImpl implements CacheManager, ApplicationListener {
 
     private HashMap<String, Cache> cacheMap = new HashMap<>();
-    private List<Cache> caches = new ArrayList<>();;
-
-    public void setCaches(List<Cache> caches) {
-        this.caches = caches;
-        if (caches != null) {
-            for (Cache c : caches) {
-                cacheMap.put(c.getName(), c);
-            }
-        }
-    }
+    private List<Cache> caches = new ArrayList<>();
 
     @Override
     public List<Cache> getCaches() {
