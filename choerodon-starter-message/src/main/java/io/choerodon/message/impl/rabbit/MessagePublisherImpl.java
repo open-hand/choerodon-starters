@@ -27,7 +27,11 @@ public class MessagePublisherImpl implements IMessagePublisher {
 
 
     public void publish(String channel, Object message) {
-        rabbitTemplate.convertAndSend(topicExchange.getName(), channel, message);
+        if (message == null) {
+            rabbitTemplate.convertAndSend(topicExchange.getName(), channel, "null");
+        } else {
+            rabbitTemplate.convertAndSend(topicExchange.getName(), channel, message);
+        }
     }
 
     @Override

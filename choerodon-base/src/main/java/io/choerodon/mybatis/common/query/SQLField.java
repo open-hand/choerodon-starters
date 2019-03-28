@@ -1,6 +1,3 @@
-/**
- * Copyright 2016 www.extdo.com 
- */
 package io.choerodon.mybatis.common.query;
 
 /**
@@ -9,11 +6,11 @@ package io.choerodon.mybatis.common.query;
 public class SQLField {
 
     private String field;
-    
-    public SQLField(String field){
+
+    public SQLField(String field) {
         setField(field);
     }
-    
+
 
     public String getField() {
         return field;

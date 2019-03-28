@@ -6,16 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by Administrator on 2017/6/5.
+ * @author njq.niu@hand-china.com
  */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JoinCode {
+public @interface JoinOn {
 
-   // String cacheName() default "code";
+    String joinField();
 
-    String joinKey();
-
-    String code();
-
+    String joinExpression() default "";
 }
