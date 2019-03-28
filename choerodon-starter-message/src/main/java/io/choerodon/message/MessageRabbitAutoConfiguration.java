@@ -22,13 +22,13 @@ import org.springframework.retry.support.RetryTemplate;
 @ConditionalOnProperty(havingValue = "rabbitmq", prefix = "message", name = "provider")
 public class MessageRabbitAutoConfiguration {
 
-    @Value("${rabbitmq.port}")
+    @Value("${rabbitmq.port:5672}")
     private int port;
-    @Value("${rabbitmq.host}")
+    @Value("${rabbitmq.host:localhost}")
     private String host;
-    @Value("${rabbitmq.username}")
+    @Value("${rabbitmq.username:guest}")
     private String username;
-    @Value("${rabbitmq.password}")
+    @Value("${rabbitmq.password:guest}")
     private String password;
     @Autowired
     private ObjectMapper objectMapper;

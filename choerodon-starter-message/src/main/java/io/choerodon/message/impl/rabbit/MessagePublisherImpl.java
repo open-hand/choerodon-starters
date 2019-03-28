@@ -31,6 +31,7 @@ public class MessagePublisherImpl implements IMessagePublisher {
     }
 
     @Override
+    @Deprecated
     public void rPush(String list, Object message) {
         message(list, message);
     }
