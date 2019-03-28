@@ -1,6 +1,3 @@
-/**
- * Copyright 2016 www.extdo.com 
- */
 package io.choerodon.mybatis.common.query;
 
 import java.lang.annotation.ElementType;
@@ -14,14 +11,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Where {
-    
+
     Comparison comparison() default Comparison.EQUAL;
-    
+
     String expression() default "";
 
     /**
      * don't use this field as where.
-     *
+     * <p>
      * default false
      */
     boolean exclude() default false;

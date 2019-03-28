@@ -28,9 +28,9 @@
             <version>1.0.1.Final</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-base</artifactId>
+            <version>${parent.version}</version>
         </dependency>
 
         <dependency>
