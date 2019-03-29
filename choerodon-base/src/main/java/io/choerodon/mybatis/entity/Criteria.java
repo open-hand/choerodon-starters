@@ -1,20 +1,17 @@
 package io.choerodon.mybatis.entity;
 
 
+import io.choerodon.base.entity.BaseEntity;
 import io.choerodon.mybatis.common.query.SQLField;
 import io.choerodon.mybatis.common.query.Selection;
 import io.choerodon.mybatis.common.query.SortField;
 import io.choerodon.mybatis.common.query.SortType;
 import io.choerodon.mybatis.common.query.WhereField;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author njq.niu@hand-china.com
@@ -35,26 +32,19 @@ public class Criteria {
     }
 
     public Criteria(Object obj) {
-        if(obj instanceof BaseDTO) {
-            BaseDTO dto = (BaseDTO)obj;
-            if (dto != null && dto.getSortname() != null) {
+        if (obj instanceof BaseEntity) {
+            BaseEntity dto = (BaseEntity) obj;
+            if (dto.getSortname() != null) {
                 sort(dto.getSortname(), dto.getSortorder() != null ? SortType.valueOf(dto.getSortorder().toUpperCase()) : SortType.ASC);
             }
         }
-    }
-
-    public Criteria sort(String field, SortType sortType) {
-        if (sortFields == null) sortFields = new HashSet<>();
-        if (!containField(sortFields, field))
-            sortFields.add(new SortField(field, sortType));
-        return this;
     }
 
     public Criteria select(String... fields) {
         excludeSelectFields = null;
         if (selectFields == null) selectFields = new HashSet<>(50);
         if (fields.length > 0) {
-            selectFields.add(new Selection(BaseDTO.FIELD_OBJECT_VERSION_NUMBER));
+            selectFields.add(new Selection(BaseEntity.FIELD_OBJECT_VERSION_NUMBER));
         }
         for (String field : fields) {
             if (!containField(selectFields, field))
@@ -64,17 +54,18 @@ public class Criteria {
     }
 
     /**
-     * 查询扩展字段
-     * @return
+     * 查询扩展字段.
+     *
+     * @return Criteria
      */
     public Criteria selectExtensionAttribute() {
         excludeSelectFields = null;
         if (selectFields == null) selectFields = new HashSet<>(50);
-        selectFields.addAll(Arrays.asList(new Selection(BaseDTO.FIELD_ATTRIBUTE1),new Selection(BaseDTO.FIELD_ATTRIBUTE2),new Selection(BaseDTO.FIELD_ATTRIBUTE3),
-                new Selection(BaseDTO.FIELD_ATTRIBUTE4),new Selection(BaseDTO.FIELD_ATTRIBUTE5),new Selection(BaseDTO.FIELD_ATTRIBUTE6),
-                new Selection(BaseDTO.FIELD_ATTRIBUTE7),new Selection(BaseDTO.FIELD_ATTRIBUTE8),new Selection(BaseDTO.FIELD_ATTRIBUTE9),
-                new Selection(BaseDTO.FIELD_ATTRIBUTE10),new Selection(BaseDTO.FIELD_ATTRIBUTE11),new Selection(BaseDTO.FIELD_ATTRIBUTE12),new Selection(BaseDTO.FIELD_ATTRIBUTE13),
-                new Selection(BaseDTO.FIELD_ATTRIBUTE14),new Selection(BaseDTO.FIELD_ATTRIBUTE15),new Selection(BaseDTO.FIELD_ATTRIBUTE_CATEGORY)));
+        selectFields.addAll(Arrays.asList(new Selection(BaseEntity.FIELD_ATTRIBUTE1), new Selection(BaseEntity.FIELD_ATTRIBUTE2), new Selection(BaseEntity.FIELD_ATTRIBUTE3),
+                new Selection(BaseEntity.FIELD_ATTRIBUTE4), new Selection(BaseEntity.FIELD_ATTRIBUTE5), new Selection(BaseEntity.FIELD_ATTRIBUTE6),
+                new Selection(BaseEntity.FIELD_ATTRIBUTE7), new Selection(BaseEntity.FIELD_ATTRIBUTE8), new Selection(BaseEntity.FIELD_ATTRIBUTE9),
+                new Selection(BaseEntity.FIELD_ATTRIBUTE10), new Selection(BaseEntity.FIELD_ATTRIBUTE11), new Selection(BaseEntity.FIELD_ATTRIBUTE12), new Selection(BaseEntity.FIELD_ATTRIBUTE13),
+                new Selection(BaseEntity.FIELD_ATTRIBUTE14), new Selection(BaseEntity.FIELD_ATTRIBUTE15), new Selection(BaseEntity.FIELD_ATTRIBUTE_CATEGORY)));
         return this;
     }
 
@@ -113,6 +104,35 @@ public class Criteria {
         return this;
     }
 
+    public void update(String... fields) {
+        if (updateFields == null) {
+            updateFields = new HashSet<>(50);
+        }
+        if (fields.length > 0 && !updateFields.contains(BaseEntity.FIELD_LAST_UPDATE_DATE)) {
+            updateFields.addAll(Arrays.asList(BaseEntity.FIELD_LAST_UPDATE_DATE, BaseEntity.FIELD_LAST_UPDATED_BY));
+        }
+        Collections.addAll(updateFields, fields);
+    }
+
+
+    /**
+     * 更新扩展字段.
+     */
+    public void updateExtensionAttribute() {
+        if (updateFields == null) {
+            updateFields = new HashSet<>(50);
+        }
+        updateFields.addAll(Arrays.asList(BaseEntity.FIELD_ATTRIBUTE1, BaseEntity.FIELD_ATTRIBUTE2, BaseEntity.FIELD_ATTRIBUTE3, BaseEntity.FIELD_ATTRIBUTE4,
+                BaseEntity.FIELD_ATTRIBUTE5, BaseEntity.FIELD_ATTRIBUTE6, BaseEntity.FIELD_ATTRIBUTE7, BaseEntity.FIELD_ATTRIBUTE8, BaseEntity.FIELD_ATTRIBUTE9,
+                BaseEntity.FIELD_ATTRIBUTE10, BaseEntity.FIELD_ATTRIBUTE11, BaseEntity.FIELD_ATTRIBUTE12, BaseEntity.FIELD_ATTRIBUTE13, BaseEntity.FIELD_ATTRIBUTE14,
+                BaseEntity.FIELD_ATTRIBUTE15, BaseEntity.FIELD_ATTRIBUTE_CATEGORY));
+    }
+
+    private void sort(String field, SortType sortType) {
+        if (sortFields == null) sortFields = new HashSet<>();
+        if (!containField(sortFields, field))
+            sortFields.add(new SortField(field, sortType));
+    }
 
     private boolean containField(Set<? extends SQLField> list, String field) {
         boolean found = false;
@@ -123,30 +143,6 @@ public class Criteria {
             }
         }
         return found;
-    }
-
-    public void update(String... fields) {
-        if (updateFields == null) {
-            updateFields = new HashSet<>(50);
-        }
-        if (fields.length > 0 && !updateFields.contains(BaseDTO.FIELD_LAST_UPDATE_DATE)) {
-            updateFields.addAll(Arrays.asList(BaseDTO.FIELD_LAST_UPDATE_DATE, BaseDTO.FIELD_LAST_UPDATED_BY));
-        }
-        Collections.addAll(updateFields, fields);
-    }
-
-
-    /**
-     * 更新扩展字段
-     */
-    public void updateExtensionAttribute(){
-        if (updateFields == null) {
-            updateFields = new HashSet<>(50);
-        }
-        updateFields.addAll(Arrays.asList(BaseDTO.FIELD_ATTRIBUTE1,BaseDTO.FIELD_ATTRIBUTE2,BaseDTO.FIELD_ATTRIBUTE3,BaseDTO.FIELD_ATTRIBUTE4,
-                BaseDTO.FIELD_ATTRIBUTE5,BaseDTO.FIELD_ATTRIBUTE6,BaseDTO.FIELD_ATTRIBUTE7,BaseDTO.FIELD_ATTRIBUTE8,BaseDTO.FIELD_ATTRIBUTE9,
-                BaseDTO.FIELD_ATTRIBUTE10,BaseDTO.FIELD_ATTRIBUTE11,BaseDTO.FIELD_ATTRIBUTE12,BaseDTO.FIELD_ATTRIBUTE13,BaseDTO.FIELD_ATTRIBUTE14,
-                BaseDTO.FIELD_ATTRIBUTE15,BaseDTO.FIELD_ATTRIBUTE_CATEGORY));
     }
 
     public Set<String> getUpdateFields() {
