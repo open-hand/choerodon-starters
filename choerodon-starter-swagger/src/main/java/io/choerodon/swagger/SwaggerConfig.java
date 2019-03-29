@@ -39,6 +39,7 @@ public class SwaggerConfig {
      * @return swagger-ui Docket
      */
     @Bean
+    @SuppressWarnings("squid:S1872") //这里的类没有依赖，不可代替为 instanceof
     public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2).select().apis(not((RequestHandler requestHandler) ->
                 requestHandler.declaringClass().getName().equals("org.springframework.boot.autoconfigure.web.BasicErrorController")

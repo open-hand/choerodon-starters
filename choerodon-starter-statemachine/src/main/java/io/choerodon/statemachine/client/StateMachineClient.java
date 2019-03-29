@@ -41,7 +41,7 @@ public class StateMachineClient {
             inputDTO.setConfigs(conditions);
             ExecuteResult result = clientService.configExecuteCondition(statusId, transformDTO.getConditionStrategy(), inputDTO);
             if (!result.getSuccess()) {
-                new CommonException("error.stateMachineClient.createInstance.condition.fail");
+                throw new CommonException("error.stateMachineClient.createInstance.condition.fail");
             }
         }
         //执行验证
@@ -50,7 +50,7 @@ public class StateMachineClient {
             inputDTO.setConfigs(validators);
             ExecuteResult result = clientService.configExecuteValidator(statusId, inputDTO);
             if (!result.getSuccess()) {
-                new CommonException("error.stateMachineClient.createInstance.validator.fail");
+                throw new CommonException("error.stateMachineClient.createInstance.validator.fail");
             }
         }
         //执行后置动作
@@ -59,7 +59,7 @@ public class StateMachineClient {
             inputDTO.setConfigs(postpositions);
             ExecuteResult result = clientService.configExecutePostAction(statusId, transformDTO.getType(), inputDTO);
             if (!result.getSuccess()) {
-                new CommonException("error.stateMachineClient.createInstance.action.fail");
+                throw new CommonException("error.stateMachineClient.createInstance.action.fail");
             }
         }
 
