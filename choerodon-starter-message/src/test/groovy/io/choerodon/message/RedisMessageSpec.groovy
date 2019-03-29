@@ -36,7 +36,7 @@ class RedisMessageSpec extends Specification {
     JedisConnectionFactory v2redisConnectionFactory(){
         JedisConnection connection = GroovyMock(JedisConnection){
             DefaultMessage message = new DefaultMessage("test:topic" as byte[], "test" as byte[])
-            bLPop(*_) >>> [Arrays.asList("test:topic" as byte[], "test" as byte[]), null]
+            bLPop(*_) >>> [Arrays.asList("test:queue" as byte[], "test" as byte[]), null]
             pSubscribe(*_) >> {
                 MessageListener listener, byte[]... patterns -> listener.onMessage(message, patterns[0])
             }
@@ -72,7 +72,7 @@ class RedisMessageSpec extends Specification {
             messagePublisher.wait(100)
         }
         then:
-        monitor.queueCount == 1
         monitor.topicCount == 1
+        monitor.queueCount == 1
     }
 }

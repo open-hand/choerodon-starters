@@ -18,14 +18,15 @@ public interface IQueueMessageListener<T> {
     /**
      * @return 队列名称
      */
-    String getQueue();
+    default String getQueue(){
+        return null;
+    }
 
     /**
      *
      * @return 用于反 序列化 从队列中取出的数据
      */
     RedisSerializer<T> getRedisSerializer();
-
     /**
      *
      * @param message

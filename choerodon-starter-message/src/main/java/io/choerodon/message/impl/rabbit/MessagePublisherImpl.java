@@ -42,7 +42,11 @@ public class MessagePublisherImpl implements IMessagePublisher {
 
     @Override
     public void message(String name, Object message) {
-        rabbitTemplate.convertAndSend(directExchange.getName(), name, message);
+        if (message == null) {
+            rabbitTemplate.convertAndSend(directExchange.getName(), name, "null");
+        } else {
+            rabbitTemplate.convertAndSend(directExchange.getName(), name, message);
+        }
     }
 
 }
