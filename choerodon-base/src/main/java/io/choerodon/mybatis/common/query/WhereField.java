@@ -9,11 +9,11 @@ public class WhereField {
 
     private Comparison comparison;
 
-    public WhereField(String field){
+    public WhereField(String field) {
         setField(field);
     }
 
-    public WhereField(String field, Comparison comparison){
+    public WhereField(String field, Comparison comparison) {
         setField(field);
         setComparison(comparison);
     }

@@ -1,6 +1,3 @@
-/**
- * Copyright 2016 www.extdo.com 
- */
 package io.choerodon.mybatis.common.query;
 
 import java.lang.annotation.ElementType;
@@ -9,15 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author njq.niu@hand-china.com
+ * @author Administrator
+ * @date 2017/6/5.
  */
-@Target({ ElementType.FIELD })
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JoinColumn {
-    
-    String joinName();
+public @interface JoinCode {
 
-    String field() default "";
-    
-    String expression() default "";
+    String joinKey();
+
+    String code();
+
 }

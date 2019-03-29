@@ -1,6 +1,3 @@
-/**
- * Copyright 2016 www.extdo.com 
- */
 package io.choerodon.mybatis.common.query;
 
 

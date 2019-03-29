@@ -1,6 +1,3 @@
-/**
- * Copyright 2016 www.extdo.com 
- */
 package io.choerodon.mybatis.common.query;
 
 
@@ -18,14 +15,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JoinTable {
-    
+
     String name();
-    
+
     Class<?> target();
 
-    
+
     JoinType type() default JoinType.INNER;
-    
+
     JoinOn[] on() default {};
 
     boolean joinMultiLanguageTable() default false;
