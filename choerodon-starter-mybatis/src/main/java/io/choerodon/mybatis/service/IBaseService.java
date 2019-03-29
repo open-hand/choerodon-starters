@@ -1,4 +1,4 @@
-package io.choerodon.base.service;
+package io.choerodon.mybatis.service;
 
 import io.choerodon.mybatis.entity.Criteria;
 
