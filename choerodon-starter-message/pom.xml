@@ -32,5 +32,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-base</artifactId>
+            <version>${parent.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

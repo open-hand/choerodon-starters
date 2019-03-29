@@ -22,7 +22,9 @@ public interface ITopicMessageListener<T> {
      * 
      * @return topics
      */
-    String[] getTopic();
+    default String[] getTopic() {
+        return null;
+    }
 
     /**
      * 消息反序列化.

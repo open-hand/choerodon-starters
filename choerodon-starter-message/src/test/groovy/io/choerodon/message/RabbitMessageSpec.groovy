@@ -1,5 +1,6 @@
 package io.choerodon.message
 
+import io.choerodon.base.entity.BaseEntity
 import io.choerodon.message.impl.rabbit.MessagePublisherImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -13,6 +14,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class RabbitMessageSpec extends Specification {
     @Autowired
     TestMonitor monitor
+    @Autowired
+    TestEntityMonitor entityMonitor;
 
     @Autowired
     MessagePublisherImpl messagePublisher;
@@ -20,12 +23,26 @@ class RabbitMessageSpec extends Specification {
     def "Rabbit Message Publisher" () {
         when:
         synchronized (messagePublisher) {
+            messagePublisher.message("test:queue", null)
+            messagePublisher.publish("test:topic", null)
             messagePublisher.message("test:queue", "test")
             messagePublisher.publish("test:topic", "test")
             messagePublisher.wait(100)
         }
         then:
-        monitor.topicCount == 1
-        monitor.queueCount == 1
+        monitor.topicCount == 2
+        monitor.queueCount == 2
+    }
+
+    def "Rabbit Message Publisher Entity" () {
+        when:
+        synchronized (messagePublisher) {
+            messagePublisher.message("test:queueEntity", new BaseEntity())
+            messagePublisher.publish("test:topicEntity",  new BaseEntity())
+            messagePublisher.wait(100)
+        }
+        then:
+        entityMonitor.topicCount == 1
+        entityMonitor.queueCount == 1
     }
 }
