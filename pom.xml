@@ -72,7 +72,6 @@
         <module>choerodon-starter-redis</module>
         <module>choerodon-starter-message</module>
         <module>choerodon-starter-freemarker</module>
-        <module>choerodon-base</module>
         <module>choerodon-starter-boot</module>
     </modules>
     <parent>
