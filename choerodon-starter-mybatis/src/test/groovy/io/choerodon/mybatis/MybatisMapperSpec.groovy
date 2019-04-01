@@ -11,10 +11,13 @@ import io.choerodon.mybatis.dto.RoleTL
 import io.choerodon.mybatis.entity.Criteria
 import io.choerodon.mybatis.mapper.RoleMapper
 import io.choerodon.mybatis.mapper.RoleTLMapper
+import org.apache.ibatis.session.Configuration
+import org.apache.ibatis.session.SqlSessionFactory
 import org.junit.Assert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Import
@@ -27,9 +30,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 /**
  * Created by superlee on 2018/10/24.
  */
-@ComponentScan
-@Import([LiquibaseConfig, ChoerodonMybatisAutoConfiguration])
-@SpringBootTest(webEnvironment = NONE, classes = [TestApplication])
+@Import([LiquibaseConfig])
+@SpringBootTest(webEnvironment = NONE)
 class MybatisMapperSpec extends Specification {
     @Autowired
     RoleMapper roleMapper;
@@ -37,12 +39,45 @@ class MybatisMapperSpec extends Specification {
     RoleTLMapper roleTLMapper;
     @Autowired
     LiquibaseExecutor liquibaseExecutor;
+    @Autowired
+    SqlSessionFactory sessionFactory;
 
     @PostConstruct
     void init() {
         //通过liquibase初始化h2数据库
         liquibaseExecutor.execute()
     }
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        CustomProvider testCustomProvider() {
+            return new CustomProvider(){
+                @Override
+                String currentLanguage() {
+                    return "en_GB";
+                }
+
+                @Override
+                Long currentPrincipal() {
+                    return 1133L;
+                }
+
+                @Override
+                Set<String> getSupportedLanguages() {
+                    return Collections.singleton("en_GB");
+                }
+            };
+        }
+    }
+
+    def testInterceptor() {
+        when:
+        Configuration configuration = sessionFactory.getConfiguration()
+        then:
+        configuration.getInterceptors().size() == 4
+    }
+
     def selectOneTest() {
         when:
         Role role = new Role()
