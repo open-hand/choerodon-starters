@@ -11,6 +11,9 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.MapperException;
 import tk.mybatis.mapper.entity.EntityColumn;
 import tk.mybatis.mapper.entity.EntityTable;
@@ -23,6 +26,8 @@ import java.util.Properties;
 /**
  * 在更新之前自动添加四个审计字段的值， creationDate， createdBy， lastUpdateDate， lastUpdatedBy
  */
+@Order(10)
+@Component
 @Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class AuditInterceptor implements Interceptor {
     @Override

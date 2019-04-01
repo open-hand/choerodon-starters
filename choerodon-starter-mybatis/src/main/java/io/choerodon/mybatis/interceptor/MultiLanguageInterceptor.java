@@ -22,6 +22,8 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.entity.EntityColumn;
 import tk.mybatis.mapper.entity.EntityField;
 import tk.mybatis.mapper.mapperhelper.EntityHelper;
@@ -44,6 +46,8 @@ import static org.springframework.util.Assert.notNull;
  *
  * @author shengyang.zhou@hand-china.com
  */
+@Order(2)
+@Component
 @Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class MultiLanguageInterceptor implements Interceptor {
 

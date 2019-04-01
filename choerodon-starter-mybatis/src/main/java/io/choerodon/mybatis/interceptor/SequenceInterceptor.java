@@ -19,12 +19,22 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.MapperException;
 import tk.mybatis.mapper.entity.EntityColumn;
 import tk.mybatis.mapper.entity.EntityTable;
 import tk.mybatis.mapper.mapperhelper.EntityHelper;
 import tk.mybatis.mapper.mapperhelper.SelectKeyGenerator;
+import tk.mybatis.mapper.util.StringUtil;
 
+import javax.annotation.PostConstruct;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -34,13 +44,39 @@ import java.util.concurrent.ConcurrentSkipListSet;
  *
  * @author shengyang.zhou@hand-china.com
  */
+@Order(0)
+@Component
+@Conditional(SequenceInterceptor.SequenceCondition.class)
 @Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class SequenceInterceptor implements Interceptor {
     private Logger logger = LoggerFactory.getLogger(SequenceInterceptor.class);
     private Set<String> processedStatement = new ConcurrentSkipListSet<>();
-    private DbType dbType;
-    public SequenceInterceptor(DbType dbType) {
-        this.dbType = dbType;
+    private DbType type;
+
+    @Value("${db.type}")
+    public void setDbType(String dbType) {
+        type = DbType.getDbType(dbType);
+        logger.info("Database type : {}, SequenceInterceptor enabled.", type);
+    }
+
+    public static class SequenceCondition implements Condition {
+
+        @Override
+        public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+            String dbType = context.getEnvironment().getProperty("db.type");
+            DbType type = DbType.getDbType(dbType);
+            if (type != null){
+                switch (type){
+                    case HANA:
+                    case ORACLE:
+                    case POSTGRE_SQL:
+                        return true;
+                        default:
+                            return false;
+                }
+            }
+            return false;
+        }
     }
 
     @Override
@@ -63,7 +99,7 @@ public class SequenceInterceptor implements Interceptor {
                 String keyId = ms.getId() + SelectKeyGenerator.SELECT_KEY_SUFFIX;
                 EntityTable entityTable = EntityHelper.getEntityTable(entityClass);
                 String identity;
-                switch (this.dbType) {
+                switch (type) {
                     case HANA:
                         identity = "SELECT " + entityTable.getName() + "_s.nextval FROM DUMMY";
                         break;
@@ -74,7 +110,6 @@ public class SequenceInterceptor implements Interceptor {
                         identity = "SELECT " + entityTable.getName() + "_s.nextval FROM DUAL";
                         break;
                 }
-                EntityColumn column = entityTable.getEntityClassPKColumns().iterator().next();
                 SqlSource sqlSource = new RawSqlSource(ms.getConfiguration(), identity, entityClass);
                 MappedStatement keyStatement = ms.getConfiguration().getMappedStatement(keyId, false);
                 MetaObject keyStatementMetaObject = SystemMetaObject.forObject(keyStatement);
