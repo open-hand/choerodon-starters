@@ -35,7 +35,7 @@
 
         <dependency>
             <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-base-api</artifactId>
+            <artifactId>choerodon-starter-base</artifactId>
             <version>${parent.version}</version>
             <scope>test</scope>
         </dependency>

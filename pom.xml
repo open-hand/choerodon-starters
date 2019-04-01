@@ -74,6 +74,7 @@
         <module>choerodon-starter-freemarker</module>
         <module>choerodon-starter-boot</module>
         <module>choerodon-starter-web</module>
+        <module>choerodon-starter-base</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
