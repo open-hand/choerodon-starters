@@ -13,6 +13,8 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Properties;
@@ -24,6 +26,8 @@ import java.util.Properties;
  *
  * @author shengyang.zhou@hand-china.com
  */
+@Order(1)
+@Component
 @Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class OvnInterceptor implements Interceptor {
 
