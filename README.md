@@ -9,7 +9,7 @@ This is the toolkit developed by Choerodon and provides some basic dependencies 
 * [choerodon-starter-event-consumer](choerodon-starter-event-consumer/README.md)
 * [choerodon-starter-event-producer](choerodon-starter-event-producer/README.md)
 * [choerodon-starter-feign-replay](choerodon-starter-feign-replay/README.md)
-* [choerodon-starter-hitoa](choerodon-starter-hitoa/README.md)
+* [choerodon-starter-metric](choerodon-starter-metric/README.md)
 * [choerodon-starter-mybatis-mapper](choerodon-starter-mybatis-mapper/README.md)
 * [choerodon-starter-oauth-core](choerodon-starter-oauth-core/README.md)
 * [choerodon-starter-oauth-resource](choerodon-starter-oauth-resource/README.md)
