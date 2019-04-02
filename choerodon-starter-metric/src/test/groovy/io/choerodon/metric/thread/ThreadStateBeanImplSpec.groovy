@@ -1,4 +1,5 @@
-package io.choerodon.hitoa.thread
+package io.choerodon.metric.thread
+
 
 import spock.lang.Specification
 

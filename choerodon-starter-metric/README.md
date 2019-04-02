@@ -1,6 +1,6 @@
-# Hitoa Toolkit
+# Metric Toolkit
 
-The hitoa toolkit is used to collect the information of jvm while the microservice program is running.
+The metric toolkit is used to collect the information of jvm while the microservice program is running.
 
 ## Feature
 
@@ -13,7 +13,7 @@ References in `pom.xml` of microservices.
 ```xml
 <dependency>
     <groupId>io.choerodon</groupId>
-    <artifactId>choerodon-starter-hitoa</artifactId>
+    <artifactId>choerodon-starter-metric</artifactId>
      <version>0.10.1.RELEASE</version>
 </dependency>
 ```
@@ -24,7 +24,7 @@ To start up the monitoring of prometheus.
 
 ```shell
 git clone https://github.com/choerodon/choerodon-starters.git
-cd choerodon-starter-hitoa
+cd choerodon-starter-metric
 ```
 ## Installation and Getting Started
 
@@ -40,12 +40,12 @@ Microservices can be monitored after being referenced.
 
 - ``io.micrometer 1.0.2``
 
-## Disable Hitoa
+## Disable Metric
 
 If you don't want this function, you can disable this by set following properties:
 
 ```yaml
-hitoa:
+metric:
   enabled: false
 management:
   metrics:
@@ -70,7 +70,7 @@ And the endpoint `/premetheus`won't be found any more and the beans will not be 
 If you want to set just one property to disable it, maybe you should just copy those above to your application and make them read the property from a certain system environment variable like this:
 
 ```yaml
-hitoa:
+metric:
   enabled: ${enabled:true}
 management:
   metrics:
@@ -90,7 +90,7 @@ management:
         enabled: ${enabled:true}
 ```
 
-And the property `hitoa.enabled` is to disable Hitoa configuration and the others are to disable the beans
+And the property `metric.enabled` is to disable Metric configuration and the others are to disable the beans
 
 and configurations from the dependency `micrometer-spring-legacy`.
 

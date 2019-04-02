@@ -15,7 +15,7 @@
  * License along with this file.  If not, see
  * <a href="http://www.gnu.org/licenses">GNU Licenses</a>.
  */
-package io.choerodon.hitoa.thread;
+package io.choerodon.metric.thread;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
