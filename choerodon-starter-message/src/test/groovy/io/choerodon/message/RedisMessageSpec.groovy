@@ -29,15 +29,32 @@ class RedisMessageSpec extends Specification {
     @Autowired
     JedisConnectionFactory connectionFactory;
 
+    private int messageNumber
+    private int topicNumber
+
     @Bean(value = "v2redisConnectionFactory")
     JedisConnectionFactory v2redisConnectionFactory(){
+        messageNumber = 1
+        topicNumber = 1
         JedisConnection connection = GroovyMock(JedisConnection){
-            DefaultMessage message = new DefaultMessage("test:topic" as byte[], "test" as byte[])
-            bLPop(*_) >>> [Arrays.asList("test:queue" as byte[], "test" as byte[]),
-                           Arrays.asList("test:queue" as byte[], "test" as byte[]),
-                           Arrays.asList("test:queue" as byte[], "test" as byte[]), null]
+            DefaultMessage message = new DefaultMessage("HAP.test.topic" as byte[], "test" as byte[])
+            bLPop(*_) >> {
+                int timeout, byte[]... keys ->
+                    if (new String(keys[0]).equals("test.queue") && messageNumber > 0){
+                        messageNumber--
+                        return Arrays.asList(keys[0], "test" as byte[])
+                    } else {
+                        return null
+                    }
+            }
             pSubscribe(*_) >> {
-                MessageListener listener, byte[]... patterns -> listener.onMessage(message, patterns[0])
+                MessageListener listener, byte[]... patterns ->
+                    for (byte[] pat : patterns){
+                        if(new String(pat).equals("HAP.test.topic") && topicNumber > 0){
+                            topicNumber--
+                            listener.onMessage(message, pat)
+                        }
+                    }
             }
             getClientName(*_) >> "test client"
         }
@@ -66,12 +83,13 @@ class RedisMessageSpec extends Specification {
     def "Redis Message Publisher" () {
         when:
         synchronized (messagePublisher) {
-            messagePublisher.message("test:queue", "test")
-            messagePublisher.publish("test:topic", "test")
+            messagePublisher.message("test.queue", "test")
+            messagePublisher.publish("test.topic", "test")
             messagePublisher.wait(100)
         }
         then:
+        monitor.queueCount == 1
         monitor.topicCount == 1
-        monitor.queueCount >= 1
+
     }
 }

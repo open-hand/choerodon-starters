@@ -5,6 +5,7 @@
 package io.choerodon.message.impl.redis;
 
 import io.choerodon.message.annotation.TopicMonitor;
+import io.choerodon.message.impl.ChannelAndQueuePrefix;
 import io.choerodon.message.impl.MethodReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,6 @@ import java.util.Map;
  * @author shengyang.zhou@hand-china.com
  */
 public class TopicListenerContainer extends RedisMessageListenerContainer implements InitializingBean {
-    private static String CHANNEL_PREFIX;
     private Logger logger = LoggerFactory.getLogger(TopicListenerContainer.class);
 
     @Autowired
@@ -65,7 +65,7 @@ public class TopicListenerContainer extends RedisMessageListenerContainer implem
             List<Topic> topics = new ArrayList<>();
             for (String t : tm.channel()) {
                 //添加前缀
-                t = addPrefix(t);
+                t = ChannelAndQueuePrefix.addPrefix(t);
                 Topic topic = new PatternTopic(t);
                 topics.add(topic);
             }
@@ -97,7 +97,7 @@ public class TopicListenerContainer extends RedisMessageListenerContainer implem
                 Object obj = redisSerializer.deserialize(message.getBody());
                 String p = new String(pattern, "UTF-8");
                 //去掉前缀
-                p = removePrefix(p);
+                p = ChannelAndQueuePrefix.removePrefix(p);
                 method.invoke(target, obj, p);
             } catch (Exception e) {
                 Throwable thr = e;
@@ -109,24 +109,5 @@ public class TopicListenerContainer extends RedisMessageListenerContainer implem
                 }
             }
         }
-    }
-
-    private static String removePrefix(String str){
-        if(!StringUtils.isEmpty(CHANNEL_PREFIX)){
-            return str.replaceFirst(CHANNEL_PREFIX+".","");
-        }
-        return str;
-    }
-
-    @Value("${redis.topic.channel.prefix:}")
-    public void setChannelPrefix(String prefix){
-        CHANNEL_PREFIX = prefix;
-    }
-
-    public static String addPrefix(String str){
-        if(!StringUtils.isEmpty(CHANNEL_PREFIX)){
-            return CHANNEL_PREFIX +"."+ str;
-        }
-        return str;
     }
 }
