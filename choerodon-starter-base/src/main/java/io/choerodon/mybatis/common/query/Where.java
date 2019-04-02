@@ -18,8 +18,7 @@ public @interface Where {
 
     /**
      * don't use this field as where.
-     * <p>
-     * default false
+     * @return default false
      */
     boolean exclude() default false;
 }
