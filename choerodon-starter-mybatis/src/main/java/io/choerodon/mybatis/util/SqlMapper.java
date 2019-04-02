@@ -40,7 +40,7 @@ public class SqlMapper {
      *
      * @param list List结果
      * @param <T>  泛型类型
-     * @return
+     * @return 获取的数据
      */
     private <T> T getOne(List<T> list) {
         if (list.size() == 1) {
@@ -56,7 +56,7 @@ public class SqlMapper {
      * 查询返回一个结果，多个结果时抛出异常
      *
      * @param sql 执行的sql
-     * @return
+     * @return 结果
      */
     public Map<String, Object> selectOne(String sql) {
         List<Map<String, Object>> list = selectList(sql);
@@ -68,7 +68,7 @@ public class SqlMapper {
      *
      * @param sql   执行的sql
      * @param value 参数
-     * @return
+     * @return 结果
      */
     public Map<String, Object> selectOne(String sql, Object value) {
         List<Map<String, Object>> list = selectList(sql, value);
@@ -81,7 +81,7 @@ public class SqlMapper {
      * @param sql        执行的sql
      * @param resultType 返回的结果类型
      * @param <T>        泛型类型
-     * @return
+     * @return 结果
      */
     public <T> T selectOne(String sql, Class<T> resultType) {
         List<T> list = selectList(sql, resultType);
@@ -95,7 +95,7 @@ public class SqlMapper {
      * @param value      参数
      * @param resultType 返回的结果类型
      * @param <T>        泛型类型
-     * @return
+     * @return 结果
      */
     public <T> T selectOne(String sql, Object value, Class<T> resultType) {
         List<T> list = selectList(sql, value, resultType);
@@ -103,10 +103,10 @@ public class SqlMapper {
     }
 
     /**
-     * 查询返回List<Map<String, Object>>
+     * 查询返回 {@code List<Map<String, Object>>}
      *
      * @param sql 执行的sql
-     * @return
+     * @return 结果
      */
     public List<Map<String, Object>> selectList(String sql) {
         String msId = msUtils.select(sql);
@@ -114,7 +114,7 @@ public class SqlMapper {
     }
 
     /**
-     * 查询返回List<Map<String, Object>>
+     * 查询返回 {@code List<Map<String, Object>>}
      *
      * @param sql   执行的sql
      * @param value 参数
@@ -132,7 +132,7 @@ public class SqlMapper {
      * @param sql        执行的sql
      * @param resultType 返回的结果类型
      * @param <T>        泛型类型
-     * @return
+     * @return 结果
      */
     public <T> List<T> selectList(String sql, Class<T> resultType) {
         String msId;
@@ -151,7 +151,7 @@ public class SqlMapper {
      * @param value      参数
      * @param resultType 返回的结果类型
      * @param <T>        泛型类型
-     * @return
+     * @return 结果
      */
     public <T> List<T> selectList(String sql, Object value, Class<T> resultType) {
         String msId;
@@ -168,7 +168,7 @@ public class SqlMapper {
      * 插入数据
      *
      * @param sql 执行的sql
-     * @return
+     * @return 影响数据行数
      */
     public int insert(String sql) {
         String msId = msUtils.insert(sql);
@@ -180,7 +180,7 @@ public class SqlMapper {
      *
      * @param sql   执行的sql
      * @param value 参数
-     * @return
+     * @return 影响数据行数
      */
     public int insert(String sql, Object value) {
         Class<?> parameterType = value != null ? value.getClass() : null;
@@ -192,7 +192,7 @@ public class SqlMapper {
      * 更新数据
      *
      * @param sql 执行的sql
-     * @return
+     * @return 影响数据行数
      */
     public int update(String sql) {
         String msId = msUtils.update(sql);
@@ -204,7 +204,7 @@ public class SqlMapper {
      *
      * @param sql   执行的sql
      * @param value 参数
-     * @return
+     * @return 影响数据行数
      */
     public int update(String sql, Object value) {
         Class<?> parameterType = value != null ? value.getClass() : null;
@@ -216,7 +216,7 @@ public class SqlMapper {
      * 删除数据
      *
      * @param sql 执行的sql
-     * @return
+     * @return 影响数据行数
      */
     public int delete(String sql) {
         String msId = msUtils.delete(sql);
@@ -228,7 +228,7 @@ public class SqlMapper {
      *
      * @param sql   执行的sql
      * @param value 参数
-     * @return
+     * @return 影响数据行数
      */
     public int delete(String sql, Object value) {
         Class<?> parameterType = value != null ? value.getClass() : null;
@@ -249,8 +249,8 @@ public class SqlMapper {
          * 创建MSID
          *
          * @param sql 执行的sql
-         * @param sql 执行的sqlCommandType
-         * @return
+         * @param sqlCommandType 执行的sqlCommandType
+         * @return MappedStatement ID
          */
         private String newMsId(String sql, SqlCommandType sqlCommandType) {
             StringBuilder msIdBuilder = new StringBuilder(sqlCommandType.toString());
@@ -261,8 +261,8 @@ public class SqlMapper {
         /**
          * 是否已经存在该ID
          *
-         * @param msId
-         * @return
+         * @param msId MsID
+         * @return 是否已经存在该ID
          */
         private boolean hasMappedStatement(String msId) {
             return configuration.hasStatement(msId, false);
@@ -271,7 +271,7 @@ public class SqlMapper {
         /**
          * 创建一个查询的MS
          *
-         * @param msId
+         * @param msId MappedStatement ID
          * @param sqlSource  执行的sqlSource
          * @param resultType 返回的结果类型
          */
@@ -290,7 +290,7 @@ public class SqlMapper {
         /**
          * 创建一个简单的MS
          *
-         * @param msId
+         * @param msId MappedStatement ID
          * @param sqlSource      执行的sqlSource
          * @param sqlCommandType 执行的sqlCommandType
          */
