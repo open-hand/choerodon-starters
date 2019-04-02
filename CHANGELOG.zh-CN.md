@@ -123,7 +123,7 @@
 
 ### 移除
 
-- 移除`choerodon-starter-hitoa`,`choerodon-starter-oauth-resource`的`cglib`依赖
+- 移除`choerodon-starter-metric`,`choerodon-starter-oauth-resource`的`cglib`依赖
 - 移除模块`choerodon-starter-bus`
 - 移除模块`choerodon-starter-config-monitor`
 

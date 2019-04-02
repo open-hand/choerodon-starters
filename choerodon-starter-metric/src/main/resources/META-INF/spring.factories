@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.choerodon.hitoa.HitoaAutoConfiguration
+io.choerodon.metric.MetricAutoConfiguration

@@ -1,6 +1,5 @@
-package io.choerodon.hitoa;
+package io.choerodon.metric;
 
-import io.choerodon.hitoa.metrics.ThreadMetrics;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
@@ -17,11 +16,11 @@ import org.springframework.context.annotation.Configuration;
  */
 
 @ConditionalOnProperty(
-        value = {"hitoa.enabled"},
+        value = {"metric.enabled"},
         matchIfMissing = true
 )
 @Configuration
-public class HitoaAutoConfiguration {
+public class MetricAutoConfiguration {
 
     @Bean
     public ClassLoaderMetrics classLoaderMetrics() {
