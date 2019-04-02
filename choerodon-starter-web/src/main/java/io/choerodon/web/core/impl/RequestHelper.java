@@ -33,7 +33,7 @@ public final class RequestHelper {
      * @param requestListener requestListener
      */
 
-    public void setRequestListener(IRequestListener requestListener) {
+    public static void setRequestListener(IRequestListener requestListener) {
         RequestHelper.requestListener = requestListener;
     }
 
