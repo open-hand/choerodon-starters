@@ -1,7 +1,7 @@
-package io.choerodon.hitoa.metrics;
+package io.choerodon.metric;
 
-import io.choerodon.hitoa.thread.ThreadStateBean;
-import io.choerodon.hitoa.thread.ThreadStateBeanImpl;
+import static java.util.Collections.emptyList;
+
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -9,7 +9,8 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.lang.NonNullApi;
 import io.micrometer.core.lang.NonNullFields;
 
-import static java.util.Collections.emptyList;
+import io.choerodon.metric.thread.ThreadStateBean;
+import io.choerodon.metric.thread.ThreadStateBeanImpl;
 
 @NonNullApi
 @NonNullFields

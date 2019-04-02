@@ -7,9 +7,9 @@
         <artifactId>choerodon-starter-parent</artifactId>
         <version>0.10.1.RELEASE</version>
     </parent>
-    <artifactId>choerodon-starter-hitoa</artifactId>
+    <artifactId>choerodon-starter-metric</artifactId>
 
-    <name>choerodon-starter-hitoa</name>
+    <name>choerodon-starter-metric</name>
 
     <properties>
         <io.micrometer.version>1.0.6</io.micrometer.version>

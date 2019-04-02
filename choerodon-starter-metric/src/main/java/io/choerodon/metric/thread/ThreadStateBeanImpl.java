@@ -1,4 +1,4 @@
-package io.choerodon.hitoa.thread;
+package io.choerodon.metric.thread;
 
 public class ThreadStateBeanImpl implements ThreadStateBean {
 
