@@ -6,8 +6,8 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 
 @Component
-@TopicMonitor(channel = "test:topic")
-@QueueMonitor(queue = "test:queue")
+@TopicMonitor(channel = "test.topic")
+@QueueMonitor(queue = "test.queue")
 public class TestMonitor implements IQueueMessageListener<String>, ITopicMessageListener<String> {
     public int topicCount = 0;
     public int queueCount = 0;

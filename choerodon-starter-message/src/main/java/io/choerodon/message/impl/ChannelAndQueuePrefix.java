@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 /**
  * @author xiangyu.qi@hand-china.com on 2017/9/25.
  */
-@Component
 public class ChannelAndQueuePrefix {
 
     private static String CHANNEL_PREFIX;
@@ -25,8 +24,7 @@ public class ChannelAndQueuePrefix {
         return str;
     }
 
-    @Value("${redis.topic.channel.prefix:}")
-    public void setChannelPrefix(String prefix){
+    public static void setChannelPrefix(String prefix){
         CHANNEL_PREFIX = prefix;
     }
 
