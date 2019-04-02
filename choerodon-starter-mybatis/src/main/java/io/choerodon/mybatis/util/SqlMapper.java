@@ -242,7 +242,7 @@ public class SqlMapper {
 
         private MSUtils(Configuration configuration) {
             this.configuration = configuration;
-            languageDriver = configuration.getDefaultScriptingLanuageInstance();
+            languageDriver = configuration.getDefaultScriptingLanguageInstance();
         }
 
         /**
@@ -276,12 +276,10 @@ public class SqlMapper {
          * @param resultType 返回的结果类型
          */
         private void newSelectMappedStatement(String msId, SqlSource sqlSource, final Class<?> resultType) {
+            List<ResultMap> resultMaps = new ArrayList<>();
+            resultMaps.add(new ResultMap.Builder(configuration, "defaultResultMap", resultType, new ArrayList<ResultMapping>(0)).build());
             MappedStatement ms = new MappedStatement.Builder(configuration, msId, sqlSource, SqlCommandType.SELECT)
-                    .resultMaps(new ArrayList<ResultMap>() {
-                        {
-                            add(new ResultMap.Builder(configuration, "defaultResultMap", resultType, new ArrayList<ResultMapping>(0)).build());
-                        }
-                    })
+                    .resultMaps(resultMaps)
                     .build();
             //缓存
             configuration.addMappedStatement(ms);
@@ -295,12 +293,10 @@ public class SqlMapper {
          * @param sqlCommandType 执行的sqlCommandType
          */
         private void newUpdateMappedStatement(String msId, SqlSource sqlSource, SqlCommandType sqlCommandType) {
+            List<ResultMap> resultMaps = new ArrayList<>();
+            resultMaps.add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0)).build());
             MappedStatement ms = new MappedStatement.Builder(configuration, msId, sqlSource, sqlCommandType)
-                    .resultMaps(new ArrayList<ResultMap>() {
-                        {
-                            add(new ResultMap.Builder(configuration, "defaultResultMap", int.class, new ArrayList<ResultMapping>(0)).build());
-                        }
-                    })
+                    .resultMaps(resultMaps)
                     .build();
             //缓存
             configuration.addMappedStatement(ms);
