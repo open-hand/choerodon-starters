@@ -1,5 +1,6 @@
-package io.choerodon.hitoa.metrics
+package io.choerodon.metirc
 
+import io.choerodon.metric.ThreadMetrics
 import io.micrometer.core.instrument.MeterRegistry
 import spock.lang.Specification
 
