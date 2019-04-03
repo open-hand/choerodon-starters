@@ -1,7 +1,10 @@
 package io.choerodon.web.core.impl;
 
+import io.choerodon.base.helper.ApplicationContextHelper;
 import io.choerodon.web.core.IRequest;
 import io.choerodon.web.core.IRequestListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -19,6 +22,8 @@ import java.util.Map;
  * @author shengyang.zhou@hand-china.com
  */
 public final class RequestHelper {
+    private static final Logger logger = LoggerFactory.getLogger(RequestHelper.class);
+
     private static ThreadLocal<IRequest> localRequestContext = new ThreadLocal<>();
 
     private static IRequestListener requestListener = new DefaultRequestListener();
@@ -87,30 +92,36 @@ public final class RequestHelper {
     public static IRequest createServiceRequest(HttpServletRequest httpServletRequest) {
         IRequest requestContext = requestListener.newInstance();
         HttpSession session = httpServletRequest.getSession(false);
-        if (session != null) {
-            if (session.getAttribute(IRequest.FIELD_USER_ID) != null) {
-                requestContext.setUserId((Long) session.getAttribute(IRequest.FIELD_USER_ID));
-            }
-            if (session.getAttribute(IRequest.FIELD_ROLE_ID) != null) {
-                requestContext.setRoleId((Long) session.getAttribute(IRequest.FIELD_ROLE_ID));
-            }
-            if (session.getAttribute(IRequest.FIELD_USER_NAME) != null) {
-                requestContext.setUserName((String) session.getAttribute(IRequest.FIELD_USER_NAME));
-            }
-            if (session.getAttribute(IRequest.FIELD_COMPANY_ID) != null) {
-                requestContext.setCompanyId((Long) session.getAttribute(IRequest.FIELD_COMPANY_ID));
-            }
-            Object roleIds = session.getAttribute(IRequest.FIELD_ALL_ROLE_ID);
-            if (roleIds instanceof Long[]) {
-                requestContext.setAllRoleId((Long[]) roleIds);
-            }
-            requestContext.setEmployeeCode((String) session.getAttribute(IRequest.FIELD_EMPLOYEE_CODE));
-            Locale locale = getLocale(httpServletRequest);
-            if (locale != null) {
-                requestContext.setLocale(locale.toString());
-            }
-        } else {
-            //todo 设置oauth2 token信息 因为目前需要引入oauth2依赖 暂时先注释 看后面有没有更好的实现方式
+        try {
+            ApplicationContextHelper.getApplicationContext().getBean("noSecurityConfig");
+            logger.debug("Using default security config!");
+            getDefaultSecurity(requestContext);
+        } catch (Exception e) {
+            logger.debug("Using custom security config!");
+            if (session != null) {
+                if (session.getAttribute(IRequest.FIELD_USER_ID) != null) {
+                    requestContext.setUserId((Long) session.getAttribute(IRequest.FIELD_USER_ID));
+                }
+                if (session.getAttribute(IRequest.FIELD_ROLE_ID) != null) {
+                    requestContext.setRoleId((Long) session.getAttribute(IRequest.FIELD_ROLE_ID));
+                }
+                if (session.getAttribute(IRequest.FIELD_USER_NAME) != null) {
+                    requestContext.setUserName((String) session.getAttribute(IRequest.FIELD_USER_NAME));
+                }
+                if (session.getAttribute(IRequest.FIELD_COMPANY_ID) != null) {
+                    requestContext.setCompanyId((Long) session.getAttribute(IRequest.FIELD_COMPANY_ID));
+                }
+                Object roleIds = session.getAttribute(IRequest.FIELD_ALL_ROLE_ID);
+                if (roleIds instanceof Long[]) {
+                    requestContext.setAllRoleId((Long[]) roleIds);
+                }
+                requestContext.setEmployeeCode((String) session.getAttribute(IRequest.FIELD_EMPLOYEE_CODE));
+                Locale locale = getLocale(httpServletRequest);
+                if (locale != null) {
+                    requestContext.setLocale(locale.toString());
+                }
+            } else {
+                //todo 设置oauth2 token信息 因为目前需要引入oauth2依赖 暂时先注释 看后面有没有更好的实现方式
            /* Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication instanceof OAuth2Authentication) {
                 OAuth2Authentication oauth2Authentication = (OAuth2Authentication) authentication;
@@ -144,6 +155,7 @@ public final class RequestHelper {
                     }
                 }
             }*/
+            }
         }
         Map<String, String> mdcMap = MDC.getCopyOfContextMap();
         if (mdcMap != null) {
@@ -151,6 +163,18 @@ public final class RequestHelper {
         }
         requestListener.afterInitialize(httpServletRequest, requestContext);
         return requestContext;
+    }
+
+    /**
+     * 配置默认安全.
+     */
+    private static void getDefaultSecurity(IRequest requestContext) {
+        requestContext.setUserId(10001L);
+        requestContext.setRoleId(10001L);
+        requestContext.setUserName("admin");
+        requestContext.setAllRoleId(new Long[]{10001L});
+        requestContext.setEmployeeCode("ADMIN");
+        requestContext.setLocale("zh_CN");
     }
 
     /**
