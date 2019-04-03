@@ -11,12 +11,14 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import tk.mybatis.spring.annotation.MapperScan;
 
 import javax.annotation.PostConstruct;
 
 @Configuration
 @ComponentScan
 @AutoConfigureAfter(MybatisAutoConfiguration.class)
+@MapperScan(basePackages = "io.choerodon.**.mapper")
 @PropertySource("classpath:default-choerodon-mybatis-config.properties")
 public class ChoerodonMybatisAutoConfiguration {
 
