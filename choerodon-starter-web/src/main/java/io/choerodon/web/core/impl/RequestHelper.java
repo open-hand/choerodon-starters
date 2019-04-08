@@ -1,6 +1,7 @@
 package io.choerodon.web.core.impl;
 
 import io.choerodon.base.helper.ApplicationContextHelper;
+import io.choerodon.web.NoSecurityConfig;
 import io.choerodon.web.core.IRequest;
 import io.choerodon.web.core.IRequestListener;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -169,12 +172,19 @@ public final class RequestHelper {
      * 配置默认安全.
      */
     private static void getDefaultSecurity(IRequest requestContext) {
-        requestContext.setUserId(10001L);
-        requestContext.setRoleId(10001L);
-        requestContext.setUserName("admin");
-        requestContext.setAllRoleId(new Long[]{10001L});
-        requestContext.setEmployeeCode("ADMIN");
-        requestContext.setLocale("zh_CN");
+        requestContext.setUserId(NoSecurityConfig.userId);
+        requestContext.setUserName(NoSecurityConfig.userName);
+        requestContext.setRoleId(NoSecurityConfig.roleId);
+        if (NoSecurityConfig.allRoleId != null && NoSecurityConfig.allRoleId.length > 0) {
+            List<Long> roleIds = new ArrayList<>();
+            for (String roleId : NoSecurityConfig.allRoleId) {
+                roleIds.add(Long.parseLong(roleId));
+            }
+            requestContext.setAllRoleId(roleIds.toArray(new Long[roleIds.size()]));
+        }
+        requestContext.setEmployeeCode(NoSecurityConfig.employeeCode);
+        requestContext.setCompanyId(NoSecurityConfig.companyId);
+        requestContext.setLocale(NoSecurityConfig.locale);
     }
 
     /**
