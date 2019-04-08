@@ -25,8 +25,4 @@ eureka:
     enabled: false
 management:
   port: 0 #设置管理端口为随机端口
-mybatis:
-  mapperLocations: src/test/resources/*.xml
-  configuration:
-    mapUnderscoreToCamelCase: true
 db.type: mysql
