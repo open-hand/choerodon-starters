@@ -1,5 +1,6 @@
 package io.choerodon.mybatis;
 
+import io.choerodon.mybatis.autoconfigure.MapperOverrideProperties;
 import io.choerodon.mybatis.common.CustomProvider;
 import io.choerodon.mybatis.util.OGNL;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
@@ -7,17 +8,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
+import tk.mybatis.mapper.autoconfigure.MybatisProperties;
 import tk.mybatis.spring.annotation.MapperScan;
 
 import javax.annotation.PostConstruct;
 
 @Configuration
 @ComponentScan
-@AutoConfigureAfter(MybatisAutoConfiguration.class)
+@AutoConfigureBefore(MybatisAutoConfiguration.class)
 @MapperScan(basePackages = "io.choerodon.**.mapper")
 @PropertySource("classpath:default-choerodon-mybatis-config.properties")
 public class ChoerodonMybatisAutoConfiguration {
@@ -25,7 +29,7 @@ public class ChoerodonMybatisAutoConfiguration {
     @Value("${db.type}")
     private String dbType;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisAutoConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonMybatisAutoConfiguration.class);
 
     @Autowired(required = false)
     private CustomProvider customProvider;
@@ -38,4 +42,12 @@ public class ChoerodonMybatisAutoConfiguration {
             OGNL.customProvider = customProvider;
         }
     }
+
+    @Bean
+    @Primary
+    public MybatisProperties mybatisProperties(){
+        return new MapperOverrideProperties();
+    }
+
+
 }
