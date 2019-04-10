@@ -16,6 +16,7 @@ java -Dspring.datasource.url="jdbc:mysql://localhost:3306/iam_service?useUnicode
  -Dspring.datasource.password=root \
  -Ddata.drop=false -Ddata.init=true \
  -Ddata.dir=src/main/resources \
+ -Ddata.update.exclusion=oauth_ldap,iam_user.hash_password
  -jar target/choerodon-tool-liquibase.jar
 
 ```
@@ -25,6 +26,7 @@ java -Dspring.datasource.url="jdbc:mysql://localhost:3306/iam_service?useUnicode
 - `-Ddata.drop=false`：是否清除数据库数据
 - `-Ddata.init`：是否使用excel数据进行数据初始化
 - `-Ddata.dir`：groovy和excel所在的文件夹，扫描指定文件夹下的所有`.groovy`和`.xlsx`文件
+- `-Ddata.update.exclusion`：初始化数据库更新数据的时候忽略的表或列，忽略表直接写表名，表名.列名 表示忽略某一列，使用都好分割
 
 ## groovy建表
 
@@ -109,10 +111,3 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_label.groovy') {
 
 * 引用： 如上图H8`=TEST_DATE!E8`即为引用，一般用于插入数据，自动生成id的方式引用id，`=TEST_DATE`为sheet页名
 * 多语言： 多语言表的多语言字段，使用`:`分割，左侧为列名，右侧为语言代码，即可初始化多语言表（tableName+_tl）
-
-# starter版本和dbtools版本映射
-
-| starter version | dbtools version|
-|:-----:|:-----:|
-|0.9.0|0.6.1|
-|0.9.2|0.6.2|
