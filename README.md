@@ -32,3 +32,11 @@ If you find any shortcomings or bugs, please describe them in the [Issue](https:
     
 ## How to Contribute
 Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
+
+## Starter and dbtool version mapping
+| starter version | dbtools version|
+|:-----:|:-----:|
+|0.9.0|0.6.1|
+|0.9.2|0.6.2|
+|0.10.1|0.6.3
+
