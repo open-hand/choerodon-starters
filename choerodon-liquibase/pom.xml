@@ -28,8 +28,8 @@
         </dependency>
         <dependency>
             <artifactId>choerodon-maven-plugin-api</artifactId>
-            <groupId>io.choerodon.plugin</groupId>
-            <version>0.10.1.RELEASE</version>
+            <groupId>io.choerodon</groupId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
