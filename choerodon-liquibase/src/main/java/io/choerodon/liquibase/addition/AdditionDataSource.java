@@ -14,10 +14,13 @@ import java.util.Set;
  * @author dongfan117@gmail.com
  */
 public class AdditionDataSource {
+    private String name;
     private String url;
     private String username;
     private String password;
     private String dir;
+    private String jar;
+    private boolean onlyIam;
     private boolean drop;
     private DataSource dataSource;
     private LiquibaseHelper liquibaseHelper;
@@ -57,6 +60,30 @@ public class AdditionDataSource {
         if (tables != null){
             tables.forEach(t -> tablesMap.put(t, this));
         }
+    }
+
+    public String getJar() {
+        return jar;
+    }
+
+    public void setJar(String jar) {
+        this.jar = jar;
+    }
+
+    public boolean isOnlyIam() {
+        return onlyIam;
+    }
+
+    public void setOnlyIam(boolean onlyIam) {
+        this.onlyIam = onlyIam;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public static Map<String, AdditionDataSource> getTablesMap() {
