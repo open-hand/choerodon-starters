@@ -2,6 +2,7 @@ package io.choerodon.plugin.maven;
 
 import java.io.*;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -25,7 +26,6 @@ public class ExtractMojo extends AbstractMojo {
     static final String CHOERODON_FOLDER_IN_JAR = "CHOERODON-META";
     static final String FORWARD_SLASH = "/";
     private static final String BACK_SLASH = "\\";
-
     @Inject
     private MavenProject mavenProject;
 
@@ -72,14 +72,11 @@ public class ExtractMojo extends AbstractMojo {
             getLog().info("Extract: " + jarFile.getName());
             while (jarEntries.hasMoreElements()) {
                 JarEntry jarEntry = jarEntries.nextElement();
-                if (!jarEntry.isDirectory()) {
-                    String resourcePath = jarEntry.getName();
-                    //if the file is under react source folder
-                    if (resourcePath.startsWith(CHOERODON_FOLDER_IN_JAR)) {
-                        //copy react source file to common folder
-                        copyResourceToCommonFolder(resourcePath.replace(CHOERODON_FOLDER_IN_JAR, ""),
-                                baseSaveFolderPath, jarFile.getInputStream(jarEntry));
-                    }
+                String resourcePath = jarEntry.getName();
+                if (!jarEntry.isDirectory() &&
+                        (resourcePath.startsWith(CHOERODON_FOLDER_IN_JAR + "/package.json")
+                        ||resourcePath.startsWith(CHOERODON_FOLDER_IN_JAR + "/react"))) {
+                    copyResourceToCommonFolder(resourcePath.replace(CHOERODON_FOLDER_IN_JAR, ""), baseSaveFolderPath, jarFile.getInputStream(jarEntry));
                 }
             }
         }
