@@ -44,10 +44,7 @@ class LiquibaseExecutorSpec extends Specification {
     def "Execute initialization in jar file"() {
         given: "准备上下文"
         // 设置 jar 包位置
-        Field jar = liquibaseExecutor.getClass().getDeclaredField("jar")
-        jar.setAccessible(true)
-        jar.set(liquibaseExecutor, liquibaseExecutor.class.getClassLoader().getResource("resource-jar.jar").getFile())
-
+        liquibaseExecutor.defaultJar = liquibaseExecutor.class.getClassLoader().getResource("resource-jar.jar").getFile()
         // 设置jar包中的搜索路径
         Field dir = liquibaseExecutor.getClass().getDeclaredField("defaultDir")
         dir.setAccessible(true)

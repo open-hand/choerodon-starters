@@ -26,7 +26,11 @@
             <artifactId>liquibase-groovy-dsl</artifactId>
             <version>1.2.2</version>
         </dependency>
-
+        <dependency>
+            <artifactId>choerodon-maven-plugin-api</artifactId>
+            <groupId>io.choerodon.plugin</groupId>
+            <version>0.10.1.RELEASE</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>

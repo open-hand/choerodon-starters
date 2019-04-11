@@ -76,4 +76,11 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_permission.groovy') {
         }
     }
 
+    changeSet(author: 'xausky@163.com', id: '2019-04-11-iam-reform') {
+        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "SERVICE_CODE", oldColumnName: "SERVICE_NAME", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
+        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "IS_PUBLIC_ACCESS", oldColumnName: "PUBLIC_ACCESS", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
+        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "IS_LOGIN_ACCESS", oldColumnName: "LOGIN_ACCESS", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
+        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "RESOURCE_LEVEL", oldColumnName: "FD_LEVEL", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
+    }
+
 }

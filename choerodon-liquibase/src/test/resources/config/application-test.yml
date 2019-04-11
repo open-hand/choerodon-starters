@@ -14,6 +14,15 @@ data:
   init: false
   update:
     exclusion: FD_ORGANIZATION.NAME,FD_ORGANIZATION,IAM_LABEL.TYPE,IAM_LABEL.FD_LEVEL
+addition:
+  datasource:
+    names: permission
+    permission:
+      password: sa
+      url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
+      username: sa
+      onlyIam: true
+      dir: src/test/resources
 logging:
   level:
     io.choerodon.liquibase: debug
