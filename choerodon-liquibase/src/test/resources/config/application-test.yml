@@ -21,7 +21,7 @@ addition:
       password: sa
       url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
       username: sa
-      onlyIam: true
+      mode: iam
       dir: src/test/resources
 logging:
   level:

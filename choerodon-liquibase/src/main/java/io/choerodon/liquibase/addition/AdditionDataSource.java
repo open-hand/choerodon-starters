@@ -20,7 +20,7 @@ public class AdditionDataSource {
     private String password;
     private String dir;
     private String jar;
-    private boolean onlyIam;
+    private String mode;
     private boolean drop;
     private DataSource dataSource;
     private LiquibaseHelper liquibaseHelper;
@@ -70,14 +70,6 @@ public class AdditionDataSource {
         this.jar = jar;
     }
 
-    public boolean isOnlyIam() {
-        return onlyIam;
-    }
-
-    public void setOnlyIam(boolean onlyIam) {
-        this.onlyIam = onlyIam;
-    }
-
     public String getName() {
         return name;
     }
@@ -88,6 +80,21 @@ public class AdditionDataSource {
 
     public static Map<String, AdditionDataSource> getTablesMap() {
         return tablesMap;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    /**
+     * 数据初始化模式， iam, normal, all
+     * iam 只初始化IAM相关数据
+     * normal 只初始化 groovy， excel 数据
+     * all 都初始化
+     * @param mode 模式
+     */
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
     public String getUrl() {
