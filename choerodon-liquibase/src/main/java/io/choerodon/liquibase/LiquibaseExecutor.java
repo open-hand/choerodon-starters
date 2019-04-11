@@ -56,10 +56,12 @@ public class LiquibaseExecutor {
     private String defaultDir;
     @Value("${data.jar:#{null}}")
     private String defaultJar;
+    @Value("${data.mode:normal}")
+    private String defaultMode;
     @Value("${data.drop:false}")
     private boolean defaultDrop;
-    @Value("${data.onlyIam:false}")
-    private boolean defaultOnlyIam;
+    @Value("${data.normal:true}")
+    private boolean defaultNormal;
 
     @Value("${data.update.exclusion:#{null}}")
     private String updateExclusion;
@@ -147,7 +149,7 @@ public class LiquibaseExecutor {
         List<AdditionDataSource> additionDataSources = new ArrayList<>();
         AdditionDataSource defaultAddition = new AdditionDataSource(this.dsUrl, this.dsUserName, this.dsPassword, this.defaultDir, this.defaultDrop, this.defaultDataSource);
         defaultAddition.setJar(defaultJar);
-        defaultAddition.setOnlyIam(defaultOnlyIam);
+        defaultAddition.setMode(defaultMode);
         defaultAddition.setName("default");
         additionDataSources.add(defaultAddition);
         if (additionDataSourceNameProfile != null) {
@@ -158,7 +160,7 @@ public class LiquibaseExecutor {
                 String password = profileMap.getAdditionValue(dataSourceName + ".password");
                 String dir = profileMap.getAdditionValue(dataSourceName + ".dir");
                 String jar = profileMap.getAdditionValue(dataSourceName + ".jar");
-                boolean onlyIam = Boolean.parseBoolean(profileMap.getAdditionValue(dataSourceName + ".onlyIam"));
+                String mode = profileMap.getAdditionValue(dataSourceName + ".mode");
                 boolean drop = Boolean.parseBoolean(profileMap.getAdditionValue(dataSourceName + ".drop"));
                 Set<String> tables = null;
                 if (profileMap.getAdditionValue(dataSourceName + ".tables") != null){
@@ -166,7 +168,7 @@ public class LiquibaseExecutor {
                 }
                 AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop, null, tables);
                 ads.setJar(jar);
-                ads.setOnlyIam(onlyIam);
+                ads.setMode("false".equals(mode)? "normal": mode);
                 ads.setName(dataSourceName);
                 additionDataSources.add(ads);
             }
@@ -253,7 +255,46 @@ public class LiquibaseExecutor {
         prepareGroovyParser(additionDataSource.getLiquibaseHelper());
         Map<String, Set<String>> updateExclusionMap = processExclusion();
         ResourceAccessor accessor = new CusFileSystemResourceAccessor(dir);
-        if (additionDataSource.isOnlyIam()){
+        if (additionDataSource.getMode().equals("all") || additionDataSource.getMode().equals("normal")){
+            Set<String> fileNameSet = accessor.list(null, File.separator, true, false, true);
+            List<String> nameList = new ArrayList<>(fileNameSet);
+            Collections.sort(nameList);
+
+            JdbcConnection jdbcConnection = new JdbcConnection(additionDataSource.getDataSource().getConnection());
+            if (additionDataSource.isDrop()) {
+                Liquibase liquibase = new Liquibase("drop", accessor, jdbcConnection);
+                liquibase.dropAll();
+            }
+            Liquibase liquibase = new Liquibase("clearCheckSums", accessor, jdbcConnection);
+            liquibase.clearCheckSums();
+
+            //执行groovy脚本
+            for (String file : nameList) {
+                if (file.endsWith(SUFFIX_GROOVY) && !file.endsWith(FINAL_SUFFIX_GROOVY)) {
+                    liquibase = new Liquibase(file, accessor, jdbcConnection);
+                    liquibase.update(new Contexts());
+                }
+            }
+
+            //初始化数据
+            for (String file : nameList) {
+                if (file.endsWith(SUFFIX_XLSX)) {
+                    ExcelDataLoader loader = new ExcelDataLoader();
+                    Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
+                    loader.setUpdateExclusionMap(updateExclusionMap);
+                    logger.info("begin to process excel : {}", file);
+                    loader.execute(inputStream.iterator().next(), additionDataSource);
+                }
+            }
+            //执行final groovy脚本
+            for (String file : nameList) {
+                if (file.endsWith(FINAL_SUFFIX_GROOVY)) {
+                    liquibase = new Liquibase(file, accessor, jdbcConnection);
+                    liquibase.update(new Contexts());
+                }
+            }
+        }
+        if (additionDataSource.getMode().equals("all") || additionDataSource.getMode().equals("iam")){
             Set<InputStream> permissionInputStreams = accessor.getResourcesAsStream(PERMISSION_FILE_PATH);
             if (permissionInputStreams == null || permissionInputStreams.isEmpty()){
                 logger.warn("Data source {} is onlyIam but permission file not found.", additionDataSource.getName());
@@ -277,43 +318,6 @@ public class LiquibaseExecutor {
             permissionLoader.setServiceCode(serviceCode);
             permissionLoader.execute(permissionInputStream, additionDataSource.getDataSource().getConnection());
             return;
-        }
-        Set<String> fileNameSet = accessor.list(null, File.separator, true, false, true);
-        List<String> nameList = new ArrayList<>(fileNameSet);
-        Collections.sort(nameList);
-
-        JdbcConnection jdbcConnection = new JdbcConnection(additionDataSource.getDataSource().getConnection());
-        if (additionDataSource.isDrop()) {
-            Liquibase liquibase = new Liquibase("drop", accessor, jdbcConnection);
-            liquibase.dropAll();
-        }
-        Liquibase liquibase = new Liquibase("clearCheckSums", accessor, jdbcConnection);
-        liquibase.clearCheckSums();
-
-        //执行groovy脚本
-        for (String file : nameList) {
-            if (file.endsWith(SUFFIX_GROOVY) && !file.endsWith(FINAL_SUFFIX_GROOVY)) {
-                liquibase = new Liquibase(file, accessor, jdbcConnection);
-                liquibase.update(new Contexts());
-            }
-        }
-
-        //初始化数据
-        for (String file : nameList) {
-            if (file.endsWith(SUFFIX_XLSX)) {
-                ExcelDataLoader loader = new ExcelDataLoader();
-                Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
-                loader.setUpdateExclusionMap(updateExclusionMap);
-                logger.info("begin to process excel : {}", file);
-                loader.execute(inputStream.iterator().next(), additionDataSource);
-            }
-        }
-        //执行final groovy脚本
-        for (String file : nameList) {
-            if (file.endsWith(FINAL_SUFFIX_GROOVY)) {
-                liquibase = new Liquibase(file, accessor, jdbcConnection);
-                liquibase.update(new Contexts());
-            }
         }
     }
 
