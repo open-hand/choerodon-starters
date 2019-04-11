@@ -71,14 +71,14 @@ class MybatisMapperSpec extends Specification {
         }
     }
 
-    def testInterceptor() {
+    def "Test Interceptor inject"() {
         when:
         Configuration configuration = sessionFactory.getConfiguration()
         then:
         configuration.getInterceptors().size() == 4
     }
 
-    def selectOneTest() {
+    def "Select One Test"() {
         when:
         Role role = new Role()
         role.roleId = 10001
@@ -87,7 +87,7 @@ class MybatisMapperSpec extends Specification {
         result.roleCode == "ADMIN"
         result.roleName == "管理员"
     }
-    def selectOneTLTest() {
+    def "Select One TL Test"() {
         when:
         RoleTL role = new RoleTL()
         role.roleId = 10001
@@ -97,7 +97,7 @@ class MybatisMapperSpec extends Specification {
         result.roleName == "ADMIN"
     }
 
-    def selectOptionsTest() {
+    def "Select Options Test"() {
         when:
         RoleTL role = new RoleTL()
         Criteria criteria = new Criteria(role)
@@ -110,7 +110,7 @@ class MybatisMapperSpec extends Specification {
         result.size() == 2
     }
 
-    def auditTest() {
+    def "Audit Test"() {
         when:
         RoleTL role = new RoleTL()
         role.roleId = 10001
@@ -129,7 +129,7 @@ class MybatisMapperSpec extends Specification {
         role.getCreationDate() != null
     }
 
-    def multiLanguageTest() {
+    def "Multi Language Test"() {
         when:
         RoleTL role = new RoleTL()
         role.setRoleCode("Test-" + System.currentTimeMillis())
@@ -141,5 +141,27 @@ class MybatisMapperSpec extends Specification {
         roleTLMapper.delete(role)
         then:
         noExceptionThrown()
+    }
+
+    def "Extension Attribute Test"() {
+        RoleTL role = new RoleTL()
+        role.roleId = 10001
+        when:
+        role.setAttribute1("Test")
+        roleTLMapper.updateByPrimaryKey(role)
+        RoleTL result = roleTLMapper.selectOne(role)
+        then:
+        result.getAttribute1() == "Test"
+    }
+
+    def "Extension Attribute Disable Test"() {
+        Role role = new Role()
+        role.roleId = 10001
+        when:
+        role.setAttribute1("Test")
+        roleMapper.updateByPrimaryKey(role)
+        Role result = roleMapper.selectOne(role)
+        then:
+        result.getAttribute1() == null
     }
 }

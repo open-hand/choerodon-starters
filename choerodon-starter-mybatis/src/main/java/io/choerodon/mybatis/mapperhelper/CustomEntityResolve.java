@@ -1,6 +1,6 @@
 package io.choerodon.mybatis.mapperhelper;
 
-import io.choerodon.mybatis.annotation.ExtensionAttribute;
+import io.choerodon.mybatis.annotation.EnableExtensionAttribute;
 import io.choerodon.mybatis.annotation.MultiLanguage;
 import io.choerodon.mybatis.annotation.MultiLanguageField;
 import io.choerodon.mybatis.common.query.JoinColumn;
@@ -94,8 +94,7 @@ public class CustomEntityResolve implements EntityResolve {
         } else {
             fields = FieldHelper.getFields(entityClass);
         }
-        ExtensionAttribute extensionAttribute = entityClass.getAnnotation(ExtensionAttribute.class);
-        boolean useExt = extensionAttribute == null || !extensionAttribute.disable();
+        boolean useExt = entityClass.isAnnotationPresent(EnableExtensionAttribute.class);
         for (EntityField field : fields) {
             //如果启用了简单类型，就做简单类型校验，如果不是简单类型，直接跳过
             //3.5.0 如果启用了枚举作为简单类型，就不会自动忽略枚举类型
