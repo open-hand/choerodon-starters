@@ -33,7 +33,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.choerodon.plugin</groupId>
+            <groupId>io.choerodon</groupId>
             <artifactId>choerodon-maven-plugin-api</artifactId>
             <version>${project.version}</version>
         </dependency>
