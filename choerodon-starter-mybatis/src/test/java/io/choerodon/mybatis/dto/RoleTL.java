@@ -1,5 +1,6 @@
 package io.choerodon.mybatis.dto;
 
+import io.choerodon.mybatis.annotation.EnableExtensionAttribute;
 import io.choerodon.mybatis.annotation.MultiLanguage;
 import io.choerodon.mybatis.annotation.MultiLanguageField;
 import io.choerodon.mybatis.common.query.Comparison;
@@ -22,6 +23,7 @@ import java.util.Date;
  */
 @MultiLanguage
 @Table(name = "sys_role_b")
+@EnableExtensionAttribute
 public class RoleTL extends BaseDTO {
 
     public static final String FIELD_ROLE_ID = "roleId";
