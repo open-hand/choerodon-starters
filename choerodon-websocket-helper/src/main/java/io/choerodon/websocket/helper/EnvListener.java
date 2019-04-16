@@ -1,6 +1,7 @@
 package io.choerodon.websocket.helper;
 
 import io.choerodon.websocket.security.AgentSecurityInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,6 @@ import java.util.Set;
 /**
  * @author crockitwood
  */
-@Component
 public class EnvListener {
     public static final String AGENT_SESSION = "cluster-sessions";
     private RedisTemplate<Object, Object> redisTemplate;

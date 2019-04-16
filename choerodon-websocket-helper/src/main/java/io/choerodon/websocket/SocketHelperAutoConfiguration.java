@@ -90,10 +90,10 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 		return new AgentCommandListener(simpleMsgListener);
 	}
 
-//	@Bean
-//    EnvListener envListener(RedisTemplate<Object,Object> redisTemplate){
-//	    return new EnvListener(redisTemplate);
-//    }
+	@Bean
+    EnvListener envListener(RedisTemplate<Object,Object> redisTemplate){
+	    return new EnvListener(redisTemplate);
+    }
 
 	@Bean
 	CommandSender commandSender(AgentCommandListener agentCommandListener){
