@@ -53,6 +53,8 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	SessionRepository sessionRepository;
 	@Autowired
 	SocketProperties socketProperties;
+	@Autowired
+	List<MsgProcessor> msgProcessors;
 
 
 	@Bean
