@@ -1,10 +1,8 @@
 package io.choerodon.annotation.entity;
 
-import io.choerodon.core.iam.ResourceLevel;
-
 public class PermissionEntity {
     private String[] roles;
-    private ResourceLevel level;
+    private String type;
     private boolean permissionLogin;
     private boolean permissionPublic;
     private boolean permissionWithin;
@@ -17,12 +15,12 @@ public class PermissionEntity {
         this.roles = roles;
     }
 
-    public ResourceLevel getLevel() {
-        return level;
+    public String getType() {
+        return type;
     }
 
-    public void setLevel(ResourceLevel level) {
-        this.level = level;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public boolean isPermissionLogin() {

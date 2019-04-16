@@ -1,7 +1,7 @@
 package io.choerodon.eureka.event.endpoint;
 
+import io.choerodon.base.annotation.Permission;
 import io.choerodon.eureka.event.EurekaEventPayload;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
