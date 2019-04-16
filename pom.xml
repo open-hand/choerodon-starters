@@ -76,7 +76,8 @@
         <module>choerodon-starter-web</module>
         <module>choerodon-starter-base</module>
         <module>choerodon-maven-plugin</module>
-        <module>choerodon-maven-plugin-api</module>
+        <module>choerodon-annotation-processor</module>
+        <module>choerodon-starter-actuator</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

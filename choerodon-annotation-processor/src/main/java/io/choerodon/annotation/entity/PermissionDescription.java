@@ -1,4 +1,4 @@
-package io.choerodon.plugin.maven.entity;
+package io.choerodon.annotation.entity;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 
