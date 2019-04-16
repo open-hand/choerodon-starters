@@ -96,11 +96,11 @@ public class SocketHandler extends AbstractWebSocketHandler {
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
                 msg.setPayload(new String(bytesArray, StandardCharsets.UTF_8));
+                if (msg.getPayload().endsWith("\r")) {
+                    msg.setPayload(msg.getPayload() + "\n");
+                }
             } else {
                 msg.setBytesPayload(bytesArray);
-            }
-            if (msg.getPayload().contains("\r")) {
-                msg.setPayload(msg.getPayload() + "\n");
             }
             msg.setKey((String) session.getAttributes().get("key"));
             msg.setBrokerFrom(sessionId + msg.getKey());
