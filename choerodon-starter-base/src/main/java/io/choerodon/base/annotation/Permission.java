@@ -25,7 +25,7 @@ public @interface Permission {
      * 级别
      * @return 级别
      */
-    ResourceType type() default ResourceType.PROJECT;
+    ResourceType type() default ResourceType.SITE;
 
     /**
      * 登陆后即可拥有的权限
