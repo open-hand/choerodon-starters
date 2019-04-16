@@ -1,9 +1,9 @@
 package io.choerodon.liquibase.iam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.plugin.maven.entity.PermissionDescription;
-import io.choerodon.plugin.maven.entity.PermissionEntity;
+import io.choerodon.annotation.entity.PermissionDescription;
+import io.choerodon.annotation.entity.PermissionEntity;
+import io.choerodon.base.enums.ResourceType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +40,7 @@ public class PermissionLoader {
 
         if (description.getPermission() == null){
             PermissionEntity permissionEntity = new PermissionEntity();
-            permissionEntity.setLevel(ResourceLevel.PROJECT);
+            permissionEntity.setType(ResourceType.PROJECT.toString());
             permissionEntity.setPermissionWithin(true);
             description.setPermission(permissionEntity);
         }
@@ -67,7 +67,7 @@ public class PermissionLoader {
             ps.setString(3, resource);
             ps.setString(4, action);
             ps.setString(5, method);
-            ps.setString(6, permission.getLevel().toString());
+            ps.setString(6, permission.getType());
             ps.setBoolean(7, permission.isPermissionPublic());
             ps.setBoolean(8, permission.isPermissionLogin());
             ps.setBoolean(9, permission.isPermissionWithin());
@@ -87,7 +87,7 @@ public class PermissionLoader {
             ps.setString(4, resource);
             ps.setString(5, action);
             ps.setString(6, method);
-            ps.setString(7, permission.getLevel().toString());
+            ps.setString(7, permission.getType());
             ps.setBoolean(8, permission.isPermissionPublic());
             ps.setBoolean(9, permission.isPermissionLogin());
             ps.setBoolean(10, permission.isPermissionWithin());
