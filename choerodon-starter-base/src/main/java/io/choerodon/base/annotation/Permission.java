@@ -1,6 +1,6 @@
-package io.choerodon.swagger.annotation;
+package io.choerodon.base.annotation;
 
-import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.base.enums.ResourceType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,7 +25,7 @@ public @interface Permission {
      * 级别
      * @return 级别
      */
-    ResourceLevel level() default ResourceLevel.PROJECT;
+    ResourceType type() default ResourceType.PROJECT;
 
     /**
      * 登陆后即可拥有的权限

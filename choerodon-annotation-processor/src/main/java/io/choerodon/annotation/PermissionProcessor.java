@@ -2,8 +2,8 @@ package io.choerodon.annotation;
 
 import io.choerodon.annotation.entity.PermissionDescription;
 import io.choerodon.annotation.entity.PermissionEntity;
-import io.choerodon.core.convertor.ApplicationContextHelper;
-import io.choerodon.swagger.annotation.Permission;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.helper.ApplicationContextHelper;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
@@ -19,7 +19,7 @@ public class PermissionProcessor {
     }
 
     public static void resolve(Map<String, PermissionDescription> descriptions){
-        Map<String, Object> controllers = ApplicationContextHelper.getContext().getBeansWithAnnotation(Controller.class);
+        Map<String, Object> controllers = ApplicationContextHelper.getApplicationContext().getBeansWithAnnotation(Controller.class);
         for (Object controller: controllers.values()){
             resolveClass(controller.getClass(), descriptions);
         }
@@ -57,7 +57,7 @@ public class PermissionProcessor {
             if (permission != null) {
                 PermissionEntity permissionEntity = new PermissionEntity();
                 permissionEntity.setRoles(permission.roles());
-                permissionEntity.setLevel(permission.level());
+                permissionEntity.setType(permission.type().value());
                 permissionEntity.setPermissionLogin(permission.permissionLogin());
                 permissionEntity.setPermissionPublic(permission.permissionPublic());
                 permissionEntity.setPermissionWithin(permission.permissionWithin());

@@ -1,9 +1,9 @@
 package io.choerodon.swagger.swagger
 
 import com.google.common.base.Optional
+import io.choerodon.base.annotation.Permission
 import io.choerodon.core.iam.ResourceLevel
 import io.choerodon.swagger.annotation.Label
-import io.choerodon.swagger.annotation.Permission
 import spock.lang.Specification
 import springfox.documentation.builders.OperationBuilder
 import springfox.documentation.spi.DocumentationType
