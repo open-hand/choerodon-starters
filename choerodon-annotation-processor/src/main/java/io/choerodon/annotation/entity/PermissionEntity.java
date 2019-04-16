@@ -1,4 +1,4 @@
-package io.choerodon.plugin.maven.entity;
+package io.choerodon.annotation.entity;
 
 import io.choerodon.core.iam.ResourceLevel;
 

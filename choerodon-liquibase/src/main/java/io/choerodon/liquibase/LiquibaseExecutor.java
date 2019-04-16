@@ -168,7 +168,7 @@ public class LiquibaseExecutor {
                 }
                 AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop, null, tables);
                 ads.setJar(jar);
-                ads.setMode("false".equals(mode)? "normal": mode);
+                ads.setMode(mode == null? "normal": mode);
                 ads.setName(dataSourceName);
                 additionDataSources.add(ads);
             }
@@ -255,7 +255,7 @@ public class LiquibaseExecutor {
         prepareGroovyParser(additionDataSource.getLiquibaseHelper());
         Map<String, Set<String>> updateExclusionMap = processExclusion();
         ResourceAccessor accessor = new CusFileSystemResourceAccessor(dir);
-        if (additionDataSource.getMode().equals("all") || additionDataSource.getMode().equals("normal")){
+        if ("all".equals(additionDataSource.getMode()) || "normal".equals(additionDataSource.getMode())){
             Set<String> fileNameSet = accessor.list(null, File.separator, true, false, true);
             List<String> nameList = new ArrayList<>(fileNameSet);
             Collections.sort(nameList);
@@ -294,7 +294,7 @@ public class LiquibaseExecutor {
                 }
             }
         }
-        if (additionDataSource.getMode().equals("all") || additionDataSource.getMode().equals("iam")){
+        if ("all".equals(additionDataSource.getMode()) || "iam".equals(additionDataSource.getMode())){
             Set<InputStream> permissionInputStreams = accessor.getResourcesAsStream(PERMISSION_FILE_PATH);
             if (permissionInputStreams == null || permissionInputStreams.isEmpty()){
                 logger.warn("Data source {} is onlyIam but permission file not found.", additionDataSource.getName());

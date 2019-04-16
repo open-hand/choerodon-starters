@@ -205,6 +205,7 @@ public class DbAdaptor {
         }
         sb.append(StringUtils.join(list, " AND "));
         Connection connection = this.connection;
+        logger.warn("connection map : {}", connectionMap);
         if(connectionMap.containsKey(tableRow.getTable().getName())){
             connection = connectionMap.get(tableRow.getTable().getName());
         }

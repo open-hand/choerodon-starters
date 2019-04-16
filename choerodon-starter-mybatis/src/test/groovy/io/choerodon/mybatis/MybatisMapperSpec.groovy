@@ -110,6 +110,16 @@ class MybatisMapperSpec extends Specification {
         result.size() == 2
     }
 
+    def "Delete By Primary Key Test"() {
+        when:
+        Role role = new Role()
+        role.roleId = 10002
+        role.roleName = "hoqwihd"
+        role.roleCode = "dwwddqd"
+        then:
+        roleMapper.deleteByPrimaryKey(role) > 0
+    }
+
     def "Audit Test"() {
         when:
         RoleTL role = new RoleTL()

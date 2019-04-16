@@ -9,30 +9,56 @@ import java.util.List;
  */
 public interface IBaseService<T> {
 
-    List<T> select(T condition, int pageNum, int pageSize);
+    default List<T> select(T condition, int pageNum, int pageSize){
+        throw new UnsupportedOperationException();
+    }
 
-    T insert(T record);
+    default T insert(T record){
+        throw new UnsupportedOperationException();
+    }
 
-    T insertSelective(T record);
+    default T insertSelective(T record){
+        throw new UnsupportedOperationException();
+    }
 
-    T updateByPrimaryKey(T record);
+    default T updateByPrimaryKey(T record){
+        throw new UnsupportedOperationException();
+    }
 
-    T updateByPrimaryKeySelective(T record);
+    default T updateByPrimaryKeySelective(T record){
+        throw new UnsupportedOperationException();
+    }
 
-    T updateByPrimaryKeyOptions(T record, Criteria criteria);
+    default T updateByPrimaryKeyOptions(T record, Criteria criteria){
+        throw new UnsupportedOperationException();
+    }
 
-    T selectByPrimaryKey(T record);
+    default T selectByPrimaryKey(T record){
+        throw new UnsupportedOperationException();
+    }
 
-    int deleteByPrimaryKey(T record);
+    default int deleteByPrimaryKey(T record){
+        throw new UnsupportedOperationException();
+    }
 
-    List<T> selectAll();
+    default List<T> selectAll(){
+        throw new UnsupportedOperationException();
+    }
 
-    List<T> batchUpdate(List<T> list);
+    default List<T> batchUpdate(List<T> list){
+        throw new UnsupportedOperationException();
+    }
 
-    int batchDelete(List<T> list);
+    default int batchDelete(List<T> list){
+        throw new UnsupportedOperationException();
+    }
 
-    List<T> selectOptions(T record, Criteria criteria);
+    default List<T> selectOptions(T record, Criteria criteria){
+        throw new UnsupportedOperationException();
+    }
 
-    List<T> selectOptions(T record, Criteria criteria, Integer pageNum, Integer pageSize);
+    default List<T> selectOptions(T record, Criteria criteria, Integer pageNum, Integer pageSize){
+        throw new UnsupportedOperationException();
+    }
 
 }

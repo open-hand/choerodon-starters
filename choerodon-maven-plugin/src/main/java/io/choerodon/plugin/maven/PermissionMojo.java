@@ -1,9 +1,8 @@
 package io.choerodon.plugin.maven;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.plugin.maven.entity.PermissionDescription;
-import io.choerodon.plugin.maven.entity.PermissionEntity;
-import io.choerodon.swagger.annotation.Permission;
+import io.choerodon.annotation.PermissionProcessor;
+import io.choerodon.annotation.entity.PermissionDescription;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -16,16 +15,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -131,50 +124,8 @@ public class PermissionMojo extends AbstractMojo {
                 classes.addAll(findClasses(directory, "", classLoader));
             }
             for (Class clazz : classes) {
-                resolveClass(clazz);
+                PermissionProcessor.resolveClass(clazz, report);
             }
-        }
-    }
-
-    private void resolveClass(Class clazz){
-        Controller controller = AnnotationUtils.findAnnotation(clazz, Controller.class);
-        if (controller != null){
-            RequestMapping controllerMapping = AnnotatedElementUtils.getMergedAnnotation(clazz, RequestMapping.class);
-            String controllerPath = "";
-            if (controllerMapping != null && controllerMapping.value().length > 0){
-                controllerPath = controllerMapping.value()[0];
-            }
-            for (Method method : clazz.getMethods()) {
-                resolveMethod(clazz, method, controllerPath);
-            }
-        }
-    }
-
-    private void resolveMethod(Class clazz, Method method, String controllerPath){
-        RequestMapping methodMapping = AnnotatedElementUtils.getMergedAnnotation(method, RequestMapping.class);
-        if (methodMapping != null){
-            String methodPath = "";
-            if (methodMapping.value().length > 0){
-                methodPath = methodMapping.value()[0];
-            }
-            PermissionDescription description = new PermissionDescription();
-            description.setPath(controllerPath + methodPath);
-            RequestMethod requestMethod = RequestMethod.GET;
-            if (methodMapping.method().length > 0){
-                requestMethod = methodMapping.method()[0];
-            }
-            description.setMethod(requestMethod);
-            Permission permission = AnnotationUtils.getAnnotation(method, Permission.class);
-            if (permission != null) {
-                PermissionEntity permissionEntity = new PermissionEntity();
-                permissionEntity.setRoles(permission.roles());
-                permissionEntity.setLevel(permission.level());
-                permissionEntity.setPermissionLogin(permission.permissionLogin());
-                permissionEntity.setPermissionPublic(permission.permissionPublic());
-                permissionEntity.setPermissionWithin(permission.permissionWithin());
-                description.setPermission(permissionEntity);
-            }
-            report.put(clazz.getName() + "." + method.getName(), description);
         }
     }
 
