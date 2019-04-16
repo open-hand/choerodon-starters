@@ -52,8 +52,6 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	@Autowired
 	SessionRepository sessionRepository;
 	@Autowired
-	List<MsgProcessor> msgProcessors;
-	@Autowired
 	SocketProperties socketProperties;
 
 
