@@ -95,7 +95,7 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-                msg.setPayload(new String(bytesArray, StandardCharsets.UTF_8).replace("\r","").trim());
+                msg.setPayload(trimEnd(new String(bytesArray, StandardCharsets.UTF_8).replace("\r","").toCharArray()));
             } else {
                 msg.setBytesPayload(bytesArray);
             }
@@ -126,5 +126,16 @@ public class SocketHandler extends AbstractWebSocketHandler {
 
     private String getSessionId(WebSocketSession session) {
         return (String) session.getAttributes().get(SESSION_ID);
+    }
+
+
+    private  String trimEnd(char[] value) {
+        int len = value.length;
+        int st = 0;
+        char[] val = value;
+        while ((st < len) && (val[len - 1] <= ' ')) {
+            len--;
+        }
+        return ((st > 0) || (len < value.length)) ? new String(val).substring(st, len) : new String(val);
     }
 }
