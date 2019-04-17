@@ -95,10 +95,7 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-                msg.setPayload(new String(bytesArray, StandardCharsets.UTF_8));
-                if (msg.getPayload().endsWith("\r")) {
-                    msg.setPayload(msg.getPayload() + "\n");
-                }
+                msg.setPayload(new String(bytesArray, StandardCharsets.UTF_8).replace("\r","").trim());
             } else {
                 msg.setBytesPayload(bytesArray);
             }
