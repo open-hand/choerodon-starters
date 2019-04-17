@@ -96,6 +96,9 @@ public class SocketHandler extends AbstractWebSocketHandler {
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
                 msg.setPayload(trimEnd(replaceR(new String(bytesArray, StandardCharsets.UTF_8), "", 0).toCharArray()));
+                //回退换行问题
+                msg.getPayload().contains("\\u001B[K");
+                msg.setPayload("\\b\\u001B[K");
             } else {
                 msg.setBytesPayload(bytesArray);
             }
