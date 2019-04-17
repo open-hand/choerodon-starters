@@ -95,7 +95,11 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-                msg.setPayload(trimEnd(replaceR(new String(bytesArray, StandardCharsets.UTF_8), "", 0).toCharArray()));
+                String payLoad = replaceR(new String(bytesArray, StandardCharsets.UTF_8), "", 0);
+                if(!payLoad.substring(payLoad.length()-1).equals("\n")) {
+                    payLoad = trimEnd(payLoad.toCharArray());
+                }
+                msg.setPayload(payLoad);
                 //回退换行问题
                 if(msg.getPayload().contains("\u001B[K")) {
                     msg.setPayload("\b\u001B[K");
