@@ -95,7 +95,7 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-                msg.setPayload(trimEnd(new String(bytesArray, StandardCharsets.UTF_8).replace("\r","").toCharArray()));
+                msg.setPayload(replaceR(new String(bytesArray, StandardCharsets.UTF_8),"",0));
             } else {
                 msg.setBytesPayload(bytesArray);
             }
@@ -129,13 +129,41 @@ public class SocketHandler extends AbstractWebSocketHandler {
     }
 
 
-    private  String trimEnd(char[] value) {
-        int len = value.length;
-        int st = 0;
-        char[] val = value;
-        while ((st < len) && (val[len - 1] <= ' ')) {
-            len--;
+
+
+    private  String replaceR(String a, String result, int index) {
+        if (index >= a.lastIndexOf("\r")) {
+            if (a.substring(index, index + 1).equals("\n")) {
+                result += a.substring(index - 1);
+            } else {
+                if (index == 0) {
+                    result += a.substring(index + 1);
+                }
+            }
+            return result;
+        } else {
+            int indexResult = a.indexOf("\r", index);
+            if (indexResult != a.length() - 1) {
+                String r = a.substring(indexResult + 1, indexResult + 2);
+                if (!r.equals("\n")) {
+                    result += a.substring(index, indexResult);
+                    return replaceR(a, result, indexResult + 1);
+                } else {
+                    if (!a.substring(index, index + 1).equals("\n")) {
+                        result += a.substring(index, indexResult);
+                    } else {
+                        result += a.substring(index - 1, indexResult);
+                    }
+                    return replaceR(a, result, indexResult + 1);
+                }
+            } else {
+                if (a.substring(index, index + 1).equals("\n")) {
+                    result += a.substring(index - 1, indexResult);
+                } else {
+                    result += a.substring(index, indexResult);
+                }
+            }
         }
-        return ((st > 0) || (len < value.length)) ? new String(val).substring(st, len) : new String(val);
+        return result;
     }
 }
