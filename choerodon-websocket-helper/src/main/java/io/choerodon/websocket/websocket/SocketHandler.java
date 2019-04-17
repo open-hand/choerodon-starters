@@ -96,12 +96,12 @@ public class SocketHandler extends AbstractWebSocketHandler {
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
                 String payLoad = replaceR(new String(bytesArray, StandardCharsets.UTF_8), "", 0);
-                if(!payLoad.substring(payLoad.length()-1).equals("\n")) {
+                if (!payLoad.substring(payLoad.length() - 1).equals("\n") && payLoad.length() != 1) {
                     payLoad = trimEnd(payLoad.toCharArray());
                 }
                 msg.setPayload(payLoad);
                 //回退换行问题
-                if(msg.getPayload().contains("\u001B[K")) {
+                if (msg.getPayload().contains("\u001B[K")) {
                     msg.setPayload("\b\u001B[K");
                 }
             } else {
@@ -148,6 +148,8 @@ public class SocketHandler extends AbstractWebSocketHandler {
             } else {
                 if (index == 0) {
                     result += a.substring(index + 1);
+                }else {
+                    result += a.substring(index);
                 }
             }
             return result;
@@ -178,7 +180,7 @@ public class SocketHandler extends AbstractWebSocketHandler {
     }
 
 
-    private  String trimEnd(char[] value) {
+    private String trimEnd(char[] value) {
         int len = value.length;
         int st = 0;
         char[] val = value;
