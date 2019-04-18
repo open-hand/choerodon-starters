@@ -62,6 +62,8 @@ public class LiquibaseExecutor {
     private boolean defaultDrop;
     @Value("${data.normal:true}")
     private boolean defaultNormal;
+    @Value("${data.init:true}")
+    private boolean defaultInit;
 
     @Value("${data.update.exclusion:#{null}}")
     private String updateExclusion;
@@ -275,15 +277,16 @@ public class LiquibaseExecutor {
                     liquibase.update(new Contexts());
                 }
             }
-
-            //初始化数据
-            for (String file : nameList) {
-                if (file.endsWith(SUFFIX_XLSX)) {
-                    ExcelDataLoader loader = new ExcelDataLoader();
-                    Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
-                    loader.setUpdateExclusionMap(updateExclusionMap);
-                    logger.info("begin to process excel : {}", file);
-                    loader.execute(inputStream.iterator().next(), additionDataSource);
+            if(defaultInit){
+                //初始化数据
+                for (String file : nameList) {
+                    if (file.endsWith(SUFFIX_XLSX)) {
+                        ExcelDataLoader loader = new ExcelDataLoader();
+                        Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
+                        loader.setUpdateExclusionMap(updateExclusionMap);
+                        logger.info("begin to process excel : {}", file);
+                        loader.execute(inputStream.iterator().next(), additionDataSource);
+                    }
                 }
             }
             //执行final groovy脚本
