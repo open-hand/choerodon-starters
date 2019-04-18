@@ -18,8 +18,7 @@ public class PermissionProcessor {
     private PermissionProcessor(){
     }
 
-    public static void resolve(Map<String, PermissionDescription> descriptions){
-        Map<String, Object> controllers = ApplicationContextHelper.getApplicationContext().getBeansWithAnnotation(Controller.class);
+    public static void resolve(Map<String, Object> controllers, Map<String, PermissionDescription> descriptions){
         for (Object controller: controllers.values()){
             resolveClass(controller.getClass(), descriptions);
         }
