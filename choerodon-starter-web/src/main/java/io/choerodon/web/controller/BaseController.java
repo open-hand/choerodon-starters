@@ -6,7 +6,7 @@ import io.choerodon.web.DefaultConfiguration;
 import io.choerodon.web.core.IRequest;
 import io.choerodon.web.core.impl.RequestHelper;
 import io.choerodon.web.dto.ResponseData;
-import io.choerodon.web.util.RequestUtil;
+import io.choerodon.web.util.RequestUtils;
 import io.choerodon.web.validator.FieldErrorWithBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class BaseController {
     public Object exceptionHandler(Exception exception, HttpServletRequest request) {
         logger.error(exception.getMessage(), exception);
         Throwable thr = Throwables.getRootCause(exception);
-        if (RequestUtil.isAjaxRequest(request) || RequestUtil.isAPIRequest(request) || RequestUtil.isMultipartRequest(request)) {
+        if (RequestUtils.isAjaxRequest(request) || RequestUtils.isAPIRequest(request) || RequestUtils.isMultipartRequest(request)) {
             ResponseData res = new ResponseData(false);
             if (thr instanceof IBaseException) {
                 IBaseException be = (IBaseException) thr;

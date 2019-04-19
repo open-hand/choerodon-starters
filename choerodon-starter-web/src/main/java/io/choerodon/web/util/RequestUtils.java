@@ -7,12 +7,12 @@ import javax.servlet.http.HttpServletRequest;
  * @author njq.niu@hand-china.com
  * @since 2016年1月19日
  */
-public final class RequestUtil {
+public final class RequestUtils {
 
     public static final String X_REQUESTED_WIDTH = "X-Requested-With";
     public static final String XML_HTTP_REQUEST = "XMLHttpRequest";
 
-    private RequestUtil() {
+    private RequestUtils() {
     }
 
     /**
