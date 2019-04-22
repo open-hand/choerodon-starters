@@ -95,15 +95,8 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-                String payLoad = replaceR(new String(bytesArray, StandardCharsets.UTF_8), "", 0);
-                if (!payLoad.substring(payLoad.length() - 1).equals("\n") && payLoad.length() != 1) {
-                    payLoad = trimEnd(payLoad.toCharArray());
-                }
+                String payLoad = replaceR(new StringBuilder(new String(bytesArray, StandardCharsets.UTF_8)), 0);
                 msg.setPayload(payLoad);
-                //回退换行问题
-                if (msg.getPayload().contains("\u001B[K")) {
-                    msg.setPayload("\b\u001B[K");
-                }
             } else {
                 msg.setBytesPayload(bytesArray);
             }
@@ -137,46 +130,28 @@ public class SocketHandler extends AbstractWebSocketHandler {
     }
 
 
-    private String replaceR(String a, String result, int index) {
+    private String replaceR(StringBuilder a, int index) {
         int lastIndex = a.lastIndexOf("\r");
-        if (lastIndex == -1) {
-            return a;
+        if (lastIndex == -1 || index >= a.length() - 1) {
+            return a.toString();
         }
-        if (index >= lastIndex) {
-            if (a.substring(lastIndex + 1, lastIndex + 2).equals("\n")) {
-                result += a.substring(index == 0 ? 0 : index - 1);
-            } else {
-                if (index == 0) {
-                    result += a.substring(index + 1);
-                }else {
-                    result += a.substring(index);
-                }
-            }
-            return result;
-        } else {
-            int indexResult = a.indexOf("\r", index);
+        int indexResult = a.indexOf("\r", index);
+        if (indexResult >= 0) {
             if (indexResult != a.length() - 1) {
                 String r = a.substring(indexResult + 1, indexResult + 2);
                 if (!r.equals("\n")) {
-                    result += a.substring(index, indexResult);
-                    return replaceR(a, result, indexResult + 1);
-                } else {
-                    if (!a.substring(index, index + 1).equals("\n")) {
-                        result += a.substring(index, indexResult);
-                    } else {
-                        result += a.substring(index - 1, indexResult);
+                    if (indexResult > 0) {
+                        a = a.replace(indexResult, indexResult + 1, "\r\n");
                     }
-                    return replaceR(a, result, indexResult + 1);
+                    return replaceR(a, indexResult + 1);
+                } else {
+                    return replaceR(a, indexResult + 1);
                 }
             } else {
-                if (a.substring(index, index + 1).equals("\n")) {
-                    result += a.substring(index - 1, indexResult);
-                } else {
-                    result += a.substring(index, indexResult);
-                }
+                a = a.replace(indexResult, indexResult + 1, "\r\n");
             }
         }
-        return result;
+        return a.toString();
     }
 
 
