@@ -5,17 +5,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 /**
  * @author wuguokai
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "oauth_password_history")
-public class BasePasswordHistoryDO extends AuditDomain {
+public class BasePasswordHistoryDTO extends BaseDTO {
     @Id
     @GeneratedValue
     private Long id;

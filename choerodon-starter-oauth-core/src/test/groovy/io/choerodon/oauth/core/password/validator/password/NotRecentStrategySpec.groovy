@@ -3,7 +3,7 @@ package io.choerodon.oauth.core.password.validator.password
 import io.choerodon.core.exception.CommonException
 import io.choerodon.oauth.core.password.PasswordPolicyMap
 import io.choerodon.oauth.core.password.PasswordPolicyType
-import io.choerodon.oauth.core.password.domain.BaseUserDO
+import io.choerodon.oauth.core.password.domain.BaseUserDTO
 import io.choerodon.oauth.core.password.mapper.BasePasswordHistoryMapper
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import spock.lang.Specification
@@ -21,7 +21,7 @@ class NotRecentStrategySpec extends Specification {
         def passwordPolicyMap = new PasswordPolicyMap(passMap, null, true, true)
 
         when:
-        Object result = new NotRecentStrategy(mapper).validate(passwordPolicyMap, new BaseUserDO(), 'abcd')
+        Object result = new NotRecentStrategy(mapper).validate(passwordPolicyMap, new BaseUserDTO(), 'abcd')
 
         then:
         result == null

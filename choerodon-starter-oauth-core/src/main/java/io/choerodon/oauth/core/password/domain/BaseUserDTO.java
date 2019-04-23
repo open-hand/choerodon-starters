@@ -6,18 +6,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 /**
  * @author wuguokai
  */
 
-@ModifyAudit
-@VersionAudit
 @Table(name = "iam_user")
-public class BaseUserDO extends AuditDomain {
+public class BaseUserDTO extends BaseDTO {
 
     public static final String EMAIL_REGULAR_EXPRESSION = "[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?";
 

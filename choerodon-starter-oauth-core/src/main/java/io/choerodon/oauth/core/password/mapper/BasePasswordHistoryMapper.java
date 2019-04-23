@@ -1,16 +1,16 @@
 package io.choerodon.oauth.core.password.mapper;
 
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-import io.choerodon.mybatis.common.BaseMapper;
-import io.choerodon.oauth.core.password.domain.BasePasswordHistoryDO;
+import io.choerodon.oauth.core.password.domain.BasePasswordHistoryDTO;
 
 /**
  * @author wuguokai
  */
-public interface BasePasswordHistoryMapper extends BaseMapper<BasePasswordHistoryDO> {
+public interface BasePasswordHistoryMapper extends Mapper<BasePasswordHistoryDTO> {
 
     /**
      * 根据userId查询用户的密码历史记录

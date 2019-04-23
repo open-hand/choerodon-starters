@@ -1,23 +1,20 @@
 package io.choerodon.oauth.core.password.domain;
 
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 /**
  * @author wuguokai
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "oauth_login_history")
-public class BaseLoginHistoryDO extends AuditDomain {
+public class BaseLoginHistoryDTO extends BaseDTO {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
     private Date lastLoginAt;

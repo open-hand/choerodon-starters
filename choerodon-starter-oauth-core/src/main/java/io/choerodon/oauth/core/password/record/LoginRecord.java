@@ -1,8 +1,8 @@
 package io.choerodon.oauth.core.password.record;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO;
-import io.choerodon.oauth.core.password.domain.BaseLoginHistoryDO;
+import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDTO;
+import io.choerodon.oauth.core.password.domain.BaseLoginHistoryDTO;
 import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper;
 import io.choerodon.oauth.core.password.mapper.BaseLoginHistoryMapper;
 
@@ -23,9 +23,9 @@ public class LoginRecord {
     }
 
     public void loginError(Long userId) {
-        BaseLoginAttemptTimesDO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(userId);
+        BaseLoginAttemptTimesDTO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(userId);
         if (baseLoginAttemptTimesDO == null) {
-            baseLoginAttemptTimesDO = new BaseLoginAttemptTimesDO();
+            baseLoginAttemptTimesDO = new BaseLoginAttemptTimesDTO();
             baseLoginAttemptTimesDO.setUserId(userId);
             baseLoginAttemptTimesDO.setLoginAttemptTimes(1);
             if (baseLoginAttemptTimesMapper.insertSelective(baseLoginAttemptTimesDO) != 1) {
@@ -40,10 +40,10 @@ public class LoginRecord {
     }
 
     public void loginSuccess(Long userId) {
-        BaseLoginAttemptTimesDO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(userId);
-        BaseLoginHistoryDO baseLoginHistoryDO = baseLoginHistoryMapper.findByUser(userId);
+        BaseLoginAttemptTimesDTO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(userId);
+        BaseLoginHistoryDTO baseLoginHistoryDO = baseLoginHistoryMapper.findByUser(userId);
         if (baseLoginHistoryDO == null) {
-            baseLoginHistoryDO = new BaseLoginHistoryDO();
+            baseLoginHistoryDO = new BaseLoginHistoryDTO();
             baseLoginHistoryDO.setUserId(userId);
             baseLoginHistoryDO.setLastLoginAt(new Date());
             if (baseLoginHistoryMapper.insertSelective(baseLoginHistoryDO) != 1) {

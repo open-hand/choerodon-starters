@@ -1,8 +1,8 @@
 package io.choerodon.oauth.core.password.record
 
 import io.choerodon.core.exception.CommonException
-import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO
-import io.choerodon.oauth.core.password.domain.BaseLoginHistoryDO
+import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDTO
+import io.choerodon.oauth.core.password.domain.BaseLoginHistoryDTO
 import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper
 import io.choerodon.oauth.core.password.mapper.BaseLoginHistoryMapper
 import spock.lang.Specification
@@ -15,7 +15,7 @@ class LoginRecordSpec extends Specification {
             insertSelective(_) >> 2
         }
         def findMapper = Mock(BaseLoginAttemptTimesMapper) {
-            def baseLoginAttemptTimesDO = new BaseLoginAttemptTimesDO()
+            def baseLoginAttemptTimesDO = new BaseLoginAttemptTimesDTO()
             baseLoginAttemptTimesDO.setLoginAttemptTimes(10)
             findByUser(_) >> baseLoginAttemptTimesDO
             updateByPrimaryKeySelective(_) >> 2
@@ -37,7 +37,7 @@ class LoginRecordSpec extends Specification {
     def "test login Success"() {
         given: 'mock mapper'
         def findMapper = Mock(BaseLoginAttemptTimesMapper) {
-            findByUser(_) >> new BaseLoginAttemptTimesDO()
+            findByUser(_) >> new BaseLoginAttemptTimesDTO()
             updateByPrimaryKeySelective(_) >> 2
         }
 
@@ -45,11 +45,11 @@ class LoginRecordSpec extends Specification {
             insertSelective(_) >> 2
         }
         def historyMapper = Mock(BaseLoginHistoryMapper) {
-            findByUser(_) >> new BaseLoginHistoryDO()
+            findByUser(_) >> new BaseLoginHistoryDTO()
             updateByPrimaryKeySelective(_) >> 2
         }
         def historyNormalMapper = Mock(BaseLoginHistoryMapper) {
-            findByUser(_) >> new BaseLoginHistoryDO()
+            findByUser(_) >> new BaseLoginHistoryDTO()
             updateByPrimaryKeySelective(_) >> 1
         }
 

@@ -7,7 +7,7 @@ import java.util.List;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.core.password.PasswordPolicyMap;
 import io.choerodon.oauth.core.password.PasswordStrategy;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
 import io.choerodon.oauth.core.password.PasswordPolicyType;
 import io.choerodon.oauth.core.password.mapper.BasePasswordHistoryMapper;
 
@@ -26,7 +26,7 @@ public class NotRecentStrategy implements PasswordStrategy {
     }
 
     @Override
-    public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
+    public Object validate(PasswordPolicyMap policyMap, BaseUserDTO userDO, String password) {
         Integer recentPasswordCount = (Integer) policyMap.getPasswordConfig().get(TYPE);
         if (recentPasswordCount > 0) {
             List<String> passwordHistoryList = passwordHistoryMapper.selectPasswordByUser(userDO.getId());
