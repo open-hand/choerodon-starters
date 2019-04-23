@@ -1,8 +1,6 @@
 package io.choerodon.oauth.core.password.domain;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,10 +9,8 @@ import javax.persistence.Table;
 /**
  * @author wuguokai
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "oauth_password_policy")
-public class BasePasswordPolicyDO extends AuditDomain {
+public class BasePasswordPolicyDTO extends BaseDTO {
     @Id
     @GeneratedValue
     private Long id;
@@ -39,7 +35,7 @@ public class BasePasswordPolicyDO extends AuditDomain {
     private Boolean enableCaptcha;
     private Integer maxCheckCaptcha;
 
-    public BasePasswordPolicyDO() {
+    public BasePasswordPolicyDTO() {
         //empty
     }
 

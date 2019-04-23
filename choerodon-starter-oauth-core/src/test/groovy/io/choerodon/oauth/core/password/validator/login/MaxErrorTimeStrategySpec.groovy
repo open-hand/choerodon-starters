@@ -2,8 +2,8 @@ package io.choerodon.oauth.core.password.validator.login
 
 import io.choerodon.oauth.core.password.PasswordPolicyMap
 import io.choerodon.oauth.core.password.PasswordPolicyType
-import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO
-import io.choerodon.oauth.core.password.domain.BaseUserDO
+import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDTO
+import io.choerodon.oauth.core.password.domain.BaseUserDTO
 import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper
 import spock.lang.Specification
 
@@ -17,19 +17,19 @@ class MaxErrorTimeStrategySpec extends Specification {
         loginMap.put('enableLock', true)
 
         def baseLoginAttemptTimesMapper = Mock(BaseLoginAttemptTimesMapper) {
-            def baseLoginAttemptTimesDO = new BaseLoginAttemptTimesDO()
+            def baseLoginAttemptTimesDO = new BaseLoginAttemptTimesDTO()
             baseLoginAttemptTimesDO.setLoginAttemptTimes(11)
             selectOne(_) >> baseLoginAttemptTimesDO
         }
 
         when: '开启最大输错次数限制'
-        def result = new MaxErrorTimeStrategy(baseLoginAttemptTimesMapper).validate(passwordPolicyMap, new BaseUserDO(), '')
+        def result = new MaxErrorTimeStrategy(baseLoginAttemptTimesMapper).validate(passwordPolicyMap, new BaseUserDTO(), '')
         then:
         !result
 
         when: '不开启最大输错次数限制'
         loginMap.put('enableLock', false)
-        def result1 = new MaxErrorTimeStrategy(baseLoginAttemptTimesMapper).validate(passwordPolicyMap, new BaseUserDO(), '')
+        def result1 = new MaxErrorTimeStrategy(baseLoginAttemptTimesMapper).validate(passwordPolicyMap, new BaseUserDTO(), '')
         then:
         result1
     }
