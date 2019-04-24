@@ -1,9 +1,6 @@
 package io.choerodon.oauth.core.password.domain;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import io.choerodon.mybatis.entity.BaseDTO;
 
@@ -13,7 +10,7 @@ import io.choerodon.mybatis.entity.BaseDTO;
 @Table(name = "oauth_password_history")
 public class BasePasswordHistoryDTO extends BaseDTO {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
     @Column(name = "hash_password")
