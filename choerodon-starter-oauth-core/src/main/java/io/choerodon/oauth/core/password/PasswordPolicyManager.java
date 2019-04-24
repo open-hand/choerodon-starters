@@ -1,9 +1,9 @@
 package io.choerodon.oauth.core.password;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO;
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
+import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDTO;
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
 import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +30,7 @@ public class PasswordPolicyManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void passwordValidate(String password, BaseUserDO userDO, BasePasswordPolicyDO policy) {
+    public void passwordValidate(String password, BaseUserDTO userDO, BasePasswordPolicyDTO policy) {
         if (password == null) {
             throw new CommonException(ERROR_EMPTY);
         }
@@ -46,7 +46,7 @@ public class PasswordPolicyManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Boolean isNeedCaptcha(BasePasswordPolicyDO policy, BaseUserDO baseUserDO) {
+    public Boolean isNeedCaptcha(BasePasswordPolicyDTO policy, BaseUserDTO baseUserDO) {
         if (policy == null) {
             return false;
         }
@@ -59,7 +59,7 @@ public class PasswordPolicyManager {
                     return true;
                 }
                 if (baseUserDO != null) {
-                    BaseLoginAttemptTimesDO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(baseUserDO.getId());
+                    BaseLoginAttemptTimesDTO baseLoginAttemptTimesDO = baseLoginAttemptTimesMapper.findByUser(baseUserDO.getId());
                     return baseLoginAttemptTimesDO != null && baseLoginAttemptTimesDO.getLoginAttemptTimes() >= maxCaptchaTime;
                 }
             }
@@ -68,7 +68,7 @@ public class PasswordPolicyManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map loginValidate(String password, BaseUserDO userDO, BasePasswordPolicyDO policy) {
+    public Map loginValidate(String password, BaseUserDTO userDO, BasePasswordPolicyDTO policy) {
         Map<String, Object> returnMap = new HashMap<>();
         if (password == null) {
             throw new CommonException(ERROR_EMPTY);

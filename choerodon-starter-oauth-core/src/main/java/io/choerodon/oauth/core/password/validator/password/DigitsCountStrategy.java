@@ -3,7 +3,7 @@ package io.choerodon.oauth.core.password.validator.password;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.oauth.core.password.PasswordPolicyMap;
 import io.choerodon.oauth.core.password.PasswordStrategy;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
 import io.choerodon.oauth.core.password.PasswordPolicyType;
 
 /**
@@ -14,7 +14,7 @@ public class DigitsCountStrategy implements PasswordStrategy {
     public static final String TYPE = PasswordPolicyType.DIGITS_COUNT.getValue();
 
     @Override
-    public Object validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
+    public Object validate(PasswordPolicyMap policyMap, BaseUserDTO userDO, String password) {
         Integer min = (Integer) policyMap.getPasswordConfig().get(TYPE);
         if (min != null && min != 0) {
             int count = 0;

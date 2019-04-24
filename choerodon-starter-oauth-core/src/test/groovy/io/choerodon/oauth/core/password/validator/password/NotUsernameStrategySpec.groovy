@@ -3,7 +3,7 @@ package io.choerodon.oauth.core.password.validator.password
 import io.choerodon.core.exception.CommonException
 import io.choerodon.oauth.core.password.PasswordPolicyMap
 import io.choerodon.oauth.core.password.PasswordPolicyType
-import io.choerodon.oauth.core.password.domain.BaseUserDO
+import io.choerodon.oauth.core.password.domain.BaseUserDTO
 import spock.lang.Specification
 
 class NotUsernameStrategySpec extends Specification {
@@ -17,7 +17,7 @@ class NotUsernameStrategySpec extends Specification {
         def passwordPolicyMap = new PasswordPolicyMap(passMap, null, true, true)
 
         when:
-        notUsernameStrategy.validate(passwordPolicyMap, new BaseUserDO(loginName: "abcd"), "abcd")
+        notUsernameStrategy.validate(passwordPolicyMap, new BaseUserDTO(loginName: "abcd"), "abcd")
 
         then:
         def exe = thrown CommonException

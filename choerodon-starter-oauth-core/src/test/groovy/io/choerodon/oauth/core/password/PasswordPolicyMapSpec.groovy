@@ -1,6 +1,6 @@
 package io.choerodon.oauth.core.password
 
-import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDO
+import io.choerodon.oauth.core.password.domain.BasePasswordPolicyDTO
 import spock.lang.Specification
 
 class PasswordPolicyMapSpec extends Specification {
@@ -41,7 +41,7 @@ class PasswordPolicyMapSpec extends Specification {
 
     def "test parse"() {
         given: '创建BasePasswordPolicyDO'
-        def pdo = new BasePasswordPolicyDO()
+        def pdo = new BasePasswordPolicyDTO()
         pdo.setterOne('name', 1l, '', 2, 3, 3, 3)
         pdo.setterTwo(1, 1, 1, true, '', 2, true)
         pdo.setterThree(true, true, 2, true, 3)

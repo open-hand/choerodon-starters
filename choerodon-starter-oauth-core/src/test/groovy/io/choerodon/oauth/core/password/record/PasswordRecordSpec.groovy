@@ -1,7 +1,7 @@
 package io.choerodon.oauth.core.password.record
 
 import io.choerodon.core.exception.CommonException
-import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO
+import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDTO
 import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper
 import io.choerodon.oauth.core.password.mapper.BasePasswordHistoryMapper
 import spock.lang.Specification
@@ -10,7 +10,7 @@ class PasswordRecordSpec extends Specification {
     def "test update Password"() {
         given: 'mock mapper'
         def findMapper = Mock(BaseLoginAttemptTimesMapper) {
-            findByUser(_) >> new BaseLoginAttemptTimesDO()
+            findByUser(_) >> new BaseLoginAttemptTimesDTO()
             updateByPrimaryKeySelective(_) >> 2
         }
 
@@ -36,7 +36,7 @@ class PasswordRecordSpec extends Specification {
     def "test un Lock User"() {
         given: 'mock mapper'
         def findMapper = Mock(BaseLoginAttemptTimesMapper) {
-            findByUser(_) >> new BaseLoginAttemptTimesDO()
+            findByUser(_) >> new BaseLoginAttemptTimesDTO()
             updateByPrimaryKeySelective(_) >> 2
         }
         when: 'findByUser不为null，update异常'
