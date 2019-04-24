@@ -17,7 +17,7 @@ public class OGNL {
 
     public static Long principal() {
         if (customProvider == null) {
-            return -1L;
+            return null;
         }
         return customProvider.currentPrincipal();
     }
