@@ -1,4 +1,4 @@
-package script
+package script.db
 
 databaseChangeLog(logicalFilePath: 'script/role.groovy') {
     changeSet(author: "hailor", id: "20160609-hailor-17") {

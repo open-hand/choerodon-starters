@@ -1,4 +1,4 @@
-package db
+package script.db
 
 databaseChangeLog(logicalFilePath: 'event_consumer_record.groovy') {
     changeSet(id: '2018-02-06-add-table-event_consumer_record', author: 'flyleft') {
