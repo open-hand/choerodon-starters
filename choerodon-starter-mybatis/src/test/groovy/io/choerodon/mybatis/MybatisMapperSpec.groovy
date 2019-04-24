@@ -2,7 +2,7 @@ package io.choerodon.mybatis
 
 import io.choerodon.liquibase.LiquibaseConfig
 import io.choerodon.liquibase.LiquibaseExecutor
-import io.choerodon.mybatis.common.CustomProvider
+import io.choerodon.base.provider.CustomProvider
 import io.choerodon.mybatis.common.query.Comparison
 import io.choerodon.mybatis.common.query.SortType
 import io.choerodon.mybatis.common.query.WhereField
@@ -13,13 +13,10 @@ import io.choerodon.mybatis.mapper.RoleMapper
 import io.choerodon.mybatis.mapper.RoleTLMapper
 import org.apache.ibatis.session.Configuration
 import org.apache.ibatis.session.SqlSessionFactory
-import org.junit.Assert
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Import
 import spock.lang.Specification
 
