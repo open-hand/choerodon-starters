@@ -1,7 +1,7 @@
 package io.choerodon.mybatis;
 
 import io.choerodon.mybatis.autoconfigure.MapperOverrideProperties;
-import io.choerodon.mybatis.common.CustomProvider;
+import io.choerodon.base.provider.CustomProvider;
 import io.choerodon.mybatis.util.OGNL;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
 import org.slf4j.Logger;

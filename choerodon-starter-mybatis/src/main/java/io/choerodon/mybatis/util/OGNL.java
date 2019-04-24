@@ -1,6 +1,6 @@
 package io.choerodon.mybatis.util;
 
-import io.choerodon.mybatis.common.CustomProvider;
+import io.choerodon.base.provider.CustomProvider;
 import tk.mybatis.mapper.util.StringUtil;
 
 import java.util.Set;
