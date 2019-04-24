@@ -3,8 +3,8 @@ package io.choerodon.oauth.core.password.validator.login;
 import io.choerodon.oauth.core.password.PasswordPolicyMap;
 import io.choerodon.oauth.core.password.PasswordPolicyType;
 import io.choerodon.oauth.core.password.PasswordStrategy;
-import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDO;
-import io.choerodon.oauth.core.password.domain.BaseUserDO;
+import io.choerodon.oauth.core.password.domain.BaseLoginAttemptTimesDTO;
+import io.choerodon.oauth.core.password.domain.BaseUserDTO;
 import io.choerodon.oauth.core.password.mapper.BaseLoginAttemptTimesMapper;
 
 /**
@@ -21,11 +21,11 @@ public class MaxErrorTimeStrategy implements PasswordStrategy {
     }
 
     @Override
-    public Boolean validate(PasswordPolicyMap policyMap, BaseUserDO userDO, String password) {
+    public Boolean validate(PasswordPolicyMap policyMap, BaseUserDTO userDO, String password) {
         Integer max = (Integer) policyMap.getLoginConfig().get(TYPE);
         Boolean enableLock = (Boolean) policyMap.getLoginConfig().get(ENABLE_LOCK_TYPE);
         if (enableLock) {
-            BaseLoginAttemptTimesDO loginAttemptTimesDO = new BaseLoginAttemptTimesDO();
+            BaseLoginAttemptTimesDTO loginAttemptTimesDO = new BaseLoginAttemptTimesDTO();
             loginAttemptTimesDO.setUserId(userDO.getId());
             loginAttemptTimesDO = loginAttemptTimesMapper.selectOne(loginAttemptTimesDO);
             if (loginAttemptTimesDO == null) {
