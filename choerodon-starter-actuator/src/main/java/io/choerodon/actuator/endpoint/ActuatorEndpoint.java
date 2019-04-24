@@ -23,8 +23,8 @@ import java.util.TreeMap;
 @RestController
 @RequestMapping("/choerodon/actuator")
 public class ActuatorEndpoint {
+    private JsonNode microServiceInitData;
     private Map<String, PermissionDescription> permissions = new HashMap<>();
-    private JsonNode microServiceInitData = JsonNodeFactory.instance.objectNode();
     private ObjectMapper objectMapper = new ObjectMapper();
     private Logger logger = LoggerFactory.getLogger(ActuatorEndpoint.class);
 
@@ -41,12 +41,15 @@ public class ActuatorEndpoint {
             result.put("permission", permissions);
         }
         if ("init-data".equals(key) || "all".equals(key)){
-            if (microServiceInitData.size() == 0){
+            if (microServiceInitData == null){
                 try {
                     microServiceInitData = objectMapper.readTree(getClass().getResourceAsStream("/CHOERODON-META/micro-service-init-data.json"));
                 } catch (IOException e) {
                     logger.warn("Micro util init data read exception", e);
                 }
+            }
+            if (microServiceInitData == null){
+                microServiceInitData = JsonNodeFactory.instance.objectNode();
             }
             result.put("init-data", microServiceInitData);
         }

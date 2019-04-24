@@ -12,7 +12,6 @@ import liquibase.exception.CustomChangeException;
 import liquibase.exception.LiquibaseException;
 import liquibase.parser.ChangeLogParser;
 import liquibase.parser.ChangeLogParserFactory;
-import liquibase.parser.core.yaml.YamlParser;
 import liquibase.parser.ext.GroovyLiquibaseChangeLogParser;
 import liquibase.resource.ResourceAccessor;
 import org.apache.commons.io.FileUtils;
@@ -272,7 +271,7 @@ public class LiquibaseExecutor {
 
             //执行groovy脚本
             for (String file : nameList) {
-                if (file.endsWith(SUFFIX_GROOVY) && !file.endsWith(FINAL_SUFFIX_GROOVY)) {
+                if (file.endsWith(SUFFIX_GROOVY) && !file.endsWith(FINAL_SUFFIX_GROOVY) && file.contains(PREFIX_SCRIPT_DB)) {
                     liquibase = new Liquibase(file, accessor, jdbcConnection);
                     liquibase.update(new Contexts());
                 }
@@ -280,7 +279,7 @@ public class LiquibaseExecutor {
             if(defaultInit){
                 //初始化数据
                 for (String file : nameList) {
-                    if (file.endsWith(SUFFIX_XLSX)) {
+                    if (file.endsWith(SUFFIX_XLSX) && file.contains(PREFIX_SCRIPT_DB)) {
                         ExcelDataLoader loader = new ExcelDataLoader();
                         Set<InputStream> inputStream = accessor.getResourcesAsStream(file);
                         loader.setUpdateExclusionMap(updateExclusionMap);
@@ -291,7 +290,7 @@ public class LiquibaseExecutor {
             }
             //执行final groovy脚本
             for (String file : nameList) {
-                if (file.endsWith(FINAL_SUFFIX_GROOVY)) {
+                if (file.endsWith(FINAL_SUFFIX_GROOVY) && file.contains(PREFIX_SCRIPT_DB)) {
                     liquibase = new Liquibase(file, accessor, jdbcConnection);
                     liquibase.update(new Contexts());
                 }
@@ -300,27 +299,28 @@ public class LiquibaseExecutor {
         if ("all".equals(additionDataSource.getMode()) || "iam".equals(additionDataSource.getMode())){
             Set<InputStream> permissionInputStreams = accessor.getResourcesAsStream(PERMISSION_FILE_PATH);
             if (permissionInputStreams == null || permissionInputStreams.isEmpty()){
-                logger.warn("Data source {} is onlyIam but permission file not found.", additionDataSource.getName());
-                return;
-            }
-            Set<InputStream> bootstrapInputStreams = accessor.getResourcesAsStream(BOOTSTRAP_FILE_PATH);
-            String serviceCode = null;
-            if (bootstrapInputStreams == null || bootstrapInputStreams.isEmpty()){
-                logger.info("Data source {} bootstrap.yml file not found.", additionDataSource.getName());
+                logger.warn("Data source {} is iam mode but permission file not found.", additionDataSource.getName());
             } else {
-                Yaml yaml = new Yaml();
-                Map result = yaml.load(bootstrapInputStreams.iterator().next());
-                serviceCode = (String) ((Map)((Map)result.get("spring")).get("application")).get("name");
-                if (serviceCode == null || serviceCode.isEmpty()){
-                    logger.warn("Data source {} key spring.application.name not found in bootstrap.yml.", additionDataSource.getName());
-                    serviceCode = null;
+                Set<InputStream> bootstrapInputStreams = accessor.getResourcesAsStream(BOOTSTRAP_FILE_PATH);
+                String serviceCode = null;
+                if (bootstrapInputStreams == null || bootstrapInputStreams.isEmpty()){
+                    logger.info("Data source {} bootstrap.yml file not found.", additionDataSource.getName());
+                } else {
+                    Yaml yaml = new Yaml();
+                    Map result = yaml.load(bootstrapInputStreams.iterator().next());
+                    serviceCode = (String) ((Map)((Map)result.get("spring")).get("application")).get("name");
+                    if (serviceCode == null || serviceCode.isEmpty()){
+                        logger.warn("Data source {} key spring.application.name not found in bootstrap.yml.", additionDataSource.getName());
+                        serviceCode = null;
+                    }
+                }
+                InputStream permissionInputStream = permissionInputStreams.iterator().next();
+                PermissionLoader permissionLoader = new PermissionLoader();
+                permissionLoader.setServiceCode(serviceCode);
+                try(Connection connection = additionDataSource.getDataSource().getConnection()){
+                    permissionLoader.execute(permissionInputStream, connection);
                 }
             }
-            InputStream permissionInputStream = permissionInputStreams.iterator().next();
-            PermissionLoader permissionLoader = new PermissionLoader();
-            permissionLoader.setServiceCode(serviceCode);
-            permissionLoader.execute(permissionInputStream, additionDataSource.getDataSource().getConnection());
-            return;
         }
     }
 
