@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import io.choerodon.core.oauth.resource.DateDeserializer;
 import io.choerodon.core.oauth.resource.DateSerializer;
@@ -46,20 +45,6 @@ public class ResourceServerConfig {
         mapper.registerModule(javaTimeModule);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper;
-    }
-
-    /**
-     * messageBean配置文件
-     *
-     * @return Bean
-     */
-    @Bean(name = "messageSource")
-    public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageBundle =
-                new ReloadableResourceBundleMessageSource();
-        messageBundle.setBasename("classpath:messages/messages");
-        messageBundle.setDefaultEncoding("UTF-8");
-        return messageBundle;
     }
 
     /**
