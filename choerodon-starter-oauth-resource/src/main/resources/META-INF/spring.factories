@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.choerodon.resource.ResourceServerConfig
+io.choerodon.resource.ResourceServerConfig,\
+io.choerodon.resource.MessageSourceConfig
