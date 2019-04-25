@@ -1,4 +1,4 @@
-package io.choerodon.mybatis.common;
+package io.choerodon.base.provider;
 
 import java.util.Set;
 

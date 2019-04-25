@@ -1,7 +1,7 @@
 package io.choerodon.redis;
 
 import io.choerodon.message.IMessagePublisher;
-import io.choerodon.mybatis.common.CustomProvider;
+import io.choerodon.base.provider.CustomProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
