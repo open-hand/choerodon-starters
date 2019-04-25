@@ -1,11 +1,9 @@
 package io.choerodon.annotation.entity;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-
 public class PermissionDescription {
     private String path;
     private String service;
-    private RequestMethod method;
+    private String method;
     private PermissionEntity permission;
 
     public String getPath() {
@@ -16,11 +14,11 @@ public class PermissionDescription {
         this.path = path;
     }
 
-    public RequestMethod getMethod() {
+    public String getMethod() {
         return method;
     }
 
-    public void setMethod(RequestMethod method) {
+    public void setMethod(String method) {
         this.method = method;
     }
 
