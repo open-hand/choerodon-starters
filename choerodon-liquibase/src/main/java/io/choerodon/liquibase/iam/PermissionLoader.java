@@ -45,9 +45,9 @@ public class PermissionLoader {
             description.setPermission(permissionEntity);
         }
         if (checkExists(makeCode(description.getService(), resource, action))){
-            update(description.getPermission(), description.getPath(), description.getMethod().name(), description.getService(), resource, action);
+            update(description.getPermission(), description.getPath(), description.getMethod(), description.getService(), resource, action);
         } else {
-            insert(description.getPermission(), description.getPath(), description.getMethod().name(), description.getService(), resource, action);
+            insert(description.getPermission(), description.getPath(), description.getMethod(), description.getService(), resource, action);
         }
     }
 

@@ -51,7 +51,7 @@ public class PermissionProcessor {
             if (methodMapping.method().length > 0){
                 requestMethod = methodMapping.method()[0];
             }
-            description.setMethod(requestMethod);
+            description.setMethod(requestMethod.name().toLowerCase());
             Permission permission = AnnotationUtils.getAnnotation(method, Permission.class);
             if (permission != null) {
                 PermissionEntity permissionEntity = new PermissionEntity();
