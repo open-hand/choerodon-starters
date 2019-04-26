@@ -60,8 +60,8 @@ public class PermissionLoader {
     }
 
     private void update(PermissionEntity permission, String path, String method, String service, String resource, String action) throws SQLException {
-        try(PreparedStatement ps = connection.prepareStatement("UPDATE iam_permission SET PATH=?, SERVICE_CODE=?, FD_RESOURCE=?, ACTION=?" +
-                ", METHOD=?, RESOURCE_LEVEL=?, IS_PUBLIC_ACCESS=?, IS_LOGIN_ACCESS=?, WITHIN=? WHERE CODE=?")){
+        try(PreparedStatement ps = connection.prepareStatement("UPDATE iam_permission SET PATH=?, SERVICE_CODE=?, CONTROLLER=?, ACTION=?" +
+                ", METHOD=?, RESOURCE_LEVEL=?, IS_PUBLIC_ACCESS=?, IS_LOGIN_ACCESS=?, IS_WITHIN=? WHERE CODE=?")){
             ps.setString(1, path);
             ps.setString(2, service);
             ps.setString(3, resource);
@@ -79,8 +79,8 @@ public class PermissionLoader {
     }
 
     private void insert(PermissionEntity permission, String path, String method, String service, String resource, String action) throws SQLException {
-        try(PreparedStatement ps = connection.prepareStatement("INSERT INTO iam_permission (CODE, PATH, SERVICE_CODE, FD_RESOURCE, ACTION, METHOD," +
-                " RESOURCE_LEVEL, IS_PUBLIC_ACCESS, IS_LOGIN_ACCESS, WITHIN) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
+        try(PreparedStatement ps = connection.prepareStatement("INSERT INTO iam_permission (CODE, PATH, SERVICE_CODE, CONTROLLER, ACTION, METHOD," +
+                " RESOURCE_LEVEL, IS_PUBLIC_ACCESS, IS_LOGIN_ACCESS, IS_WITHIN) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")){
             ps.setString(1, makeCode(service, resource, action));
             ps.setString(2, path);
             ps.setString(3, service);
