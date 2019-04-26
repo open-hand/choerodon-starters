@@ -11,7 +11,7 @@ spring:
 data:
   drop: true
   dir: src/test/resources
-  init: false
+  init: true
   update:
     exclusion: FD_ORGANIZATION.NAME,FD_ORGANIZATION,IAM_LABEL.TYPE,IAM_LABEL.FD_LEVEL
 addition:

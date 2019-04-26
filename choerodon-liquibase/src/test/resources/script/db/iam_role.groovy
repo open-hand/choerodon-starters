@@ -2,8 +2,8 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'script/db/iam_role.groovy') {
     changeSet(author: 'jcalaz@163.com', id: '2018-03-21-iam-role') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'IAM_ROLE_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'IAM_ROLE_S', startValue: "1")
         }
         createTable(tableName: "IAM_ROLE") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: '表ID，主键，供其他表做外键，unsigned bigint、单表时自增、步长为 1') {
@@ -65,4 +65,10 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_role.groovy') {
     changeSet(author: 'superleader8@gmail.com', id: '2018-08-27-rename') {
         renameColumn(columnDataType: 'VARCHAR(32)', newColumnName: "FD_LEVEL", oldColumnName: "LEVEL", remarks: '角色级别', tableName: 'IAM_ROLE')
     }
+
+    changeSet(author: 'superlee', id: '2019-04-16-role-upgrade') {
+        renameColumn(columnDataType: 'VARCHAR(32)', newColumnName: "RESOURCE_LEVEL", oldColumnName: "FD_LEVEL", remarks: '角色层级site/organization/project', tableName: 'IAM_ROLE')
+        dropColumn(tableName: 'IAM_ROLE', ColumnName: 'IS_ASSIGNABLE')
+    }
+
 }

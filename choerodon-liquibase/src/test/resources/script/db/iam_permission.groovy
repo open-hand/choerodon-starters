@@ -76,11 +76,22 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_permission.groovy') {
         }
     }
 
-    changeSet(author: 'xausky@163.com', id: '2019-04-11-iam-reform') {
-        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "SERVICE_CODE", oldColumnName: "SERVICE_NAME", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
-        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "IS_PUBLIC_ACCESS", oldColumnName: "PUBLIC_ACCESS", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
-        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "IS_LOGIN_ACCESS", oldColumnName: "LOGIN_ACCESS", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
-        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "RESOURCE_LEVEL", oldColumnName: "FD_LEVEL", remarks: '权限所在的服务代码', tableName: 'IAM_PERMISSION')
+    changeSet(author: 'superlee', id: '2019-03-20-rename-within-column') {
+        renameColumn(columnDataType: 'TINYINT UNSIGNED', newColumnName: "IS_WITHIN", oldColumnName: "WITHIN", remarks: '是否为内部接口', tableName: 'IAM_PERMISSION')
     }
 
+    changeSet(author: 'superlee', id: '2019-04-16-upgrade-permission') {
+        renameColumn(columnDataType: 'VARCHAR(64)', newColumnName: "RESOURCE_LEVEL", oldColumnName: "FD_LEVEL", remarks: '权限的层级', tableName: 'IAM_PERMISSION')
+        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "CONTROLLER", oldColumnName: "FD_RESOURCE", remarks: 'controller名', tableName: 'IAM_PERMISSION')
+        renameColumn(columnDataType: 'VARCHAR(128)', newColumnName: "SERVICE_CODE", oldColumnName: "SERVICE_NAME", remarks: '权限所在的服务名称', tableName: 'IAM_PERMISSION')
+        renameColumn(columnDataType: 'TINYINT UNSIGNED', newColumnName: "IS_PUBLIC_ACCESS", oldColumnName: "PUBLIC_ACCESS", remarks: '是否公开的权限', tableName: 'IAM_PERMISSION')
+        renameColumn(columnDataType: 'TINYINT UNSIGNED', newColumnName: "IS_LOGIN_ACCESS", oldColumnName: "LOGIN_ACCESS", remarks: '是否需要登录才能访问的权限', tableName: 'IAM_PERMISSION')
+        addColumn(tableName: 'IAM_PERMISSION') {
+            column(name: 'PERMISSION_TYPE', type: 'VARCHAR(128)', remarks: '类型包括url/api/page等', afterColumn: 'SERVICE_CODE', defaultValue: 'api')
+        }
+    }
+    changeSet(author: 'xausky', id: '2019-04-24-upgrade-nullable') {
+        dropNotNullConstraint(columnDataType: 'VARCHAR(64)', columnName: 'METHOD', tableName: 'IAM_PERMISSION')
+        dropNotNullConstraint(columnDataType: 'VARCHAR(64)', columnName: 'ACTION', tableName: 'IAM_PERMISSION')
+    }
 }

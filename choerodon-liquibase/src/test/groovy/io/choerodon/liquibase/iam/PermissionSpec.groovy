@@ -36,15 +36,15 @@ class PermissionSpec extends Specification {
         resultSet1.first()
         resultSet1.getInt("COUNT(*)") > 0
         resultSet1.close()
-        ResultSet resultSet2 = statement.executeQuery("SELECT SERVICE_CODE, WITHIN FROM iam_permission WHERE CODE = 'iam-service.user.listUsersByIds'")
+        ResultSet resultSet2 = statement.executeQuery("SELECT SERVICE_CODE, IS_WITHIN FROM iam_permission WHERE CODE = 'iam-service.user.listUsersByIds'")
         resultSet2.first()
         resultSet2.getString("SERVICE_CODE") == "iam-service"
-        resultSet2.getBoolean("WITHIN")
+        resultSet2.getBoolean("IS_WITHIN")
         resultSet2.close()
-        ResultSet resultSet3 = statement.executeQuery("SELECT SERVICE_CODE, WITHIN FROM iam_permission WHERE CODE = 'iam-service.user.query'")
+        ResultSet resultSet3 = statement.executeQuery("SELECT SERVICE_CODE, IS_WITHIN FROM iam_permission WHERE CODE = 'iam-service.user.query'")
         resultSet3.first()
         resultSet3.getString("SERVICE_CODE") == "iam-service"
-        !resultSet3.getBoolean("WITHIN")
+        !resultSet3.getBoolean("IS_WITHIN")
         resultSet3.close()
         statement.close()
         connection.close()
