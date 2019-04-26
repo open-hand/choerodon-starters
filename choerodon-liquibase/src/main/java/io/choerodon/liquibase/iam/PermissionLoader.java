@@ -40,7 +40,7 @@ public class PermissionLoader {
 
         if (description.getPermission() == null){
             PermissionEntity permissionEntity = new PermissionEntity();
-            permissionEntity.setType(ResourceType.PROJECT.toString());
+            permissionEntity.setType(ResourceType.SITE.value());
             permissionEntity.setPermissionWithin(true);
             description.setPermission(permissionEntity);
         }
