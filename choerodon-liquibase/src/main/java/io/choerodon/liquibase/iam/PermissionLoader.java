@@ -77,6 +77,7 @@ public class PermissionLoader {
         for (String roleCode : roles){
             Long roleId = roleMap.get(roleCode);
             if (roleId == null){
+                System.out.println(roleMap);
                 throw new IllegalArgumentException(String.format("role code [%s] not found.", roleCode));
             }
             try(PreparedStatement ps = connection.prepareStatement("INSERT INTO iam_role_permission (ROLE_ID, PERMISSION_ID) VALUES (?, ?)")) {

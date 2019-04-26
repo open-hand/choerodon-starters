@@ -323,6 +323,7 @@ public class LiquibaseExecutor {
                         permissionLoader.execute(permissionInputStream, connection);
                         connection.commit();
                     } catch (Exception e) {
+                        e.printStackTrace();
                         connection.rollback();
                     }
                 }
