@@ -318,7 +318,13 @@ public class LiquibaseExecutor {
                 PermissionLoader permissionLoader = new PermissionLoader();
                 permissionLoader.setServiceCode(serviceCode);
                 try(Connection connection = additionDataSource.getDataSource().getConnection()){
-                    permissionLoader.execute(permissionInputStream, connection);
+                    connection.setAutoCommit(false);
+                    try {
+                        permissionLoader.execute(permissionInputStream, connection);
+                        connection.commit();
+                    } catch (Exception e) {
+                        connection.rollback();
+                    }
                 }
             }
         }

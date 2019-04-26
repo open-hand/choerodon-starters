@@ -1,7 +1,7 @@
 package io.choerodon.annotation.entity;
 
 public class PermissionEntity {
-    private String[] roles;
+    private String[] roles = new String[0];
     private String type;
     private boolean permissionLogin;
     private boolean permissionPublic;

@@ -11,13 +11,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class PermissionLoader {
     private String serviceCode;
     private static final char UNDERLINE = '-';
     private Connection connection;
+    private Map<String, Long> roleMap;
 
     public void setServiceCode(String serviceCode) {
         this.serviceCode = serviceCode;
@@ -25,6 +30,7 @@ public class PermissionLoader {
 
     public void execute(InputStream inputStream, Connection connection) throws IOException, SQLException {
         this.connection = connection;
+        this.roleMap = queryRoleMap();
         ObjectMapper objectMapper = new ObjectMapper();
         Map <String, PermissionDescription> descriptions = objectMapper.readValue(inputStream, objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, PermissionDescription.class));
         for (Map.Entry<String, PermissionDescription> entry : descriptions.entrySet()){
@@ -44,10 +50,42 @@ public class PermissionLoader {
             permissionEntity.setPermissionWithin(true);
             description.setPermission(permissionEntity);
         }
-        if (checkExists(makeCode(description.getService(), resource, action))){
+        Long permissionKey = queryPermission(makeCode(description.getService(), resource, action));
+        if (permissionKey != null){
             update(description.getPermission(), description.getPath(), description.getMethod(), description.getService(), resource, action);
         } else {
             insert(description.getPermission(), description.getPath(), description.getMethod(), description.getService(), resource, action);
+            permissionKey = queryPermission(makeCode(description.getService(), resource, action));
+            insertRolePermission(permissionKey, new HashSet<>(Arrays.asList(description.getPermission().getRoles())));
+        }
+    }
+
+    private Map<String, Long> queryRoleMap() throws SQLException {
+        Map<String, Long> result = new HashMap<>();
+        try(PreparedStatement ps = connection.prepareStatement("SELECT ID, CODE FROM iam_role")){
+            try(ResultSet resultSet = ps.executeQuery()){
+                while (resultSet.next()){
+                    result.put(resultSet.getString("CODE"), resultSet.getLong("ID"));
+                }
+            }
+        }
+        return result;
+    }
+
+    private void insertRolePermission(Long permissionKey, Set<String> roles) throws SQLException {
+        roles.add("ADMIN");
+        for (String roleCode : roles){
+            Long roleId = roleMap.get(roleCode);
+            if (roleId == null){
+                throw new IllegalArgumentException(String.format("role code [%s] not found.", roleCode));
+            }
+            try(PreparedStatement ps = connection.prepareStatement("INSERT INTO iam_role_permission (ROLE_ID, PERMISSION_ID) VALUES (?, ?)")) {
+                ps.setLong(1, roleId);
+                ps.setLong(2, permissionKey);
+                if (ps.executeUpdate() != 1){
+                    throw new IllegalStateException("update permission result not one.");
+                }
+            }
         }
     }
 
@@ -73,7 +111,7 @@ public class PermissionLoader {
             ps.setBoolean(9, permission.isPermissionWithin());
             ps.setString(10, makeCode(service, resource, action));
             if (ps.executeUpdate() != 1){
-                throw new RuntimeException("update permission result not one.");
+                throw new IllegalStateException("update permission result not one.");
             }
         }
     }
@@ -92,17 +130,19 @@ public class PermissionLoader {
             ps.setBoolean(9, permission.isPermissionLogin());
             ps.setBoolean(10, permission.isPermissionWithin());
             if (ps.executeUpdate() != 1){
-                throw new RuntimeException("update permission result not one.");
+                throw new IllegalStateException("update permission result not one.");
             }
         }
     }
 
-    private boolean checkExists(String code) throws SQLException {
-        try(PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM iam_permission WHERE CODE=?")){
+    private Long queryPermission(String code) throws SQLException {
+        try(PreparedStatement ps = connection.prepareStatement("SELECT ID FROM iam_permission WHERE CODE=?")){
             ps.setString(1, code);
             try(ResultSet resultSet = ps.executeQuery()){
-                resultSet.first();
-                return resultSet.getInt("COUNT(*)") > 0;
+                if(resultSet.first()){
+                    return resultSet.getLong("ID");
+                }
+                return null;
             }
         }
     }
