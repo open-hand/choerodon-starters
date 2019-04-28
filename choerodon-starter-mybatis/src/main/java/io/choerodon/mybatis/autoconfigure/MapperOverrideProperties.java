@@ -20,10 +20,10 @@ public class MapperOverrideProperties extends MybatisProperties {
             try {
                 String[] split = result[i].getURI().toString().split("classes/");
                 if (split.length != 2){
-                    split = result[i].getURI().toString().split(".jar!/");
+                    split = result[i].getURI().toString().split("!/");
                 }
                 //将出现过的Resource置为null，mybatis会忽略这些null
-                if (split.length == 2 && !mapperFilePath.add(split[1])){
+                if (split.length >= 2 && !mapperFilePath.add(split[split.length - 1])){
                     result[i] = null;
                 }
             } catch (IOException e) {
