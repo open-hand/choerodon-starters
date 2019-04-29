@@ -5,8 +5,7 @@ package io.choerodon.base.exception;
  * 基础异常类.
  *
  * @author njq.niu@hand-china.com
- *         <p>
- *         2016年1月28日
+ * @since 2016年1月28日
  */
 public abstract class BaseException extends Exception implements IBaseException {
 
@@ -26,7 +25,7 @@ public abstract class BaseException extends Exception implements IBaseException 
      * @param descriptionKey 异常消息代码,系统描述中定义
      * @param parameters     如果没有参数,可以传 null
      */
-    protected BaseException(String code, String descriptionKey, Object[] parameters) {
+    public BaseException(String code, String descriptionKey, Object... parameters) {
         super(descriptionKey);
         this.code = code;
         this.descriptionKey = descriptionKey;

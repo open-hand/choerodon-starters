@@ -22,7 +22,6 @@ public interface IRequest extends Serializable {
     String FIELD_EMPLOYEE_CODE = "employeeCode";
     String FIELD_LOCALE = "locale";
     String FIELD_ROLE_ID = "roleId";
-    String FIELD_LOGIN_ID = "loginId";
     String FIELD_ALL_ROLE_ID = "roleIds";
 
     String MDC_PREFIX = "MDC.";
