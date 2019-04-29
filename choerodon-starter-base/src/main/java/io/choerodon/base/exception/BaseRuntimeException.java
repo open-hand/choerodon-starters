@@ -2,7 +2,7 @@ package io.choerodon.base.exception;
 
 /**
  * @author xiangyu.qi@hand-china.com
- * @since 2018/3/27.
+ * @since 2018/3/27
  */
 public class BaseRuntimeException extends RuntimeException implements IBaseException {
 
@@ -13,6 +13,13 @@ public class BaseRuntimeException extends RuntimeException implements IBaseExcep
 
     private Object[] parameters;
 
+    public BaseRuntimeException(String code, Object... parameters) {
+        super(code);
+        this.code = code;
+        this.descriptionKey = code;
+        this.parameters = parameters;
+    }
+
     /**
      * 不应该直接实例化,应该定义子类.
      *
@@ -20,7 +27,7 @@ public class BaseRuntimeException extends RuntimeException implements IBaseExcep
      * @param descriptionKey 异常消息代码,系统描述中定义
      * @param parameters     如果没有参数,可以传 null
      */
-    protected BaseRuntimeException(String code, String descriptionKey, Object[] parameters) {
+    public BaseRuntimeException(String code, String descriptionKey, Object... parameters) {
         super(descriptionKey);
         this.code = code;
         this.descriptionKey = descriptionKey;
