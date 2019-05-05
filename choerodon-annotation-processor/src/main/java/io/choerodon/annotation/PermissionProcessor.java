@@ -3,7 +3,9 @@ package io.choerodon.annotation;
 import io.choerodon.annotation.entity.PermissionDescription;
 import io.choerodon.annotation.entity.PermissionEntity;
 import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.base.helper.ApplicationContextHelper;
+import io.choerodon.dataset.annotation.Dataset;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 public class PermissionProcessor {
@@ -35,6 +38,27 @@ public class PermissionProcessor {
             for (Method method : clazz.getMethods()) {
                 resolveMethod(clazz, method, controllerPath, descriptions);
             }
+        }
+        Dataset dataset = AnnotationUtils.findAnnotation(clazz, Dataset.class);
+        if (dataset != null){
+            resolveDataset(descriptions, dataset.value());
+        }
+    }
+
+    private static void resolveDataset(Map<String, PermissionDescription> descriptions, String name){
+        String[] datasetActions = new String[]{"queries", "mutations", "languages", "validate", "export"};
+        for (String action : datasetActions){
+            PermissionDescription description = new PermissionDescription();
+            PermissionEntity permissionEntity = new PermissionEntity();
+            permissionEntity.setType(ResourceType.SITE.value());
+            permissionEntity.setPermissionLogin(false);
+            permissionEntity.setPermissionWithin(false);
+            permissionEntity.setPermissionPublic(false);
+
+            description.setPath(String.format("/dataset/%s/%s", name, action));
+            description.setPermission(permissionEntity);
+            description.setMethod("post");
+            descriptions.put(String.format("io.cherodon.dataset.%sDatasetController.%s", name, action), description);
         }
     }
 
