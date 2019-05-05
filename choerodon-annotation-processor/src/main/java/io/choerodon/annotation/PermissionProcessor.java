@@ -2,10 +2,9 @@ package io.choerodon.annotation;
 
 import io.choerodon.annotation.entity.PermissionDescription;
 import io.choerodon.annotation.entity.PermissionEntity;
+import io.choerodon.base.annotation.Dataset;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.base.helper.ApplicationContextHelper;
-import io.choerodon.dataset.annotation.Dataset;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 public class PermissionProcessor {
