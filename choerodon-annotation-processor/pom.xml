@@ -23,7 +23,12 @@
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-base</artifactId>
-            <version>${project.version}</version>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-dataset-api</artifactId>
+            <version>${parent.version}</version>
         </dependency>
     </dependencies>
 </project>
