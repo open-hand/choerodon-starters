@@ -26,9 +26,6 @@ import javax.annotation.PostConstruct;
 @PropertySource("classpath:default-choerodon-mybatis-config.properties")
 public class ChoerodonMybatisAutoConfiguration {
 
-    @Value("${db.type}")
-    private String dbType;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonMybatisAutoConfiguration.class);
 
     @Autowired(required = false)

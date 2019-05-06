@@ -30,3 +30,5 @@ eureka:
 management:
   port: 0 #设置管理端口为随机端口
 db.type: mysql
+choerodon:
+  tenant-column: tenantId

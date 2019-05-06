@@ -16,7 +16,7 @@ import java.sql.Connection
 
 @Import([LiquibaseConfig])
 @SpringBootTest(classes = TestApplication, properties = "spring.application.name=test-app")
-class MicroServiceInitDataTest extends Specification {
+class ActuatorSpec extends Specification {
     @Autowired
     LiquibaseExecutor liquibaseExecutor;
     @Autowired
@@ -41,5 +41,20 @@ class MicroServiceInitDataTest extends Specification {
         noExceptionThrown()
         jdbcTemplate.queryForObject("SELECT COUNT(*) FROM IAM_MENU_B", Integer.class) == 1
         jdbcTemplate.queryForObject("SELECT COUNT(*) FROM IAM_MENU_TL", Integer.class) == 2
+    }
+
+    def "Actuator Test" () {
+        when:
+        Map<String, Object> result1 = endpoint.query("permission")
+        then:
+        result1.size() > 0
+        when:
+        Map<String, Object> result2 = endpoint.query("all")
+        then:
+        result2.size() > 0
+        when:
+        Map<String, Object> result3 = endpoint.query("not match key")
+        then:
+        result3.size() == 0
     }
 }
