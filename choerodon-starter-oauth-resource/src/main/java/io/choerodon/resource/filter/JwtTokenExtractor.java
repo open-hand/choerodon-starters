@@ -40,7 +40,7 @@ public class JwtTokenExtractor implements TokenExtractor {
     }
 
     protected String extractHeaderToken(HttpServletRequest request) {
-        Enumeration headers = request.getHeaders(RequestVariableHolder.HEADER_JWT);
+        Enumeration headers = request.getHeaders(RequestVariableHolder.HEADER_TOKEN);
 
         String value;
         do {
