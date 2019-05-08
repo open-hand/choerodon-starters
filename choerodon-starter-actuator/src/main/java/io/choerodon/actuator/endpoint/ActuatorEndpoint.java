@@ -39,7 +39,7 @@ public class ActuatorEndpoint {
     @Value("${spring.datasource.url:null}")
     private String datasourceUrl;
 
-    @Value("${choerodon.tenant-column:organizationId}")
+    @Value("${choerodon.tenant-column:ORGANIZATION_ID}")
     private String tenantColumn;
 
     @Autowired
