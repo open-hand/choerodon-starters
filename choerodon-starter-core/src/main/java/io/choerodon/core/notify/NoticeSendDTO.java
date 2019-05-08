@@ -6,6 +6,21 @@ import java.util.Map;
 public class NoticeSendDTO {
 
     /**
+     * 发送邮件
+     */
+    public static final String EMAIL = "email";
+
+    /**
+     * 发送站内信
+     */
+    public static final String SITE_MESSAGE = "siteMessage";
+
+    /**
+     * 发送短信
+     */
+    public static final String SMS = "sms";
+
+    /**
      * 发送的业务类型code
      */
     private String code;
@@ -19,6 +34,11 @@ public class NoticeSendDTO {
      * 发送者(目前用于发送站内信的发送者字段)
      */
     private User fromUser;
+
+    /**
+     * 自定义发送类型
+     */
+    private List<String> customizedSendingTypes;
 
     /**
      * 目标用户
@@ -92,4 +112,34 @@ public class NoticeSendDTO {
     public void setTargetUsers(List<User> targetUsers) {
         this.targetUsers = targetUsers;
     }
+
+    public List<String> getCustomizedSendingTypes() {
+        return customizedSendingTypes;
+    }
+
+    public void setCustomizedSendingTypes(List<String> customizedSendingTypes) {
+        this.customizedSendingTypes = customizedSendingTypes;
+    }
+
+    public boolean isSendingEmail() {
+        if (this.customizedSendingTypes == null) {
+            return false;
+        }
+        return customizedSendingTypes.contains(EMAIL);
+    }
+
+    public boolean isSendingSiteMessage() {
+        if (this.customizedSendingTypes == null) {
+            return false;
+        }
+        return customizedSendingTypes.contains(SITE_MESSAGE);
+    }
+
+    public boolean isSendingSMS() {
+        if (this.customizedSendingTypes == null) {
+            return false;
+        }
+        return customizedSendingTypes.contains(SMS);
+    }
+
 }
