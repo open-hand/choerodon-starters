@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @RestController
-@RequestMapping("/choerodon/actuator")
+@RequestMapping("/choerodon")
 public class ActuatorEndpoint {
     private JsonNode microServiceInitData;
     private MetadataDatabase metadata = null;
@@ -45,7 +45,7 @@ public class ActuatorEndpoint {
     @Autowired
     private IMetadataDriver metadataDriver;
 
-    @GetMapping("/{key}")
+    @GetMapping("/actuator/{key}")
     private Map<String, Object> query(@PathVariable String key) {
         Map<String, Object> result = new TreeMap<>();
         if ("permission".equals(key) || "all".equals(key)){
@@ -67,19 +67,24 @@ public class ActuatorEndpoint {
             }
             result.put("init-data", microServiceInitData);
         }
-        if ("metadata".equals(key) || "all".equals(key)){
-            if (metadata == null){
-                try {
-                    metadata = new MetadataDatabase();
-                    metadata.setType(datasourceUrl.split(":")[1]);
-                    metadata.setTenantColumn(tenantColumn);
-                    metadata.setTables(metadataDriver.selectTables());
-                } catch (SQLException e) {
-                    logger.warn("Read metadata exception", e);
-                }
-            }
-            result.put("metadata", metadata);
-        }
         return result;
     }
+
+    @GetMapping("/metadata")
+    private Map<String, Object> queryMetadata() {
+        Map<String, Object> result = new TreeMap<>();
+        if (metadata == null){
+            try {
+                metadata = new MetadataDatabase();
+                metadata.setType(datasourceUrl.split(":")[1]);
+                metadata.setTenantColumn(tenantColumn);
+                metadata.setTables(metadataDriver.selectTables());
+            } catch (SQLException e) {
+                logger.warn("Read metadata exception", e);
+            }
+        }
+        result.put("metadata", metadata);
+        return result;
+    }
+
 }
