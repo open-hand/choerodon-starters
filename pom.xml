@@ -54,6 +54,7 @@
     <modules>
         <module>choerodon-gitlab4j-api</module>
         <module>choerodon-liquibase</module>
+        <module>choerodon-markdown2html</module>
         <module>choerodon-starter-asgard</module>
         <module>choerodon-starter-config-client</module>
         <module>choerodon-starter-core</module>
