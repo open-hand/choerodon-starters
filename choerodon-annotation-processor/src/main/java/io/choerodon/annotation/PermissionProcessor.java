@@ -68,7 +68,7 @@ public class PermissionProcessor {
                 methodPath = methodMapping.value()[0];
             }
             PermissionDescription description = new PermissionDescription();
-            description.setPath(controllerPath + methodPath);
+            description.setPath(processPath(controllerPath + methodPath));
             RequestMethod requestMethod = RequestMethod.GET;
             if (methodMapping.method().length > 0){
                 requestMethod = methodMapping.method()[0];
@@ -86,5 +86,12 @@ public class PermissionProcessor {
             }
             descriptions.put(clazz.getName() + "." + method.getName(), description);
         }
+    }
+
+    private static String processPath(String path){
+        if (!path.startsWith("/")){
+            path = "/" + path;
+        }
+        return path.replace("//", "/");
     }
 }
