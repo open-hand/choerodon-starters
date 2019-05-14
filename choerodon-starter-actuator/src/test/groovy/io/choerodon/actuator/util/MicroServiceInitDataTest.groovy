@@ -53,8 +53,12 @@ class ActuatorSpec extends Specification {
         then:
         result2.size() > 0
         when:
-        Map<String, Object> result3 = endpoint.query("not match key")
+        Map<String, Object> result3 = endpoint.queryMetadata()
         then:
-        result3.size() == 0
+        result3.size() > 0
+        when:
+        Map<String, Object> result4 = endpoint.query("not match key")
+        then:
+        result4.size() == 0
     }
 }
