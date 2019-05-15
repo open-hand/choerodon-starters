@@ -65,6 +65,7 @@ public class BaseMetadataDriver implements IMetadataDriver {
                 String originTableName = columnsResult.getString("TABLE_NAME");
                 String tableName = originTableName.toLowerCase();
                 String columnName = columnsResult.getString("COLUMN_NAME").toUpperCase();
+                String tableSchema = columnsResult.getString("TABLE_CAT");
                 if (isSkip(tableName, columnName)) {
                     continue;
                 }
@@ -72,6 +73,7 @@ public class BaseMetadataDriver implements IMetadataDriver {
                 if (table == null) {
                     table = new MetadataTable();
                     table.setTableName(tableName);
+                    table.setSchema(tableSchema);
                     table.setMultiLanguage(false);
                     table.setColumns(new LinkedList<>());
                     table.setPrimaryColumns(new TreeSet<>());
