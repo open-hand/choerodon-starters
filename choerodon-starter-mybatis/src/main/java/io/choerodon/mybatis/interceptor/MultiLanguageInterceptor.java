@@ -48,10 +48,12 @@ import static org.springframework.util.Assert.notNull;
  */
 @Order(2)
 @Component
-@Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
+@Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})})
 public class MultiLanguageInterceptor implements Interceptor {
 
     private Logger logger = LoggerFactory.getLogger(MultiLanguageInterceptor.class);
+    private static final String BASE_TABLE_SUFFIX = "_b";
+    private static final String MULTI_TABLE_SUFFIX = "_tl";
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -61,19 +63,19 @@ public class MultiLanguageInterceptor implements Interceptor {
             MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
             Object domain = invocation.getArgs()[1];
             Criteria criteria = null;
-            if(domain instanceof MapperMethod.ParamMap){
+            if (domain instanceof MapperMethod.ParamMap) {
                 Map map = ((Map) domain);
                 if (map.containsKey(SelectOptionsMapper.OPTIONS_CRITERIA)) {
                     criteria = (Criteria) ((Map) domain).get(SelectOptionsMapper.OPTIONS_CRITERIA);
                     domain = ((Map) domain).get(SelectOptionsMapper.OPTIONS_DTO);
                 }
             }
-            if (domain instanceof BaseDTO){
+            if (domain instanceof BaseDTO) {
                 BaseDTO dtoObj = (BaseDTO) domain;
                 if (mappedStatement.getSqlCommandType() == SqlCommandType.INSERT
                         || mappedStatement.getSqlCommandType() == SqlCommandType.UPDATE) {
                     Object obj = invocation.proceed();
-                    proceedMultiLanguage(dtoObj, invocation, mappedStatement,criteria);
+                    proceedMultiLanguage(dtoObj, invocation, mappedStatement, criteria);
                     return obj;
                 } else if (mappedStatement.getSqlCommandType() == SqlCommandType.DELETE) {
                     Object obj = invocation.proceed();
@@ -86,9 +88,9 @@ public class MultiLanguageInterceptor implements Interceptor {
         return invocation.proceed();
     }
 
-    private void proceedMultiLanguage(BaseDTO parameterObject, Invocation invocation, MappedStatement mappedStatement,Criteria criteria)
+    private void proceedMultiLanguage(BaseDTO parameterObject, Invocation invocation, MappedStatement mappedStatement, Criteria criteria)
             throws Exception {
-        Set<String> updateFields = criteria !=null ? criteria.getUpdateFields():null;
+        Set<String> updateFields = criteria != null ? criteria.getUpdateFields() : null;
         Class<?> clazz = parameterObject.getClass();
         MultiLanguage multiLanguageTable = clazz.getAnnotation(MultiLanguage.class);
         if (multiLanguageTable == null) {
@@ -103,15 +105,15 @@ public class MultiLanguageInterceptor implements Interceptor {
             proceedInsertMultiLanguage(tableName, parameterObject, (Executor) invocation.getTarget());
         } else if (mappedStatement.getSqlCommandType() == SqlCommandType.UPDATE) {
             if (parameterObject.get__tls().isEmpty()) {
-                proceedUpdateMultiLanguage(tableName, parameterObject, (Executor) invocation.getTarget(),updateFields);
+                proceedUpdateMultiLanguage(tableName, parameterObject, (Executor) invocation.getTarget(), updateFields);
             } else {
-                proceedUpdateMultiLanguage2(tableName, parameterObject, (Executor) invocation.getTarget(),updateFields);
+                proceedUpdateMultiLanguage2(tableName, parameterObject, (Executor) invocation.getTarget(), updateFields);
             }
         }
     }
 
-    private static String getTlTableName(String tableName){
-        return tableName.substring(0, tableName.length() - 2) + "_tl";
+    private static String getTlTableName(String baseTableName) {
+        return baseTableName.toLowerCase().endsWith(BASE_TABLE_SUFFIX) ? baseTableName.substring(0, baseTableName.length() - 2) + MULTI_TABLE_SUFFIX : baseTableName + MULTI_TABLE_SUFFIX;
     }
 
     private void proceedDeleteMultiLanguage(BaseDTO parameterObject, Invocation invocation)
@@ -144,7 +146,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         if (keys.size() > 0) {
             Executor executor = (Executor) invocation.getTarget();
             StringBuilder sql = new StringBuilder("DELETE FROM ");
-            sql.append(tableName).append(" WHERE ").append(String.join(" AND ",keys));
+            sql.append(tableName).append(" WHERE ").append(String.join(" AND ", keys));
             executeSql(executor.getTransaction().getConnection(), sql.toString(), objs);
         }
     }
@@ -169,7 +171,7 @@ public class MultiLanguageInterceptor implements Interceptor {
 
         for (EntityColumn column : EntityHelper.getEntityTable(clazz).getEntityClassColumns()) {
             CustomEntityColumn customEntityColumn = (CustomEntityColumn) column;
-            if(customEntityColumn.isMultiLanguage()){
+            if (customEntityColumn.isMultiLanguage()) {
                 keys.add(column.getColumn());
                 placeholders.add("?");
                 Map<String, String> tls = parameterObject.get__tls().get(column.getProperty());
@@ -194,7 +196,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         keys.add("LAST_UPDATE_DATE");
         placeholders.add("CURRENT_TIMESTAMP");
 
-        sql.append(String.join( ",", keys));
+        sql.append(String.join(",", keys));
         sql.append(") VALUES (").append(String.join(",", placeholders)).append(")");
 
         EntityField[] mlFields = ((CustomEntityTable) EntityHelper.getEntityTable(clazz)).getMultiLanguageColumns().stream().map(EntityColumn::getEntityField).toArray(EntityField[]::new);
@@ -218,7 +220,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         }
     }
 
-    private void proceedUpdateMultiLanguage(String tableName, BaseDTO parameterObject, Executor executor,Set<String> updateFields)
+    private void proceedUpdateMultiLanguage(String tableName, BaseDTO parameterObject, Executor executor, Set<String> updateFields)
             throws Exception {
         Class<?> clazz = parameterObject.getClass();
         List<String> sets = new ArrayList<>();
@@ -227,7 +229,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
         for (EntityColumn column : EntityHelper.getEntityTable(clazz).getEntityClassColumns()) {
             CustomEntityColumn customEntityColumn = (CustomEntityColumn) column;
-            if(customEntityColumn.isMultiLanguage()) {
+            if (customEntityColumn.isMultiLanguage()) {
                 EntityField field = column.getEntityField();
                 if (null != updateFields && !updateFields.isEmpty() && !updateFields.contains(field.getName())) {
                     continue;
@@ -259,7 +261,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         objs.add(OGNL.language());
 
         sql.append(String.join(",", sets));
-        sql.append(" WHERE ").append(String.join( " AND ", keys));
+        sql.append(" WHERE ").append(String.join(" AND ", keys));
         if (logger.isDebugEnabled()) {
             logger.debug("Update TL(Classic):{}", sql.toString());
             logger.debug("Parameters:{}", objs);
@@ -275,7 +277,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         }
     }
 
-    private void proceedUpdateMultiLanguage2(String tableName, BaseDTO parameterObject, Executor executor,Set<String> updateFields)
+    private void proceedUpdateMultiLanguage2(String tableName, BaseDTO parameterObject, Executor executor, Set<String> updateFields)
             throws Exception {
 
         Class<?> clazz = parameterObject.getClass();
@@ -287,7 +289,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         StringBuilder sql = new StringBuilder("UPDATE " + tableName + " SET ");
         for (EntityColumn column : EntityHelper.getEntityTable(clazz).getEntityClassColumns()) {
             CustomEntityColumn customEntityColumn = (CustomEntityColumn) column;
-            if(customEntityColumn.isMultiLanguage()) {
+            if (customEntityColumn.isMultiLanguage()) {
                 if (null != updateFields && !updateFields.isEmpty() && !updateFields.contains(column.getProperty())) {
                     continue;
                 }
@@ -370,7 +372,7 @@ public class MultiLanguageInterceptor implements Interceptor {
         Map<String, Map<String, String>> tls = parameterObject.get__tls();
         for (EntityColumn column : EntityHelper.getEntityTable(clazz).getEntityClassColumns()) {
             CustomEntityColumn customEntityColumn = (CustomEntityColumn) column;
-            if(customEntityColumn.isMultiLanguage()) {
+            if (customEntityColumn.isMultiLanguage()) {
                 sb.append(",").append(column.getColumn());
                 if (tls != null && tls.get(column.getProperty()) != null) {
                     values.add(tls.get(column.getProperty()).get(lang));
