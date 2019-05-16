@@ -117,6 +117,19 @@ class MybatisMapperSpec extends Specification {
         roleMapper.deleteByPrimaryKey(role) > 0
     }
 
+    def "Update Version Test" () {
+        when:
+        RoleTL role = roleTLMapper.selectByPrimaryKey(10001)
+        long oldVersionNumber = role.objectVersionNumber;
+        role.roleId = 10001
+        role.roleName = "wdqqfqdq"
+        roleTLMapper.updateByPrimaryKeySelective(role)
+        RoleTL versionRole = roleTLMapper.selectByPrimaryKey(10001)
+        then:
+        role.objectVersionNumber == oldVersionNumber + 1
+        versionRole.objectVersionNumber == oldVersionNumber + 1
+    }
+
     def "Audit Test"() {
         when:
         RoleTL role = new RoleTL()
