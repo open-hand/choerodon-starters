@@ -12,11 +12,21 @@ public class MetadataTable {
 
     private Boolean multiLanguage;
 
+    private String schema;
+
     private String lockedBy;
 
     private Set<String> primaryColumns;
 
     private List<MetadataColumn> columns;
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
 
     public String getLockedBy() {
         return lockedBy;

@@ -20,11 +20,13 @@ public class MicroServiceInitData {
      * @param data       actuator json 的 init-data 块
      * @param connection 数据库连接
      */
-    public static void processInitData(JsonNode data, Connection connection) throws SQLException {
+    public static void processInitData(JsonNode data, Connection connection, Set<String> tables) throws SQLException {
         Iterator<String> tableNames = data.fieldNames();
         while (tableNames.hasNext()) {
             String tableName = tableNames.next();
-            processTableData(data.get(tableName), tableName, connection);
+            if(tables.contains(tableName)){
+                processTableData(data.get(tableName), tableName, connection);
+            }
         }
     }
 

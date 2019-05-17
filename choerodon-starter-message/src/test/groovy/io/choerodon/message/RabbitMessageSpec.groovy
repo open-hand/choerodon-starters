@@ -1,7 +1,7 @@
 package io.choerodon.message
 
-import io.choerodon.base.entity.BaseEntity
 import io.choerodon.message.impl.rabbit.MessagePublisherImpl
+import io.choerodon.mybatis.entity.BaseDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Ignore
@@ -9,7 +9,8 @@ import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
 
-@Ignore //测试需要RabbitMQ环境，如果有条件可以删除这个注解，启用测试
+@Ignore
+//测试需要RabbitMQ环境，如果有条件可以删除这个注解，启用测试
 @SpringBootTest(webEnvironment = NONE, classes = [TestApplication], properties = ["message.provider=rabbitmq"])
 class RabbitMessageSpec extends Specification {
     @Autowired
@@ -20,7 +21,7 @@ class RabbitMessageSpec extends Specification {
     @Autowired
     MessagePublisherImpl messagePublisher;
 
-    def "Rabbit Message Publisher" () {
+    def "Rabbit Message Publisher"() {
         when:
         synchronized (messagePublisher) {
             messagePublisher.message("test:queue", null)
@@ -34,11 +35,11 @@ class RabbitMessageSpec extends Specification {
         monitor.queueCount == 2
     }
 
-    def "Rabbit Message Publisher Entity" () {
+    def "Rabbit Message Publisher Entity"() {
         when:
         synchronized (messagePublisher) {
-            messagePublisher.message("test:queueEntity", new BaseEntity())
-            messagePublisher.publish("test:topicEntity",  new BaseEntity())
+            messagePublisher.message("test:queueEntity", new BaseDTO())
+            messagePublisher.publish("test:topicEntity", new BaseDTO())
             messagePublisher.wait(100)
         }
         then:
