@@ -11,7 +11,7 @@ import java.util.List;
 @FeignClient(name = "${choerodon.saga.service:asgard-service}")
 public interface SagaConsumerClient {
 
-    @PostMapping("/v1/sagas/tasks/instances/poll")
+    @PostMapping("/v1/ext/sagas/tasks/instances/poll")
     List<SagaTaskInstanceDTO> pollBatch(@RequestBody PollSagaTaskInstanceDTO pollSagaTaskInstanceDTO);
 
 

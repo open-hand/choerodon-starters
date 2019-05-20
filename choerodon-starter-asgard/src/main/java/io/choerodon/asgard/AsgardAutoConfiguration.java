@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -40,6 +41,7 @@ import java.util.concurrent.*;
 @Configuration
 @EnableFeignClients
 @EnableConfigurationProperties({SagaProperties.class, ScheduleProperties.class})
+@PropertySource("classpath:asgard-client-hystrix-feign-config.properties")
 public class AsgardAutoConfiguration {
 
     @Value("${spring.application.name}")
