@@ -51,7 +51,7 @@ import java.util.List;
  * @author liuzh
  */
 public class CustomEntityResolve implements EntityResolve {
-    private final Log log = LogFactory.getLog(CustomEntityResolve.class);
+    private static final Log log = LogFactory.getLog(CustomEntityResolve.class);
 
     @Override
     public EntityTable resolveEntity(Class<?> entityClass, Config config) {
@@ -105,7 +105,7 @@ public class CustomEntityResolve implements EntityResolve {
                     && !(SimpleTypeUtil.isSimpleType(field.getJavaType())
                     ||
                     (config.isEnumAsSimpleType() && Enum.class.isAssignableFrom(field.getJavaType())))
-            || (!useExt && field.getName().matches("attribute(\\d+|Category)"))) {
+                    || (!useExt && field.getName().matches("attribute(\\d+|Category)"))) {
                 continue;
             }
             processField(entityTable, field, config, style);
@@ -145,9 +145,9 @@ public class CustomEntityResolve implements EntityResolve {
         }
 
         //JoinTable
-        if(entityTable.isMultiLanguage()) {
+        if (entityTable.isMultiLanguage()) {
             if (field.isAnnotationPresent(Id.class)) {
-                JoinTable jt = new JoinTable(){
+                JoinTable jt = new JoinTable() {
                     @Override
                     public Class<? extends java.lang.annotation.Annotation> annotationType() {
                         return JoinTable.class;
@@ -175,7 +175,7 @@ public class CustomEntityResolve implements EntityResolve {
 
                     @Override
                     public JoinOn[] on() {
-                        JoinOn on1 = new JoinOn(){
+                        JoinOn on1 = new JoinOn() {
                             @Override
                             public Class<? extends java.lang.annotation.Annotation> annotationType() {
                                 return JoinOn.class;
@@ -192,7 +192,7 @@ public class CustomEntityResolve implements EntityResolve {
                             }
                         };
 
-                        JoinOn on2 = new JoinOn(){
+                        JoinOn on2 = new JoinOn() {
                             @Override
                             public Class<? extends java.lang.annotation.Annotation> annotationType() {
                                 return JoinOn.class;
@@ -210,7 +210,7 @@ public class CustomEntityResolve implements EntityResolve {
                         };
 
 
-                        return new JoinOn[]{on1,on2};
+                        return new JoinOn[]{on1, on2};
                     }
 
 
@@ -222,7 +222,7 @@ public class CustomEntityResolve implements EntityResolve {
             }
 
             if (field.isAnnotationPresent(MultiLanguageField.class)) {
-                JoinColumn jc = new JoinColumn(){
+                JoinColumn jc = new JoinColumn() {
 
                     @Override
                     public Class<? extends java.lang.annotation.Annotation> annotationType() {
@@ -253,12 +253,16 @@ public class CustomEntityResolve implements EntityResolve {
             Field entityField = EntityField.class.getDeclaredField("field");
             entityField.setAccessible(true);
             Field metaFiled = (Field) entityField.get(field);
-            JoinTable[] jts =  metaFiled.getAnnotationsByType(JoinTable.class);
-            if (jts != null) {
-                for(JoinTable joinTable: jts){
-                    entityColumn.addJoinTable(joinTable);
-                    entityTable.createAlias(buildJoinKey(joinTable));
-                    entityTable.getJoinMapping().put(joinTable.name(), entityColumn);
+            if (metaFiled == null) {
+                log.warn("the field property is empty in the entityField: " + entityField.getName());
+            } else {
+                JoinTable[] jts = metaFiled.getAnnotationsByType(JoinTable.class);
+                if (jts != null) {
+                    for (JoinTable joinTable : jts) {
+                        entityColumn.addJoinTable(joinTable);
+                        entityTable.createAlias(buildJoinKey(joinTable));
+                        entityTable.getJoinMapping().put(joinTable.name(), entityColumn);
+                    }
                 }
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -288,7 +292,7 @@ public class CustomEntityResolve implements EntityResolve {
             entityColumn.setUpdatable(column.updatable());
             entityColumn.setInsertable(column.insertable());
         }
-        if (field.isAnnotationPresent(MultiLanguageField.class)){
+        if (field.isAnnotationPresent(MultiLanguageField.class)) {
             entityColumn.setMultiLanguage(true);
         }
         //ColumnType
@@ -328,13 +332,13 @@ public class CustomEntityResolve implements EntityResolve {
         if (entityColumn.isId()) {
             entityTable.getEntityClassPKColumns().add(entityColumn);
         }
-        if (entityColumn.isMultiLanguage()){
+        if (entityColumn.isMultiLanguage()) {
             entityTable.getMultiLanguageColumns().add(entityColumn);
         }
         if (!field.isAnnotationPresent(Transient.class)) {
             entityTable.getEntityClassColumns().add(entityColumn);
         }
-        if(entityColumn.isSelectable()){
+        if (entityColumn.isSelectable()) {
             entityTable.getAllColumns().add(entityColumn);
         }
     }
@@ -348,7 +352,7 @@ public class CustomEntityResolve implements EntityResolve {
      */
     protected void processOrderBy(EntityTable entityTable, EntityField field, EntityColumn entityColumn) {
         String orderBy = "";
-        if(field.isAnnotationPresent(OrderBy.class)){
+        if (field.isAnnotationPresent(OrderBy.class)) {
             orderBy = field.getAnnotation(OrderBy.class).value();
             if ("".equals(orderBy)) {
                 orderBy = "ASC";
@@ -440,17 +444,17 @@ public class CustomEntityResolve implements EntityResolve {
         } else if (keySql.dialect() == IdentityDialect.DEFAULT) {
             entityColumn.setIdentity(true);
             entityColumn.setOrder(ORDER.AFTER);
-        }  else if (keySql.dialect() != IdentityDialect.NULL) {
+        } else if (keySql.dialect() != IdentityDialect.NULL) {
             //自动增长
             entityColumn.setIdentity(true);
             entityColumn.setOrder(ORDER.AFTER);
             entityColumn.setGenerator(keySql.dialect().getIdentityRetrievalStatement());
-        } else if (StringUtil.isNotEmpty(keySql.sql())){
+        } else if (StringUtil.isNotEmpty(keySql.sql())) {
 
             entityColumn.setIdentity(true);
             entityColumn.setOrder(keySql.order());
             entityColumn.setGenerator(keySql.sql());
-        } else if (keySql.genSql() != GenSql.NULL.class){
+        } else if (keySql.genSql() != GenSql.NULL.class) {
             entityColumn.setIdentity(true);
             entityColumn.setOrder(keySql.order());
             try {
@@ -460,7 +464,7 @@ public class CustomEntityResolve implements EntityResolve {
                 log.error("实例化 GenSql 失败: " + e, e);
                 throw new MapperException("实例化 GenSql 失败: " + e, e);
             }
-        } else if(keySql.genId() != GenId.NULL.class){
+        } else if (keySql.genId() != GenId.NULL.class) {
             entityColumn.setIdentity(false);
             entityColumn.setGenIdClass(keySql.genId());
         } else {
@@ -469,7 +473,7 @@ public class CustomEntityResolve implements EntityResolve {
         }
     }
 
-    public static String buildJoinKey(JoinTable jt){
+    public static String buildJoinKey(JoinTable jt) {
         return jt.target().getCanonicalName() + "." + jt.name();
     }
 

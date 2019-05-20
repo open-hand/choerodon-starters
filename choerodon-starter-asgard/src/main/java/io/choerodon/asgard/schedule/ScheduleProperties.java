@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "choerodon.schedule.consumer")
 public class ScheduleProperties {
 
-    private Long pollIntervalMs = 1000L;
+    private Long pollIntervalMs = 10L;
 
     private Integer coreThreadNum = 1;
 
