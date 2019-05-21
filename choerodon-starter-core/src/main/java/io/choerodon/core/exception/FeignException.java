@@ -15,13 +15,19 @@ public class FeignException extends RuntimeException {
     /**
      * 构造器
      *
-     * @param code    异常code
+     * @param code       异常code
      * @param parameters parameters
      */
     public FeignException(String code, Object... parameters) {
         super(code);
         this.parameters = parameters;
         this.code = code;
+    }
+
+    public FeignException(String code, String message) {
+        super(message);
+        this.code = code;
+        this.parameters = new Object[]{};
     }
 
     public FeignException(String code, Throwable cause, Object... parameters) {
@@ -50,7 +56,7 @@ public class FeignException extends RuntimeException {
         return code;
     }
 
-    public String getTrace(){
+    public String getTrace() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         this.printStackTrace(ps);
@@ -58,7 +64,7 @@ public class FeignException extends RuntimeException {
         return new String(baos.toByteArray());
     }
 
-    public Map<String, Object> toMap(){
+    public Map<String, Object> toMap() {
         HashMap<String, Object> map = new LinkedHashMap<>();
         map.put("code", code);
         map.put("message", super.getMessage());
