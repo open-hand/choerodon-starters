@@ -27,7 +27,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 /**
  * Created by superlee on 2018/10/24.
  */
-@Import([LiquibaseConfig])
+@Import(IntegrationTestConfiguration)
 @SpringBootTest(webEnvironment = NONE)
 class MybatisMapperSpec extends Specification {
     @Autowired
@@ -35,15 +35,7 @@ class MybatisMapperSpec extends Specification {
     @Autowired
     RoleTLMapper roleTLMapper;
     @Autowired
-    LiquibaseExecutor liquibaseExecutor;
-    @Autowired
     SqlSessionFactory sessionFactory;
-
-    @PostConstruct
-    void init() {
-        //通过liquibase初始化h2数据库
-        liquibaseExecutor.execute()
-    }
 
     @TestConfiguration
     static class TestConfig {
@@ -164,8 +156,7 @@ class MybatisMapperSpec extends Specification {
     }
 
     def "Extension Attribute Test"() {
-        RoleTL role = new RoleTL()
-        role.roleId = 10001
+        RoleTL role = roleTLMapper.selectByPrimaryKey(10001)
         when:
         role.setAttribute1("Test")
         roleTLMapper.updateByPrimaryKey(role)
@@ -175,8 +166,7 @@ class MybatisMapperSpec extends Specification {
     }
 
     def "Extension Attribute Disable Test"() {
-        Role role = new Role()
-        role.roleId = 10001
+        RoleTL role = roleTLMapper.selectByPrimaryKey(10001)
         when:
         role.setAttribute1("Test")
         roleMapper.updateByPrimaryKey(role)
