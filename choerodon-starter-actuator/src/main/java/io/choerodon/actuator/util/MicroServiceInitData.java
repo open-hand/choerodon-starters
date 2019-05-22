@@ -152,7 +152,7 @@ public class MicroServiceInitData {
             updateColumnsJoiner.add(uniqueKey + "=?");
             updateParameters.add(data.get("#" + uniqueKey));
         }
-        for (String column: description.columns){
+        for (String column: description.updateColumns){
             updateColumnsJoiner.add(column + "=?");
             updateParameters.add(data.get(column));
         }
@@ -184,7 +184,7 @@ public class MicroServiceInitData {
             insertParametersJoiner.add("?");
             insertParameters.add(data.get("#" + uniqueKey));
         }
-        for (String column: description.columns){
+        for (String column: description.insertColumns){
             insertColumnsJoiner.add(column);
             insertParametersJoiner.add("?");
             insertParameters.add(data.get(column));
@@ -276,7 +276,12 @@ public class MicroServiceInitData {
                 description.multiLanguageColumns.add(columnSplit[0]);
                 continue;
             }
-            description.columns.add(columnName);
+            if (columnName.startsWith("@")) {
+                description.insertColumns.add(columnName.substring(1));
+            } else {
+                description.updateColumns.add(columnName);
+                description.insertColumns.add(columnName);
+            }
         }
         if (description.primaryKey == null) {
             throw new IllegalStateException("Must have a primary key in table: " + tableName);
@@ -290,7 +295,8 @@ public class MicroServiceInitData {
     private static class TableDescription {
         String primaryKey = null;
         Set<String> uniqueKeys = new TreeSet<>();
-        Set<String> columns = new TreeSet<>();
+        Set<String> insertColumns = new TreeSet<>();
+        Set<String> updateColumns = new TreeSet<>();
         Set<String> multiLanguageColumns = new TreeSet<>();
         Set<String> multiLanguages = new TreeSet<>();
     }
