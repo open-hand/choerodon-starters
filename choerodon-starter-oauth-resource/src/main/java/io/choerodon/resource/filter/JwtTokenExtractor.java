@@ -40,16 +40,30 @@ public class JwtTokenExtractor implements TokenExtractor {
     }
 
     protected String extractHeaderToken(HttpServletRequest request) {
-        Enumeration headers = request.getHeaders(RequestVariableHolder.HEADER_TOKEN);
+        boolean containJwt = true;
+        String value = "";
 
-        String value;
+        Enumeration jwtHeaders = request.getHeaders(RequestVariableHolder.HEADER_JWT);
         do {
-            if (!headers.hasMoreElements()) {
-                return null;
+            if (!jwtHeaders.hasMoreElements()) {
+                containJwt = false;
+                break;
             }
 
-            value = (String) headers.nextElement();
+            value = (String) jwtHeaders.nextElement();
         } while (!value.toLowerCase().startsWith(HEADER_BEARER.toLowerCase()));
+
+        if (!containJwt) {
+            Enumeration headers = request.getHeaders(RequestVariableHolder.HEADER_TOKEN);
+
+            do {
+                if (!headers.hasMoreElements()) {
+                    return null;
+                }
+
+                value = (String) headers.nextElement();
+            } while (!value.toLowerCase().startsWith(HEADER_BEARER.toLowerCase()));
+        }
 
         String authHeaderValue = value.substring(HEADER_BEARER.length()).trim();
         request.setAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_TYPE, value.substring(0, HEADER_BEARER.length()).trim());

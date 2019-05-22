@@ -67,6 +67,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                 token = OAUTH_TOKEN_PREFIX + JwtHelper.encode(OBJECT_MAPPER.writeValueAsString(defaultUserDetails), signer).getEncoded();
             }
             template.header(RequestVariableHolder.HEADER_TOKEN, token);
+            template.header(RequestVariableHolder.HEADER_JWT, token);
             setLabel(template);
         } catch (Exception e) {
             LOGGER.error("generate jwt token failed {}", e);
