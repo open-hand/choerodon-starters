@@ -1,5 +1,6 @@
 package io.choerodon.actuator.dataset;
 
+import io.choerodon.actuator.dataset.domain.ActionJoinTable;
 import io.choerodon.actuator.dataset.domain.ActionProperty;
 import io.choerodon.actuator.dataset.domain.DatabasePageAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,9 @@ public class MysqlExecutor implements DatabaseActionExecutor{
             sql.append(property.getTable().getName());
             sql.append('.');
             sql.append(property.getColumn());
-            sql.append(" AS ");
+            sql.append(" AS \"");
             sql.append(property.getName());
+            sql.append('\"');
             if (propertyIterator.hasNext()){
                 sql.append(',');
             }
@@ -36,8 +38,20 @@ public class MysqlExecutor implements DatabaseActionExecutor{
         sql.append(" FROM ");
 
         sql.append(action.getMasterActionTable().getName());
+        for (ActionJoinTable actionJoinTable : action.getJoinTables()){
+            sql.append(" LEFT JOIN ");
+            sql.append(actionJoinTable.getJoinTable().getName());
+            sql.append(" ON (");
+            sql.append(actionJoinTable.getJoinTable().getName());
+            sql.append('.');
+            sql.append(actionJoinTable.getJoinColumn());
+            sql.append('=');
+            sql.append(action.getMasterActionTable().getName());
+            sql.append('.');
+            sql.append(actionJoinTable.getMasterColumn());
+            sql.append(") ");
+        }
         countSql.append(action.getMasterActionTable().getName());
-
         sql.append(" LIMIT ?,?");
 
         action.setCount(template.queryForObject(countSql.toString(), Long.class));
