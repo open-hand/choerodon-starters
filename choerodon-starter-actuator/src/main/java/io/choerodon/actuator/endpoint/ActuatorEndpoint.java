@@ -3,6 +3,8 @@ package io.choerodon.actuator.endpoint;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import io.choerodon.actuator.dataset.DatabaseActionExecutor;
+import io.choerodon.actuator.dataset.domain.DatabasePageAction;
 import io.choerodon.actuator.metadata.IMetadataDriver;
 import io.choerodon.actuator.metadata.dto.MetadataDatabase;
 import io.choerodon.annotation.PermissionProcessor;
@@ -15,9 +17,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -39,11 +44,17 @@ public class ActuatorEndpoint {
     @Value("${spring.datasource.url:null}")
     private String datasourceUrl;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Value("${choerodon.tenant-column:ORGANIZATION_ID}")
     private String tenantColumn;
 
     @Autowired
     private IMetadataDriver metadataDriver;
+
+    @Autowired
+    private DatabaseActionExecutor executor;
 
     @GetMapping("/actuator/{key}")
     private Map<String, Object> query(@PathVariable String key) {
@@ -85,6 +96,12 @@ public class ActuatorEndpoint {
         }
         result.put("metadata", metadata);
         return result;
+    }
+
+    @PostMapping("/executor/query")
+    public DatabasePageAction page(@RequestBody DatabasePageAction action) {
+        executor.page(action);
+        return action;
     }
 
 }
