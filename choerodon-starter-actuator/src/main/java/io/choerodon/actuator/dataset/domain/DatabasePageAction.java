@@ -8,6 +8,7 @@ import java.util.Set;
 public class DatabasePageAction {
     private ActionTable masterActionTable = new ActionTable();
     private Set<ActionProperty> properties = new HashSet<>();
+    private Set<ActionJoinTable> joinTables = new HashSet<>();
     private Long page;
     private Long pageSize;
     private Long count;
@@ -19,6 +20,7 @@ public class DatabasePageAction {
     public DatabasePageAction(DatabasePageAction action) {
         this.properties = action.properties;
         this.masterActionTable = action.masterActionTable;
+        this.joinTables = action.joinTables;
         this.page = action.page;
         this.pageSize = action.pageSize;
         this.result = action.result;
@@ -71,5 +73,13 @@ public class DatabasePageAction {
 
     public void setResult(List<Map<String, Object>> result) {
         this.result = result;
+    }
+
+    public Set<ActionJoinTable> getJoinTables() {
+        return joinTables;
+    }
+
+    public void setJoinTables(Set<ActionJoinTable> joinTables) {
+        this.joinTables = joinTables;
     }
 }
