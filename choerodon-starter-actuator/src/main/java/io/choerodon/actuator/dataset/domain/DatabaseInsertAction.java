@@ -1,23 +1,29 @@
-package io.choerodon.actuator.dataset;
+package io.choerodon.actuator.dataset.domain;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
-public class DatabaseUpdateAction {
+public class DatabaseInsertAction {
     private String sql;
     private List<Object> params;
-    private int result;
+    private Object key;
 
     public void execute(DataSource dataSource) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
-            try(PreparedStatement ps = connection.prepareStatement(sql)){
+            try(PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
                 for (int i = 0; i < params.size(); i++){
                     ps.setObject(i + 1, params.get(i));
                 }
-                result = ps.executeUpdate();
+                ps.executeUpdate();
+                try(ResultSet generatedKeys = ps.getGeneratedKeys()){
+                    generatedKeys.next();
+                    key = generatedKeys.getObject(1);
+                }
             }
         }
     }
@@ -38,11 +44,11 @@ public class DatabaseUpdateAction {
         this.params = params;
     }
 
-    public int getResult() {
-        return result;
+    public Object getKey() {
+        return key;
     }
 
-    public void setResult(int result) {
-        this.result = result;
+    public void setKey(Object key) {
+        this.key = key;
     }
 }
