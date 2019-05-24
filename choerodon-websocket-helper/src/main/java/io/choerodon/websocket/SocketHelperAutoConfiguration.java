@@ -52,9 +52,9 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	@Autowired
 	SessionRepository sessionRepository;
 	@Autowired
-	List<MsgProcessor> msgProcessors;
-	@Autowired
 	SocketProperties socketProperties;
+	@Autowired
+	List<MsgProcessor> msgProcessors;
 
 
 	@Bean
@@ -89,6 +89,7 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	AgentCommandListener commandMsgListener(SimpleMsgListener simpleMsgListener){
 		return new AgentCommandListener(simpleMsgListener);
 	}
+
 	@Bean
     EnvListener envListener(RedisTemplate<Object,Object> redisTemplate){
 	    return new EnvListener(redisTemplate);

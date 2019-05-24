@@ -1,5 +1,8 @@
 package io.choerodon.websocket.websocket;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
 import io.choerodon.websocket.Msg;
 import io.choerodon.websocket.helper.PathHelper;
 import io.choerodon.websocket.session.Session;
@@ -11,9 +14,6 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author jiatong.li
@@ -39,7 +39,7 @@ public class SocketHandler extends AbstractWebSocketHandler {
         String sessionId = getSessionId(session);
         int sessionType = pathHelper.getSessionType(session.getUri().getPath());
         int msgType;
-        switch (sessionType){
+        switch (sessionType) {
             case Session.AGENT:
                 msgType = Msg.AGENT;
                 break;
@@ -47,8 +47,8 @@ public class SocketHandler extends AbstractWebSocketHandler {
                 msgType = Msg.FRONT_PIP_EXEC;
                 break;
             case Session.LOG:
-                 msgType = Msg.PIPE;
-                 break;
+                msgType = Msg.PIPE;
+                break;
             case Session.COMMON:
                 msgType = Msg.DEFAULT;
                 break;
@@ -65,21 +65,21 @@ public class SocketHandler extends AbstractWebSocketHandler {
             msg = SerializeTool.readMsg(message.getPayload());
         }
         msg.setMsgType(msgType);
-        logger.info("receive {} msg of {},",msg.getType(),msg.getKey());
+        logger.info("receive {} msg of {},", msg.getType(), msg.getKey());
         if (msg.getMsgType() == Msg.AGENT) {
             msg.setClusterId((String) session.getAttributes().get("clusterId"));
         }
-        msg.setBrokerFrom(sessionId+session.getAttributes().get("key").toString());
+        msg.setBrokerFrom(sessionId + session.getAttributes().get("key").toString());
         sockHandlerDelegate.onMsgReceived(msg);
 
     }
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
-        try{
+        try {
             Msg msg = new Msg();
 
-            switch (pathHelper.getSessionType(session.getUri().getPath())){
+            switch (pathHelper.getSessionType(session.getUri().getPath())) {
                 case Session.EXEC:
                     msg.setMsgType(Msg.PIPE_EXEC);
                     break;
@@ -95,15 +95,16 @@ public class SocketHandler extends AbstractWebSocketHandler {
             buffer.get(bytesArray, 0, bytesArray.length);
             String sessionId = getSessionId(session);
             if (msg.getMsgType() == Msg.PIPE_EXEC) {
-                msg.setPayload(new String(bytesArray, StandardCharsets.UTF_8));
+                String payLoad = replaceR(new StringBuilder(new String(bytesArray, StandardCharsets.UTF_8)), 0);
+                msg.setPayload(payLoad);
             } else {
                 msg.setBytesPayload(bytesArray);
             }
             msg.setKey((String) session.getAttributes().get("key"));
-            msg.setBrokerFrom(sessionId+msg.getKey());
+            msg.setBrokerFrom(sessionId + msg.getKey());
             sockHandlerDelegate.onMsgReceived(msg);
-        }catch (Exception e){
-            logger.error("handle binary message error!!!!",e);
+        } catch (Exception e) {
+            logger.error("handle binary message error!!!!", e);
         }
     }
 
@@ -118,13 +119,49 @@ public class SocketHandler extends AbstractWebSocketHandler {
         return false;
     }
 
-    private Session upgradeSession(WebSocketSession webSocketSession){
+    private Session upgradeSession(WebSocketSession webSocketSession) {
         Session session = new Session(webSocketSession);
         session.setType(pathHelper.getSessionType(webSocketSession.getUri().getPath()));
-       return session;
+        return session;
     }
 
-    private String getSessionId(WebSocketSession session){
+    private String getSessionId(WebSocketSession session) {
         return (String) session.getAttributes().get(SESSION_ID);
+    }
+
+
+    private String replaceR(StringBuilder a, int index) {
+        int lastIndex = a.lastIndexOf("\r");
+        if (lastIndex == -1 || index >= a.length() - 1) {
+            return a.toString();
+        }
+        int indexResult = a.indexOf("\r", index);
+        if (indexResult >= 0) {
+            if (indexResult != a.length() - 1) {
+                String r = a.substring(indexResult + 1, indexResult + 2);
+                if (!r.equals("\n")) {
+                    if (indexResult > 0) {
+                        a = a.replace(indexResult, indexResult + 1, "\r\n");
+                    }
+                    return replaceR(a, indexResult + 1);
+                } else {
+                    return replaceR(a, indexResult + 1);
+                }
+            } else {
+                a = a.replace(indexResult, indexResult + 1, "\r\n");
+            }
+        }
+        return a.toString();
+    }
+
+
+    private String trimEnd(char[] value) {
+        int len = value.length;
+        int st = 0;
+        char[] val = value;
+        while ((st < len) && (val[len - 1] <= ' ')) {
+            len--;
+        }
+        return ((st > 0) || (len < value.length)) ? new String(val).substring(st, len) : new String(val);
     }
 }
