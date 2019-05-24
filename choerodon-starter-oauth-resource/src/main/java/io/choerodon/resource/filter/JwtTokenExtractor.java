@@ -45,7 +45,7 @@ public class JwtTokenExtractor implements TokenExtractor {
 
         Enumeration jwtHeaders = request.getHeaders(RequestVariableHolder.HEADER_JWT);
         do {
-            if (!jwtHeaders.hasMoreElements()) {
+            if (jwtHeaders == null || !jwtHeaders.hasMoreElements()) {
                 containJwt = false;
                 break;
             }
