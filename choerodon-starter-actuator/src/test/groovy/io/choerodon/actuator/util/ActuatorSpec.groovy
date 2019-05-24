@@ -82,9 +82,9 @@ class ActuatorSpec extends Specification {
         action.sql = "SELECT * FROM IAM_PERMISSION WHERE SERVICE_CODE=?"
         action.params = ["iam"]
         when:
-        action.execute(dataSource)
+        def result = action.execute(dataSource)
         then:
-        !action.result.isEmpty()
+        !result.isEmpty()
     }
 
     def "Database UPDATE Action Test" () {
