@@ -187,7 +187,11 @@ public class MicroServiceInitData {
         for (String column: description.insertColumns){
             insertColumnsJoiner.add(column);
             insertParametersJoiner.add("?");
-            insertParameters.add(data.get(column));
+            JsonNode param = data.get(column);
+            if (param == null){
+                param = data.get("@" + column);
+            }
+            insertParameters.add(param);
         }
         StringBuilder sql = new StringBuilder();
         sql.append("INSERT INTO ");
