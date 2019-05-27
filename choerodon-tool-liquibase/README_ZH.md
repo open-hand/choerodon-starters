@@ -26,7 +26,37 @@ java -Dspring.datasource.url="jdbc:mysql://localhost:3306/iam_service?useUnicode
 - `-Ddata.drop=false`：是否清除数据库数据
 - `-Ddata.init`：是否使用excel数据进行数据初始化
 - `-Ddata.dir`：groovy和excel所在的文件夹，扫描指定文件夹下的所有`.groovy`和`.xlsx`文件
+- `-Ddata.mode` : 数据初始化的模式可选：normal（默认，初始化groovy和excel），iam（初始化权限数据，仅单体模式需要），all（二者并集）
 - `-Ddata.update.exclusion`：初始化数据库更新数据的时候忽略的表或列，忽略表直接写表名，表名.列名 表示忽略某一列，使用都好分割
+
+## 多数据源初始化
+
+- 使用`addition.datasource.names`参数指定额外的数据源名称
+- 配置以`addition.datasource.`开头的额外数据源配置，与单数据源参数含义一致
+- 初始化工具会顺序初始化多个数据源，下面为例子
+- `data.tables`参数或者`addition.datasource.xxx.tables`参数可以配置按表名进行匹配数据源，参数配置以逗号分隔的表名，当表名被指定时无论这个表在哪个数据源出现都将初始化到指定的数据源。
+
+```
+java \
+-Ddata.jar=app1.jar \
+-Dspring.datasource.url="jdbc:mysql://localhost:3306/database1?useUnicode=true&characterEncoding=utf-8&useSSL=false" \
+-Dspring.datasource.username=choerodon \
+-Dspring.datasource.password=123456 \
+-Ddata.dir=db \
+-Ddata.drop=true \
+-Daddition.datasource.names=ds1,ds2 \
+-Daddition.datasource.ds1.url="jdbc:mysql://localhost:3306/database2?useUnicode=true&characterEncoding=utf-8&useSSL=false" \
+-Daddition.datasource.ds1.username=ds1 \
+-Daddition.datasource.ds1.password=123456 \
+-Daddition.datasource.ds1.drop=true \
+-Daddition.datasource.ds1.dir=db \
+-Daddition.datasource.ds2.url="jdbc:mysql://localhost:3306/database3?useUnicode=true&characterEncoding=utf-8&useSSL=false" \
+-Daddition.datasource.ds2.username=ds2 \
+-Daddition.datasource.ds2.password=123456 \
+-Daddition.datasource.ds2.dir=db \
+-Daddition.datasource.ds2.drop=true \
+-jar choerodon-tool-liquibase.jar
+```
 
 ## groovy建表
 
