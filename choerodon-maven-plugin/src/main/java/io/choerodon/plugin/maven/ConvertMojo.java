@@ -137,6 +137,10 @@ public class ConvertMojo extends AbstractMojo {
         }
         for (int rowIndex = SKIP_ROW_NUMBER + 1; rowIndex <= sheet.getLastRowNum(); rowIndex++){
             Row dataRow = sheet.getRow(rowIndex);
+            if (dataRow == null){
+                getLog().warn(String.format("row is null break: %s, %d", sheet.getSheetName(), rowIndex));
+                break;
+            }
             ObjectNode rowNode = JsonNodeFactory.instance.objectNode();
             for (int cellIndex = SKIP_CELL_NUMBER; cellIndex < headerRow.getLastCellNum(); cellIndex++){
                 String columnName = columns[cellIndex - SKIP_CELL_NUMBER];
