@@ -357,7 +357,7 @@ public class CustomEntityResolve implements EntityResolve {
             if ("".equals(orderBy)) {
                 orderBy = "ASC";
             }
-            log.warn(OrderBy.class + " is outdated, use " + Order.class + " instead!");
+            log.debug(OrderBy.class + " is outdated, use " + Order.class + " instead!");
         }
         if (field.isAnnotationPresent(Order.class)) {
             Order order = field.getAnnotation(Order.class);
@@ -404,26 +404,19 @@ public class CustomEntityResolve implements EntityResolve {
             entityTable.setKeyProperties(entityColumn.getProperty());
             entityTable.setKeyColumns(entityColumn.getColumn());
         } else {
-            //允许通过generator来设置获取id的sql,例如mysql=CALL IDENTITY(),hsqldb=SELECT SCOPE_IDENTITY()
-            //允许通过拦截器参数设置公共的generator
-            if (generatedValue.strategy() == GenerationType.IDENTITY) {
-                //mysql的自动增长
-                entityColumn.setIdentity(true);
-                if (!"".equals(generatedValue.generator())) {
-                    String generator = null;
-                    IdentityDialect identityDialect = IdentityDialect.getDatabaseDialect(generatedValue.generator());
-                    if (identityDialect != null) {
-                        generator = identityDialect.getIdentityRetrievalStatement();
-                    } else {
-                        generator = generatedValue.generator();
-                    }
-                    entityColumn.setGenerator(generator);
+            entityColumn.setIdentity(true);
+            if (!"".equals(generatedValue.generator())) {
+                String generator = null;
+                IdentityDialect identityDialect = IdentityDialect.getDatabaseDialect(generatedValue.generator());
+                if (identityDialect != null) {
+                    generator = identityDialect.getIdentityRetrievalStatement();
+                } else {
+                    generator = generatedValue.generator();
                 }
-            } else {
-                throw new MapperException(entityColumn.getProperty()
-                        + " - 该字段@GeneratedValue配置只允许以下几种形式:" +
-                        "\n1.useGeneratedKeys的@GeneratedValue(generator=\\\"JDBC\\\")  " +
-                        "\n2.类似mysql数据库的@GeneratedValue(strategy=GenerationType.IDENTITY[,generator=\"Mysql\"])");
+                entityColumn.setGenerator(generator);
+            }
+            if (generatedValue.strategy() != GenerationType.AUTO) {
+                log.debug("HAP 会自行判断自增生成方式，只需要@GeneratedValue即可，以下属性配置无效：" + entityColumn.getTable().getEntityClass() + "." + entityColumn.getProperty());
             }
         }
     }
