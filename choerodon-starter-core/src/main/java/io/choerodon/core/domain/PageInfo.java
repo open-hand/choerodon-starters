@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * Created by xausky on 3/15/17.
  */
+@Deprecated
 public class PageInfo implements Serializable {
 
     private int page;
