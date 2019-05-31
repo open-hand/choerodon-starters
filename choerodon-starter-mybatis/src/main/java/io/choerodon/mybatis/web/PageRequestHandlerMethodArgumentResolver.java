@@ -132,7 +132,7 @@ public class PageRequestHandlerMethodArgumentResolver implements PageRequestArgu
         int pageSize = StringUtils.hasText(pageSizeString) ? parseAndApplyBoundaries(pageSizeString, maxPageSize, false)
                 : defaultOrFallback.getSize();
 
-        pageSize = pageSize < 1 ? defaultOrFallback.getSize() : pageSize;
+        pageSize = pageSize < 0 ? defaultOrFallback.getSize() : pageSize;
         pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
 
         Sort sort = sortResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
