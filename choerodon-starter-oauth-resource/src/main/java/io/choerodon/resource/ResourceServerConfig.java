@@ -88,7 +88,7 @@ public class ResourceServerConfig {
 
 
     @Bean
-    @ConditionalOnMissingClass("com.hand.hap.core.impl.CustomProviderImpl")
+    @ConditionalOnMissingClass("io.choerodon.hap.core.impl.CustomProviderImpl")
     public CustomProvider choerodonProvider() {
         return new CustomProvider() {
             @Override

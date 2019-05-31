@@ -18,9 +18,9 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Order(HIGHEST_PRECEDENCE)
 @Configuration
 @ConditionalOnMissingClass(value = {
-        "com.hand.hap.security.CasAutoConfiguration",
-        "com.hand.hap.StandardSecurityConfig",
-        "com.hand.hap.security.LdapAutoConfiguration"})
+        "io.choerodon.hap.security.CasAutoConfiguration",
+        "io.choerodon.hap.StandardSecurityConfig",
+        "io.choerodon.hap.security.LdapAutoConfiguration"})
 public class NoSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static Long userId;
