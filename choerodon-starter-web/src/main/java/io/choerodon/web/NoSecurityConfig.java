@@ -36,7 +36,7 @@ public class NoSecurityConfig extends WebSecurityConfigurerAdapter {
         NoSecurityConfig.userId = userId;
     }
 
-    @Value("${default.security.roleId:10001}")
+    @Value("${default.security.roleId:1}")
     public void setRoleId(Long roleId) {
         NoSecurityConfig.roleId = roleId;
     }
@@ -46,7 +46,7 @@ public class NoSecurityConfig extends WebSecurityConfigurerAdapter {
         NoSecurityConfig.userName = userName;
     }
 
-    @Value("${default.security.allRoleId:10001}")
+    @Value("${default.security.allRoleId:1}")
     public void setAllRoleId(String[] allRoleId) {
         NoSecurityConfig.allRoleId = allRoleId;
     }
