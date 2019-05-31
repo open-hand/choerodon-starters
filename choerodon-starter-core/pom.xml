@@ -53,6 +53,12 @@
             <artifactId>poi-ooxml</artifactId>
             <version>3.16</version>
         </dependency>
+        <!--ConvertPageHelper.convertPageInfo使用该依赖，如果移除该方法，则可以移除该依赖-->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>5.1.8</version>
+        </dependency>
 
         <!-- powerMock for unit test -->
         <dependency>
