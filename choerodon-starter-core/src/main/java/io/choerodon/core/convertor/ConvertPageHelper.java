@@ -65,7 +65,7 @@ public class ConvertPageHelper {
      * @return
      */
     public static <T> PageInfo<T> convertPageInfo(final PageInfo pageInfo, final Class<T> destin) {
-        com.github.pagehelper.Page<T> page = new com.github.pagehelper.Page<>(pageInfo.getPages(), pageInfo.getSize());
+        com.github.pagehelper.Page<T> page = new com.github.pagehelper.Page<>(pageInfo.getPageNum(), pageInfo.getPageSize());
         page.setTotal(pageInfo.getTotal());
         if (pageInfo.getList().isEmpty()) {
             return page.toPageInfo();
