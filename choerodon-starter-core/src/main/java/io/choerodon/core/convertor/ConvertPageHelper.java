@@ -14,6 +14,7 @@ import io.choerodon.core.domain.Page;
  * @author flyleft
  * 2018/3/19
  */
+@Deprecated
 public class ConvertPageHelper {
 
     private ConvertPageHelper() {
