@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * Created by xausky on 3/16/17.
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@Deprecated
 public class Page<E> extends AbstractList<E> {
     private int totalPages;
     private long totalElements;
