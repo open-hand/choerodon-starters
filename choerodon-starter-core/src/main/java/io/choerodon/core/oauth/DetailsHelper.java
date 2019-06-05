@@ -1,5 +1,7 @@
 package io.choerodon.core.oauth;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
@@ -62,4 +64,22 @@ public class DetailsHelper {
         }
         return null;
     }
+
+    public static void setCustomUserDetails(CustomUserDetails customUserDetails) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        if (securityContext == null) {
+            return;
+        }
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(customUserDetails, customUserDetails.getPassword());
+        securityContext.setAuthentication(usernamePasswordAuthenticationToken);
+    }
+
+    public static void setCustomUserDetails(Long userId, String language) {
+        CustomUserDetails customUserDetails = new CustomUserDetails("default", "default");
+        customUserDetails.setUserId(userId);
+        customUserDetails.setLanguage(language);
+        setCustomUserDetails(customUserDetails);
+    }
+
+
 }
