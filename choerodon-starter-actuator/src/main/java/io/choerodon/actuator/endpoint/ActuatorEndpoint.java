@@ -100,7 +100,7 @@ public class ActuatorEndpoint {
 
     @PostMapping("/executor/query")
     public DatabasePageAction page(@RequestBody DatabasePageAction action) {
-        executor.page(action);
+        executor.process(action);
         return action;
     }
 
