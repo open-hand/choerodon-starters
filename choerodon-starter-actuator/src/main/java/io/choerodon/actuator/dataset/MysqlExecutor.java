@@ -16,7 +16,7 @@ public class MysqlExecutor implements DatabaseActionExecutor{
     private JdbcTemplate template;
 
     @Override
-    public void page(DatabasePageAction action) {
+    public void process(DatabasePageAction action) {
         StringBuilder sql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
         sql.append("SELECT ");
@@ -25,6 +25,8 @@ public class MysqlExecutor implements DatabaseActionExecutor{
         Iterator<ActionProperty> propertyIterator = action.getProperties().iterator();
         while (propertyIterator.hasNext()){
             ActionProperty property = propertyIterator.next();
+            sql.append(property.getTable().getSchema());
+            sql.append('.');
             sql.append(property.getTable().getName());
             sql.append('.');
             sql.append(property.getColumn());
@@ -37,20 +39,30 @@ public class MysqlExecutor implements DatabaseActionExecutor{
         }
         sql.append(" FROM ");
 
+        sql.append(action.getMasterActionTable().getSchema());
+        sql.append('.');
         sql.append(action.getMasterActionTable().getName());
         for (ActionJoinTable actionJoinTable : action.getJoinTables()){
             sql.append(" LEFT JOIN ");
+            sql.append(actionJoinTable.getJoinTable().getSchema());
+            sql.append('.');
             sql.append(actionJoinTable.getJoinTable().getName());
             sql.append(" ON (");
+            sql.append(actionJoinTable.getJoinTable().getSchema());
+            sql.append('.');
             sql.append(actionJoinTable.getJoinTable().getName());
             sql.append('.');
             sql.append(actionJoinTable.getJoinColumn());
             sql.append('=');
+            sql.append(action.getMasterActionTable().getSchema());
+            sql.append('.');
             sql.append(action.getMasterActionTable().getName());
             sql.append('.');
             sql.append(actionJoinTable.getMasterColumn());
             sql.append(") ");
         }
+        countSql.append(action.getMasterActionTable().getSchema());
+        countSql.append('.');
         countSql.append(action.getMasterActionTable().getName());
         sql.append(" LIMIT ?,?");
 
