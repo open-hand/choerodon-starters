@@ -33,7 +33,7 @@ public class PermissionProcessor {
             if (controllerMapping != null && controllerMapping.value().length > 0){
                 controllerPath = controllerMapping.value()[0];
             }
-            for (Method method : clazz.getMethods()) {
+            for (Method method : clazz.getDeclaredMethods()) {
                 resolveMethod(clazz, method, controllerPath, descriptions);
             }
         }
