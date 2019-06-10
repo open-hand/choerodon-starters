@@ -1,8 +1,5 @@
 package io.choerodon.actuator.util
 
-import io.choerodon.actuator.dataset.DatabaseInsertAction
-import io.choerodon.actuator.dataset.DatabaseQueryAction
-import io.choerodon.actuator.dataset.DatabaseUpdateAction
 import io.choerodon.actuator.endpoint.ActuatorEndpoint
 import io.choerodon.actuator.endpoint.TestApplication
 import io.choerodon.liquibase.LiquibaseConfig
@@ -63,49 +60,5 @@ class ActuatorSpec extends Specification {
         Map<String, Object> result4 = endpoint.query("not match key")
         then:
         result4.size() == 0
-    }
-
-    def "Database INSERT Action Test" () {
-        given:
-        def action = new DatabaseInsertAction();
-        action.sql = "INSERT INTO IAM_PERMISSION(CODE) VALUES (?)"
-        action.params = ["test"]
-        when:
-        action.execute(dataSource)
-        then:
-        action.key != null
-    }
-
-    def "Database QUERY Action Test" () {
-        given:
-        def action = new DatabaseQueryAction();
-        action.sql = "SELECT * FROM IAM_PERMISSION WHERE SERVICE_CODE=?"
-        action.params = ["iam"]
-        when:
-        def result = action.execute(dataSource)
-        then:
-        !result.isEmpty()
-    }
-
-    def "Database UPDATE Action Test" () {
-        given:
-        def action = new DatabaseUpdateAction();
-        action.sql = "UPDATE IAM_PERMISSION SET SERVICE_CODE=? WHERE CODE=?"
-        action.params = ["test-service", "test"]
-        when:
-        action.execute(dataSource)
-        then:
-        action.result == 1
-    }
-
-    def "Database DELETE Action Test" () {
-        given:
-        def action = new DatabaseUpdateAction();
-        action.sql = "DELETE FROM IAM_PERMISSION WHERE SERVICE_CODE=?"
-        action.params = ["iam"]
-        when:
-        action.execute(dataSource)
-        then:
-        action.result == 1
     }
 }

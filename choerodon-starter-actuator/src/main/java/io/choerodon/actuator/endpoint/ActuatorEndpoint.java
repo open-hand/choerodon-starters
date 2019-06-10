@@ -86,5 +86,4 @@ public class ActuatorEndpoint {
         result.put("metadata", metadata);
         return result;
     }
-
 }
