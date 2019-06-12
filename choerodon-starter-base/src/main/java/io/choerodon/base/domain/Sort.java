@@ -85,6 +85,9 @@ public class Sort implements Iterable<Sort.Order>, Serializable {
             builder.append(property).append(" ").append(direction).append(",");
         }
         String orderBy = builder.toString();
+        if (StringUtils.isEmpty(orderBy)) {
+            return "";
+        }
         return orderBy.substring(0, orderBy.length() - 1);
     }
 
