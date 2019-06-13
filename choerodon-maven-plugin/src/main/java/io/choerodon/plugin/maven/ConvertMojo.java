@@ -142,6 +142,7 @@ public class ConvertMojo extends AbstractMojo {
                 break;
             }
             ObjectNode rowNode = JsonNodeFactory.instance.objectNode();
+            boolean isValida = false;
             for (int cellIndex = SKIP_CELL_NUMBER; cellIndex < headerRow.getLastCellNum(); cellIndex++){
                 String columnName = columns[cellIndex - SKIP_CELL_NUMBER];
                 Cell cell = dataRow.getCell(cellIndex);
@@ -149,11 +150,15 @@ public class ConvertMojo extends AbstractMojo {
                     rowNode.putNull(columnName);
                     continue;
                 }
+                isValida = true;
                 if (cell.getCellType().equals(CellType.NUMERIC)){
                     rowNode.put(columnName, cell.getNumericCellValue());
                 } else {
                     rowNode.put(columnName, cell.getStringCellValue());
                 }
+            }
+            if (!isValida){
+                break;
             }
             sheetNode.add(rowNode);
         }
