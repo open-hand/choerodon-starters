@@ -7,13 +7,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 
 public class MicroServiceInitData {
+    private static final String DEL_COLUMN_NAME = "$DEL";
     /**
      * 将微服务初始化数据的Json执行到数据库
      *
@@ -42,14 +45,54 @@ public class MicroServiceInitData {
 
     private static void processRowData(JsonNode data, String tableName, Connection connection, TableDescription description) throws SQLException {
         Object keyData = queryPrimaryKeyByUnique(data, tableName, connection, description);
-        if (keyData == null){
-            insertRowData(data, tableName, connection, description);
-            keyData = queryPrimaryKeyByUnique(data, tableName, connection, description);
+        if (data.get(DEL_COLUMN_NAME) == null || data.get(DEL_COLUMN_NAME).asInt() != 1) {
+            if (keyData == null){
+                insertRowData(data, tableName, connection, description);
+                keyData = queryPrimaryKeyByUnique(data, tableName, connection, description);
+            } else {
+                updateRowData(data, tableName, connection, description, keyData);
+            }
+            if (!description.multiLanguageColumns.isEmpty()){
+                processRowMultiLanguage(data, tableName, connection, description, keyData);
+            }
         } else {
-            updateRowData(data, tableName, connection, description, keyData);
+            if (keyData != null){
+                deleteRowData(tableName, connection, description, keyData);
+                deleteRowMultiLanguage(tableName, connection, description, keyData);
+            }
         }
-        if (!description.multiLanguageColumns.isEmpty()){
-            processRowMultiLanguage(data, tableName, connection, description, keyData);
+    }
+
+
+    private static void deleteRowData(String tableName, Connection connection, TableDescription description, Object keyData) throws SQLException {
+        StringBuilder sql = new StringBuilder();
+        sql.append("DELETE FROM ");
+        sql.append(tableName);
+        sql.append(" WHERE ");
+        sql.append(description.primaryKey);
+        sql.append("=?");
+        try(PreparedStatement statement = connection.prepareStatement(sql.toString())){
+            statement.setObject(1, keyData);
+            if(statement.executeUpdate() != 1){
+                throw new IllegalStateException("Execute update result not one.");
+            }
+        }
+    }
+
+    private static void deleteRowMultiLanguage(String tableName, Connection connection, TableDescription description, Object keyData) throws SQLException {
+        String upperCaseTableName = tableName.toUpperCase();
+        String multiLanguageTableName = upperCaseTableName + "_TL";
+        if (upperCaseTableName.endsWith("_B")){
+            multiLanguageTableName = upperCaseTableName.substring(0, upperCaseTableName.length() - 2) + "_TL";
+        }
+        StringBuilder sql = new StringBuilder();
+        sql.append("DELETE FROM ");
+        sql.append(multiLanguageTableName);
+        sql.append(" WHERE ");
+        sql.append(description.primaryKey);
+        sql.append("=?");
+        try(PreparedStatement statement = connection.prepareStatement(sql.toString())){
+            statement.setObject(1, keyData);
         }
     }
 
@@ -150,11 +193,11 @@ public class MicroServiceInitData {
         StringJoiner updateColumnsJoiner = new StringJoiner(",");
         for (String uniqueKey: description.uniqueKeys){
             updateColumnsJoiner.add(uniqueKey + "=?");
-            updateParameters.add(data.get("#" + uniqueKey));
+            updateParameters.add(data.get(description.rawColumns.get(uniqueKey)));
         }
         for (String column: description.updateColumns){
             updateColumnsJoiner.add(column + "=?");
-            updateParameters.add(data.get(column));
+            updateParameters.add(data.get(description.rawColumns.get(column)));
         }
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ");
@@ -182,15 +225,12 @@ public class MicroServiceInitData {
         for (String uniqueKey: description.uniqueKeys){
             insertColumnsJoiner.add(uniqueKey);
             insertParametersJoiner.add("?");
-            insertParameters.add(data.get("#" + uniqueKey));
+            insertParameters.add(data.get(description.rawColumns.get(uniqueKey)));
         }
         for (String column: description.insertColumns){
             insertColumnsJoiner.add(column);
             insertParametersJoiner.add("?");
-            JsonNode param = data.get(column);
-            if (param == null){
-                param = data.get("@" + column);
-            }
+            JsonNode param = data.get(description.rawColumns.get(column));
             insertParameters.add(param);
         }
         StringBuilder sql = new StringBuilder();
@@ -227,7 +267,7 @@ public class MicroServiceInitData {
             int uniqueKeyIndex = 0;
             for (String uniqueKey : description.uniqueKeys) {
                 uniqueKeyIndex++;
-                setNodeValue(data.get("#" + uniqueKey), statement, uniqueKeyIndex);
+                setNodeValue(data.get(description.rawColumns.get(uniqueKey)), statement, uniqueKeyIndex);
             }
             try(ResultSet resultSet = statement.executeQuery()){
                 if (!resultSet.first()){
@@ -260,15 +300,20 @@ public class MicroServiceInitData {
         Iterator<String> columnNames = header.fieldNames();
         while (columnNames.hasNext()) {
             String columnName = columnNames.next();
+            if (DEL_COLUMN_NAME.equals(columnName)){
+                continue;
+            }
             if (columnName.startsWith("*")) {
                 if (description.primaryKey != null) {
                     throw new IllegalStateException("Multi-primary key not supported in table: " + tableName);
                 }
                 description.primaryKey = columnName.substring(1);
+                description.rawColumns.put(description.primaryKey, columnName);
                 continue;
             }
             if (columnName.startsWith("#")) {
                 description.uniqueKeys.add(columnName.substring(1));
+                description.rawColumns.put(columnName.substring(1), columnName);
                 continue;
             }
             if (columnName.contains(":")) {
@@ -280,11 +325,13 @@ public class MicroServiceInitData {
                 description.multiLanguageColumns.add(columnSplit[0]);
                 continue;
             }
-            if (columnName.startsWith("@")) {
+            if (columnName.startsWith("@") || columnName.startsWith("$")) {
                 description.insertColumns.add(columnName.substring(1));
+                description.rawColumns.put(columnName.substring(1), columnName);
             } else {
                 description.updateColumns.add(columnName);
                 description.insertColumns.add(columnName);
+                description.rawColumns.put(columnName, columnName);
             }
         }
         if (description.primaryKey == null) {
@@ -299,6 +346,7 @@ public class MicroServiceInitData {
     private static class TableDescription {
         String primaryKey = null;
         Set<String> uniqueKeys = new TreeSet<>();
+        Map<String, String> rawColumns = new HashMap<>();
         Set<String> insertColumns = new TreeSet<>();
         Set<String> updateColumns = new TreeSet<>();
         Set<String> multiLanguageColumns = new TreeSet<>();
