@@ -24,11 +24,22 @@ import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
@@ -164,12 +175,12 @@ public class LiquibaseExecutor {
                 String mode = profileMap.getAdditionValue(dataSourceName + ".mode");
                 boolean drop = Boolean.parseBoolean(profileMap.getAdditionValue(dataSourceName + ".drop"));
                 Set<String> tables = null;
-                if (profileMap.getAdditionValue(dataSourceName + ".tables") != null){
+                if (profileMap.getAdditionValue(dataSourceName + ".tables") != null) {
                     tables = Arrays.stream(profileMap.getAdditionValue(dataSourceName + ".tables").split(",")).collect(Collectors.toSet());
                 }
                 AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop, null, tables);
                 ads.setJar(jar);
-                ads.setMode(mode == null? "normal": mode);
+                ads.setMode(mode == null ? "normal" : mode);
                 ads.setName(dataSourceName);
                 additionDataSources.add(ads);
             }
@@ -184,7 +195,7 @@ public class LiquibaseExecutor {
         for (AdditionDataSource addition : additionDataSourceList) {
             logger.info("Init data source, name : {}", addition.getName());
             String dir = addition.getDir();
-            if (StringUtils.isEmpty(dir)){
+            if (StringUtils.isEmpty(dir)) {
                 logger.info("Data source name : {} dir is empty, extra jar {}", addition.getName(), addition.getJar());
                 extra(addition.getJar(), TEMP_DIR_NAME);
                 dir = TEMP_DIR_NAME;
@@ -208,9 +219,10 @@ public class LiquibaseExecutor {
 
     /**
      * 从jar包输入流解压需要的文件到目标目录
+     *
      * @param inputStream jar包输入流
-     * @param dir 目标目录
-     * @param dep 是否是Spring Boot依赖包的解压， 只有为false时
+     * @param dir         目标目录
+     * @param dep         是否是Spring Boot依赖包的解压， 只有为false时
      * @throws IOException 出现IO错误
      */
     private void extraJarStream(InputStream inputStream, String dir, boolean dep) throws IOException {
@@ -222,7 +234,7 @@ public class LiquibaseExecutor {
                     || name.endsWith(SUFFIX_XLSX)
                     || name.endsWith(SUFFIX_SQL)) && name.contains(PREFIX_SCRIPT_DB))
                     || (name.endsWith(PERMISSION_FILE_PATH) && !dep) || (name.endsWith(BOOTSTRAP_FILE_PATH) && !dep)) {
-                if(name.startsWith(PREFIX_SPRING_BOOT_CLASSES)){
+                if (name.startsWith(PREFIX_SPRING_BOOT_CLASSES)) {
                     name = name.substring(PREFIX_SPRING_BOOT_CLASSES.length());
                 }
                 File file = new File(dir + name);
@@ -256,7 +268,7 @@ public class LiquibaseExecutor {
         prepareGroovyParser(additionDataSource.getLiquibaseHelper());
         Map<String, Set<String>> updateExclusionMap = processExclusion();
         ResourceAccessor accessor = new CusFileSystemResourceAccessor(dir);
-        if ("all".equals(additionDataSource.getMode()) || "normal".equals(additionDataSource.getMode())){
+        if ("all".equals(additionDataSource.getMode()) || "normal".equals(additionDataSource.getMode())) {
             Set<String> fileNameSet = accessor.list(null, File.separator, true, false, true);
             List<String> nameList = new ArrayList<>(fileNameSet);
             Collections.sort(nameList);
@@ -276,7 +288,7 @@ public class LiquibaseExecutor {
                     liquibase.update(new Contexts());
                 }
             }
-            if(defaultInit){
+            if (defaultInit) {
                 //初始化数据
                 for (String file : nameList) {
                     if (file.endsWith(SUFFIX_XLSX) && file.contains(PREFIX_SCRIPT_DB)) {
@@ -296,28 +308,28 @@ public class LiquibaseExecutor {
                 }
             }
         }
-        if ("all".equals(additionDataSource.getMode()) || "iam".equals(additionDataSource.getMode())){
+        if ("all".equals(additionDataSource.getMode()) || "iam".equals(additionDataSource.getMode())) {
             Set<InputStream> permissionInputStreams = accessor.getResourcesAsStream(PERMISSION_FILE_PATH);
-            if (permissionInputStreams == null || permissionInputStreams.isEmpty()){
+            if (permissionInputStreams == null || permissionInputStreams.isEmpty()) {
                 logger.warn("Data source {} is iam mode but permission file not found.", additionDataSource.getName());
             } else {
                 Set<InputStream> bootstrapInputStreams = accessor.getResourcesAsStream(BOOTSTRAP_FILE_PATH);
                 String serviceCode = null;
-                if (bootstrapInputStreams == null || bootstrapInputStreams.isEmpty()){
+                if (bootstrapInputStreams == null || bootstrapInputStreams.isEmpty()) {
                     logger.info("Data source {} bootstrap.yml file not found.", additionDataSource.getName());
                 } else {
                     Yaml yaml = new Yaml();
                     Map result = yaml.load(bootstrapInputStreams.iterator().next());
-                    serviceCode = (String) ((Map)((Map)result.get("spring")).get("application")).get("name");
-                    if (serviceCode == null || serviceCode.isEmpty()){
+                    serviceCode = (String) ((Map) ((Map) result.get("spring")).get("application")).get("name");
+                    if (serviceCode == null || serviceCode.isEmpty()) {
                         logger.warn("Data source {} key spring.application.name not found in bootstrap.yml.", additionDataSource.getName());
                         serviceCode = null;
                     }
                 }
                 InputStream permissionInputStream = permissionInputStreams.iterator().next();
-                PermissionLoader permissionLoader = new PermissionLoader();
+                PermissionLoader permissionLoader = new PermissionLoader(new LiquibaseHelper(this.dsUrl));
                 permissionLoader.setServiceCode(serviceCode);
-                try(Connection connection = additionDataSource.getDataSource().getConnection()){
+                try (Connection connection = additionDataSource.getDataSource().getConnection()) {
                     connection.setAutoCommit(false);
                     try {
                         permissionLoader.execute(permissionInputStream, connection);
