@@ -74,6 +74,23 @@ public class Sort implements Iterable<Sort.Order>, Serializable {
         }
     }
 
+
+    public String toSql() {
+        StringBuilder builder = new StringBuilder();
+        Iterator<Order> iterator = this.iterator();
+        while (iterator.hasNext()) {
+            Order order = iterator.next();
+            String property = order.getProperty();
+            String direction = order.getDirection().toString();
+            builder.append(property).append(" ").append(direction).append(",");
+        }
+        String orderBy = builder.toString();
+        if (StringUtils.isEmpty(orderBy)) {
+            return "";
+        }
+        return orderBy.substring(0, orderBy.length() - 1);
+    }
+
     /**
      * sort后面拼接sort
      *
