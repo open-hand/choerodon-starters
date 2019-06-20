@@ -145,18 +145,75 @@ public class DbAdaptor {
         if (tableRow.isProcessFlag()) {
             return 0;
         }
+        if (tableRow.isDeleteFlag()) {
+            tableRow.setProcessFlag(true);
+        }
         Long cu = checkExists(tableRow);
-        if (cu == null && tableRow.canInsert()) {
-            doInsert(tableRow);
-            doInsertTl(tableRow);
+        if (cu == null && tableRow.canInsert() && !tableRow.isDeleteFlag()) {
+            if (doInsert(tableRow) > 0){
+                doInsertTl(tableRow);
+            }
             return 1;
         } else if (cu != null && cu >= 0) {
             tableRow.setProcessFlag(true);
-            doInsertTl(tableRow);
+            if (tableRow.isDeleteFlag()){
+                doDelete(tableRow);
+                doDeleteTL(tableRow);
+            } else {
+                doInsertTl(tableRow);
+            }
             return 1;
         }
-
         return 0;
+    }
+
+    protected int doDelete(TableData.TableRow tableRow) throws SQLException {
+        TableCellValue genTableCellValue = null;
+        for (TableCellValue tableCellValue : tableRow.getTableCellValues()) {
+            if (tableCellValue.getColumn().isGen() || tableCellValue.getColumn().isUnique()) {
+                genTableCellValue = tableCellValue;
+                break;
+            }
+        }
+        if (genTableCellValue == null){
+            return 0;
+        }
+        StringBuilder sql = new StringBuilder();
+        sql.append("DELETE FROM ");
+        sql.append(tableRow.getTable().getName());
+        sql.append(" WHERE ");
+        sql.append(genTableCellValue.getColumn().getName());
+        sql.append("=?");
+        try(PreparedStatement statement = connection.prepareStatement(sql.toString())){
+            setParam(statement, genTableCellValue, 1);
+            return statement.executeUpdate();
+        }
+    }
+
+    protected int doDeleteTL(TableData.TableRow tableRow) throws SQLException {
+        if(tableRow.getTable().getLangs().isEmpty()){
+            return 0;
+        }
+        TableCellValue genTableCellValue = null;
+        for (TableCellValue tableCellValue : tableRow.getTableCellValues()) {
+            if (tableCellValue.getColumn().isGen() || tableCellValue.getColumn().isUnique()) {
+                genTableCellValue = tableCellValue;
+                break;
+            }
+        }
+        if (genTableCellValue == null){
+            return 0;
+        }
+        StringBuilder sql = new StringBuilder();
+        sql.append("DELETE FROM ");
+        sql.append(tlTableName(tableRow.getTable().getName()));
+        sql.append(" WHERE ");
+        sql.append(genTableCellValue.getColumn().getName());
+        sql.append("=?");
+        try(PreparedStatement statement = connection.prepareStatement(sql.toString())){
+            setParam(statement, genTableCellValue, 1);
+            return statement.executeUpdate();
+        }
     }
 
     /**
@@ -257,22 +314,25 @@ public class DbAdaptor {
         List<TableCellValue> uniques = new ArrayList<>();
         List<TableCellValue> normals = new ArrayList<>();
         for (TableData.TableCellValue tableCellValue : tableRow.getTableCellValues()) {
+            if (tableCellValue.getColumn().isDeleteFlag()){
+                continue;
+            }
             if (tableCellValue.isFormula() && !tableCellValue.isValuePresent()) {
                 dataProcessor.tryUpdateCell(tableCellValue);
             }
             if (tableCellValue.getColumn().isGen()) {
                 genTableCellValue = tableCellValue;
             } else if (tableCellValue.getColumn().isUnique()) {
-                if (!excluded(tableCellValue.getColumn().getName(), excludedColumns)) {
-                    uniques.add(tableCellValue);
-                } else {
+                if (tableCellValue.getColumn().isOnlyInsert() || excluded(tableCellValue.getColumn().getName(), excludedColumns)) {
                     logInfo.add(processLog(tableRow, tableCellValue));
+                } else {
+                    uniques.add(tableCellValue);
                 }
             } else {
-                if (!excluded(tableCellValue.getColumn().getName(), excludedColumns)) {
-                    normals.add(tableCellValue);
-                } else {
+                if (tableCellValue.getColumn().isOnlyInsert() || excluded(tableCellValue.getColumn().getName(), excludedColumns)) {
                     logInfo.add(processLog(tableRow, tableCellValue));
+                } else {
+                    normals.add(tableCellValue);
                 }
             }
         }
@@ -412,6 +472,10 @@ public class DbAdaptor {
      */
     protected Long doInsert(TableData.TableRow tableRow) throws SQLException {
         String sql = prepareInsertSql(tableRow);
+        if (sql == null){
+            tableRow.setProcessFlag(true);
+            return 1L;
+        }
         long genVal = 0L;
         TableData.TableCellValue genTableCellValue = null;
         boolean isGeneratedColumnInserted = tableRow.isGeneratedColumnInserted();
@@ -448,8 +512,7 @@ public class DbAdaptor {
                     }
                     continue;
                 }
-                if (tableCellValue.getColumn().getLang() == null
-                        || ZH_CN.equals(tableCellValue.getColumn().getLang())) {
+                if ((tableCellValue.getColumn().getLang() == null || ZH_CN.equals(tableCellValue.getColumn().getLang())) && !tableCellValue.getColumn().isDeleteFlag()) {
                     if (!tableCellValue.isValuePresent() && tableCellValue.isFormula()) {
                         ps.setLong(count++, -1L);
                     } else {
@@ -774,6 +837,9 @@ public class DbAdaptor {
             sb.append("INSERT INTO ").append(tableName).append("(");
             int count = 0;
             for (TableData.TableCellValue tableCellValue : tableRow.getTableCellValues()) {
+                if (tableCellValue.getColumn().isDeleteFlag()){
+                        continue;
+                }
                 boolean isGen = tableCellValue.getColumn().isGen();
                 if (isGen && !isGeneratedColumnInserted && !sequencePk()) {
                     continue;
