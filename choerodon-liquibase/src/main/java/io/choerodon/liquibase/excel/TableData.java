@@ -191,10 +191,13 @@ public class TableData {
     }
 
     public static class Column {
+        public static final String DEL_FLAG_COLUMN_NAME = "$DEL";
         private boolean gen = false;
         private String type = "VARCHAR";
         private String name;
         private boolean unique = false;
+        private boolean onlyInsert = false;
+        private boolean deleteFlag = false;
 
         private String lang = null;
 
@@ -216,14 +219,20 @@ public class TableData {
 
         private void setName(String originName) {
             this.name = originName;
+            if (DEL_FLAG_COLUMN_NAME.equals(originName)){
+                deleteFlag = true;
+                return;
+            }
             if (originName.startsWith("*")) {
                 name = originName.substring(1);
                 gen = true;
             } else if (originName.startsWith("#")) {
                 unique = true;
                 name = originName.substring(1);
+            } else if (originName.startsWith("$") || originName.startsWith("@")) {
+                onlyInsert = true;
+                name = originName.substring(1);
             }
-
             int sem = name.indexOf(':');
             if (sem > 0) {
                 String localLang = name.substring(sem + 1);
@@ -251,6 +260,14 @@ public class TableData {
             return lang;
         }
 
+        public boolean isOnlyInsert() {
+            return onlyInsert;
+        }
+
+        public boolean isDeleteFlag() {
+            return deleteFlag;
+        }
+
         @Override
         public String toString() {
             return (gen ? "*" : "") + name + ":" + type;
@@ -267,6 +284,7 @@ public class TableData {
         private boolean existsFlag = false;
         private boolean insertFlag = false;
         private boolean updateFlag = false;
+        private boolean deleteFlag = false;
         /**
          * 自增列(带*的列，只能有一个)是否可以使用excel里的value做值插入
          * 只有值为整数的情况下才能插入，其他情况自增长
@@ -384,6 +402,14 @@ public class TableData {
 
         public void setGeneratedColumnInserted(boolean generatedColumnInserted) {
             this.generatedColumnInserted = generatedColumnInserted;
+        }
+
+        public boolean isDeleteFlag() {
+            return deleteFlag;
+        }
+
+        public void setDeleteFlag(boolean deleteFlag) {
+            this.deleteFlag = deleteFlag;
         }
     }
 
@@ -506,6 +532,8 @@ public class TableData {
         public Column getColumn() {
             return column;
         }
+
+
     }
 
 }
