@@ -236,6 +236,9 @@ public class ExcelSeedDataReader {
                 //do nothing
             }
         }
+        if (TableData.Column.DEL_FLAG_COLUMN_NAME.equals(currentTitleColumn.getName()) && "1".equals(value)){
+            tableRow.setDeleteFlag(true);
+        }
         TableData.TableCellValue tableCellValue = new TableData.TableCellValue(cell, tableRow, currentTitleColumn);
         tableCellValue.setValue(value);
         tableRow.getTableCellValues().add(tableCellValue);
