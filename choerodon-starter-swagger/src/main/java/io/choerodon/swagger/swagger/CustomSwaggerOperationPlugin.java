@@ -35,7 +35,7 @@ public class CustomSwaggerOperationPlugin implements OperationBuilderPlugin {
         if (permission != null) {
             PermissionData permissionData = new PermissionData();
             permissionData.setAction(context.getName());
-            permissionData.setPermissionLevel(permission.toString());
+            permissionData.setPermissionLevel(permission.type().value());
             permissionData.setPermissionLogin(permission.permissionLogin());
             permissionData.setPermissionPublic(permission.permissionPublic());
             permissionData.setRoles(permission.roles());
