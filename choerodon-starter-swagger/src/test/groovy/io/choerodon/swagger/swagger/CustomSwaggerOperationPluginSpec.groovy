@@ -2,7 +2,7 @@ package io.choerodon.swagger.swagger
 
 import com.google.common.base.Optional
 import io.choerodon.base.annotation.Permission
-import io.choerodon.core.iam.ResourceLevel
+import io.choerodon.base.enums.ResourceType
 import io.choerodon.swagger.annotation.Label
 import spock.lang.Specification
 import springfox.documentation.builders.OperationBuilder
@@ -17,7 +17,7 @@ class CustomSwaggerOperationPluginSpec extends Specification {
     def "Apply"() {
         given: "mock参数准备"
         def permission = Mock(Permission)
-        permission.level() >> { return ResourceLevel.SITE }
+        permission.type() >> { return ResourceType.SITE }
         def label = Mock(Label)
         optional1.orNull() >> { permission }
         optional2.orNull() >> { label }
