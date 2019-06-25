@@ -57,32 +57,40 @@ public class BaseMetadataDriver implements IMetadataDriver {
         Map<String, MetadataTable> result = new TreeMap<>();
         Connection connection = null;
         ResultSet columnsResult = null;
+        ResultSet tablesResult = null;
         try {
             connection = source.getConnection();
             DatabaseMetaData databaseMetaData = connection.getMetaData();
+            tablesResult = databaseMetaData.getTables(connection.getCatalog(), connection.getSchema(), null, null);
+            while (tablesResult.next()){
+                String originTableName = tablesResult.getString("TABLE_NAME");
+                String tableName = originTableName.toLowerCase();
+                String tableSchema = tablesResult.getString("TABLE_CAT");
+                MetadataTable table = new MetadataTable();
+                table.setTableName(tableName);
+                table.setSchema(tableSchema);
+                table.setDescription(tablesResult.getString("REMARKS"));
+                table.setMultiLanguage(false);
+                table.setColumns(new LinkedList<>());
+                table.setPrimaryColumns(new TreeSet<>());
+                result.put(tableName, table);
+                ResultSet primaryResult = databaseMetaData.getPrimaryKeys(connection.getCatalog(), connection.getSchema(), originTableName);
+                while (primaryResult.next()) {
+                    table.getPrimaryColumns().add(primaryResult.getString("COLUMN_NAME").toUpperCase());
+                }
+                safeClose(primaryResult);
+            }
             columnsResult = databaseMetaData.getColumns(connection.getCatalog(), connection.getSchema(), null, null);
             while (columnsResult.next()) {
                 String originTableName = columnsResult.getString("TABLE_NAME");
                 String tableName = originTableName.toLowerCase();
                 String columnName = columnsResult.getString("COLUMN_NAME").toUpperCase();
-                String tableSchema = columnsResult.getString("TABLE_CAT");
                 if (isSkip(tableName, columnName)) {
                     continue;
                 }
                 MetadataTable table = result.get(tableName);
                 if (table == null) {
-                    table = new MetadataTable();
-                    table.setTableName(tableName);
-                    table.setSchema(tableSchema);
-                    table.setMultiLanguage(false);
-                    table.setColumns(new LinkedList<>());
-                    table.setPrimaryColumns(new TreeSet<>());
-                    result.put(tableName, table);
-                    ResultSet primaryResult = databaseMetaData.getPrimaryKeys(connection.getCatalog(), connection.getSchema(), originTableName);
-                    while (primaryResult.next()) {
-                        table.getPrimaryColumns().add(primaryResult.getString("COLUMN_NAME").toUpperCase());
-                    }
-                    safeClose(primaryResult);
+                    continue;
                 }
                 MetadataColumn column = new MetadataColumn();
                 column.setTableName(tableName);
@@ -96,6 +104,7 @@ public class BaseMetadataDriver implements IMetadataDriver {
                 table.getColumns().add(column);
             }
         } finally {
+            safeClose(tablesResult);
             safeClose(columnsResult);
             safeClose(connection);
         }
