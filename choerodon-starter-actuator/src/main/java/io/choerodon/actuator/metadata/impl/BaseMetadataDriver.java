@@ -61,7 +61,7 @@ public class BaseMetadataDriver implements IMetadataDriver {
         try {
             connection = source.getConnection();
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            tablesResult = databaseMetaData.getTables(connection.getCatalog(), connection.getSchema(), null, null);
+            tablesResult = databaseMetaData.getTables(connection.getCatalog(), connection.getSchema(), "%", null);
             while (tablesResult.next()){
                 String originTableName = tablesResult.getString("TABLE_NAME");
                 String tableName = originTableName.toLowerCase();
@@ -80,7 +80,7 @@ public class BaseMetadataDriver implements IMetadataDriver {
                 }
                 safeClose(primaryResult);
             }
-            columnsResult = databaseMetaData.getColumns(connection.getCatalog(), connection.getSchema(), null, null);
+            columnsResult = databaseMetaData.getColumns(connection.getCatalog(), connection.getSchema(), "%", "%");
             while (columnsResult.next()) {
                 String originTableName = columnsResult.getString("TABLE_NAME");
                 String tableName = originTableName.toLowerCase();
@@ -96,7 +96,7 @@ public class BaseMetadataDriver implements IMetadataDriver {
                 column.setTableName(tableName);
                 column.setColumnName(columnName);
                 column.setMultiLanguage(false);
-                column.setPrimaryKey(false);
+                column.setPrimaryKey(table.getPrimaryColumns().contains(columnName));
                 column.setTypeName(columnsResult.getString("TYPE_NAME"));
                 column.setColumnSize(columnsResult.getInt("COLUMN_SIZE"));
                 column.setNullable(columnsResult.getBoolean("NULLABLE"));
