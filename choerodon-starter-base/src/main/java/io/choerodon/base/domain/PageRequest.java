@@ -11,9 +11,7 @@ public class PageRequest {
     private int page;
     private int size;
     private Sort sort;
-
-    public PageRequest() {
-    }
+    private final boolean queriedAll;
 
     public PageRequest(int page, int size) {
         this(page, size, null);
@@ -30,6 +28,11 @@ public class PageRequest {
         this.page = page;
         this.size = size;
         this.sort = sort;
+        if (size == 0) {
+            queriedAll = true;
+        } else {
+            queriedAll = false;
+        }
     }
 
     public PageRequest(int page, int size, Sort.Direction direction, String... properties) {
@@ -58,5 +61,9 @@ public class PageRequest {
 
     public void setSort(Sort sort) {
         this.sort = sort;
+    }
+
+    public boolean isQueriedAll() {
+        return queriedAll;
     }
 }
