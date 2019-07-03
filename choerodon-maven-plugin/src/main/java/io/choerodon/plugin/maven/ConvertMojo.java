@@ -1,5 +1,17 @@
 package io.choerodon.plugin.maven;
 
+import static io.choerodon.plugin.maven.ExtractMojo.CHOERODON_FOLDER_IN_JAR;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import javax.inject.Inject;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,24 +29,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
-
-import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
-
-import static io.choerodon.plugin.maven.ExtractMojo.CHOERODON_FOLDER_IN_JAR;
 
 @Mojo(name = "convert", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class ConvertMojo extends AbstractMojo {
@@ -60,15 +56,15 @@ public class ConvertMojo extends AbstractMojo {
         }
         try {
             ObjectNode objectNode = convertFormDirectory(target.getAbsolutePath());
-            if (objectNode == null){
+            if (objectNode == null) {
                 objectNode = JsonNodeFactory.instance.objectNode();
             }
-            if (serviceBuild){
+            if (serviceBuild) {
                 mergeDependency(objectNode);
             }
             File outputFile = new File(target.getAbsolutePath() + File.separator + MERGE_FILE_NAME);
             FileUtils.forceMkdirParent(outputFile);
-            FileUtils.writeStringToFile(outputFile, objectNode.toString(), Charset.defaultCharset());
+            FileUtils.writeStringToFile(outputFile, objectNode.toString(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new MojoExecutionException("convert exception", e);
         }
@@ -77,7 +73,7 @@ public class ConvertMojo extends AbstractMojo {
     private void mergeDependency(ObjectNode root) throws IOException {
         ArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE);
         mavenProject.setArtifactFilter(artifactFilter);
-        for(Artifact artifact : mavenProject.getArtifacts()){
+        for (Artifact artifact : mavenProject.getArtifacts()) {
             File file = artifact.getFile();
             if (file != null) {
                 if (file.isDirectory()) {
@@ -90,9 +86,9 @@ public class ConvertMojo extends AbstractMojo {
     }
 
     private void mergeFormJar(String target, ObjectNode root) throws IOException {
-        try(JarFile jarFile = new JarFile(target)) {
+        try (JarFile jarFile = new JarFile(target)) {
             ZipEntry entry = jarFile.getEntry(MERGE_FILE_NAME);
-            if (entry != null){
+            if (entry != null) {
                 getLog().info("Merge: " + target);
                 mergeFormInputStream(jarFile.getInputStream(entry), root);
             }
@@ -101,7 +97,7 @@ public class ConvertMojo extends AbstractMojo {
 
     private void mergeFormDirectory(String target, ObjectNode root) throws IOException {
         File convertFile = new File(target + File.separator + MERGE_FILE_NAME);
-        if (convertFile.isFile()){
+        if (convertFile.isFile()) {
             getLog().info("Merge: " + target);
             mergeFormInputStream(new FileInputStream(convertFile), root);
         }
@@ -109,7 +105,7 @@ public class ConvertMojo extends AbstractMojo {
 
     private ObjectNode convertFormDirectory(String target) throws IOException {
         File convertFile = new File(target + File.separator + CONVERT_FILE_NAME);
-        if (convertFile.isFile()){
+        if (convertFile.isFile()) {
             getLog().info("Convert: " + target);
             return convertFormInputStream(new FileInputStream(convertFile));
         }
@@ -118,9 +114,9 @@ public class ConvertMojo extends AbstractMojo {
 
     private ObjectNode convertFormInputStream(InputStream inputStream) throws IOException {
         ObjectNode result = JsonNodeFactory.instance.objectNode();
-        try(Workbook workbook = XSSFWorkbookFactory.create(inputStream)){
+        try (Workbook workbook = XSSFWorkbookFactory.create(inputStream)) {
             workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-            for( int i = 0; i < workbook.getNumberOfSheets(); i++){
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 Sheet sheet = workbook.getSheetAt(i);
                 result.set(sheet.getSheetName(), convertFormSheet(sheet));
             }
@@ -128,36 +124,36 @@ public class ConvertMojo extends AbstractMojo {
         return result;
     }
 
-    private ArrayNode convertFormSheet(Sheet sheet){
+    private ArrayNode convertFormSheet(Sheet sheet) {
         Row headerRow = sheet.getRow(SKIP_ROW_NUMBER);
         ArrayNode sheetNode = JsonNodeFactory.instance.arrayNode();
         String[] columns = new String[headerRow.getLastCellNum() - SKIP_CELL_NUMBER + 1];
-        for (int cellIndex = SKIP_CELL_NUMBER; cellIndex < headerRow.getLastCellNum(); cellIndex++){
+        for (int cellIndex = SKIP_CELL_NUMBER; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
             columns[cellIndex - SKIP_CELL_NUMBER] = headerRow.getCell(cellIndex).getStringCellValue();
         }
-        for (int rowIndex = SKIP_ROW_NUMBER + 1; rowIndex <= sheet.getLastRowNum(); rowIndex++){
+        for (int rowIndex = SKIP_ROW_NUMBER + 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
             Row dataRow = sheet.getRow(rowIndex);
-            if (dataRow == null){
+            if (dataRow == null) {
                 getLog().warn(String.format("row is null break: %s, %d", sheet.getSheetName(), rowIndex));
                 break;
             }
             ObjectNode rowNode = JsonNodeFactory.instance.objectNode();
             boolean isValida = false;
-            for (int cellIndex = SKIP_CELL_NUMBER; cellIndex < headerRow.getLastCellNum(); cellIndex++){
+            for (int cellIndex = SKIP_CELL_NUMBER; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
                 String columnName = columns[cellIndex - SKIP_CELL_NUMBER];
                 Cell cell = dataRow.getCell(cellIndex);
-                if (cell == null){
+                if (cell == null) {
                     rowNode.putNull(columnName);
                     continue;
                 }
                 isValida = true;
-                if (cell.getCellType().equals(CellType.NUMERIC)){
+                if (cell.getCellType().equals(CellType.NUMERIC)) {
                     rowNode.put(columnName, cell.getNumericCellValue());
                 } else {
                     rowNode.put(columnName, cell.getStringCellValue());
                 }
             }
-            if (!isValida){
+            if (!isValida) {
                 break;
             }
             sheetNode.add(rowNode);
@@ -168,10 +164,10 @@ public class ConvertMojo extends AbstractMojo {
     private void mergeFormInputStream(InputStream inputStream, ObjectNode root) throws IOException {
         JsonNode inputRoot = objectMapper.readTree(inputStream);
         Iterator<String> tableNames = inputRoot.fieldNames();
-        while (tableNames.hasNext()){
+        while (tableNames.hasNext()) {
             String tableName = tableNames.next();
             JsonNode oldNode = root.get(tableName);
-            if (oldNode == null){
+            if (oldNode == null) {
                 root.set(tableName, inputRoot.get(tableName));
             } else {
                 root.set(tableName, mergeTableJsonObject(oldNode, inputRoot.get(tableName)));
@@ -179,12 +175,12 @@ public class ConvertMojo extends AbstractMojo {
         }
     }
 
-    private ArrayNode mergeTableJsonObject(JsonNode oldNode, JsonNode newNode){
+    private ArrayNode mergeTableJsonObject(JsonNode oldNode, JsonNode newNode) {
         ArrayNode tableNode = JsonNodeFactory.instance.arrayNode();
-        for (int i = 0; i < oldNode.size(); i++){
+        for (int i = 0; i < oldNode.size(); i++) {
             tableNode.add(oldNode.get(i));
         }
-        for (int i = 0; i < newNode.size(); i++){
+        for (int i = 0; i < newNode.size(); i++) {
             tableNode.add(newNode.get(i));
         }
         return tableNode;
