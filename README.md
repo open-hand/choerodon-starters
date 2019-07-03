@@ -38,5 +38,5 @@ Pull requests are welcome! Follow [this link](https://github.com/choerodon/choer
 |:-----:|:-----:|
 |0.9.0|0.6.1|
 |0.9.2|0.6.2|
-|0.10.1|0.6.3
+|0.10.1|0.6.3|
 
