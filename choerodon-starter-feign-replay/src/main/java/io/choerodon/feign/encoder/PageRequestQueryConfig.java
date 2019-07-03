@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @author superlee
  * @since 2019-07-02
  */
-@Configuration
+//@Configuration
 public class PageRequestQueryConfig {
 
     private ObjectFactory<HttpMessageConverters> messageConverters;
@@ -22,7 +22,7 @@ public class PageRequestQueryConfig {
         this.messageConverters = messageConverters;
     }
 
-    @Bean
+//    @Bean
     public Encoder feignEncoder() {
         return new PageRequestQueryEncoder(new SpringEncoder(messageConverters));
     }
