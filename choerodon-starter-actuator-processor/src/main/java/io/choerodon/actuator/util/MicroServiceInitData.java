@@ -1,19 +1,12 @@
 package io.choerodon.actuator.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.TreeSet;
+import java.util.*;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class MicroServiceInitData {
     private static final String DEL_COLUMN_NAME = "$DEL";
