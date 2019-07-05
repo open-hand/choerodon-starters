@@ -1,9 +1,12 @@
 package io.choerodon.annotation.entity;
 
+import java.util.Objects;
+
 public class PermissionDescription {
     private String path;
     private String service;
     private String method;
+    private String description;
     private PermissionEntity permission;
 
     public String getPath() {
@@ -38,24 +41,28 @@ public class PermissionDescription {
         this.service = service;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         PermissionDescription that = (PermissionDescription) o;
-
-        if (path != null ? !path.equals(that.path) : that.path != null) return false;
-        if (method != that.method) return false;
-        return permission != null ? permission.equals(that.permission) : that.permission == null;
-
+        return Objects.equals(path, that.path) &&
+                Objects.equals(service, that.service) &&
+                Objects.equals(method, that.method) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(permission, that.permission);
     }
 
     @Override
     public int hashCode() {
-        int result = path != null ? path.hashCode() : 0;
-        result = 31 * result + (method != null ? method.hashCode() : 0);
-        result = 31 * result + (permission != null ? permission.hashCode() : 0);
-        return result;
+        return Objects.hash(path, service, method, description, permission);
     }
 }
