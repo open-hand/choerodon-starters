@@ -34,9 +34,12 @@ If you find any shortcomings or bugs, please describe them in the [Issue](https:
 Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
 
 ## Starter and dbtool version mapping
-| starter version | dbtools version|
-|:-----:|:-----:|
-|0.9.0|0.6.1|
-|0.9.2|0.6.2|
-|0.10.1|0.6.3|
+| starter version | dbtools version|changelog|
+|:-----:|:-----:|:-----:|
+|0.9.0|0.6.1||
+|0.9.2|0.6.2||
+|0.10.1|0.6.3||
+|0.11.0|0.6.4||
+|0.11.0|0.6.5||
+|0.12.0|0.6.6|初始化配置添加update策略;修改tool-config mapper|
 
