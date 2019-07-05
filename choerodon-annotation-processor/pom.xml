@@ -25,5 +25,10 @@
             <artifactId>choerodon-starter-base</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.5.10</version>
+        </dependency>
     </dependencies>
 </project>
