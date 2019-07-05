@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-mybatis-mapper</artifactId>
+            <artifactId>choerodon-starter-mybatis</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

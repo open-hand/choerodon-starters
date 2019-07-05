@@ -3,11 +3,11 @@ package io.choerodon.config;
 import io.choerodon.config.execute.Executor;
 import io.choerodon.config.utils.FileUtil;
 import io.choerodon.config.utils.InitConfigProperties;
-import io.choerodon.mybatis.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import tk.mybatis.mapper.util.StringUtil;
 
 import java.io.File;
 import java.util.List;
