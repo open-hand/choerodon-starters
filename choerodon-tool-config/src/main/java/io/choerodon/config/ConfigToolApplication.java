@@ -1,6 +1,6 @@
 package io.choerodon.config;
 
-import io.choerodon.mybatis.MybatisMapperAutoConfiguration;
+import io.choerodon.mybatis.ChoerodonMybatisAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * @author wuguokai
  */
-@SpringBootApplication(exclude = MybatisMapperAutoConfiguration.class)
+@SpringBootApplication(exclude = ChoerodonMybatisAutoConfiguration.class)
 public class ConfigToolApplication {
     /**
      * 主函数

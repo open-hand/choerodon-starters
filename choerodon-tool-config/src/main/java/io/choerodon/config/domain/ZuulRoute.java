@@ -1,25 +1,18 @@
 package io.choerodon.config.domain;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 /**
  * 数据库zuul_route表实体对象
  *
  * @author wuguokai
  */
-@VersionAudit
-@ModifyAudit
 @Table(name = "mgmt_route")
-public class ZuulRoute extends AuditDomain {
+public class ZuulRoute extends BaseDTO {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;

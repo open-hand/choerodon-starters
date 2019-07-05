@@ -22,24 +22,32 @@ public class RegisterServerExecutor extends AbstractExecutor {
     @Override
     public void execute(InitConfigProperties properties, String configFile) throws IOException {
         String updatePolicy = properties.getConfig().getUpdatePolicy();
-        if (UPDATE_POLICY_ADD.equals(updatePolicy) || UPDATE_POLICY_NOT.equals(updatePolicy)
-                || UPDATE_POLICY_OVERRIDE.equals(updatePolicy)) {
-            CreateConfigDTO dto = new CreateConfigDTO().setService(properties.getService().getName())
-                    .setVersion(properties.getService().getVersion())
-                    .setNamespace(properties.getService().getNamespace())
-                    .setProfile(properties.getConfig().getProfile())
-                    .setYaml(readFile(configFile))
-                    .setUpdatePolicy(updatePolicy);
-            ResponseEntity<Void> response = restTemplate.postForEntity(getCreateConfigMapUrl(properties.getRegister().getHost()), dto, Void.class);
-            if (response.getStatusCode() == HttpStatus.NOT_MODIFIED) {
-                LOGGER.warn("该服务配置的configMap已存在！");
-            } else if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new InitConfigException("Create configMap error, statusCode: " + response.getStatusCodeValue());
-            }
-            LOGGER.info("配置初始化完成");
-        } else {
-            throw new InitConfigException("invalid update policy, update policy is only one of 'not'、'add'、'override'");
+        switch (updatePolicy) {
+            case UPDATE_POLICY_ADD:
+            case UPDATE_POLICY_NOT:
+            case UPDATE_POLICY_OVERRIDE:
+            case UPDATE_POLICY_UPDATE:
+                postConfigToRegisterServer(properties, configFile, updatePolicy);
+                break;
+            default:
+                throw new InitConfigException("invalid update policy, update policy is only one of 'not'、'add'、'override' and 'update'");
         }
+    }
+
+    private void postConfigToRegisterServer(InitConfigProperties properties, String configFile, String updatePolicy) throws IOException {
+        CreateConfigDTO dto = new CreateConfigDTO().setService(properties.getService().getName())
+                .setVersion(properties.getService().getVersion())
+                .setNamespace(properties.getService().getNamespace())
+                .setProfile(properties.getConfig().getProfile())
+                .setYaml(readFile(configFile))
+                .setUpdatePolicy(updatePolicy);
+        ResponseEntity<Void> response = restTemplate.postForEntity(getCreateConfigMapUrl(properties.getRegister().getHost()), dto, Void.class);
+        if (response.getStatusCode() == HttpStatus.NOT_MODIFIED) {
+            LOGGER.warn("该服务配置的configMap已存在！");
+        } else if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new InitConfigException("Create configMap error, statusCode: " + response.getStatusCodeValue());
+        }
+        LOGGER.info("配置初始化完成");
     }
 
     private String getCreateConfigMapUrl(String url) {

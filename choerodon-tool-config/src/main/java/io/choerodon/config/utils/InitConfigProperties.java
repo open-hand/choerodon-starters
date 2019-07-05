@@ -5,15 +5,35 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties
 public class InitConfigProperties {
 
+    /**
+     * 初始化配置类型，向manager-service数据库初始化配置
+     */
     public static final String TYPE_CONFIG_SERVER = "db";
 
+    /**
+     * 初始化配置类型，向k8s config map初始化配置
+     */
     public static final String TYPE_REGISTER_SERVER = "k8s";
 
+    /**
+     * 初始化配置策略：什么也不做
+     */
     public static final String UPDATE_POLICY_NOT = "not";
 
+    /**
+     * 初始化配置策略：只新增
+     */
     public static final String UPDATE_POLICY_ADD = "add";
 
+    /**
+     * 初始化配置策略：覆盖
+     */
     public static final String UPDATE_POLICY_OVERRIDE = "override";
+
+    /**
+     * 初始化配置策略：更新，有值的话更新，没有的新增
+     */
+    public static final String UPDATE_POLICY_UPDATE = "update";
 
     private Config config = new Config();
 
