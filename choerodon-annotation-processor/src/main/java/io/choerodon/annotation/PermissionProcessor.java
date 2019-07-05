@@ -5,6 +5,7 @@ import io.choerodon.annotation.entity.PermissionEntity;
 import io.choerodon.base.annotation.Dataset;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
@@ -75,6 +76,7 @@ public class PermissionProcessor {
             }
             description.setMethod(requestMethod.name().toLowerCase());
             Permission permission = AnnotationUtils.getAnnotation(method, Permission.class);
+            ApiOperation operation = AnnotationUtils.getAnnotation(method, ApiOperation.class);
             if (permission != null) {
                 PermissionEntity permissionEntity = new PermissionEntity();
                 permissionEntity.setRoles(permission.roles());
@@ -83,6 +85,9 @@ public class PermissionProcessor {
                 permissionEntity.setPermissionPublic(permission.permissionPublic());
                 permissionEntity.setPermissionWithin(permission.permissionWithin());
                 description.setPermission(permissionEntity);
+                if (operation != null){
+                    description.setDescription(operation.value());
+                }
             }
             descriptions.put(clazz.getName() + "." + method.getName(), description);
         }
