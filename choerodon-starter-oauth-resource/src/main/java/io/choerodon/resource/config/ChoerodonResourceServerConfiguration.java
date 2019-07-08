@@ -17,6 +17,10 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.util.ObjectUtils;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static javax.servlet.DispatcherType.REQUEST;
 
@@ -27,18 +31,25 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonResourceServerConfiguration.class);
 
-    @Value("${choerodon.oauth.jwt.key:choerodon}")
-    private String key;
+    private final String key;
 
-    @Value("${choerodon.resource.pattern:/v1/*}")
-    private String pattern;
+    private final String[] pattern;
 
-    public void setKey(String key) {
+    private final String[] jwtIgnore;
+
+    private final String[] defaultJwtIgnore = {"/v2/choerodon/**", "/choerodon/**", "/actuator/**", "/prometheus"};
+
+    public ChoerodonResourceServerConfiguration(@Value("${choerodon.oauth.jwt.key:choerodon}") final String key,
+                                                @Value("${choerodon.resource.pattern:/*}") final String[] pattern,
+                                                @Value("${choerodon.resource.jwt.ignore:#{null}}") final String[] jwtIgnore) {
         this.key = key;
-    }
-
-    public void setPattern(String pattern) {
         this.pattern = pattern;
+        if (ObjectUtils.isEmpty(jwtIgnore)) {
+            this.jwtIgnore = defaultJwtIgnore;
+        } else {
+            this.jwtIgnore =
+                    Stream.concat(Arrays.stream(jwtIgnore), Arrays.stream(defaultJwtIgnore)).toArray(String[]::new);
+        }
     }
 
     @Override
@@ -71,7 +82,7 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
 
     @Bean
     public JwtTokenFilter jwtTokenFilter(PublicPermissionOperationPlugin publicPermissionOperationPlugin, JwtTokenExtractor jwtTokenExtractor) {
-        return new JwtTokenFilter(tokenServices(), jwtTokenExtractor, publicPermissionOperationPlugin.getPublicPaths());
+        return new JwtTokenFilter(tokenServices(), jwtTokenExtractor, publicPermissionOperationPlugin.getPublicPaths(), jwtIgnore);
     }
 
     /**
