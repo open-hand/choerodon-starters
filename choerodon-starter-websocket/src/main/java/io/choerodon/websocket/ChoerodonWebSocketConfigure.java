@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
@@ -23,8 +25,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@ComponentScan
 @Configuration
 @EnableWebSocket
+@EnableConfigurationProperties(ChoerodonWebSocketProperties.class)
 public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonWebSocketConfigure.class);

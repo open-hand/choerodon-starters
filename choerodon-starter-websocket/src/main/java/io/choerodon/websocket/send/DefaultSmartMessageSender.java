@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
+import io.choerodon.websocket.VisitorsInfo;
+import io.choerodon.websocket.VisitorsInfoObservable;
 import io.choerodon.websocket.relationship.RelationshipDefining;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,20 +16,31 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 @Component
-public class DefaultSmartMessageSender implements MessageSender {
-
+public class DefaultSmartMessageSender implements MessageSender, Observer {
+    private static final String ONLINE_INFO_TYPE = "online-info";
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSender.class);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private StringRedisTemplate redisTemplate;
-
     private RelationshipDefining relationshipDefining;
 
     public DefaultSmartMessageSender(StringRedisTemplate redisTemplate,
-                                     RelationshipDefining relationshipDefining) {
+                                     RelationshipDefining relationshipDefining,
+                                     VisitorsInfoObservable observable) {
+        observable.addObserver(this);
         this.redisTemplate = redisTemplate;
         this.relationshipDefining = relationshipDefining;
     }
@@ -137,5 +150,41 @@ public class DefaultSmartMessageSender implements MessageSender {
         }
     }
 
+    @Override
+    public void sendVisitorsInfo(Integer currentOnlines, Integer numberOfVisitorsToday) {
+        Map<String, Object> visitorsInfo = new HashMap<>();
+        visitorsInfo.put("CurrentOnliners", currentOnlines);
+        visitorsInfo.put("numberOfVisitorsToday", numberOfVisitorsToday);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        List<String> times = new ArrayList<>();
+        List<String> data = new ArrayList<>();
+        for (int i = 0; i < 24; i++) {
+            String time = dateFormat.format(calendar.getTime());
+            times.add(time);
+            String onlinersOnThatTime = redisTemplate.opsForValue().get(time);
+            if (onlinersOnThatTime == null) {
+                onlinersOnThatTime = "0";
+            }
+            data.add(onlinersOnThatTime);
+            calendar.add(Calendar.HOUR, -1);
+        }
+        Collections.reverse(times);
+        Collections.reverse(data);
+        visitorsInfo.put("time", times);
+        visitorsInfo.put("data", data);
+        String key = "choerodon:msg:online-info";
+        this.sendByKey(key, new WebSocketSendPayload<>(ONLINE_INFO_TYPE, key, visitorsInfo));
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (arg instanceof VisitorsInfo) {
+            VisitorsInfo info = (VisitorsInfo) arg;
+            this.sendVisitorsInfo(info.currentOnlines, info.numberOfVisitorsToday);
+        }
+    }
 }
 
