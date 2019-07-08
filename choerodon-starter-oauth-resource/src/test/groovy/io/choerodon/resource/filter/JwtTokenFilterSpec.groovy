@@ -35,7 +35,7 @@ class JwtTokenFilterSpec extends Specification {
     def "Init"() {
         given: "参数准备"
         def publicPermissions = new HashSet<PublicPermission>()
-        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions)
+        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions,"/v1/**")
         def filterConfig = Mock(FilterConfig)
         filterConfig.getServletContext() >> { return Mock(ServletContext) }
         and: "mock静态类"
@@ -51,7 +51,7 @@ class JwtTokenFilterSpec extends Specification {
         def publicPermissions = new HashSet<PublicPermission>()
         def publicPermissions1 = new PublicPermission("path", mockHttpMethod1)
         publicPermissions.add(publicPermissions1)
-        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions)
+        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions,"/v1/**")
 
         and: "参数准备"
         def request = Mock(HttpServletRequest)
@@ -75,7 +75,7 @@ class JwtTokenFilterSpec extends Specification {
         def publicPermissions = new HashSet<PublicPermission>()
         def publicPermissions1 = new PublicPermission("path", HttpMethod.GET)
         publicPermissions.add(publicPermissions1)
-        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions)
+        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions,"/v1/**")
 
         and: "参数准备"
         def request = Mock(HttpServletRequest)
@@ -106,7 +106,7 @@ class JwtTokenFilterSpec extends Specification {
         def publicPermissions = new HashSet<PublicPermission>()
         def publicPermissions1 = new PublicPermission("path", HttpMethod.GET)
         publicPermissions.add(publicPermissions1)
-        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions)
+        jwtTokenFilter = new JwtTokenFilter(mockResourceServerTokenServices, mockTokenExtractor, publicPermissions,"/v1/**")
 
         and: "参数准备"
         def request = Mock(HttpServletRequest)
