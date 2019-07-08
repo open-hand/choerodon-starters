@@ -37,16 +37,16 @@ public class JwtTokenFilter implements Filter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenFilter.class);
 
-    public JwtTokenFilter() {
-
-    }
+    private final String[] jwtIgnore;
 
     public JwtTokenFilter(ResourceServerTokenServices tokenServices,
                           TokenExtractor tokenExtractor,
-                          Set<PublicPermission> publicPermissions) {
+                          Set<PublicPermission> publicPermissions,
+                          String[] jwtIgnore) {
         this.tokenServices = tokenServices;
         this.tokenExtractor = tokenExtractor;
         this.publicPermissions = publicPermissions;
+        this.jwtIgnore = jwtIgnore;
     }
 
     @Override
@@ -61,6 +61,13 @@ public class JwtTokenFilter implements Filter {
         for (PublicPermission publicPermission : publicPermissions) {
             if (MATCHER.match(publicPermission.path, httpRequest.getRequestURI()) &&
                     publicPermission.method.matches(httpRequest.getMethod())) {
+                //public接口放行
+                chain.doFilter(request, response);
+                return;
+            }
+        }
+        for (String ignore : jwtIgnore) {
+            if (MATCHER.match(ignore, httpRequest.getRequestURI())) {
                 chain.doFilter(request, response);
                 return;
             }
