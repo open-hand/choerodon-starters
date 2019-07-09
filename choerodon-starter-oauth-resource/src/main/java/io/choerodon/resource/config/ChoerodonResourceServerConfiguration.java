@@ -11,6 +11,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -49,6 +50,12 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
             this.jwtIgnore =
                     Stream.concat(Arrays.stream(jwtIgnore), Arrays.stream(defaultJwtIgnore)).toArray(String[]::new);
         }
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web
+                .ignoring().anyRequest();
     }
 
     @Override
