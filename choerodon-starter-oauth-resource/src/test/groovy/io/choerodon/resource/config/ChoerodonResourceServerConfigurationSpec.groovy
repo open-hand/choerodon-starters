@@ -18,7 +18,8 @@ class ChoerodonResourceServerConfigurationSpec extends spock.lang.Specification 
     ChoerodonResourceServerConfiguration choerodonResourceServerConfiguration
 
     void setup() {
-        choerodonResourceServerConfiguration = new ChoerodonResourceServerConfiguration("choerodon", "/v1/*", null)
+        String[] pattern = ["/v1/**"]
+        choerodonResourceServerConfiguration = new ChoerodonResourceServerConfiguration("choerodon", pattern, null)
     }
 
     def "Configure"() {
