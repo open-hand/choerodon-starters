@@ -11,7 +11,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -37,7 +36,7 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
 
     private final String[] jwtIgnore;
 
-    private final String[] defaultJwtIgnore = {"/v2/choerodon/**", "/choerodon/**", "/actuator/**", "/prometheus"};
+    private static final String[] defaultJwtIgnore = {"/choerodon/**"};
 
     public ChoerodonResourceServerConfiguration(@Value("${choerodon.oauth.jwt.key:choerodon}") final String key,
                                                 @Value("${choerodon.resource.pattern:/*}") final String[] pattern,
@@ -50,13 +49,6 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
             this.jwtIgnore =
                     Stream.concat(Arrays.stream(jwtIgnore), Arrays.stream(defaultJwtIgnore)).toArray(String[]::new);
         }
-    }
-
-    @Override
-    public void configure(WebSecurity web) {
-        web
-                .ignoring()
-                .antMatchers("/v1/**", "/v2/choerodon/**", "/choerodon/**", "/actuator/**", "/prometheus");
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import io.choerodon.base.annotation.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class ActuatorEndpoint {
     private ApplicationContext applicationContext;
 
     @GetMapping("/actuator/{key}")
+    @Permission(permissionPublic = true, permissionWithin = true)
     private Map<String, Object> query(@PathVariable String key) {
         Map<String, Object> result = new TreeMap<>();
         if ("permission".equals(key) || "all".equals(key)) {
