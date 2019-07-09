@@ -2,6 +2,7 @@ package io.choerodon.swagger;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import io.choerodon.base.annotation.Permission;
 import io.choerodon.swagger.notify.NotifyScanData;
 import io.choerodon.swagger.notify.NotifyTemplateProcessor;
 import io.choerodon.swagger.swagger.CustomSwagger;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
-import springfox.documentation.annotations.ApiIgnore;
 import springfox.documentation.service.Documentation;
 import springfox.documentation.spring.web.DocumentationCache;
 import springfox.documentation.spring.web.json.Json;
@@ -37,7 +37,6 @@ import static org.springframework.util.StringUtils.*;
  * @author wuguokai
  */
 @Controller
-@ApiIgnore
 public class CustomController {
 
     private static final String CUSTOM_SWAGGER_URL = "/v2/choerodon/api-docs";
@@ -74,6 +73,7 @@ public class CustomController {
     }
 
     @GetMapping(value = CUSTOM_NOTIFY_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
+    @Permission(permissionPublic = true, permissionWithin = true)
     public
     @ResponseBody
     ResponseEntity<NotifyScanData> getNotifyTemplates() {
@@ -82,6 +82,7 @@ public class CustomController {
     }
 
     @GetMapping(value = CUSTOM_SWAGGER_URL, produces = {APPLICATION_JSON_VALUE, HAL_MEDIA_TYPE})
+    @Permission(permissionPublic = true, permissionWithin = true)
     public
     @ResponseBody
     ResponseEntity<Json> getDocumentation(
