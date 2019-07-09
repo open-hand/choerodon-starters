@@ -37,7 +37,7 @@ public class ChoerodonResourceServerConfiguration extends WebSecurityConfigurerA
 
     private final String[] jwtIgnore;
 
-    private static final String[] defaultJwtIgnore = {"/choerodon/**"};
+    private static final String[] defaultJwtIgnore = {"/choerodon/**", "/", "/dis/**", "/env-config.js"};
 
     public ChoerodonResourceServerConfiguration(@Value("${choerodon.oauth.jwt.key:choerodon}") final String key,
                                                 @Value("${choerodon.resource.pattern:/*}") final String[] pattern,
