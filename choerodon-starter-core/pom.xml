@@ -26,6 +26,11 @@
             <version>${spring-security-oauth2.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-starter-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
