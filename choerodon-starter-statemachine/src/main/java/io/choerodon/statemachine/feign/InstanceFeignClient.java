@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  * @author peng.jiang, dinghuang123@gmail.com
  * @since 2018/10/29
  */
-@FeignClient(value = "state-machine-service",
+@FeignClient(value = "issue-service",
         fallback = InstanceFeignClientFallback.class)
 @Component
 public interface InstanceFeignClient {
