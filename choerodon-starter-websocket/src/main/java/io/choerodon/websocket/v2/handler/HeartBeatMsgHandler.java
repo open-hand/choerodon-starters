@@ -1,12 +1,13 @@
-package io.choerodon.websocket.receive;
+package io.choerodon.websocket.v2.handler;
 
-import io.choerodon.websocket.send.MessageSender;
-import io.choerodon.websocket.send.WebSocketSendPayload;
+import io.choerodon.websocket.v2.send.MessageSender;
+import io.choerodon.websocket.v2.send.WebSocketSendPayload;
+import io.choerodon.websocket.v2.receive.MessageHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 @Component
-public class HeartBeatMsgHandler implements ReceiveMsgHandler<String> {
+public class HeartBeatMsgHandler implements MessageHandler<String> {
 
     private static final String HEART_BEAT = "heartBeat";
     private MessageSender messageSender;
@@ -16,7 +17,7 @@ public class HeartBeatMsgHandler implements ReceiveMsgHandler<String> {
     }
 
     @Override
-    public void handle(WebSocketSession session, String payload) {
+    public void handle(WebSocketSession session, String type, String key, String payload) {
         messageSender.sendWebSocket(session, new WebSocketSendPayload<>(HEART_BEAT, null, null));
     }
 

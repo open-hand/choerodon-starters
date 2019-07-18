@@ -16,7 +16,7 @@ class DefaultRelationshipDefiningSpec extends Specification {
     private StringRedisTemplate redisTemplate = Mock(StringRedisTemplate)
     private RedisChannelRegister redisChannelRegister = Mock(RedisChannelRegister)
     private DefaultRelationshipDefining relationshipDefining =
-            new DefaultRelationshipDefining(redisTemplate, redisChannelRegister, Mock(VisitorsInfoObservable))
+            new DefaultRelationshipDefining(redisTemplate, redisChannelRegister)
 
     def "GetWebSocketSessionsByKey"() {
         when: "调用方法"

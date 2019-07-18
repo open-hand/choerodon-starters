@@ -11,10 +11,8 @@ import spock.lang.Specification
  * @author dengyouquan
  * */
 class AuthHandshakeInterceptorSpec extends Specification {
-    private ChoerodonWebSocketProperties choerodonWebSocketProperties =
-            new ChoerodonWebSocketProperties()
-    private AuthHandshakeInterceptor authHandshakeInterceptor =
-            new AuthHandshakeInterceptor(choerodonWebSocketProperties)
+    private ChoerodonWebSocketProperties choerodonWebSocketProperties = new ChoerodonWebSocketProperties()
+    private AuthHandshakeInterceptor authHandshakeInterceptor = new AuthHandshakeInterceptor(choerodonWebSocketProperties)
 
     def "BeforeHandshake"() {
         given: "构造请求参数"

@@ -1,5 +1,6 @@
-package io.choerodon.websocket.send;
+package io.choerodon.websocket.v2.send;
 
+import io.choerodon.websocket.v2.send.WebSocketSendPayload;
 import org.springframework.web.socket.WebSocketSession;
 
 public interface MessageSender {
@@ -18,5 +19,4 @@ public interface MessageSender {
 
     void sendByKey(String key, String type, String data);
 
-    void sendVisitorsInfo(Integer currentOnlines, Integer numberOfVisitorsToday);
 }

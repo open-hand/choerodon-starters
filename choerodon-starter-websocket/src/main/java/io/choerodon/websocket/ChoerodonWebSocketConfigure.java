@@ -5,6 +5,8 @@ import io.choerodon.websocket.handshake.AuthHandshakeInterceptor;
 import io.choerodon.websocket.handshake.WebSocketHandshakeInterceptor;
 import io.choerodon.websocket.notify.ReceiveRedisMessageListener;
 import io.choerodon.websocket.register.RedisChannelRegister;
+import io.choerodon.websocket.v2.helper.HandshakeCheckerHandler;
+import io.choerodon.websocket.v2.helper.SocketHandlerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,9 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
     @Autowired
     private Optional<List<WebSocketHandshakeInterceptor>> handshakeInterceptors;
 
+    @Autowired
+    private Optional<List<SocketHandlerRegistration>> socketHandlerRegistrations;
+
 
     @Bean
     MessageListenerAdapter defaultListenerAdapter(ReceiveRedisMessageListener receiveRedisMessageListener) {
@@ -74,7 +79,10 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
         registry.addHandler(webSocketHandler, choerodonWebSocketProperties.getPaths())
                 .setAllowedOrigins("*")
                 .addInterceptors(webSocketHandshakeInterceptors);
-
+        List<SocketHandlerRegistration> registrations = socketHandlerRegistrations.orElseGet(Collections::emptyList);
+        registrations.forEach(registration -> {
+            webSocketHandler.addSocketHandlerRegistration(registration);
+            registry.addHandler(webSocketHandler, registration.path()).setHandshakeHandler(new HandshakeCheckerHandler(registration));
+        });
     }
-
 }
