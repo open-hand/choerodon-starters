@@ -37,7 +37,7 @@ public class BrokerHelper {
     @Value("${spring.application.name}")
     private String application;
 
-    @Value("${choerodon.ws.heartBeatIntervalMs}")
+    @Value("${choerodon.ws.heartBeatIntervalMs:10000}")
     private Long heartBeatIntervalMs;
 
     private ScheduledExecutorService scheduledExecutorService;
