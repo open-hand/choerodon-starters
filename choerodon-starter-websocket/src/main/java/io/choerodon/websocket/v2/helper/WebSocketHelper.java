@@ -1,12 +1,11 @@
 package io.choerodon.websocket.v2.helper;
 
-import io.choerodon.websocket.connect.WebSocketMessageHandler;
+import io.choerodon.websocket.v2.receive.WebSocketMessageHandler;
 import io.choerodon.websocket.v2.send.MessageSender;
 import io.choerodon.websocket.v2.receive.MessageHandler;
 import io.choerodon.websocket.v2.send.WebSocketSendPayload;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 
 /**
  * Created by hailuo.liu@choerodon.io on 2019/7/2.

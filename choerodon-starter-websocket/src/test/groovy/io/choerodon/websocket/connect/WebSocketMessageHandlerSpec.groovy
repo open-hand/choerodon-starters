@@ -1,6 +1,7 @@
 package io.choerodon.websocket.connect
 
 import io.choerodon.websocket.relationship.RelationshipDefining
+import io.choerodon.websocket.v2.receive.WebSocketMessageHandler
 import io.choerodon.websocket.v2.send.MessageSender
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -12,9 +13,7 @@ import spock.lang.Specification
 class WebSocketMessageHandlerSpec extends Specification {
     private MessageSender messageSender = Mock(MessageSender)
     private RelationshipDefining relationshipDefining = Mock(RelationshipDefining)
-    private WebSocketMessageHandler handler = new WebSocketMessageHandler(
-            Optional.ofNullable(null),
-            relationshipDefining, messageSender)
+    private WebSocketMessageHandler handler = new WebSocketMessageHandler(Optional.ofNullable(null), relationshipDefining, messageSender)
 
     def "AfterConnectionEstablished"() {
         given: "构造参数"
@@ -28,14 +27,14 @@ class WebSocketMessageHandlerSpec extends Specification {
 
     def "AfterConnectionClosed"() {
         when: "调用方法"
-        handler.afterConnectionClosed(null, null)
+        handler.afterConnectionClosed(Mock(WebSocketSession), null)
         then: "校验结果"
         noExceptionThrown()
     }
 
     def "HandleTransportError"() {
         when: "调用方法"
-        handler.handleTransportError(null, null)
+        handler.handleTransportError(Mock(WebSocketSession), null)
         then: "校验结果"
         noExceptionThrown()
     }

@@ -1,11 +1,10 @@
 package io.choerodon.websocket.send
 
-import io.choerodon.websocket.VisitorsInfoObservable
+
 import io.choerodon.websocket.relationship.RelationshipDefining
 import io.choerodon.websocket.v2.send.DefaultSmartMessageSender
 import io.choerodon.websocket.v2.send.WebSocketSendPayload
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.data.redis.core.ValueOperations
 import org.springframework.web.socket.WebSocketSession
 import spock.lang.Specification
 

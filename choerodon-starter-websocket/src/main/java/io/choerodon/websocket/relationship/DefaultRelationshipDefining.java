@@ -1,7 +1,6 @@
 package io.choerodon.websocket.relationship;
 
-import io.choerodon.websocket.register.RedisChannelRegister;
-
+import io.choerodon.websocket.v2.helper.BrokerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -19,11 +18,11 @@ public class DefaultRelationshipDefining implements RelationshipDefining {
     private Map<String, Set<WebSocketSession>> keySessionsMap = new ConcurrentHashMap<>();
     private Map<WebSocketSession, Set<String>> sessionKeysMap = new ConcurrentHashMap<>();
     private StringRedisTemplate redisTemplate;
-    private RedisChannelRegister redisChannelRegister;
+    private BrokerHelper brokerHelper;
 
-    public DefaultRelationshipDefining(StringRedisTemplate redisTemplate, RedisChannelRegister redisChannelRegister) {
+    public DefaultRelationshipDefining(StringRedisTemplate redisTemplate, BrokerHelper brokerHelper) {
         this.redisTemplate = redisTemplate;
-        this.redisChannelRegister = redisChannelRegister;
+        this.brokerHelper = brokerHelper;
     }
 
 
@@ -40,9 +39,9 @@ public class DefaultRelationshipDefining implements RelationshipDefining {
     @Override
     public Set<String> getRedisChannelsByKey(String key, boolean exceptSelf) {
         Set<String> set = new HashSet<>();
-        Set<String> survivalChannels = redisChannelRegister.getSurvivalChannels();
+        Set<String> survivalChannels = brokerHelper.getSurvivalBrokers();
         if (exceptSelf) {
-            survivalChannels.remove(redisChannelRegister.channelName());
+            survivalChannels.remove(brokerHelper.brokerName());
         }
         survivalChannels.forEach(t -> {
             if (redisTemplate.opsForSet().members(t).contains(key)) {
@@ -64,7 +63,7 @@ public class DefaultRelationshipDefining implements RelationshipDefining {
             subKeys.add(key);
             LOGGER.debug("webSocket subscribe sessionId is {}, subKeys is {}", session.getId(), subKeys);
         }
-        redisTemplate.opsForSet().add(redisChannelRegister.channelName(), key);
+        redisTemplate.opsForSet().add(brokerHelper.brokerName(), key);
     }
 
     @Override
@@ -88,7 +87,7 @@ public class DefaultRelationshipDefining implements RelationshipDefining {
             sessions.removeIf(t -> t.getId().equals(delSession.getId()));
             if (sessions.isEmpty()) {
                 it.remove();
-                redisTemplate.opsForSet().remove(redisChannelRegister.channelName(), next.getKey());
+                redisTemplate.opsForSet().remove(brokerHelper.brokerName(), next.getKey());
             }
         }
 

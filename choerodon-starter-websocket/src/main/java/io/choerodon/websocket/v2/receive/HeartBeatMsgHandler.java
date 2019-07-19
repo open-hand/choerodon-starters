@@ -1,4 +1,4 @@
-package io.choerodon.websocket.v2.handler;
+package io.choerodon.websocket.v2.receive;
 
 import io.choerodon.websocket.v2.send.MessageSender;
 import io.choerodon.websocket.v2.send.WebSocketSendPayload;

@@ -1,7 +1,6 @@
 package io.choerodon.websocket.relationship
 
-import io.choerodon.websocket.VisitorsInfoObservable
-import io.choerodon.websocket.register.RedisChannelRegister
+import io.choerodon.websocket.v2.helper.BrokerHelper
 import org.springframework.data.redis.core.SetOperations
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.web.socket.WebSocketSession
@@ -14,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap
  * */
 class DefaultRelationshipDefiningSpec extends Specification {
     private StringRedisTemplate redisTemplate = Mock(StringRedisTemplate)
-    private RedisChannelRegister redisChannelRegister = Mock(RedisChannelRegister)
+    private BrokerHelper brokerHelper = Mock(BrokerHelper)
     private DefaultRelationshipDefining relationshipDefining =
-            new DefaultRelationshipDefining(redisTemplate, redisChannelRegister)
+            new DefaultRelationshipDefining(redisTemplate, brokerHelper)
 
     def "GetWebSocketSessionsByKey"() {
         when: "调用方法"
@@ -36,8 +35,8 @@ class DefaultRelationshipDefiningSpec extends Specification {
         relationshipDefining.getRedisChannelsByKey("key", true)
         then: "校验结果"
         noExceptionThrown()
-        redisChannelRegister.getSurvivalChannels() >> survivalChannels
-        1 * redisChannelRegister.channelName() >> "notify-service"
+        brokerHelper.getSurvivalBrokers() >> survivalChannels
+        1 * brokerHelper.brokerName() >> "notify-service"
         1 * redisTemplate.opsForSet() >> setOperations
         1 * setOperations.members(_) >> { new HashSet<>() }
     }
@@ -56,7 +55,7 @@ class DefaultRelationshipDefiningSpec extends Specification {
         relationshipDefining.contact("key", session)
         then: "校验结果"
         noExceptionThrown()
-        1 * redisChannelRegister.channelName() >> "notify-service"
+        1 * brokerHelper.brokerName() >> "notify-service"
         1 * redisTemplate.opsForSet() >> setOperations
     }
 
