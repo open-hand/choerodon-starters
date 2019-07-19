@@ -1,6 +1,5 @@
-package io.choerodon.websocket.v2.handler;
+package io.choerodon.websocket.v2.receive;
 
-import io.choerodon.websocket.v2.receive.MessageHandler;
 import io.choerodon.websocket.relationship.RelationshipDefining;
 import io.choerodon.websocket.v2.send.MessageSender;
 import io.choerodon.websocket.v2.send.WebSocketSendPayload;
@@ -11,15 +10,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.socket.WebSocketSession;
 
 @Component
-public class UnSubReceiveMessageHandler implements MessageHandler<String> {
+public class SubReceiveMessageHandler implements MessageHandler<String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(UnSubReceiveMessageHandler.class);
 
     private RelationshipDefining relationshipDefining;
 
     private MessageSender messageSender;
 
-    public UnSubReceiveMessageHandler(RelationshipDefining relationshipDefining,
-                                      MessageSender messageSender) {
+    public SubReceiveMessageHandler(RelationshipDefining relationshipDefining, MessageSender messageSender) {
         this.relationshipDefining = relationshipDefining;
         this.messageSender = messageSender;
     }
@@ -28,14 +26,13 @@ public class UnSubReceiveMessageHandler implements MessageHandler<String> {
     public void handle(WebSocketSession session, String type, String key, String payload) {
         LOGGER.info("webSocket unsub {},session id ={}", key, session.getId());
         if (!StringUtils.isEmpty(key)) {
-            relationshipDefining.removeKeyContact(session, key);
+            relationshipDefining.contact(key, session);
             messageSender.sendWebSocket(session, new WebSocketSendPayload<>(type, key, relationshipDefining.getKeysBySession(session)));
         }
     }
 
     @Override
     public String matchType() {
-        return "unsub";
+        return "sub";
     }
-
 }

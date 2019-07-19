@@ -1,4 +1,4 @@
-package io.choerodon.websocket.notify;
+package io.choerodon.websocket.v2.receive;
 
 import io.choerodon.websocket.v2.send.MessageSender;
 import org.slf4j.Logger;

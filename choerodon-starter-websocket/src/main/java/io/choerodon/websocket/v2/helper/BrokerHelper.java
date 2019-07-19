@@ -1,6 +1,5 @@
-package io.choerodon.websocket.register;
+package io.choerodon.websocket.v2.helper;
 
-import io.choerodon.websocket.ChoerodonWebSocketProperties;
 import io.choerodon.websocket.exception.GetSelfSubChannelsFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +12,17 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class DefaultRedisChannelRegisterImpl implements RedisChannelRegister {
+public class BrokerHelper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRedisChannelRegisterImpl.class);
-
-    private static final Long HEART_BEAT_INTERVAL = 10000L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BrokerHelper.class);
 
     private static final String REGISTER_PREFIX = "choerodon:msg:register:";
 
@@ -37,47 +37,43 @@ public class DefaultRedisChannelRegisterImpl implements RedisChannelRegister {
     @Value("${spring.application.name}")
     private String application;
 
+    @Value("${choerodon.ws.heartBeatIntervalMs}")
+    private Long heartBeatIntervalMs;
+
     private ScheduledExecutorService scheduledExecutorService;
 
-    private ChoerodonWebSocketProperties properties;
-
-    public DefaultRedisChannelRegisterImpl(Environment environment,
-                                           StringRedisTemplate redisTemplate,
-                                           @Qualifier("registerHeartBeat") ScheduledExecutorService scheduledExecutorService,
-                                           ChoerodonWebSocketProperties properties) {
-        this.scheduledExecutorService = scheduledExecutorService;
+    public BrokerHelper(Environment environment, StringRedisTemplate redisTemplate) {
+        this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
         this.environment = environment;
         this.redisTemplate = redisTemplate;
-        this.properties = properties;
     }
 
     @PostConstruct
     public void start() {
         this.registerKey = REGISTER_PREFIX + application;
-        registerByChannelName();
+        registerByBrokerName();
         scheduledExecutorService.scheduleWithFixedDelay(() -> {
             try {
-                String thisInstanceRegisterKey = REGISTER_PREFIX + channelName();
-                redisTemplate.opsForSet().add(registerKey, channelName());
-                redisTemplate.opsForValue().set(thisInstanceRegisterKey, System.currentTimeMillis() + "");
-                redisTemplate.opsForSet().members(registerKey).forEach(t -> {
-                    if (t.equals(channelName())) {
+                String thisInstanceRegisterKey = REGISTER_PREFIX + brokerName();
+                redisTemplate.opsForSet().add(registerKey, brokerName());
+                redisTemplate.opsForValue().set(thisInstanceRegisterKey, Long.toString(System.currentTimeMillis()));
+                Optional.ofNullable(redisTemplate.opsForSet().members(registerKey)).orElse(Collections.emptySet()).forEach(t -> {
+                    if (t.equals(brokerName())) {
                         return;
                     }
                     String instanceRegisterKey = REGISTER_PREFIX + t;
-                    long lastUpdateTime = Long.parseLong(redisTemplate.opsForValue().get(instanceRegisterKey));
-                    if (System.currentTimeMillis() - lastUpdateTime > 2 * HEART_BEAT_INTERVAL) {
-                        removeDeathChannel(t);
+                    long lastUpdateTime = Long.parseLong(Optional.ofNullable(redisTemplate.opsForValue().get(instanceRegisterKey)).orElse("0"));
+                    if (System.currentTimeMillis() - lastUpdateTime > 2 * heartBeatIntervalMs) {
+                        removeDeathBroker(t);
                     }
                 });
             } catch (Exception e) {
                 LOGGER.error("error.redisRegister.heartBeat", e);
             }
-        }, properties.getHeartBeatIntervalMs(), properties.getHeartBeatIntervalMs(), TimeUnit.MILLISECONDS);
+        }, heartBeatIntervalMs, heartBeatIntervalMs, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public String channelName() {
+    public String brokerName() {
         try {
             if (this.selfSubChannel == null) {
                 selfSubChannel = application + ":" + InetAddress.getLocalHost().getHostAddress() + ":" + environment.getProperty("server.port");
@@ -88,20 +84,17 @@ public class DefaultRedisChannelRegisterImpl implements RedisChannelRegister {
         }
     }
 
-    @Override
-    public Set<String> getSurvivalChannels() {
+    public Set<String> getSurvivalBrokers() {
         return redisTemplate.opsForSet().members(registerKey);
     }
 
-    @Override
-    public void registerByChannelName() {
-        redisTemplate.opsForSet().add(registerKey, channelName());
-        String thisInstanceRegisterKey = REGISTER_PREFIX + channelName();
+    private void registerByBrokerName() {
+        redisTemplate.opsForSet().add(registerKey, brokerName());
+        String thisInstanceRegisterKey = REGISTER_PREFIX + brokerName();
         redisTemplate.opsForValue().set(thisInstanceRegisterKey, System.currentTimeMillis() + "");
     }
 
-    @Override
-    public void removeDeathChannel(String channel) {
+    private void removeDeathBroker(String channel) {
         redisTemplate.opsForSet().remove(registerKey, channel);
         redisTemplate.delete(channel);
         redisTemplate.delete(REGISTER_PREFIX + channel);

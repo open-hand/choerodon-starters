@@ -1,7 +1,7 @@
 package io.choerodon.websocket.receive
 
 import io.choerodon.websocket.v2.send.MessageSender
-import io.choerodon.websocket.v2.handler.HeartBeatMsgHandler
+import io.choerodon.websocket.v2.receive.HeartBeatMsgHandler
 import io.choerodon.websocket.v2.receive.WebSocketReceivePayload
 import spock.lang.Specification
 

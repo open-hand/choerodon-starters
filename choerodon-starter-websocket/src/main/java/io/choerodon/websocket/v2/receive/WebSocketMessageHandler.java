@@ -1,11 +1,9 @@
-package io.choerodon.websocket.connect;
+package io.choerodon.websocket.v2.receive;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.websocket.exception.MsgHandlerDuplicateMathTypeException;
 import io.choerodon.websocket.v2.helper.SocketHandlerRegistration;
-import io.choerodon.websocket.v2.receive.MessageHandler;
-import io.choerodon.websocket.v2.receive.WebSocketReceivePayload;
 import io.choerodon.websocket.relationship.RelationshipDefining;
 import io.choerodon.websocket.v2.send.MessageSender;
 import io.choerodon.websocket.v2.send.WebSocketSendPayload;
@@ -75,6 +73,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
+        if (session.getUri() != null){
+            SocketHandlerRegistration registration = registrationMap.get(session.getUri().getPath());
+            if (registration != null){
+                registration.afterConnectionClosed(session, status);
+            }
+        }
         this.relationshipDefining.removeWebSocketSessionContact(session);
     }
 
