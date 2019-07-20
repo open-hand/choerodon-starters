@@ -1,16 +1,15 @@
 package io.choerodon.websocket.receive
 
-import io.choerodon.websocket.v2.send.MessageSender
-import io.choerodon.websocket.v2.receive.HeartBeatMsgHandler
-import io.choerodon.websocket.v2.receive.WebSocketReceivePayload
+import io.choerodon.websocket.helper.WebSocketHelper
+import io.choerodon.websocket.send.MessageSender
 import spock.lang.Specification
 
 /**
  * @author dengyouquan
  * */
 class HeartBeatMsgHandlerSpec extends Specification {
-    private MessageSender messageSender = Mock(MessageSender)
-    private HeartBeatMsgHandler handler = new HeartBeatMsgHandler(messageSender)
+    private WebSocketHelper webSocketHelper = Mock(WebSocketHelper)
+    private HeartBeatMsgHandler handler = new HeartBeatMsgHandler(webSocketHelper)
 
     def "Handle"() {
         given: "构造请求参数"
@@ -23,7 +22,7 @@ class HeartBeatMsgHandlerSpec extends Specification {
         handler.handle(null, null, null, null)
         then: "校验结果"
         noExceptionThrown()
-        1 * messageSender.sendWebSocket(_, _)
+        1 * webSocketHelper.sendMessageBySession(_, _)
         payload.equals(payload2)
     }
 }

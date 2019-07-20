@@ -1,4 +1,4 @@
-package io.choerodon.websocket.v2.send;
+package io.choerodon.websocket.send;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

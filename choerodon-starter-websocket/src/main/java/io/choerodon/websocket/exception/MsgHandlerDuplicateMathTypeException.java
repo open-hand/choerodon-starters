@@ -1,6 +1,6 @@
 package io.choerodon.websocket.exception;
 
-import io.choerodon.websocket.v2.receive.MessageHandler;
+import io.choerodon.websocket.receive.MessageHandler;
 
 public class MsgHandlerDuplicateMathTypeException extends RuntimeException {
 

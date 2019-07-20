@@ -1,8 +1,8 @@
 package io.choerodon.websocket.connect
 
 import io.choerodon.websocket.relationship.RelationshipDefining
-import io.choerodon.websocket.v2.receive.WebSocketMessageHandler
-import io.choerodon.websocket.v2.send.MessageSender
+import io.choerodon.websocket.receive.WebSocketMessageHandler
+import io.choerodon.websocket.send.MessageSender
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import spock.lang.Specification

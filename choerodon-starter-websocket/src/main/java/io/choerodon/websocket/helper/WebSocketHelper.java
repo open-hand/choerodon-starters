@@ -1,9 +1,10 @@
-package io.choerodon.websocket.v2.helper;
+package io.choerodon.websocket.helper;
 
-import io.choerodon.websocket.v2.receive.WebSocketMessageHandler;
-import io.choerodon.websocket.v2.send.MessageSender;
-import io.choerodon.websocket.v2.receive.MessageHandler;
-import io.choerodon.websocket.v2.send.WebSocketSendPayload;
+import io.choerodon.websocket.relationship.RelationshipDefining;
+import io.choerodon.websocket.receive.WebSocketMessageHandler;
+import io.choerodon.websocket.send.MessageSender;
+import io.choerodon.websocket.receive.MessageHandler;
+import io.choerodon.websocket.send.WebSocketSendPayload;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -14,10 +15,12 @@ import org.springframework.web.socket.WebSocketSession;
 public class WebSocketHelper {
     private WebSocketMessageHandler handler;
     private MessageSender sender;
+    private RelationshipDefining relationshipDefining;
 
-    public WebSocketHelper(WebSocketMessageHandler handler, MessageSender sender){
+    public WebSocketHelper(WebSocketMessageHandler handler, MessageSender sender, RelationshipDefining relationshipDefining){
         this.handler = handler;
         this.sender = sender;
+        this.relationshipDefining = relationshipDefining;
     }
 
     /**
@@ -47,5 +50,18 @@ public class WebSocketHelper {
         sender.sendWebSocket(session, payload);
     }
 
+    /**
+     * 关联key,webSocket
+     */
+    public void contact(WebSocketSession session, String key){
+        relationshipDefining.contact(key, session);
+    }
+
+    /**
+     * 解除key,webSocket的关联
+     */
+    public void removeKeyContact(WebSocketSession session, String key){
+        relationshipDefining.removeKeyContact(session, key);
+    }
 
 }

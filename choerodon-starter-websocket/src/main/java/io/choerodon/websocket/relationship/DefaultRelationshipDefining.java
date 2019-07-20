@@ -1,6 +1,6 @@
 package io.choerodon.websocket.relationship;
 
-import io.choerodon.websocket.v2.helper.BrokerHelper;
+import io.choerodon.websocket.helper.BrokerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
