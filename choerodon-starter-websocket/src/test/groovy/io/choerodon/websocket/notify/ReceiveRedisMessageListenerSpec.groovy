@@ -1,5 +1,6 @@
 package io.choerodon.websocket.notify
 
+import io.choerodon.websocket.send.ReceiveRedisMessageListener
 import io.choerodon.websocket.send.MessageSender
 import spock.lang.Specification
 

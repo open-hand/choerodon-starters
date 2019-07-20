@@ -1,9 +1,8 @@
 package io.choerodon.websocket.send
 
-import io.choerodon.websocket.VisitorsInfoObservable
+
 import io.choerodon.websocket.relationship.RelationshipDefining
 import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.data.redis.core.ValueOperations
 import org.springframework.web.socket.WebSocketSession
 import spock.lang.Specification
 
@@ -13,8 +12,7 @@ import spock.lang.Specification
 class DefaultSmartMessageSenderSpec extends Specification {
     private StringRedisTemplate redisTemplate = Mock(StringRedisTemplate)
     private RelationshipDefining relationshipDefining = Mock(RelationshipDefining)
-    private VisitorsInfoObservable observable = Mock(VisitorsInfoObservable)
-    private DefaultSmartMessageSender messageSender = new DefaultSmartMessageSender(redisTemplate, relationshipDefining, observable)
+    private DefaultSmartMessageSender messageSender = new DefaultSmartMessageSender(redisTemplate, relationshipDefining)
 
     def "SendWebSocket"() {
         given: "构造参数"
@@ -91,23 +89,5 @@ class DefaultSmartMessageSenderSpec extends Specification {
         noExceptionThrown()
         2 * relationshipDefining.getWebSocketSessionsByKey(_) >> set
         2 * relationshipDefining.getRedisChannelsByKey(_, _) >> { new HashSet<>() }
-    }
-
-    def "sendVisitorsInfo"() {
-        given: "参数准备"
-        Set<WebSocketSession> set = new HashSet<>()
-        WebSocketSendPayload<?> payload = new WebSocketSendPayload<>()
-        def currentOnlines = 1
-        def numberOfVisitorsToday = 1
-        and: "mock"
-        ValueOperations<String, Object> valueOperations = Mock(ValueOperations)
-        valueOperations.get(_) >> { return null }
-        when: "调用方法"
-        messageSender.sendVisitorsInfo(currentOnlines, numberOfVisitorsToday)
-        then: "方法检验"
-        noExceptionThrown()
-        24 * redisTemplate.opsForValue() >> { return valueOperations }
-        1 * relationshipDefining.getWebSocketSessionsByKey(_) >> set
-        1 * relationshipDefining.getRedisChannelsByKey(_, _) >> { new HashSet<>() }
     }
 }
