@@ -68,7 +68,6 @@
         <module>choerodon-starter-swagger</module>
         <module>choerodon-tool-config</module>
         <module>choerodon-tool-liquibase</module>
-        <module>choerodon-websocket-helper</module>
         <module>choerodon-starter-redis</module>
         <module>choerodon-starter-message</module>
         <module>choerodon-starter-freemarker</module>
