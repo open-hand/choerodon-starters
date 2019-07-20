@@ -1,4 +1,4 @@
-package io.choerodon.websocket.v2.receive;
+package io.choerodon.websocket.receive;
 
 import java.util.Objects;
 

@@ -1,12 +1,12 @@
-package io.choerodon.websocket.v2.receive;
+package io.choerodon.websocket.receive;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.websocket.exception.MsgHandlerDuplicateMathTypeException;
-import io.choerodon.websocket.v2.helper.SocketHandlerRegistration;
+import io.choerodon.websocket.helper.SocketHandlerRegistration;
 import io.choerodon.websocket.relationship.RelationshipDefining;
-import io.choerodon.websocket.v2.send.MessageSender;
-import io.choerodon.websocket.v2.send.WebSocketSendPayload;
+import io.choerodon.websocket.send.MessageSender;
+import io.choerodon.websocket.send.WebSocketSendPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONObject;

@@ -1,9 +1,8 @@
-package io.choerodon.websocket.v2.helper;
+package io.choerodon.websocket.helper;
 
 import io.choerodon.websocket.exception.GetSelfSubChannelsFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.StringRedisTemplate;

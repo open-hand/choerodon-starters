@@ -1,6 +1,6 @@
 package io.choerodon.websocket.relationship
 
-import io.choerodon.websocket.v2.helper.BrokerHelper
+import io.choerodon.websocket.helper.BrokerHelper
 import org.springframework.data.redis.core.SetOperations
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.web.socket.WebSocketSession

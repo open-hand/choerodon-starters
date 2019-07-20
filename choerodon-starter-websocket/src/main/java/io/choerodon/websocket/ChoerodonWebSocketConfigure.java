@@ -1,10 +1,10 @@
 package io.choerodon.websocket;
 
-import io.choerodon.websocket.v2.helper.BrokerHelper;
-import io.choerodon.websocket.v2.receive.WebSocketMessageHandler;
-import io.choerodon.websocket.v2.receive.ReceiveRedisMessageListener;
-import io.choerodon.websocket.v2.helper.HandshakeCheckerHandler;
-import io.choerodon.websocket.v2.helper.SocketHandlerRegistration;
+import io.choerodon.websocket.helper.BrokerHelper;
+import io.choerodon.websocket.receive.WebSocketMessageHandler;
+import io.choerodon.websocket.send.ReceiveRedisMessageListener;
+import io.choerodon.websocket.helper.HandshakeCheckerHandler;
+import io.choerodon.websocket.helper.SocketHandlerRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,7 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
         List<SocketHandlerRegistration> registrations = socketHandlerRegistrations.orElseGet(Collections::emptyList);
         registrations.forEach(registration -> {
             webSocketHandler.addSocketHandlerRegistration(registration);
-            registry.addHandler(webSocketHandler, registration.path()).setHandshakeHandler(new HandshakeCheckerHandler(registration));
+            registry.addHandler(webSocketHandler, registration.path()).addInterceptors(new HandshakeCheckerHandler(registration)).setAllowedOrigins("*");
         });
     }
 

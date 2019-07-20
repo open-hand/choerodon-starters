@@ -1,4 +1,4 @@
-package io.choerodon.websocket.v2.send;
+package io.choerodon.websocket.send;
 
 public class WebSocketSendPayload<T> {
 
