@@ -18,5 +18,4 @@ public interface MessageSender {
 
     void sendByKey(String key, String type, String data);
 
-    void sendVisitorsInfo(Integer currentOnlines, Integer numberOfVisitorsToday);
 }

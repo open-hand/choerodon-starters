@@ -1,6 +1,5 @@
-package io.choerodon.websocket.notify;
+package io.choerodon.websocket.send;
 
-import io.choerodon.websocket.send.MessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONException;
