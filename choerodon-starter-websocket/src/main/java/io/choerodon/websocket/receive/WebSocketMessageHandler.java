@@ -1,6 +1,7 @@
 package io.choerodon.websocket.receive;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.websocket.exception.MsgHandlerDuplicateMathTypeException;
 import io.choerodon.websocket.helper.SocketHandlerRegistration;
@@ -9,7 +10,6 @@ import io.choerodon.websocket.send.MessageSender;
 import io.choerodon.websocket.send.WebSocketSendPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -24,8 +24,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketMessageHandler.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final Map<String, HandlerInfo> typeClassMap = new ConcurrentHashMap<>();
+    private final Map<String, HandlerInfo> typeClassMap = new HashMap<>(2 << 4);
+    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final Map<String, SocketHandlerRegistration> registrationMap = new ConcurrentHashMap<>();
     private MessageSender messageSender;
     private RelationshipDefining relationshipDefining;
@@ -53,7 +53,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     }
 
     public void addSocketHandlerRegistration(SocketHandlerRegistration registration){
-        if (registrationMap.putIfAbsent(registration.path(), registration) != null){
+        if (registrationMap.putIfAbsent(registration.path(), registration) != null && LOGGER.isWarnEnabled()){
             LOGGER.warn("path {} connect processor duplicate.", registration.path());
         }
     }
@@ -94,13 +94,13 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         super.handleTextMessage(session, message);
         String receiveMsg = message.getPayload();
         try {
-            JSONObject jsonObject = new JSONObject(receiveMsg);
-            String type = jsonObject.getString("type");
+            JsonNode node = OBJECT_MAPPER.readTree(receiveMsg);
+            String type = node.get("type").asText();
             if (type != null) {
                 HandlerInfo handlerInfo = typeClassMap.get(type);
                 if (handlerInfo != null) {
-                    JavaType javaType = objectMapper.getTypeFactory().constructParametricType(WebSocketReceivePayload.class, handlerInfo.payloadType);
-                    WebSocketReceivePayload<?> payload = objectMapper.readValue(receiveMsg, javaType);
+                    JavaType javaType = OBJECT_MAPPER.getTypeFactory().constructParametricType(WebSocketReceivePayload.class, handlerInfo.payloadType);
+                    WebSocketReceivePayload<?> payload = OBJECT_MAPPER.readValue(receiveMsg, javaType);
                     handlerInfo.msgHandler.handle(session, payload.getType(), payload.getKey(), payload.getData());
                 } else {
                     LOGGER.warn("abandon message that can not find msgHandler, message {}", receiveMsg);
