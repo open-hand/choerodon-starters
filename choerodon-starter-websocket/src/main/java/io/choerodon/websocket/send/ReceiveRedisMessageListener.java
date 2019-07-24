@@ -1,12 +1,14 @@
-package io.choerodon.websocket.notify;
+package io.choerodon.websocket.send;
 
-import io.choerodon.websocket.send.MessageSender;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
 
 /**
  * 监听本实例的channel，接收消息
@@ -15,6 +17,7 @@ import org.springframework.util.StringUtils;
 public class ReceiveRedisMessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveRedisMessageListener.class);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private MessageSender messageSender;
 
@@ -26,13 +29,12 @@ public class ReceiveRedisMessageListener {
         LOGGER.debug("receive message from redis channels, message {}", message);
         if (message instanceof String) {
             try {
-                String json = (String) message;
-                JSONObject jsonObject = new JSONObject(json);
-                String key = jsonObject.getString("key");
+                JsonNode node = OBJECT_MAPPER.readTree((String) message);
+                String key = node.get("key").asText();
                 if (!StringUtils.isEmpty(key)) {
-                    messageSender.sendWebSocketByKey(key, json);
+                    messageSender.sendWebSocketByKey(key, (String) message);
                 }
-            } catch (JSONException e) {
+            } catch (IOException e) {
                 LOGGER.warn("error.receiveRedisMessageListener.receiveMessage.send", e);
             }
         } else {

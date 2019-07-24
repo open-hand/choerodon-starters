@@ -5,6 +5,7 @@ import java.util.Objects;
 public class WebSocketReceivePayload<T> {
 
     private String type;
+    private String key;
 
     private T data;
 
@@ -32,10 +33,19 @@ public class WebSocketReceivePayload<T> {
         this.data = data;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
     public String toString() {
         return "WebSocketReceivePayload{" +
                 "type='" + type + '\'' +
+                "key='" + key + '\'' +
                 ", data=" + data +
                 '}';
     }

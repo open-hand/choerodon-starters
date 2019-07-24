@@ -1,5 +1,6 @@
 package io.choerodon.websocket.notify
 
+import io.choerodon.websocket.send.ReceiveRedisMessageListener
 import io.choerodon.websocket.send.MessageSender
 import spock.lang.Specification
 
@@ -13,7 +14,7 @@ class ReceiveRedisMessageListenerSpec extends Specification {
 
     def "ReceiveMessage"() {
         given: "构造请求参数"
-        def message = "{'key':'value'}"
+        def message = '{"key":"value"}'
 
         when: "调用方法[警告]"
         redisMessageListener.receiveMessage(1L)
