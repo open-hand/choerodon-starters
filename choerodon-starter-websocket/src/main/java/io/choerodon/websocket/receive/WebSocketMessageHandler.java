@@ -1,9 +1,7 @@
 package io.choerodon.websocket.receive;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.websocket.exception.MsgHandlerDuplicateMathTypeException;
 import io.choerodon.websocket.helper.SocketHandlerRegistration;
 import io.choerodon.websocket.relationship.RelationshipDefining;
 import io.choerodon.websocket.send.MessageSender;
@@ -11,45 +9,36 @@ import io.choerodon.websocket.send.WebSocketSendPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class WebSocketMessageHandler extends TextWebSocketHandler {
-
+public class WebSocketMessageHandler extends AbstractWebSocketHandler {
+    static final String MATCH_ALL_STRING = "*";
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketMessageHandler.class);
 
-    private final Map<String, HandlerInfo> typeClassMap = new HashMap<>(2 << 4);
-    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final Map<String, Set<HandlerInfo>> pathHandlersMap = new ConcurrentHashMap<>();
+    private final Map<String, Set<HandlerInfo>> typeHandlersMap = new ConcurrentHashMap<>();
     private final Map<String, SocketHandlerRegistration> registrationMap = new ConcurrentHashMap<>();
-    private MessageSender messageSender;
+
     private RelationshipDefining relationshipDefining;
 
-    public WebSocketMessageHandler(Optional<List<MessageHandler>> msgHandlers,
-                                   RelationshipDefining relationshipDefining,
-                                   MessageSender messageSender) {
-        msgHandlers.orElseGet(Collections::emptyList).forEach(t -> {
-            if (typeClassMap.get(t.matchType()) == null) {
-                typeClassMap.put(t.matchType(), new HandlerInfo(t.payloadClass(), t));
-            } else {
-                throw new MsgHandlerDuplicateMathTypeException(t);
-            }
-        });
-        this.messageSender = messageSender;
+    public WebSocketMessageHandler(Optional<List<MessageHandler>> msgHandlers, RelationshipDefining relationshipDefining) {
+        msgHandlers.orElseGet(Collections::emptyList).forEach(this::addMessageHandler);
         this.relationshipDefining = relationshipDefining;
     }
 
-    public void addMessageHandler(MessageHandler messageHandler, String type){
-        if (typeClassMap.get(type) == null) {
-            typeClassMap.put(type, new HandlerInfo(messageHandler.payloadClass(), messageHandler));
-        } else {
-            throw new MsgHandlerDuplicateMathTypeException(messageHandler);
-        }
+    public synchronized void addMessageHandler(MessageHandler handler){
+        pathHandlersMap.computeIfAbsent(handler.matchPath(), key -> new HashSet<>()).add(new HandlerInfo(handler.payloadClass(), handler));
+        typeHandlersMap.computeIfAbsent(handler.matchType(), key -> new HashSet<>()).add(new HandlerInfo(handler.payloadClass(), handler));
     }
 
     public void addSocketHandlerRegistration(SocketHandlerRegistration registration){
@@ -67,7 +56,6 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
                 registration.afterConnectionEstablished(session);
             }
         }
-        messageSender.sendWebSocket(session, new WebSocketSendPayload<>(WebSocketSendPayload.MSG_TYPE_SESSION, null, session.getId()));
     }
 
     @Override
@@ -91,17 +79,21 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     @Override
     @SuppressWarnings("unchecked")
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        super.handleTextMessage(session, message);
         String receiveMsg = message.getPayload();
         try {
-            JsonNode node = OBJECT_MAPPER.readTree(receiveMsg);
-            String type = node.get("type").asText();
+            String path = Optional.ofNullable(session.getUri()).map(URI::getPath).orElse(null);
+            String type = OBJECT_MAPPER.readTree(receiveMsg).get("type").asText();
             if (type != null) {
-                HandlerInfo handlerInfo = typeClassMap.get(type);
-                if (handlerInfo != null) {
-                    JavaType javaType = OBJECT_MAPPER.getTypeFactory().constructParametricType(WebSocketReceivePayload.class, handlerInfo.payloadType);
-                    WebSocketReceivePayload<?> payload = OBJECT_MAPPER.readValue(receiveMsg, javaType);
-                    handlerInfo.msgHandler.handle(session, payload.getType(), payload.getKey(), payload.getData());
+                Set<HandlerInfo> matchHandlers = new HashSet<>(Optional.ofNullable(pathHandlersMap.get(path)).orElse(Collections.emptySet()));
+                matchHandlers.addAll(Optional.ofNullable(pathHandlersMap.get(MATCH_ALL_STRING)).orElse(Collections.emptySet()));
+                Set<HandlerInfo> matchTypeHandlers = new HashSet<>(Optional.ofNullable(typeHandlersMap.get(type)).orElse(Collections.emptySet()));
+                matchTypeHandlers.addAll(Optional.ofNullable(typeHandlersMap.get(MATCH_ALL_STRING)).orElse(Collections.emptySet()));
+                matchHandlers.retainAll(matchTypeHandlers);
+                if (!matchHandlers.isEmpty()) {
+                    for (HandlerInfo handlerInfo : matchHandlers){
+                        WebSocketReceivePayload<?> payload = OBJECT_MAPPER.readValue(receiveMsg, handlerInfo.javaType);
+                        handlerInfo.msgHandler.handle(session, payload.getType(), payload.getKey(), payload.getData());
+                    }
                 } else {
                     LOGGER.warn("abandon message that can not find msgHandler, message {}", receiveMsg);
                 }
@@ -113,13 +105,42 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
     }
 
+    @Override
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
+        String path = Optional.ofNullable(session.getUri()).map(URI::getPath).orElse(null);
+        Set<HandlerInfo> matchHandlers = new HashSet<>(Optional.ofNullable(pathHandlersMap.get(path)).orElse(Collections.emptySet()));
+        matchHandlers.addAll(Optional.ofNullable(pathHandlersMap.get(MATCH_ALL_STRING)).orElse(Collections.emptySet()));
+        matchHandlers.retainAll(Optional.ofNullable(typeHandlersMap.get(MATCH_ALL_STRING)).orElse(Collections.emptySet()));
+        if (!matchHandlers.isEmpty()) {
+            for (HandlerInfo handlerInfo : matchHandlers){
+                handlerInfo.msgHandler.handle(session, message);
+            }
+        } else {
+            LOGGER.warn("abandon message that can not find msgHandler, message {}", message);
+        }
+    }
+
     final class HandlerInfo {
-        final Class<?> payloadType;
+        final JavaType javaType;
         final MessageHandler msgHandler;
 
         HandlerInfo(Class<?> payloadType, MessageHandler msgHandler) {
-            this.payloadType = payloadType;
+            this.javaType = OBJECT_MAPPER.getTypeFactory().constructParametricType(WebSocketReceivePayload.class, payloadType);
             this.msgHandler = msgHandler;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            HandlerInfo that = (HandlerInfo) o;
+            return Objects.equals(javaType, that.javaType) &&
+                    Objects.equals(msgHandler, that.msgHandler);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(javaType, msgHandler);
         }
     }
 
