@@ -6,6 +6,7 @@ import io.choerodon.websocket.send.MessageSender;
 import io.choerodon.websocket.receive.MessageHandler;
 import io.choerodon.websocket.send.WebSocketSendPayload;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
@@ -26,10 +27,9 @@ public class WebSocketHelper {
     /**
      * 添加消息处理器
      * @param messageHandler 消息处理器
-     * @param type 处理的消息类型
      */
-    public void addMessageHandler(MessageHandler messageHandler, String type){
-        handler.addMessageHandler(messageHandler, type);
+    public void addMessageHandler(MessageHandler messageHandler){
+        handler.addMessageHandler(messageHandler);
     }
 
     /**
@@ -48,6 +48,10 @@ public class WebSocketHelper {
      */
     public void sendMessageBySession(WebSocketSession session, WebSocketSendPayload payload){
         sender.sendWebSocket(session, payload);
+    }
+
+    public void sendBinaryMessageBySession(WebSocketSession session, BinaryMessage message){
+        sender.sendBinaryMessageBySession(session, message);
     }
 
     /**

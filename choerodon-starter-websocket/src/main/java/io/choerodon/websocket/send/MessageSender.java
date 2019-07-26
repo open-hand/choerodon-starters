@@ -1,5 +1,6 @@
 package io.choerodon.websocket.send;
 
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 public interface MessageSender {
@@ -9,6 +10,8 @@ public interface MessageSender {
     void sendWebSocket(WebSocketSession session, String json);
 
     void sendWebSocketByKey(String key, String json);
+
+    void sendBinaryMessageBySession(WebSocketSession session, BinaryMessage message);
 
     void sendRedis(String channel, WebSocketSendPayload<?> payload);
 

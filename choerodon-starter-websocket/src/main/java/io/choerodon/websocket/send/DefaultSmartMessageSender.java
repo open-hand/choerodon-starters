@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -47,6 +48,15 @@ public class DefaultSmartMessageSender implements MessageSender {
             session.sendMessage(textMessage);
         } catch (IOException e) {
             LOGGER.warn("error.messageOperator.sendWebSocket.IOException, payload: {}", payload, e);
+        }
+    }
+
+    @Override
+    public void sendBinaryMessageBySession(WebSocketSession session, BinaryMessage message){
+        try {
+            session.sendMessage(message);
+        } catch (IOException e) {
+            LOGGER.warn("error.messageOperator.sendWebSocket.IOException, message: {}", message, e);
         }
     }
 
