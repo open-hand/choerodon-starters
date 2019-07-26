@@ -13,7 +13,7 @@ import spock.lang.Specification
 class WebSocketMessageHandlerSpec extends Specification {
     private MessageSender messageSender = Mock(MessageSender)
     private RelationshipDefining relationshipDefining = Mock(RelationshipDefining)
-    private WebSocketMessageHandler handler = new WebSocketMessageHandler(Optional.ofNullable(null), relationshipDefining, messageSender)
+    private WebSocketMessageHandler handler = new WebSocketMessageHandler(Optional.ofNullable(null), relationshipDefining)
 
     def "AfterConnectionEstablished"() {
         given: "构造参数"
@@ -21,7 +21,6 @@ class WebSocketMessageHandlerSpec extends Specification {
         when: "调用方法"
         handler.afterConnectionEstablished(session)
         then: "校验结果"
-        1 * session.getId() >> 1
         noExceptionThrown()
     }
 
