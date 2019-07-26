@@ -23,7 +23,6 @@ import java.util.List;
 public class ClientServiceImpl implements ClientService {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
-
     private static final String CONFIGURE_TYPE_CONDITION = "配置类型【条件】:";
     private static final String CONFIGURE_TYPE_VALIDATION = "配置类型【验证】:";
     private static final String CONFIGURE_TYPE_POST_ACTION = "配置类型【后置动作】:";

@@ -16,6 +16,15 @@ public class ExecuteResult {
 
     private String errorMessage;
 
+    public ExecuteResult() {
+    }
+
+    public ExecuteResult(Boolean isSuccess, Long resultStatusId, String errorMessage) {
+        this.isSuccess = isSuccess;
+        this.resultStatusId = resultStatusId;
+        this.errorMessage = errorMessage;
+    }
+
     public Boolean getSuccess() {
         return isSuccess;
     }
