@@ -58,3 +58,30 @@ public class HeartBeatMsgHandler implements MessageHandler<String> {
 * 调用 WebSocketHelper.sendMessage 方法根据Key来发送消息到与Key绑定的前端
 * 需要先调用过 WebSocketHelper.contact 建立绑定关系
 * 使用 Redis 消息进行路由转发，需要保证 Redis 功能正常
+
+## 4. 二进制消息处理
+
+```
+@Component
+public class ExampleBinaryHandler implements MessageHandler {
+    private WebSocketHelper webSocketHelper;
+
+    public ExampleBinaryHandler(@Lazy WebSocketHelper webSocketHelper) {
+        this.webSocketHelper = webSocketHelper;
+    }
+
+    @Override
+    public void handle(WebSocketSession session, BinaryMessage message) {
+        // 简单的 echo 二进制消息， 只能直接发送到 Session
+        webSocketHelper.sendBinaryMessageBySession(session, message);
+    }
+
+    // 覆盖 matchPath 方法， 不要覆盖 matchType 方法， 因为二进制消息没有 Type， 这个 Path 必须在 SocketHandlerRegistration 类也注册
+    @Override
+    public String matchPath() {
+        return "/choerodon/binary";
+    }
+}
+```
+
+* 二进制消息不支持按Key转发，只能直接响应Session
