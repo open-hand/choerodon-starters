@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.websocket.helper.SocketHandlerRegistration;
 import io.choerodon.websocket.relationship.RelationshipDefining;
-import io.choerodon.websocket.send.MessageSender;
-import io.choerodon.websocket.send.WebSocketSendPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,6 +12,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
+import org.springframework.web.socket.handler.ExceptionWebSocketHandlerDecorator;
 
 import java.net.URI;
 import java.util.*;
@@ -74,6 +73,8 @@ public class WebSocketMessageHandler extends AbstractWebSocketHandler {
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         super.handleTransportError(session, exception);
         LOGGER.error("error.webSocketMessageHandler.handleTransportError", exception);
+        this.relationshipDefining.removeWebSocketSessionContact(session);
+        throw new Exception(exception); // 抛出异常 Spring 框架负责断开连接
     }
 
     @Override
