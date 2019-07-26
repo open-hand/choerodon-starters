@@ -30,7 +30,7 @@ public class StateMachineConfigMonitor {
         invokes.forEach(x -> {
             if (x.getValue().getCode().equals(code)) {
                 logger.error("StateMachineConfigMonitor annotation configCode duplication: {}", code);
-                throw new IllegalArgumentException("error.checkUniqueCode.duplication");
+//                throw new IllegalArgumentException("error.checkUniqueCode.duplication");
             }
         });
     }
@@ -40,7 +40,7 @@ public class StateMachineConfigMonitor {
         invokes.forEach(x -> {
             if (x.getValue().getCode().equals(code)) {
                 logger.error("StateMachineConfigMonitor annotation updateCode duplication: {}", code);
-                throw new IllegalArgumentException("error.checkUniqueCode.duplication");
+//                throw new IllegalArgumentException("error.checkUniqueCode.duplication");
             }
         });
     }
