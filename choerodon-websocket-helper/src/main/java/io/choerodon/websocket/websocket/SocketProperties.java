@@ -15,6 +15,10 @@ public class SocketProperties {
     private int commandTimeoutSeconds = 10;
     private int durationCount = 10;
     /**
+     * Maximum message buffer, unit bytes.
+     */
+    private int maxMessageBufferSize = 500 * 1024;
+    /**
      * Maximum free time allowed. In milliseconds. Health checks should be performed after this time.
      */
     private int healthCheckDuration = 30 * 1000;
@@ -148,5 +152,13 @@ public class SocketProperties {
 
     public void setHealthCheckWorkerNumber(int healthCheckWorkerNumber) {
         this.healthCheckWorkerNumber = healthCheckWorkerNumber;
+    }
+
+    public int getMaxMessageBufferSize() {
+        return maxMessageBufferSize;
+    }
+
+    public void setMaxMessageBufferSize(int maxMessageBufferSize) {
+        this.maxMessageBufferSize = maxMessageBufferSize;
     }
 }

@@ -262,8 +262,8 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	@Bean
 	public ServletServerContainerFactoryBean createWebSocketContainer() {
 		ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-		container.setMaxTextMessageBufferSize(500 * 1024);
-		container.setMaxBinaryMessageBufferSize(500 * 1024);
+		container.setMaxTextMessageBufferSize(socketProperties.getMaxMessageBufferSize());
+		container.setMaxBinaryMessageBufferSize(socketProperties.getMaxMessageBufferSize());
 		return container;
 	}
 

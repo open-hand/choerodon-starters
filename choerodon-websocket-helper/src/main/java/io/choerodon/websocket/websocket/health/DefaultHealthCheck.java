@@ -50,19 +50,28 @@ public class DefaultHealthCheck extends AbstractHealthCheck {
     }
 
     @Override
+    protected void onPing(Session session, PingMessage msg) {
+        try {
+            session.getWebSocketSession().sendMessage(new PongMessage(msg.getPayload()));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
     protected void onPong(Session session, PongMessage message) {
-//        CountDownLatch latch = checkingRoom.get(session.getUuid());
-//        if (latch != null) {
-//
-//            latch.countDown();
-//
-//        } else {
-//
-//            LOGGER.warn(
-//                "The corresponding Session({}) receiving probe was not found when Pong message was received, may be timeout.",
-//                session.toString());
-//
-//        }
+        CountDownLatch latch = checkingRoom.get(session.getUuid());
+        if (latch != null) {
+
+            latch.countDown();
+
+        } else {
+
+            LOGGER.warn(
+                "The corresponding Session({}) receiving probe was not found when Pong message was received, may be timeout.",
+                session.toString());
+
+        }
     }
 
     /**

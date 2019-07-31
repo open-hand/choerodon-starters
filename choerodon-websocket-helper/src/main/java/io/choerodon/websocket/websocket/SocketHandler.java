@@ -41,13 +41,23 @@ public class SocketHandler extends AbstractWebSocketHandler {
 
     @Override
     protected void handlePongMessage(WebSocketSession socketSession, PongMessage message) throws Exception {
-        Session session = sessionRepository.getById(getSessionId(socketSession));
+        doHandlePongPingMessage(socketSession, message);
+    }
 
-        if (session == null) {
-            throw new Exception(String.format("Invalid session information![remote=%s]", socketSession.getRemoteAddress().toString()));
+    /**
+     * Extend the old handle and now listen for Ping messages.
+     */
+    protected void handlePingMessage(WebSocketSession socketSession, PingMessage message) throws Exception {
+        doHandlePongPingMessage(socketSession, message);
+    }
+
+    @Override
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+        if (PingMessage.class.isInstance(message)) {
+            handlePingMessage(session, (PingMessage) message);
+        } else {
+            super.handleMessage(session, message);
         }
-
-        healthCheck.onReceived(session, message);
     }
 
     @Override
@@ -183,5 +193,15 @@ public class SocketHandler extends AbstractWebSocketHandler {
 
     private String getSessionId(WebSocketSession session){
         return (String) session.getAttributes().get(SESSION_ID);
+    }
+
+    private void doHandlePongPingMessage(WebSocketSession socketSession, WebSocketMessage<?> message) throws Exception {
+        Session session = sessionRepository.getById(getSessionId(socketSession));
+
+        if (session == null) {
+            throw new Exception(String.format("Invalid session information![remote=%s]", socketSession.getRemoteAddress().toString()));
+        }
+
+        healthCheck.onReceived(session, message);
     }
 }

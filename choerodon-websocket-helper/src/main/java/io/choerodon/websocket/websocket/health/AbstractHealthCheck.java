@@ -7,6 +7,7 @@ import io.choerodon.websocket.websocket.health.utils.TimeoutNotification;
 import io.choerodon.websocket.websocket.health.utils.TimerWheel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.PongMessage;
 import org.springframework.web.socket.WebSocketMessage;
 
@@ -81,6 +82,10 @@ public abstract class AbstractHealthCheck implements HealthCheck {
         if (PongMessage.class.isInstance(msg)) {
             onPong(session, (PongMessage) msg);
         }
+
+        if (PingMessage.class.isInstance(msg)) {
+            onPing(session, (PingMessage) msg);
+        }
     }
 
     @Override
@@ -150,7 +155,19 @@ public abstract class AbstractHealthCheck implements HealthCheck {
      * @param session target session.
      * @param message target message.
      */
-    protected abstract void onPong(Session session, PongMessage message);
+    protected void onPong(Session session, PongMessage message) {
+        // do nothing.
+    }
+
+    /**
+     * Processing when a Ping response.
+     *
+     * @param session target session.
+     * @param msg target message.
+     */
+    protected void onPing(Session session, PingMessage msg) {
+        // do nothing.
+    }
 
     /**
      * Actually check.
