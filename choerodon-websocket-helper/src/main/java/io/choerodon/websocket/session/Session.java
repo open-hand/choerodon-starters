@@ -40,6 +40,11 @@ public class Session {
     private volatile long lastReceive;
 
     // cache line padding
+    private long c1,c2,c3,c4,c5,c6,c7;
+
+    private volatile boolean healthChecking;
+
+    // cache line padding
     private long p1,p2,p3,p4,p5,p6,p7;
 
 
@@ -104,6 +109,14 @@ public class Session {
         this.healthCheckTriedTimes = healthCheckTriedTimes;
     }
 
+    public boolean isHealthChecking() {
+        return healthChecking;
+    }
+
+    public void setHealthChecking(boolean healthChecking) {
+        this.healthChecking = healthChecking;
+    }
+
     public WebSocketSession getWebSocketSession() {
         return webSocketSession;
     }
@@ -123,15 +136,16 @@ public class Session {
     @Override
     public String toString() {
         return "Session{" +
-            "webSocketSession=" + webSocketSession +
+            "remote=" + (webSocketSession != null ? webSocketSession.getRemoteAddress().toString() : "") +
             ", uuid='" + uuid + '\'' +
             ", pingEnable=" + pingEnable +
             ", type=" + type +
             ", registerKey='" + registerKey + '\'' +
             ", lastPong=" + lastPong +
             ", lastPing=" + lastPing +
-            ", lastReceive=" + lastReceive +
             ", healthCheckTriedTimes=" + healthCheckTriedTimes +
+            ", lastReceive=" + lastReceive +
+            ", healthChecking=" + healthChecking +
             '}';
     }
 

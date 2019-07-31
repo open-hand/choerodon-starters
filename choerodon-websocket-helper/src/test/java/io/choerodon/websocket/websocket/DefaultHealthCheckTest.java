@@ -11,6 +11,7 @@ import org.springframework.web.socket.PongMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -109,6 +110,7 @@ public class DefaultHealthCheckTest {
             put("key", UUID.randomUUID().toString());
             put("SESSION_ID", UUID.randomUUID().toString());
         }});
+        when(webSocketSession.getRemoteAddress()).thenReturn(new InetSocketAddress("localhost", 8206));
 
         if (error) {
             doThrow(new IOException()).when(webSocketSession).sendMessage(new PingMessage());

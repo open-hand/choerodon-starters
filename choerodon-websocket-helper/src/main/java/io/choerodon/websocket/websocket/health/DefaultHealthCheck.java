@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.LongAdder;
 /**
  * Default io.choerodon.websocket.websocket.health check implementation.
  *
+ * After starting the health check, even if the message is not Pong's message, it will not be considered as the health check passed.
+ *
  * @version 0.1 2019-07-26 17:33
  * @author dongbin
  * @since 1.8
@@ -49,18 +51,18 @@ public class DefaultHealthCheck extends AbstractHealthCheck {
 
     @Override
     protected void onPong(Session session, PongMessage message) {
-        CountDownLatch latch = checkingRoom.get(session.getUuid());
-        if (latch != null) {
-
-            latch.countDown();
-
-        } else {
-
-            LOGGER.warn(
-                "The corresponding Session({}) receiving probe was not found when Pong message was received, may be timeout.",
-                session.toString());
-
-        }
+//        CountDownLatch latch = checkingRoom.get(session.getUuid());
+//        if (latch != null) {
+//
+//            latch.countDown();
+//
+//        } else {
+//
+//            LOGGER.warn(
+//                "The corresponding Session({}) receiving probe was not found when Pong message was received, may be timeout.",
+//                session.toString());
+//
+//        }
     }
 
     /**

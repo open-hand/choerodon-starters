@@ -9,6 +9,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.socket.PongMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -164,6 +165,7 @@ public class AbstractHealthCheckTest {
         when(webSocketSession.getAttributes()).thenReturn(new HashMap() {{
             put("key", UUID.randomUUID().toString());
         }});
+        when(webSocketSession.getRemoteAddress()).thenReturn(new InetSocketAddress("localhost", 8206));
 
         Session s = new Session(webSocketSession, true);
         return s;

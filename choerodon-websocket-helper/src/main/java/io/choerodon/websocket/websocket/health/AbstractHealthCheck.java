@@ -39,7 +39,11 @@ public abstract class AbstractHealthCheck implements HealthCheck {
 
     public void init() {
 
-        LOGGER.info("Initialize health check({}) with initialization parameter ({}).",this.getClass(), healthCheckParam());
+        verify();
+
+
+        LOGGER.info("Initialize health check({}) with initialization parameter ({}).", this.getClass(), healthCheckParam());
+
         /**
          * The default value is sufficient for the usage scenario.
          * Unless the number of agents is too large, consider adjusting the parameters here.
@@ -62,7 +66,7 @@ public abstract class AbstractHealthCheck implements HealthCheck {
         healthCheckWorker.shutdownNow();
         timeWheel.stop();
 
-        LOGGER.info("Termination of health check({})!",this.getClass());
+        LOGGER.info("Termination of health check({})!", this.getClass());
     }
 
     @Override
@@ -95,10 +99,30 @@ public abstract class AbstractHealthCheck implements HealthCheck {
 
     /**
      * get now socket properties.
+     *
      * @return properteis.
      */
     public SocketProperties getProperties() {
         return properties;
+    }
+
+    private void verify() {
+        if (properties.getHealthCheckTryNumber() < 1) {
+            throw new IllegalArgumentException("The minimum number of health check retries is 1.");
+        }
+
+        //允许的相同 session 两次健康检查之间的空闲时间最小值.
+        if (properties.getHealthCheckDuration() < 100) {
+            throw new IllegalArgumentException("The minimum time between health checks is 100 milliseconds.");
+        }
+
+        if (properties.getHealthCheckTimeout() <= 0) {
+            throw new IllegalArgumentException("The minimum health check wait timeout is 1 millisecond.");
+        }
+
+        if (properties.getHealthCheckWorkerNumber() < 1) {
+            throw new IllegalArgumentException("The number of doctors checking in should not be less than 1.");
+        }
     }
 
     private String healthCheckParam() {
@@ -110,8 +134,8 @@ public abstract class AbstractHealthCheck implements HealthCheck {
             if (f.getName().startsWith("healthCheck")) {
                 try {
                     buff.append(f.getName()).append("=").append(f.get(properties)).append(",");
-                } catch(Exception ex) {
-                    throw new RuntimeException(ex.getMessage(),ex);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex.getMessage(), ex);
                 }
             }
         }
@@ -122,6 +146,7 @@ public abstract class AbstractHealthCheck implements HealthCheck {
 
     /**
      * Processing when a Ping Pong response is received.
+     *
      * @param session target session.
      * @param message target message.
      */
@@ -154,31 +179,47 @@ public abstract class AbstractHealthCheck implements HealthCheck {
             if (needCheck(session)) {
                 // Notification callbacks that cannot block time slices.
                 healthCheckWorker.submit(() -> {
+
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Start a health check on Session({}).", session.toString());
+                    }
+
+                    session.setHealthChecking(true);
+
                     try {
 
-                        if (session.getHealthCheckTriedTimes() >= properties.getHealthCheckTryNumber()) {
+                        if (check(session)) {
 
-                            eliminate(session);
+                            session.setHealthCheckTriedTimes(0);
+                            timeWheel.add(session, properties.getHealthCheckDuration());
+
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("Session({}) health check passes, wait {} milliseconds for next check.",
+                                    session.toString(), properties.getHealthCheckDuration());
+                            }
 
                         } else {
 
-                            if (check(session)) {
+                            if (session.getHealthCheckTriedTimes() < properties.getHealthCheckTryNumber() - 1) {
 
-                                session.setHealthCheckTriedTimes(0);
+                                session.setHealthCheckTriedTimes(session.getHealthCheckTriedTimes() + 1);
+
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.debug("Failed health check, but will try again after {} milliseconds.",
+                                        properties.getHealthCheckDuration());
+                                }
+
                                 timeWheel.add(session, properties.getHealthCheckDuration());
 
                             } else {
 
-                                if (session.getHealthCheckTriedTimes() < properties.getHealthCheckTryNumber()) {
-
-                                    session.setHealthCheckTriedTimes(session.getHealthCheckTriedTimes() + 1);
-                                    timeWheel.add(session, properties.getHealthCheckDuration());
-
-                                } else {
-
-                                    eliminate(session);
-
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.debug("Since the maximum number({}) of health checks has been exceeded, {} will be eliminated.",
+                                        properties.getHealthCheckTryNumber(),
+                                        session.toString());
                                 }
+
+                                eliminate(session);
 
                             }
                         }
@@ -188,6 +229,10 @@ public abstract class AbstractHealthCheck implements HealthCheck {
                         LOGGER.error(ex.getMessage(), ex);
 
                         eliminate(session);
+
+                    } finally {
+
+                        session.setHealthChecking(false);
 
                     }
                 });
@@ -207,7 +252,11 @@ public abstract class AbstractHealthCheck implements HealthCheck {
         }
 
         private boolean needCheck(Session session) {
-            return System.currentTimeMillis() - session.getLastReceive() >= properties.getHealthCheckDuration();
+            if (session.isHealthChecking()) {
+                return false;
+            } else {
+                return System.currentTimeMillis() - session.getLastReceive() >= properties.getHealthCheckDuration();
+            }
         }
     }
 }
