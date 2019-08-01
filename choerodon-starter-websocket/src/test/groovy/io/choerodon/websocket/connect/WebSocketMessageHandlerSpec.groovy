@@ -35,7 +35,7 @@ class WebSocketMessageHandlerSpec extends Specification {
         when: "调用方法"
         handler.handleTransportError(Mock(WebSocketSession), null)
         then: "校验结果"
-        noExceptionThrown()
+        thrown(Exception)
     }
 
     def "HandleTextMessage"() {
