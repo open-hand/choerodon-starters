@@ -67,6 +67,30 @@ class MybatisMapperSpec extends Specification {
         configuration.getInterceptors().size() == 4
     }
 
+    def "Select Sort Test"() {
+        when:
+        Role role = new Role()
+        role.setSortname("roleName")
+        role.setSortorder("ASC")
+        def ascResult = roleMapper.select(role)
+        role.setSortorder("DESC")
+        def descResult = roleMapper.select(role)
+        then:
+        ascResult.get(0).getRoleId() != descResult.get(0).getRoleId()
+    }
+
+    def "Select TL Sort Test"() {
+        when:
+        RoleTL role = new RoleTL()
+        role.setSortname("roleName")
+        role.setSortorder("ASC")
+        def ascResult = roleTLMapper.select(role)
+        role.setSortorder("DESC")
+        def descResult = roleTLMapper.select(role)
+        then:
+        ascResult.get(0).getRoleId() != descResult.get(0).getRoleId()
+    }
+
     def "Select One Test"() {
         when:
         Role role = new Role()
