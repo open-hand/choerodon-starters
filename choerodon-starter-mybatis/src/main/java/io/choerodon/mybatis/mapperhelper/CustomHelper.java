@@ -293,9 +293,9 @@ public class CustomHelper {
      */
     public static String orderBy_TL(Class<?> entityClass) {
         StringBuilder sql = new StringBuilder();
-        sql.append("<bind name=\"__orderByClause\" value=\"@io.choerodon.mybatis.util.OGNL@getOrderByClause(_parameter)\"/>");
+        sql.append("<bind name=\"__orderByClause\" value=\"@io.choerodon.mybatis.util.OGNL@getOrderByClause_TL(_parameter)\"/>");
         sql.append("<if test=\"__orderByClause!=null\">");
-        sql.append("ORDER BY b.${__orderByClause}");
+        sql.append("ORDER BY ${__orderByClause}");
         sql.append("</if>");
         return sql.toString();
     }
