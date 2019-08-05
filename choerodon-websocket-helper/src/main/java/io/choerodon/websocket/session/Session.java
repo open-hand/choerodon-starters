@@ -25,27 +25,21 @@ public class Session {
     private volatile long lastPong;
     private volatile long lastPing;
 
-    // cache line padding
-    private long a1,a2,a3,a4,a5,a6,a7;
     /**
      * Healthcheck try number, set zero if success.
      */
     private volatile int healthCheckTriedTimes;
 
-    // cache line padding
-    private long b1,b2,b3,b4,b5,b6,b7;
     /**
      * Tecord reccive message time, include heatbeat message.
      */
     private volatile long lastReceive;
 
-    // cache line padding
-    private long c1,c2,c3,c4,c5,c6,c7;
-
+    /**
+     * Being checked for health.
+     */
     private volatile boolean healthChecking;
 
-    // cache line padding
-    private long p1,p2,p3,p4,p5,p6,p7;
 
 
     public Session(WebSocketSession webSocketSession) {
