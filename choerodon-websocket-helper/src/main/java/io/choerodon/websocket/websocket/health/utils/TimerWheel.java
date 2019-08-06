@@ -36,13 +36,7 @@ public class TimerWheel<T> {
     private final long duration;
     private final int slotNumber;
 
-    // cache line padding
-    private long a1,a2,a3,a4,a5,a6,a7;
-
     private volatile int currentSlot;
-
-    // cache line padding
-    private long p1,p2,p3,p4,p5,p6,p7;
 
     /**
      * Take the default 512 slots, with an interval of 100 milliseconds, and fail without notice to construct a new time wheel.
