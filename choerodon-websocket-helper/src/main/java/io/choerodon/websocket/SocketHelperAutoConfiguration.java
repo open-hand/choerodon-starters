@@ -15,6 +15,8 @@ import io.choerodon.websocket.security.SecurityCheckManager;
 import io.choerodon.websocket.security.WebSecurityInterceptor;
 import io.choerodon.websocket.session.*;
 import io.choerodon.websocket.websocket.*;
+import io.choerodon.websocket.websocket.health.DefaultHealthCheck;
+import io.choerodon.websocket.websocket.health.HealthCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +58,8 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	List<MsgProcessor> msgProcessors;
 	@Autowired
 	SocketProperties socketProperties;
-
+	@Resource
+	private HealthCheck healthCheck;
 
 	@Bean
 	SocketRegister socketRegister(RedisTemplate<String, String> stringRedisTemplate){
@@ -201,19 +205,6 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 		return container;
 	}
 
-	@Scheduled(initialDelay = 10*1000,fixedRate = 10*1000)
-	public void sendPing(){
-		List<Session> sessions = sessionRepository.allExecutors();
-		for (Session session : sessions){
-			try {
-				session.getWebSocketSession().sendMessage(new PingMessage());
-			} catch (Exception e) {
-				sessionRepository.removeById(session.getUuid());
-				logger.error("remove disconnected ");
-			}
-		}
-	}
-
 	@Bean
 	SessionListenerFactory sessionListenerFactory(SimpleSessionListener simpleSessionListener,
 												  AgentSessionListener agentSessionListener,
@@ -271,8 +262,8 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	@Bean
 	public ServletServerContainerFactoryBean createWebSocketContainer() {
 		ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-		container.setMaxTextMessageBufferSize(500 * 1024);
-		container.setMaxBinaryMessageBufferSize(500 * 1024);
+		container.setMaxTextMessageBufferSize(socketProperties.getMaxMessageBufferSize());
+		container.setMaxBinaryMessageBufferSize(socketProperties.getMaxMessageBufferSize());
 		return container;
 	}
 
@@ -286,7 +277,7 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 	private SecurityCheckManager securityCheckManager;
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new SocketHandler(sockHandlerDelegate,pathHelper),
+		registry.addHandler(new SocketHandler(sessionRepository, sockHandlerDelegate,pathHelper,healthCheck),
 				socketProperties.getAgent(), socketProperties.getFront())
 				.setAllowedOrigins("*")
 				.addInterceptors(new RequestParametersInterceptor(securityCheckManager));
@@ -314,5 +305,9 @@ public class SocketHelperAutoConfiguration implements WebSocketConfigurer {
 		}
 	}
 
+	@Bean
+	public HealthCheck createHealthCheck() {
+		return new DefaultHealthCheck();
+	}
 
 }
