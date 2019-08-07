@@ -82,6 +82,7 @@ public class ThrottledThreadPoolExecutor extends ThreadPoolExecutor{
 
     /**
      * Return the maximum number of parallel accesses allowed.
+     * @return now concurrent limit.
      */
     public final int getConcurrencyLimit() {
         return this.concurrencyThrottle.getConcurrencyLimit();

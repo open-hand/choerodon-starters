@@ -21,6 +21,7 @@ public interface HealthCheck {
     /**
      * received message
      * @param session target.
+     * @param msg received message.
      */
     void onReceived(Session session, WebSocketMessage msg);
 
