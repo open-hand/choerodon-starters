@@ -58,7 +58,7 @@ public class TimerWheel<T> {
      * Specifies the number of slots, the number of milliseconds between, and no notification of timeout.
      *
      * @param slotNumber Slot number.
-     * @param duration
+     * @param duration Slot intervals are milliseconds.
      */
     public TimerWheel(int slotNumber, long duration) {
         this(slotNumber, duration, null);

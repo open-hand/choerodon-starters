@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Thread help tool.
  * @version 0.1 2019-07-26 16:18
- * @auth dongbin
+ * @author dongbin
  * @since 1.8
  */
 public class ThreadTool {

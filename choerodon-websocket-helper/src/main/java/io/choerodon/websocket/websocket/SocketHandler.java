@@ -46,6 +46,9 @@ public class SocketHandler extends AbstractWebSocketHandler {
 
     /**
      * Extend the old handle and now listen for Ping messages.
+     * @param socketSession target websocket session.
+     * @param message ping message instance.
+     * @throws Exception process err.
      */
     protected void handlePingMessage(WebSocketSession socketSession, PingMessage message) throws Exception {
         doHandlePongPingMessage(socketSession, message);
