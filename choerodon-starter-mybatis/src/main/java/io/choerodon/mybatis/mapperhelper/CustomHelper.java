@@ -286,6 +286,36 @@ public class CustomHelper {
     }
 
     /**
+     * 获取的orderBy，通过BaseDTO和注解设置
+     *
+     * @param entityClass
+     * @return
+     */
+    public static String orderBy_TL(Class<?> entityClass) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("<bind name=\"__orderByClause\" value=\"@io.choerodon.mybatis.util.OGNL@getOrderByClause_TL(_parameter)\"/>");
+        sql.append("<if test=\"__orderByClause!=null\">");
+        sql.append("ORDER BY ${__orderByClause}");
+        sql.append("</if>");
+        return sql.toString();
+    }
+
+    /**
+     * 获取的orderBy，通过BaseDTO和注解设置
+     *
+     * @param entityClass
+     * @return
+     */
+    public static String orderBy(Class<?> entityClass) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("<bind name=\"__orderByClause\" value=\"@io.choerodon.mybatis.util.OGNL@getOrderByClause(_parameter)\"/>");
+        sql.append("<if test=\"__orderByClause!=null\">");
+        sql.append("ORDER BY ${__orderByClause}");
+        sql.append("</if>");
+        return sql.toString();
+    }
+
+    /**
      * example支持查询指定列时
      *
      * @return
