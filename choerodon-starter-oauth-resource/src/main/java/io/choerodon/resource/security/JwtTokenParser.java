@@ -1,6 +1,9 @@
-package io.choerodon.resource.filter;
+package io.choerodon.resource.security;
 
 import io.choerodon.resource.permission.PublicPermission;
+import io.choerodon.resource.permission.PublicPermissionOperationPlugin;
+import io.choerodon.resource.security.exception.AuthenticationRequestFailedException;
+import io.choerodon.resource.security.exception.JwtTokenNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -11,100 +14,93 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.util.ObjectUtils;
 
-import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
- * @author dongfan117@gmail.com
+ * Jwt token解析器
+ *
+ * @author superlee
+ * @since 2019-08-08
  */
-public class JwtTokenFilter implements Filter {
+public class JwtTokenParser {
 
-    private TokenExtractor tokenExtractor;
-
-    private ResourceServerTokenServices tokenServices;
-
-    private Set<PublicPermission> publicPermissions;
-
-    private static final AntPathMatcher MATCHER = new AntPathMatcher();
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenParser.class);
 
     private final String[] jwtIgnore;
 
-    public JwtTokenFilter(ResourceServerTokenServices tokenServices,
-                          TokenExtractor tokenExtractor,
-                          Set<PublicPermission> publicPermissions,
-                          String[] jwtIgnore) {
-        this.tokenServices = tokenServices;
-        this.tokenExtractor = tokenExtractor;
-        this.publicPermissions = publicPermissions;
-        this.jwtIgnore = jwtIgnore;
+    private PublicPermissionOperationPlugin publicPermissionOperationPlugin;
+
+    private final DefaultTokenServices defaultTokenServices;
+
+    private final JwtTokenExtractor jwtTokenExtractor;
+
+    private static final AntPathMatcher MATCHER = new AntPathMatcher();
+
+    private static final String[] DEFAULT_JWT_IGNORE = {"/choerodon/**", "/", "/dis/**", "/env-config.js"};
+
+    public JwtTokenParser(final String[] jwtIgnore,
+                          PublicPermissionOperationPlugin publicPermissionOperationPlugin,
+                          DefaultTokenServices defaultTokenServices,
+                          JwtTokenExtractor jwtTokenExtractor) {
+        this.publicPermissionOperationPlugin = publicPermissionOperationPlugin;
+        this.defaultTokenServices = defaultTokenServices;
+        this.jwtTokenExtractor = jwtTokenExtractor;
+        if (ObjectUtils.isEmpty(jwtIgnore)) {
+            this.jwtIgnore = DEFAULT_JWT_IGNORE;
+        } else {
+            this.jwtIgnore =
+                    Stream.concat(Arrays.stream(jwtIgnore), Arrays.stream(DEFAULT_JWT_IGNORE)).toArray(String[]::new);
+        }
     }
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-                filterConfig.getServletContext());
-    }
+    public boolean extractor(HttpServletRequest request) {
+        Set<PublicPermission> publicPermissions = publicPermissionOperationPlugin.getPublicPaths();
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
         for (PublicPermission publicPermission : publicPermissions) {
-            if (MATCHER.match(publicPermission.path, httpRequest.getRequestURI()) &&
-                    publicPermission.method.matches(httpRequest.getMethod())) {
+            if (MATCHER.match(publicPermission.path, request.getRequestURI()) &&
+                    publicPermission.method.matches(request.getMethod())) {
                 //public接口放行
-                chain.doFilter(request, response);
-                return;
+                return true;
             }
         }
+
         for (String ignore : jwtIgnore) {
-            if (MATCHER.match(ignore, httpRequest.getRequestURI())) {
-                chain.doFilter(request, response);
-                return;
+            if (MATCHER.match(ignore, request.getRequestURI())) {
+                return true;
             }
         }
         try {
-            Authentication authentication = this.tokenExtractor.extract(httpRequest);
+            Authentication authentication = this.jwtTokenExtractor.extract(request);
 
             if (authentication == null) {
-                if (this.isAuthenticated()) {
+                if (isAuthenticated()) {
                     LOGGER.debug("Clearing security context.");
                     SecurityContextHolder.clearContext();
                 }
-                LOGGER.debug("No Jwt token in request, will continue chain.");
-                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "No Jwt token in request.");
-                return;
+                throw new JwtTokenNotFoundException("No Jwt token in request");
             } else {
                 request.setAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE, authentication.getPrincipal());
                 if (authentication instanceof AbstractAuthenticationToken) {
                     AbstractAuthenticationToken needsDetails = (AbstractAuthenticationToken) authentication;
-                    needsDetails.setDetails(new OAuth2AuthenticationDetails(httpRequest));
+                    needsDetails.setDetails(new OAuth2AuthenticationDetails(request));
                 }
 
                 Authentication authResult = this.authenticate(authentication);
                 LOGGER.debug("Authentication success: {}", authResult);
                 SecurityContextHolder.getContext().setAuthentication(authResult);
             }
-            chain.doFilter(request, response);
+            return true;
         } catch (OAuth2Exception e) {
             SecurityContextHolder.clearContext();
-            LOGGER.debug("Authentication request failed: ", e);
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token.");
+            throw new AuthenticationRequestFailedException("Authentication request failed");
         }
-    }
-
-    @Override
-    public void destroy() {
-        // Do nothing
     }
 
     protected Authentication authenticate(Authentication authentication) {
@@ -112,7 +108,7 @@ public class JwtTokenFilter implements Filter {
             throw new InvalidTokenException("Invalid token (token not found)");
         } else {
             String token = (String) authentication.getPrincipal();
-            OAuth2Authentication auth = this.tokenServices.loadAuthentication(token);
+            OAuth2Authentication auth = defaultTokenServices.loadAuthentication(token);
             if (auth == null) {
                 throw new InvalidTokenException("Invalid token: " + token);
             } else {
