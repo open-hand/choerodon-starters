@@ -87,13 +87,13 @@ public class MultiLanguageSelectProvider extends BaseSelectProvider {
             sql.append(CustomHelper.selectAllColumns_TL(entityClass));
             sql.append(CustomHelper.fromTable_TL(entityClass, tableName(entityClass)));
             sql.append(CustomHelper.whereAllIfColumns_TL(entityClass, isNotEmpty(), false));
-            sql.append(CustomHelper.orderByDefault_TL(entityClass));
+            sql.append(CustomHelper.orderBy_TL(entityClass));
             return sql.toString();
         } else {
             sql.append(SqlHelper.selectAllColumns(entityClass));
             sql.append(SqlHelper.fromTable(entityClass, tableName(entityClass)));
             sql.append(CustomHelper.whereAllIfColumns(entityClass, isNotEmpty(), false));
-            sql.append(SqlHelper.orderByDefault(entityClass));
+            sql.append(CustomHelper.orderBy(entityClass));
             return sql.toString();
         }
     }

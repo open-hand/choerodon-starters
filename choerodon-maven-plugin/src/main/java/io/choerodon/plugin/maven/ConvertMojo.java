@@ -36,7 +36,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 public class ConvertMojo extends AbstractMojo {
     private static final int SKIP_ROW_NUMBER = 6;
     private static final int SKIP_CELL_NUMBER = 4;
-    private static final String CONVERT_FILE_NAME = "script/front/micro-service-init-data.xlsx";
+    private static final String CONVERT_FILE_NAME = "script/meta/micro-service-init-data.xlsx";
     private static final String MERGE_FILE_NAME = CHOERODON_FOLDER_IN_JAR + "/micro-service-init-data.json";
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -108,6 +108,8 @@ public class ConvertMojo extends AbstractMojo {
         if (convertFile.isFile()) {
             getLog().info("Convert: " + target);
             return convertFormInputStream(new FileInputStream(convertFile));
+        } else {
+            getLog().warn("No files found that need to be converted " + CONVERT_FILE_NAME);
         }
         return null;
     }
