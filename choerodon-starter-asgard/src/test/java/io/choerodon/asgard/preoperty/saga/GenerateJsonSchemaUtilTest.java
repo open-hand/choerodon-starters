@@ -25,8 +25,10 @@ public class GenerateJsonSchemaUtilTest {
         expectedResult.put("anEnum", "\"Enum\"");
 
         Arrays.asList(Demo.class.getDeclaredMethods()).forEach(method -> {
-            String outputSchemaDemo = GenerateJsonSchemaUtil.generate(method.getReturnType(), OBJECT_MAPPER, false);
-            Assert.assertEquals(outputSchemaDemo, expectedResult.get(method.getName()));
+            if (expectedResult.containsKey(method.getName())){ //使用JCoco测试覆盖率的时候会添加不存在的方法
+                String outputSchemaDemo = GenerateJsonSchemaUtil.generate(method.getReturnType(), OBJECT_MAPPER, false);
+                Assert.assertEquals(outputSchemaDemo, expectedResult.get(method.getName()));
+            }
         });
     }
 
