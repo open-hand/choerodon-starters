@@ -1,6 +1,7 @@
 package io.choerodon.resource.filter
 
 import io.choerodon.core.variable.RequestVariableHolder
+import io.choerodon.resource.security.JwtTokenExtractor
 import org.junit.runner.RunWith
 import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest

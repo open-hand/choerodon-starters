@@ -1,4 +1,4 @@
-package io.choerodon.resource.filter;
+package io.choerodon.resource.security;
 
 import io.choerodon.core.variable.RequestVariableHolder;
 import org.slf4j.Logger;

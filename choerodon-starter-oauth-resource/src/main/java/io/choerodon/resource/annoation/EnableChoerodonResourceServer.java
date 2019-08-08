@@ -2,9 +2,8 @@ package io.choerodon.resource.annoation;
 
 import java.lang.annotation.*;
 
+import io.choerodon.resource.security.JwtResourceServerConfig;
 import org.springframework.context.annotation.Import;
-
-import io.choerodon.resource.config.ChoerodonResourceServerConfiguration;
 
 /**
  * @author dongfan117@gmail.com
@@ -12,6 +11,6 @@ import io.choerodon.resource.config.ChoerodonResourceServerConfiguration;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ChoerodonResourceServerConfiguration.class})
+@Import({JwtResourceServerConfig.class})
 public @interface EnableChoerodonResourceServer {
 }
