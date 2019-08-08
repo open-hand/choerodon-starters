@@ -43,7 +43,7 @@ public class JwtTokenParser {
 
     private static final AntPathMatcher MATCHER = new AntPathMatcher();
 
-    private static final String[] DEFAULT_JWT_IGNORE = {"/choerodon/**", "/", "/dis/**", "/env-config.js"};
+    private static final String[] DEFAULT_JWT_IGNORE = {"/choerodon/**", "/", "/dis/**", "/env-config.js", "/actuator/**"};
 
     public JwtTokenParser(final String[] jwtIgnore,
                           PublicPermissionOperationPlugin publicPermissionOperationPlugin,
