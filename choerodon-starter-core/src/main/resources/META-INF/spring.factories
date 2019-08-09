@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 io.choerodon.core.ChoerodonCoreAutoConfiguration
+org.springframework.boot.env.EnvironmentPostProcessor=\
+io.choerodon.core.config.CoreEnvironmentPostProcessor
