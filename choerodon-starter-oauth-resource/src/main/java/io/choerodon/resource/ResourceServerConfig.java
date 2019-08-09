@@ -119,10 +119,10 @@ public class ResourceServerConfig {
         };
     }
 
-    @Bean
-    public OAuth2WebSecurityExpressionHandler oAuth2WebSecurityExpressionHandler(ApplicationContext applicationContext) {
-        OAuth2WebSecurityExpressionHandler expressionHandler = new OAuth2WebSecurityExpressionHandler();
-        expressionHandler.setApplicationContext(applicationContext);
-        return expressionHandler;
-    }
+//    @Bean
+//    public OAuth2WebSecurityExpressionHandler oAuth2WebSecurityExpressionHandler(ApplicationContext applicationContext) {
+//        OAuth2WebSecurityExpressionHandler expressionHandler = new OAuth2WebSecurityExpressionHandler();
+//        expressionHandler.setApplicationContext(applicationContext);
+//        return expressionHandler;
+//    }
 }
