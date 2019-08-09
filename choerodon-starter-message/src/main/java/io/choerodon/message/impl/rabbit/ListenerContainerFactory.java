@@ -136,7 +136,7 @@ public class ListenerContainerFactory implements ApplicationContextAware, SmartL
             });
             running = false;
         }
-        if (callback != null) callback.run();
+        if (callback != null) {callback.run();}
     }
 
     @Override
@@ -156,8 +156,8 @@ public class ListenerContainerFactory implements ApplicationContextAware, SmartL
             this.setMessageConverter(jackson2JsonMessageConverter);
         }
 
-        protected Object invokeListenerMethod(String methodName, Object[] arguments, Message originalMessage)
-                throws Exception {
+        @Override
+        protected Object invokeListenerMethod(String methodName, Object[] arguments, Message originalMessage) {
             arguments = new Object[]{arguments[0], originalMessage.getMessageProperties().getReceivedRoutingKey()};
             return super.invokeListenerMethod(methodName, arguments, originalMessage);
         }
