@@ -51,7 +51,7 @@ public class JwtResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatcher("/**")
                 .authorizeRequests()
                 .anyRequest()
-                .access("@jwtTokenEnhancer.extractor(request)");
+                .access("@jwtTokenParser.extractor(request)");
     }
 
     @Override
@@ -93,7 +93,7 @@ public class JwtResourceServerConfig extends ResourceServerConfigurerAdapter {
     }
 
     @Bean
-    public JwtTokenParser jwtTokenEnhancer(PublicPermissionOperationPlugin publicPermissionOperationPlugin) {
+    public JwtTokenParser jwtTokenParser(PublicPermissionOperationPlugin publicPermissionOperationPlugin) {
         return new JwtTokenParser(jwtIgnore, publicPermissionOperationPlugin, tokenServices(), jwtTokenExtractor());
     }
 }
