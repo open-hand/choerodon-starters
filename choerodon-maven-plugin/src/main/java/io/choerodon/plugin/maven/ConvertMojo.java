@@ -148,11 +148,15 @@ public class ConvertMojo extends AbstractMojo {
                     rowNode.putNull(columnName);
                     continue;
                 }
-                isValida = true;
                 if (cell.getCellType().equals(CellType.NUMERIC)) {
+                    isValida = true;
                     rowNode.put(columnName, cell.getNumericCellValue());
                 } else {
-                    rowNode.put(columnName, cell.getStringCellValue());
+                    String value = cell.getStringCellValue();
+                    if (value != null && value.length() != 0){
+                        isValida = true;
+                    }
+                    rowNode.put(columnName, value);
                 }
             }
             if (!isValida) {
