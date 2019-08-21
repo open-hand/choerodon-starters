@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.choerodon.mybatis.web;
+package io.choerodon.webmvc.paginate;
 
 import io.choerodon.base.domain.Sort;
 import org.springframework.core.MethodParameter;

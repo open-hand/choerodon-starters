@@ -1,4 +1,4 @@
-package io.choerodon.mybatis.web;
+package io.choerodon.webmvc.paginate;
 
 import io.choerodon.base.domain.PageRequest;
 import org.springframework.core.MethodParameter;

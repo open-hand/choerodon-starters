@@ -1,8 +1,8 @@
-package io.choerodon.mybatis.web;
+package io.choerodon.webmvc.paginate;
 
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.base.domain.Sort;
-import io.choerodon.mybatis.annotation.PageableDefault;
+import io.choerodon.webmvc.paginate.annotation.PageableDefault;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
