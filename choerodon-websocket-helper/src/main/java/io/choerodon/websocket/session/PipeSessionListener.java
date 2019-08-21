@@ -62,8 +62,9 @@ public class PipeSessionListener extends AbstractSessionListener{
         String podName = (String) paras.get("podName");
         String containerName = (String) paras.get("containerName");
         String logId = (String) paras.get("logId");
+        String namespace = (String) paras.get("env");
         if(podName != null && containerName != null && logId !=null){
-            return new PipeRequest(podName,containerName,logId);
+            return new PipeRequest(podName,containerName,logId, namespace);
         }else {
             return null;
         }
