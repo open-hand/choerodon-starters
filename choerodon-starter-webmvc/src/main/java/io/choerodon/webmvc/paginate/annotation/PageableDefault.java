@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.choerodon.mybatis.annotation;
+package io.choerodon.webmvc.paginate.annotation;
 
 import io.choerodon.base.domain.Sort;
 

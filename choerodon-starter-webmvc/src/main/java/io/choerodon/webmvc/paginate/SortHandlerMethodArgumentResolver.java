@@ -1,10 +1,10 @@
-package io.choerodon.mybatis.web;
+package io.choerodon.webmvc.paginate;
 
 import io.choerodon.base.domain.Sort;
 import io.choerodon.base.domain.Sort.Order;
 import io.choerodon.base.domain.Sort.Direction;
-import io.choerodon.mybatis.annotation.SortDefault;
-import io.choerodon.mybatis.annotation.SortDefault.SortDefaults;
+import io.choerodon.webmvc.paginate.annotation.SortDefault;
+import io.choerodon.webmvc.paginate.annotation.SortDefault.SortDefaults;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
