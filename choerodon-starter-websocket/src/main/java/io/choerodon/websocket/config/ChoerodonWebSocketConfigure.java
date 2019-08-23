@@ -1,15 +1,16 @@
-package io.choerodon.websocket;
+package io.choerodon.websocket.config;
 
-import io.choerodon.websocket.helper.BrokerHelper;
-import io.choerodon.websocket.receive.WebSocketMessageHandler;
-import io.choerodon.websocket.send.ReceiveRedisMessageListener;
-import io.choerodon.websocket.helper.HandshakeCheckerHandler;
-import io.choerodon.websocket.helper.SocketHandlerRegistration;
+import io.choerodon.websocket.receive.MessageHandler;
+import io.choerodon.websocket.send.BrokerManager;
+import io.choerodon.websocket.receive.MessageHandlerAdapter;
+import io.choerodon.websocket.send.BrokerChannelMessageListener;
+import io.choerodon.websocket.connect.HandshakeCheckerHandler;
+import io.choerodon.websocket.connect.SocketHandlerRegistration;
+import io.choerodon.websocket.send.relationship.BrokerKeySessionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
@@ -25,30 +26,37 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-@ComponentScan
 @Configuration
 @EnableWebSocket
 public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonWebSocketConfigure.class);
 
-    @Autowired
-    private WebSocketMessageHandler webSocketHandler;
-
+    //通过SocketHandlerRegistration接口找到所有注册的websocket入口
     @Autowired
     private Optional<List<SocketHandlerRegistration>> socketHandlerRegistrations;
 
+    //通过MessageHandler接口找到所有消息处理器
+    @Autowired
+    Optional<List<MessageHandler>> messageHandlers;
 
+
+    @Autowired
+    MessageHandlerAdapter messageHandlerAdapter;
+
+    // Broker监听Redis channal消息,初始化Redis MessageListenerAdapter
     @Bean
-    MessageListenerAdapter defaultListenerAdapter(ReceiveRedisMessageListener receiveRedisMessageListener) {
+    MessageListenerAdapter defaultListenerAdapter(BrokerChannelMessageListener receiveRedisMessageListener) {
         return new MessageListenerAdapter(receiveRedisMessageListener, "receiveMessage");
     }
+
+
 
     @Bean
     RedisMessageListenerContainer defaultContainer(RedisConnectionFactory connectionFactory,
                                                    MessageListenerAdapter messageListenerAdapter,
-                                                   BrokerHelper brokerHelper) {
-        PatternTopic topic = new PatternTopic(brokerHelper.brokerName());
+                                                   BrokerManager brokerManager) {
+        PatternTopic topic = new PatternTopic(brokerManager.getBrokerName());
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(messageListenerAdapter, topic);
@@ -56,18 +64,28 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
         return container;
     }
 
-
+    // 定时任务执行线程池ScheduledExecutorService
+    // Broker定时刷新活跃状态
+    //
     @Bean(name = "registerHeartBeat")
     public ScheduledExecutorService registerHeartBeat() {
         return Executors.newScheduledThreadPool(1);
+    }
+
+
+    // Websocket消息处理Adapter
+    @Bean
+    MessageHandlerAdapter messageHandlerAdapter(BrokerKeySessionMapper brokerKeySessionMapper){
+        MessageHandlerAdapter messageHandlerAdapter = new MessageHandlerAdapter(messageHandlers, brokerKeySessionMapper);
+        return messageHandlerAdapter;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         List<SocketHandlerRegistration> registrations = socketHandlerRegistrations.orElseGet(Collections::emptyList);
         registrations.forEach(registration -> {
-            webSocketHandler.addSocketHandlerRegistration(registration);
-            registry.addHandler(webSocketHandler, registration.path()).addInterceptors(new HandshakeCheckerHandler(registration)).setAllowedOrigins("*");
+            messageHandlerAdapter.addSocketHandlerRegistration(registration);
+            registry.addHandler(messageHandlerAdapter, registration.path()).addInterceptors(new HandshakeCheckerHandler(registration)).setAllowedOrigins("*");
         });
     }
 

@@ -1,147 +1,152 @@
 package io.choerodon.websocket.send;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
-import io.choerodon.websocket.relationship.RelationshipDefining;
+import io.choerodon.websocket.send.relationship.BrokerKeySessionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Set;
 
-@Component
 public class DefaultSmartMessageSender implements MessageSender {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSender.class);
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private StringRedisTemplate redisTemplate;
-    private RelationshipDefining relationshipDefining;
+    private BrokerKeySessionMapper brokerKeySessionMapper;
 
-    public DefaultSmartMessageSender(StringRedisTemplate redisTemplate, RelationshipDefining relationshipDefining) {
+    public DefaultSmartMessageSender(StringRedisTemplate redisTemplate, BrokerKeySessionMapper brokerKeySessionMapper) {
         this.redisTemplate = redisTemplate;
-        this.relationshipDefining = relationshipDefining;
-    }
-
-    @Override
-    public void sendWebSocket(WebSocketSession session, WebSocketSendPayload<?> payload) {
-        if (payload == null) {
-            LOGGER.warn("error.messageOperator.sendWebSocket.payloadIsNull");
-            return;
-        }
-        if (session == null) {
-            return;
-        }
-        if (!session.isOpen()) {
-            relationshipDefining.removeWebSocketSessionContact(session);
-            return;
-        }
-        try {
-            TextMessage textMessage = new TextMessage(objectMapper.writeValueAsBytes(payload));
-            session.sendMessage(textMessage);
-        } catch (IOException e) {
-            LOGGER.warn("error.messageOperator.sendWebSocket.IOException, payload: {}", payload, e);
-        }
-    }
-
-    @Override
-    public void sendBinaryMessageBySession(WebSocketSession session, BinaryMessage message){
-        try {
-            session.sendMessage(message);
-        } catch (IOException e) {
-            LOGGER.warn("error.messageOperator.sendWebSocket.IOException, message: {}", message, e);
-        }
-    }
-
-    @Override
-    public void sendRedis(String channel, WebSocketSendPayload<?> payload) {
-        if (payload == null) {
-            LOGGER.warn("error.messageOperator.sendRedis.payloadIsNull");
-            return;
-        }
-        try {
-            redisTemplate.convertAndSend(channel, objectMapper.writeValueAsString(payload));
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("error.messageOperator.sendRedisDefaultChannel.JsonProcessingException, payload: {}", payload, e);
-        }
-    }
-
-    @Override
-    public void sendRedis(String channel, String json) {
-        if (json == null) {
-            LOGGER.warn("error.messageOperator.sendRedis.payloadIsNull");
-            return;
-        }
-        redisTemplate.convertAndSend(channel, json);
+        this.brokerKeySessionMapper = brokerKeySessionMapper;
     }
 
 
     @Override
-    public void sendWebSocket(WebSocketSession session, String json) {
-        if (json == null) {
-            LOGGER.warn("error.messageOperator.sendWebSocket.jsonIsNull");
-            return;
-        }
-        if (session == null) {
-            return;
-        }
-        if (!session.isOpen()) {
-            relationshipDefining.removeWebSocketSessionContact(session);
-            return;
-        }
-        try {
-            session.sendMessage(new TextMessage(json));
-        } catch (IOException e) {
-            LOGGER.warn("error.messageOperator.sendWebSocket.IOException, json: {}", json, e);
-        }
-    }
-
-    @Override
-    public void sendWebSocketByKey(String key, String json) {
-        relationshipDefining.getWebSocketSessionsByKey(key).forEach(session -> this.sendWebSocket(session, json));
-    }
-
-
-    @Override
-    public void sendByKey(String key, WebSocketSendPayload<?> payload) {
+    public void sendByKey(String key, SendMessagePayload<?> payload) {
         if (!StringUtils.isEmpty(key) && payload != null) {
-            relationshipDefining.getWebSocketSessionsByKey(key).forEach(session -> this.sendWebSocket(session, payload));
-            relationshipDefining.getRedisChannelsByKey(key, true).forEach(redis -> this.sendRedis(redis, payload));
+            // 从本地找出messageKey对应的session
+            Set<WebSocketSession> sessions = brokerKeySessionMapper.getSessionsByKey(key);
+            // 从redis存储中找出messageKey对应的broker
+            Set<String> brokerChannels = brokerKeySessionMapper.getBrokerChannelsByKey(key);
+            if (payload instanceof SendBinaryMessagePayload) {
+                SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
+                if (!sessions.isEmpty()) {
+                    BinaryMessage binaryMessage = new BinaryMessage(binaryMessagePayload.getData());
+                    sessions.forEach(session -> {
+                        this.sendToSession(session, binaryMessage);
+                    });
+                }
+                if (!brokerChannels.isEmpty()) {
+                    String payloadJson = payloadToJson(payload);
+                    brokerChannels.forEach(channel -> {
+                        this.sendToChannel(channel, payloadJson);
+                    });
+                }
+            } else {
+                if (!sessions.isEmpty() || !brokerChannels.isEmpty()) {
+                    String payloadJson = payloadToJson(payload);
+                    sessions.forEach(session -> {
+                        this.sendToSession(session, new TextMessage(payloadJson));
+                    });
+                    brokerChannels.forEach(channel -> {
+                        this.sendToChannel(channel, payloadJson);
+                    });
+                }
+
+            }
         }
     }
 
     @Override
-    public void sendByKey(String key, String type, String data) {
-        if (StringUtils.isEmpty(key) || StringUtils.isEmpty(type)) {
-            return;
-        }
-        try {
-            JsonNode jsonNode = objectMapper.readTree(data);
-            ObjectNode root = objectMapper.createObjectNode();
-            root.set("key", new TextNode(key));
-            root.set("type", new TextNode(type));
-            if (data == null) {
-                root.set("data", NullNode.instance);
+    public void sendBySession(WebSocketSession session, SendMessagePayload<?> payload) {
+        if (payload != null) {
+            if (payload instanceof SendBinaryMessagePayload) {
+                SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
+                BinaryMessage binaryMessage = new BinaryMessage(binaryMessagePayload.getData());
+                this.sendToSession(session, binaryMessage);
             } else {
-                if (jsonNode instanceof ObjectNode || jsonNode instanceof ValueNode) {
-                    root.set("data", jsonNode);
-                } else if (jsonNode instanceof ArrayNode) {
-                    root.putArray("data").addAll((ArrayNode) jsonNode);
-                }
+                String payloadJson = payloadToJson(payload);
+                this.sendToSession(session, new TextMessage(payloadJson));
             }
-            String json = root.toString();
-            relationshipDefining.getWebSocketSessionsByKey(key).forEach(session -> this.sendWebSocket(session, json));
-            relationshipDefining.getRedisChannelsByKey(key, true).forEach(redis -> this.sendRedis(redis, json));
-        } catch (IOException e) {
-            this.sendByKey(key, new WebSocketSendPayload<>(type, key, data));
+
         }
     }
+
+    @Override
+    public void sendToLocalSessionByKey(String messageKey, SendMessagePayload<?> payload) {
+        if (!StringUtils.isEmpty(messageKey) && payload != null) {
+            Set<WebSocketSession> sessions = brokerKeySessionMapper.getSessionsByKey(messageKey);
+            if (payload instanceof SendBinaryMessagePayload) {
+                SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
+                if (!sessions.isEmpty()) {
+                    BinaryMessage binaryMessage = new BinaryMessage(binaryMessagePayload.getData());
+                    sessions.forEach(session -> {
+                        this.sendToSession(session, binaryMessage);
+                    });
+                }
+
+            } else {
+                if (!sessions.isEmpty() ) {
+                    String payloadJson = payloadToJson(payload);
+                    sessions.forEach(session -> {
+                        this.sendToSession(session, new TextMessage(payloadJson));
+                    });
+                }
+
+            }
+        }
+    }
+
+
+    private void sendToChannel(String brokerChannel, String payloadJson) {
+        redisTemplate.convertAndSend(brokerChannel, payloadJson);
+    }
+
+
+    private void sendToSession(WebSocketSession session, WebSocketMessage webSocketMessage) {
+        try {
+            if (!session.isOpen()) {
+                brokerKeySessionMapper.unsubscribeAll(session);
+                LOGGER.warn("websocket session is close, json: {},message not send {}", session,webSocketMessage);
+                return;
+            }
+            if (webSocketMessage != null) {
+                session.sendMessage(webSocketMessage);
+            }
+        } catch (IOException e) {
+            LOGGER.error("error.messageOperator.sendWebSocket.IOException, json: {}", webSocketMessage, e);
+        }
+    }
+
+    private String payloadToJson(SendMessagePayload<?> payload) {
+        ObjectNode root = OBJECT_MAPPER.createObjectNode();
+        root.set("key", new TextNode(payload.getKey()));
+        root.set("type", new TextNode(payload.getType()));
+        if (payload instanceof SendBinaryMessagePayload) {
+            root.set("binary", new TextNode(BrokerChannelMessageListener.BINARY_FLAG_YES));
+            SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
+            root.set("data", new BinaryNode(binaryMessagePayload.getData()));
+        } else {
+            root.set("binary", new TextNode(BrokerChannelMessageListener.BINARY_FLAG_NO));
+            if(payload.getData() instanceof JsonNode){
+                root.set("data", (JsonNode)payload.getData());
+            }else{
+                JsonNode data = OBJECT_MAPPER.convertValue(payload.getData(), JsonNode.class);
+                root.set("data", data);
+            }
+
+        }
+        return root.toString();
+
+    }
+
 }
 

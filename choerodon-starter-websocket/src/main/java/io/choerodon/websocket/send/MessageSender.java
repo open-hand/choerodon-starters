@@ -1,24 +1,13 @@
 package io.choerodon.websocket.send;
 
-import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 public interface MessageSender {
 
-    void sendWebSocket(WebSocketSession session, WebSocketSendPayload<?> payload);
+    void sendByKey(String messageKey, SendMessagePayload<?> payload);
 
-    void sendWebSocket(WebSocketSession session, String json);
+    void sendBySession(WebSocketSession session, SendMessagePayload<?> payload);
 
-    void sendWebSocketByKey(String key, String json);
-
-    void sendBinaryMessageBySession(WebSocketSession session, BinaryMessage message);
-
-    void sendRedis(String channel, WebSocketSendPayload<?> payload);
-
-    void sendByKey(String key, WebSocketSendPayload<?> payload);
-
-    void sendRedis(String channel, String json);
-
-    void sendByKey(String key, String type, String data);
+    void sendToLocalSessionByKey(String messageKey,SendMessagePayload<?> payload);
 
 }
