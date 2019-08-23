@@ -2,44 +2,50 @@ package io.choerodon.websocket.receive;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.websocket.helper.SocketHandlerRegistration;
-import io.choerodon.websocket.relationship.RelationshipDefining;
+import io.choerodon.websocket.connect.SocketHandlerRegistration;
+import io.choerodon.websocket.send.relationship.BrokerKeySessionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
-import org.springframework.web.socket.handler.ExceptionWebSocketHandlerDecorator;
 
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-@Component
-public class WebSocketMessageHandler extends AbstractWebSocketHandler {
+//处理websocket消息
+//处理连接成功，断开连接
+//
+public class MessageHandlerAdapter extends AbstractWebSocketHandler {
     static final String MATCH_ALL_STRING = "*";
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketMessageHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageHandlerAdapter.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final Map<String, Set<HandlerInfo>> pathHandlersMap = new ConcurrentHashMap<>();
     private final Map<String, Set<HandlerInfo>> typeHandlersMap = new ConcurrentHashMap<>();
+    private final Map<String, Set<BinaryMessageHandler>> binaryHandlersMap = new ConcurrentHashMap<>();
     private final Map<String, SocketHandlerRegistration> registrationMap = new ConcurrentHashMap<>();
 
-    private RelationshipDefining relationshipDefining;
+    private BrokerKeySessionMapper brokerKeySessionMapper;
 
-    public WebSocketMessageHandler(Optional<List<MessageHandler>> msgHandlers, RelationshipDefining relationshipDefining) {
+    public MessageHandlerAdapter(Optional<List<MessageHandler>> msgHandlers, BrokerKeySessionMapper brokerKeySessionMapper) {
         msgHandlers.orElseGet(Collections::emptyList).forEach(this::addMessageHandler);
-        this.relationshipDefining = relationshipDefining;
+        this.brokerKeySessionMapper = brokerKeySessionMapper;
     }
-
+    // 添加接收消息处理器
     public synchronized void addMessageHandler(MessageHandler handler){
-        pathHandlersMap.computeIfAbsent(handler.matchPath(), key -> new HashSet<>()).add(new HandlerInfo(handler.payloadClass(), handler));
-        typeHandlersMap.computeIfAbsent(handler.matchType(), key -> new HashSet<>()).add(new HandlerInfo(handler.payloadClass(), handler));
+        if(handler instanceof TextMessageHandler) {
+            TextMessageHandler textMessageHandler = (TextMessageHandler)handler;
+            pathHandlersMap.computeIfAbsent(textMessageHandler.matchPath(), key -> new HashSet<>()).add(new HandlerInfo(textMessageHandler.payloadClass(), textMessageHandler));
+            typeHandlersMap.computeIfAbsent(textMessageHandler.matchType(), key -> new HashSet<>()).add(new HandlerInfo(textMessageHandler.payloadClass(), textMessageHandler));
+        }else{
+            BinaryMessageHandler binaryMessageHandler = (BinaryMessageHandler)handler;
+            binaryHandlersMap.computeIfAbsent(binaryMessageHandler.matchPath(), key -> new HashSet<>()).add(binaryMessageHandler);
+        }
     }
-
+    // 添加websocket入口
     public void addSocketHandlerRegistration(SocketHandlerRegistration registration){
         if (registrationMap.putIfAbsent(registration.path(), registration) != null && LOGGER.isWarnEnabled()){
             LOGGER.warn("path {} connect processor duplicate.", registration.path());
@@ -66,15 +72,16 @@ public class WebSocketMessageHandler extends AbstractWebSocketHandler {
                 registration.afterConnectionClosed(session, status);
             }
         }
-        this.relationshipDefining.removeWebSocketSessionContact(session);
+        this.brokerKeySessionMapper.unsubscribeAll(session);
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         super.handleTransportError(session, exception);
         LOGGER.error("error.webSocketMessageHandler.handleTransportError", exception);
-        this.relationshipDefining.removeWebSocketSessionContact(session);
-        throw new Exception(exception); // 抛出异常 Spring 框架负责断开连接
+        this.brokerKeySessionMapper.unsubscribeAll(session);
+        // 抛出异常 Spring 框架负责断开连接
+        throw new Exception(exception);
     }
 
     @Override
@@ -92,7 +99,7 @@ public class WebSocketMessageHandler extends AbstractWebSocketHandler {
                 matchHandlers.retainAll(matchTypeHandlers);
                 if (!matchHandlers.isEmpty()) {
                     for (HandlerInfo handlerInfo : matchHandlers){
-                        WebSocketReceivePayload<?> payload = OBJECT_MAPPER.readValue(receiveMsg, handlerInfo.javaType);
+                        TextMessagePayload<?> payload = OBJECT_MAPPER.readValue(receiveMsg, handlerInfo.javaType);
                         handlerInfo.msgHandler.handle(session, payload.getType(), payload.getKey(), payload.getData());
                     }
                 } else {
@@ -109,12 +116,10 @@ public class WebSocketMessageHandler extends AbstractWebSocketHandler {
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         String path = Optional.ofNullable(session.getUri()).map(URI::getPath).orElse(null);
-        Set<HandlerInfo> matchHandlers = new HashSet<>(Optional.ofNullable(pathHandlersMap.get(path)).orElse(Collections.emptySet()));
-        matchHandlers.addAll(Optional.ofNullable(pathHandlersMap.get(MATCH_ALL_STRING)).orElse(Collections.emptySet()));
-        matchHandlers.retainAll(Optional.ofNullable(typeHandlersMap.get(MATCH_ALL_STRING)).orElse(Collections.emptySet()));
+        Set<BinaryMessageHandler> matchHandlers = new HashSet<>(Optional.ofNullable(binaryHandlersMap.get(path)).orElse(Collections.emptySet()));
         if (!matchHandlers.isEmpty()) {
-            for (HandlerInfo handlerInfo : matchHandlers){
-                handlerInfo.msgHandler.handle(session, message);
+            for (BinaryMessageHandler binaryMessageHandler : matchHandlers){
+                binaryMessageHandler.handle(session, message);
             }
         } else {
             LOGGER.warn("abandon message that can not find msgHandler, message {}", message);
@@ -123,10 +128,10 @@ public class WebSocketMessageHandler extends AbstractWebSocketHandler {
 
     final class HandlerInfo {
         final JavaType javaType;
-        final MessageHandler msgHandler;
+        final TextMessageHandler msgHandler;
 
-        HandlerInfo(Class<?> payloadType, MessageHandler msgHandler) {
-            this.javaType = OBJECT_MAPPER.getTypeFactory().constructParametricType(WebSocketReceivePayload.class, payloadType);
+        HandlerInfo(Class<?> payloadType, TextMessageHandler msgHandler) {
+            this.javaType = OBJECT_MAPPER.getTypeFactory().constructParametricType(TextMessagePayload.class, payloadType);
             this.msgHandler = msgHandler;
         }
 
