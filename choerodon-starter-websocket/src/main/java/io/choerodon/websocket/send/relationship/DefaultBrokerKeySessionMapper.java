@@ -88,16 +88,8 @@ public class DefaultBrokerKeySessionMapper implements BrokerKeySessionMapper {
             if(exceptSelf&&brokerManager.getBrokerName().equals(brokerName)){
                 continue;
             }
-            boolean isMember = redisTemplate.execute(new RedisCallback<Boolean>() {
-                @Override
-                public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
-                    RedisSerializer<String> serializer = redisTemplate.getStringSerializer();
-                    byte[] byteKey = serializer.serialize(brokerManager.getBrokerKeyMapKey(brokerName));
-                    byte[] byteVal = serializer.serialize(messageKey);
-                    return connection.sIsMember(byteKey, byteVal);
-                }
-            });
-            if (isMember) {
+            Boolean isMember = redisTemplate.opsForSet().isMember(brokerManager.getBrokerKeyMapKey(brokerName), messageKey);
+            if (Boolean.TRUE.equals(isMember)) {
                 set.add(brokerName);
             }
         }

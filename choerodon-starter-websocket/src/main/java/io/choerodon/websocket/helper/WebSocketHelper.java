@@ -11,7 +11,6 @@ import org.springframework.web.socket.WebSocketSession;
 /**
  * Created by hailuo.liu@choerodon.io on 2019/7/2.
  */
-@Component
 public class WebSocketHelper {
     private MessageSender sender;
     private BrokerKeySessionMapper brokerKeySessionMapper;

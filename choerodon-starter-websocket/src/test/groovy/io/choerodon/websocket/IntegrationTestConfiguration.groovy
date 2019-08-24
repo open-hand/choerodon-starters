@@ -1,11 +1,9 @@
 package io.choerodon.websocket
 
-import ai.grakn.redismock.RedisServer
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.After
-import org.junit.Before
 import org.junit.BeforeClass
+import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Import
 
@@ -17,13 +15,11 @@ import javax.annotation.PostConstruct
 
 @TestConfiguration
 class IntegrationTestConfiguration {
-
-
+    static int redisPort = 0
     @BeforeClass
-    public void before() {
-        //启动Redis mock
-        RedisServer server = RedisServer.newRedisServer(6370);
-        server.start();
-    }
+    static void before() {
 
+//        SpringApplicationBuilder recvie = new SpringApplicationBuilder(TestApplication.class)
+//        recvie.run()
+    }
 }

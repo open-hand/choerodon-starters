@@ -45,7 +45,7 @@ public class BrokerManager {
 
     private ScheduledExecutorService scheduledExecutorService;
 
-    public BrokerManager(Environment environment, StringRedisTemplate redisTemplate, @Qualifier("registerHeartBeat")ScheduledExecutorService scheduledExecutorService) {
+    public BrokerManager(Environment environment, StringRedisTemplate redisTemplate, ScheduledExecutorService scheduledExecutorService) {
         this.scheduledExecutorService = scheduledExecutorService;
         this.environment = environment;
         this.redisTemplate = redisTemplate;
