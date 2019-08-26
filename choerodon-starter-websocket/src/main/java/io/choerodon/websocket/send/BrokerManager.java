@@ -65,7 +65,6 @@ public class BrokerManager {
                         return;
                     }
                     long lastUpdateTime = Long.parseLong(Optional.ofNullable(redisTemplate.opsForValue().get(getBrokerHeartbeatKey(t))).orElse("0"));
-                    LoggerFactory.getLogger(this.getClass()).info("lastUpdateTime {}, currentTimeMillis {}， diff {}", lastUpdateTime, System.currentTimeMillis(), System.currentTimeMillis() - lastUpdateTime);
                     if (System.currentTimeMillis() - lastUpdateTime > 2 * heartBeatIntervalMs) {
                         removeDeathBroker(t);
                     }
@@ -133,7 +132,6 @@ public class BrokerManager {
     }
     // 失效Broker
     private void removeDeathBroker(String deathBrokerName) {
-        LoggerFactory.getLogger(this.getClass()).info("removeDeathBroker {}", deathBrokerName);
         // 从注册表中删除Broker
         redisTemplate.opsForSet().remove(registerKey, deathBrokerName);
         // 删除心跳Key

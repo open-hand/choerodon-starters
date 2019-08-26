@@ -1,7 +1,9 @@
 package io.choerodon.websocket;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -9,6 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
 public class CountWebSocketHandler implements WebSocketHandler {
     public int afterConnectionEstablishedCount = 0;
     public int handleMessageCount = 0;
+    public int handleBinaryMessageCount = 0;
     public int handleTransportErrorCount = 0;
     public int afterConnectionClosedCount = 0;
     public int supportsPartialMessagesCount = 0;
@@ -23,8 +26,12 @@ public class CountWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+        if (message instanceof BinaryMessage){
+            handleBinaryMessageCount++;
+        } else {
+            handleMessageCount++;
+        }
         LoggerFactory.getLogger(this.getClass()).info("handleMessage {}, {}", session.getId(), message.getPayload());
-        handleMessageCount++;
         synchronized (this){
             this.notify();
         }

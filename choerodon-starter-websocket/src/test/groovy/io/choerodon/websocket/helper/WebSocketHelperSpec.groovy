@@ -5,12 +5,14 @@ import io.choerodon.websocket.CountWebSocketHandler
 import io.choerodon.websocket.TestApplication
 import io.choerodon.websocket.send.BrokerManager
 import io.choerodon.websocket.send.SendMessagePayload
+import io.choerodon.websocket.send.relationship.BrokerKeySessionMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.core.env.Environment
+import org.springframework.web.socket.BinaryMessage
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
@@ -42,7 +44,11 @@ class WebSocketHelperSpec extends Specification {
     ConfigurableApplicationContext secondContext = null
 
     @Autowired
-    BrokerManager brokerManager;
+    BrokerManager brokerManager
+    @Autowired
+    WebSocketHelper helper
+    @Autowired
+    BrokerKeySessionMapper sessionMapper
 
     def setupSpec() {
         secondContext = new SpringApplicationBuilder(TestApplication.class)
@@ -100,6 +106,50 @@ class WebSocketHelperSpec extends Specification {
         noExceptionThrown()
         masterCountHandler.handleMessageCount == 1 // 只收到 test-key-master
         slaveCountHandler.handleMessageCount == 2 // 收到 test-key-master 和 test-key-slave
+    }
+
+    def "Send Binary Message" () {
+        when:
+        synchronized (masterCountHandler){
+            synchronized (slaveCountHandler){
+                masterCountHandler.handleBinaryMessageCount = 0
+                slaveCountHandler.handleBinaryMessageCount = 0
+                slaveSession.sendMessage(new BinaryMessage([1, 2, 3] as byte[]))
+                masterSession.sendMessage(new BinaryMessage([1, 2, 3, 4] as byte[]))
+                slaveCountHandler.wait(1000)
+                slaveCountHandler.wait(1000)
+            }
+            masterCountHandler.wait(1000) //等待一个消息收取
+        }
+        then:
+        noExceptionThrown()
+        masterCountHandler.handleBinaryMessageCount == 1 // 只收到 [1, 2, 3, 4]
+        slaveCountHandler.handleBinaryMessageCount == 2 // 收到 [1, 2, 3] 和 [1, 2, 3, 4]
+    }
+
+    def "Unsubscribe Test" (){
+        when:
+        sessionMapper.getSessionsByKey("test-key-master").each {
+            helper.unsubscribe("test-key-master", it)
+        }
+        synchronized (masterCountHandler){
+            synchronized (slaveCountHandler){
+                masterCountHandler.handleMessageCount = 0
+                slaveCountHandler.handleMessageCount = 0
+                SendMessagePayload<String> messagePayload = new SendMessagePayload<>("test", "test-key-slave", "test-data-slave")
+                slaveSession.sendMessage(new TextMessage(MAPPER.writeValueAsString(messagePayload)))
+                messagePayload.type = "test"
+                messagePayload.key = "test-key-master"
+                messagePayload.data = "test-data-master"
+                masterSession.sendMessage(new TextMessage(MAPPER.writeValueAsString(messagePayload)))
+                slaveCountHandler.wait(1000)
+            }
+            masterCountHandler.wait(1000) //等待一个消息收取
+        }
+        then:
+        noExceptionThrown()
+        masterCountHandler.handleMessageCount == 1 // 只收到 test-key-master
+        slaveCountHandler.handleMessageCount == 1 // 收到 test-key-master 和 test-key-slave
     }
 
     def "Session Close" () {
