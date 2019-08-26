@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
-@Component
 public class HeartBeatMsgHandler implements TextMessageHandler<String> {
 
     private static final String HEART_BEAT = "heartBeat";

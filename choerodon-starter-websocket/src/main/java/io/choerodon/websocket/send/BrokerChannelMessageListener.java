@@ -12,7 +12,6 @@ import java.io.IOException;
 /**
  * 监听本实例的channel，接收消息
  */
-@Service
 public class BrokerChannelMessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrokerChannelMessageListener.class);
