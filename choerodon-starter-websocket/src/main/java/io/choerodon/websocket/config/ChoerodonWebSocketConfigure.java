@@ -78,8 +78,8 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
     }
 
     @Bean
-    BrokerManager defaultBrokerManager(Environment environment, StringRedisTemplate redisTemplate){
-        return new BrokerManager(environment, redisTemplate, defaultHeartbeatScheduledExecutorService());
+    BrokerManager defaultBrokerManager(StringRedisTemplate redisTemplate){
+        return new BrokerManager(redisTemplate, defaultHeartbeatScheduledExecutorService());
     }
 
     @Bean

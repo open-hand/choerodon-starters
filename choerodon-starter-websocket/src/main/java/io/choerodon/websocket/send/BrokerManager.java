@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -29,8 +30,6 @@ public class BrokerManager {
     private static final String BROKER_HEARTBEAT_POSTFIX = ":heartbeat";
     private static final String BROKER_SUBSCRIBE_POSTFIX = ":subscribe";
 
-    private Environment environment;
-
     private StringRedisTemplate redisTemplate;
 
     private String registerKey;
@@ -38,16 +37,17 @@ public class BrokerManager {
     private String brokerName;
 
     @Value("${spring.application.name}")
-    private String application;
+    private String applicationName;
+    @Value("${server.port}")
+    private Integer localPort;
 
     @Value("${choerodon.ws.heartBeatIntervalMs:10000}")
     private Long heartBeatIntervalMs;
 
     private ScheduledExecutorService scheduledExecutorService;
 
-    public BrokerManager(Environment environment, StringRedisTemplate redisTemplate, ScheduledExecutorService scheduledExecutorService) {
+    public BrokerManager(StringRedisTemplate redisTemplate, ScheduledExecutorService scheduledExecutorService) {
         this.scheduledExecutorService = scheduledExecutorService;
-        this.environment = environment;
         this.redisTemplate = redisTemplate;
     }
 
@@ -64,7 +64,8 @@ public class BrokerManager {
                     if (t.equals(this.brokerName)) {
                         return;
                     }
-                    long lastUpdateTime = Long.parseLong(Optional.ofNullable(redisTemplate.opsForValue().get(getBrokerHeartbeatKey())).orElse("0"));
+                    long lastUpdateTime = Long.parseLong(Optional.ofNullable(redisTemplate.opsForValue().get(getBrokerHeartbeatKey(t))).orElse("0"));
+                    LoggerFactory.getLogger(this.getClass()).info("lastUpdateTime {}, currentTimeMillis {}， diff {}", lastUpdateTime, System.currentTimeMillis(), System.currentTimeMillis() - lastUpdateTime);
                     if (System.currentTimeMillis() - lastUpdateTime > 2 * heartBeatIntervalMs) {
                         removeDeathBroker(t);
                     }
@@ -78,13 +79,15 @@ public class BrokerManager {
     // Broker 注册列表对应的Key
     // 在Redis中Value为BrokerName
     private void generateRegisterKey(){
-        this.registerKey =  REGISTER_PREFIX+application;
+        this.registerKey =  REGISTER_PREFIX + applicationName;
     }
 
     private void generateBrokerName() {
         try {
             if (this.brokerName == null) {
-                brokerName = BROKER_NAME_PREFIX+application + ":" + InetAddress.getLocalHost().getHostAddress()+  ":" + environment.getProperty("server.port")+  ":"+ UUID.randomUUID();
+                brokerName = String.format("%s%s:%s:%s:%s", BROKER_NAME_PREFIX, applicationName,
+                        InetAddress.getLocalHost().getHostAddress(), localPort,
+                        UUID.randomUUID());
             }
         } catch (UnknownHostException e) {
             throw new GetSelfSubChannelsFailedException(e);
@@ -130,11 +133,11 @@ public class BrokerManager {
     }
     // 失效Broker
     private void removeDeathBroker(String deathBrokerName) {
+        LoggerFactory.getLogger(this.getClass()).info("removeDeathBroker {}", deathBrokerName);
         // 从注册表中删除Broker
         redisTemplate.opsForSet().remove(registerKey, deathBrokerName);
         // 删除心跳Key
         redisTemplate.delete(getBrokerHeartbeatKey(deathBrokerName));
-        //
-        //redisTemplate.delete(REGISTER_PREFIX + channel);
+        redisTemplate.delete(getBrokerKeyMapKey(deathBrokerName));
     }
 }

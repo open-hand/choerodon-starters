@@ -1,5 +1,6 @@
 package io.choerodon.websocket;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
@@ -22,6 +23,7 @@ public class CountWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+        LoggerFactory.getLogger(this.getClass()).info("handleMessage {}, {}", session.getId(), message.getPayload());
         handleMessageCount++;
         synchronized (this){
             this.notify();
