@@ -25,7 +25,7 @@ public class TestSocketHandlerRegistration implements SocketHandlerRegistration 
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        helper.subscribe("test-topic", session);
+        helper.subscribe("test-key-master", session);
     }
 
     @Override

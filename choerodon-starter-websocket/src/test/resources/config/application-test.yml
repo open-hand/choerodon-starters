@@ -1,1 +1,3 @@
-spring:
+choerodon:
+  ws:
+    heartBeatIntervalMs: 50
