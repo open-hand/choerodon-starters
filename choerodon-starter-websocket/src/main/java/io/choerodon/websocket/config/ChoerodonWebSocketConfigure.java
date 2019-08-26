@@ -87,6 +87,11 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
         return new DefaultBrokerKeySessionMapper(redisTemplate, brokerManager);
     }
 
+    @Bean
+    BrokerChannelMessageListener defaultBrokerChannelMessageListener(MessageSender messageSender){
+        return new BrokerChannelMessageListener(messageSender);
+    }
+
 
     // Websocket消息处理Adapter
     @Bean
