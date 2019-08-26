@@ -111,7 +111,7 @@ public class DefaultSmartMessageSender implements MessageSender {
     }
 
 
-    private void sendToSession(WebSocketSession session, WebSocketMessage webSocketMessage) {
+    private void sendToSession(final WebSocketSession session, WebSocketMessage webSocketMessage) {
         try {
             if (!session.isOpen()) {
                 brokerKeySessionMapper.unsubscribeAll(session);
@@ -119,7 +119,9 @@ public class DefaultSmartMessageSender implements MessageSender {
                 return;
             }
             if (webSocketMessage != null) {
-                session.sendMessage(webSocketMessage);
+                synchronized (session){
+                    session.sendMessage(webSocketMessage);
+                }
             }
         } catch (IOException e) {
             LOGGER.error("error.messageOperator.sendWebSocket.IOException, json: {}", webSocketMessage, e);
