@@ -30,8 +30,8 @@ public class MessageHandlerAdapter extends AbstractWebSocketHandler {
 
     private BrokerKeySessionMapper brokerKeySessionMapper;
 
-    public MessageHandlerAdapter(Optional<List<MessageHandler>> msgHandlers, BrokerKeySessionMapper brokerKeySessionMapper) {
-        msgHandlers.orElseGet(Collections::emptyList).forEach(this::addMessageHandler);
+    public MessageHandlerAdapter(Collection<MessageHandler> messageHandlers, BrokerKeySessionMapper brokerKeySessionMapper) {
+        messageHandlers.forEach(this::addMessageHandler);
         this.brokerKeySessionMapper = brokerKeySessionMapper;
     }
     // 添加接收消息处理器

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -26,7 +27,9 @@ import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import reactor.util.annotation.NonNullApi;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,16 +42,11 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChoerodonWebSocketConfigure.class);
 
-    //通过SocketHandlerRegistration接口找到所有注册的websocket入口
     @Autowired
-    private Optional<List<SocketHandlerRegistration>> socketHandlerRegistrations;
-
-    //通过MessageHandler接口找到所有消息处理器
-    @Autowired
-    private Optional<List<MessageHandler>> messageHandlers;
+    private ApplicationContext applicationContext;
 
     @Autowired
-    MessageHandlerAdapter messageHandlerAdapter;
+    private MessageHandlerAdapter messageHandlerAdapter;
 
 
     // Broker监听Redis channal消息,初始化Redis MessageListenerAdapter
@@ -93,6 +91,8 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
     // Websocket消息处理Adapter
     @Bean
     MessageHandlerAdapter defaultMessageHandlerAdapter(BrokerKeySessionMapper brokerKeySessionMapper){
+        //通过MessageHandler接口找到所有消息处理器
+        Collection<MessageHandler> messageHandlers = applicationContext.getBeansOfType(MessageHandler.class).values();
         return new MessageHandlerAdapter(messageHandlers, brokerKeySessionMapper);
     }
 
@@ -107,8 +107,9 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
     }
 
     @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        List<SocketHandlerRegistration> registrations = socketHandlerRegistrations.orElseGet(Collections::emptyList);
+    public void registerWebSocketHandlers( WebSocketHandlerRegistry registry) {
+        //通过SocketHandlerRegistration接口找到所有注册的websocket入口
+        Collection<SocketHandlerRegistration> registrations = applicationContext.getBeansOfType(SocketHandlerRegistration.class).values();
         registrations.forEach(registration -> {
             messageHandlerAdapter.addSocketHandlerRegistration(registration);
             registry.addHandler(messageHandlerAdapter, registration.path()).addInterceptors(new HandshakeCheckerHandler(registration)).setAllowedOrigins("*");
