@@ -20,7 +20,7 @@
 ### Broker 失效  BrokerManager.removeDeathBroker
 1, 删除注册表中的broker的注册信息
 2, 删除broker心跳信息
-3, TODO-删除broker订阅key的消息   --这里比较有风险，如果broker由于网络原因，不能及时刷新redis,再次连接上后，会接收不到跨broker的消息。
+3, 删除broker订阅key的消息   --这里比较有风险，如果broker由于网络原因，不能及时刷新redis,再次连接上后，会接收不到跨broker的消息。
 
 ### 建立连接 MessageHandlerAdapter.afterConnectionEstablished
 1,检查连接合法性,在SocketHandlerRegistration的beforeHandshake中实现  
