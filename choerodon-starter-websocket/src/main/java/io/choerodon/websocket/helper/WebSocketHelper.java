@@ -41,14 +41,14 @@ public class WebSocketHelper {
     /**
      * 关联key,webSocket
      */
-    public void subscribe(String key,WebSocketSession session){
+    public void subscribe(String key, WebSocketSession session){
         brokerKeySessionMapper.subscribe(key, session);
     }
 
     /**
      * 解除key,webSocket的关联
      */
-    public void unsubscribe( String key,WebSocketSession session){
+    public void unsubscribe(String key, WebSocketSession session){
         brokerKeySessionMapper.subscribe(key, session);
     }
 
