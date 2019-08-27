@@ -52,7 +52,7 @@ public class DefaultBrokerKeySessionMapper implements BrokerKeySessionMapper {
     }
 
     @Override
-    public synchronized void unsubscribe(WebSocketSession session, String messageKey) {
+    public synchronized void unsubscribe(String messageKey, WebSocketSession session) {
         Set<WebSocketSession> keySessions = keySessionsMap.computeIfAbsent(messageKey, k -> new HashSet<>());
         keySessions.remove(session);
         Set<String> sessionKeys = sessionKeysMap.computeIfAbsent(session, k -> new HashSet<>());
