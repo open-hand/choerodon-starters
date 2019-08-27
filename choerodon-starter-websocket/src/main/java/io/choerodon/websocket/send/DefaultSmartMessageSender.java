@@ -60,7 +60,6 @@ public class DefaultSmartMessageSender implements MessageSender {
                         this.sendToChannel(channel, payloadJson);
                     });
                 }
-
             }
         }
     }
@@ -77,6 +76,37 @@ public class DefaultSmartMessageSender implements MessageSender {
                 this.sendToSession(session, new TextMessage(payloadJson));
             }
 
+        }
+    }
+
+    @Override
+    public void closeSessionByKey(String messageKey) {
+        if (!StringUtils.isEmpty(messageKey)) {
+            closeLocalSessionByKey(messageKey);
+            // 从redis存储中找出messageKey对应的broker
+            Set<String> brokerChannels = brokerKeySessionMapper.getBrokerChannelsByKey(messageKey);
+            if (!brokerChannels.isEmpty()) {
+                String payloadJson = makeClosePayload(messageKey);
+                brokerChannels.forEach(channel -> {
+                    this.sendToChannel(channel, payloadJson);
+                });
+            }
+        }
+    }
+
+    @Override
+    public void closeLocalSessionByKey(String messageKey) {
+        if (!StringUtils.isEmpty(messageKey)) {
+            Set<WebSocketSession> sessions = brokerKeySessionMapper.getSessionsByKey(messageKey);
+            sessions.forEach(session -> {
+                if (session.isOpen()){
+                    try {
+                        session.close();
+                    } catch (IOException e) {
+                        LOGGER.warn("close session {} exception.", session.getId(), e);
+                    }
+                }
+            });
         }
     }
 
@@ -128,23 +158,30 @@ public class DefaultSmartMessageSender implements MessageSender {
         }
     }
 
+    private String makeClosePayload(String key){
+        ObjectNode root = OBJECT_MAPPER.createObjectNode();
+        root.set("key", new TextNode(key));
+        root.set("type", new TextNode(""));
+        root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_CLOSE));
+        return root.toString();
+    }
+
     private String payloadToJson(SendMessagePayload<?> payload) {
         ObjectNode root = OBJECT_MAPPER.createObjectNode();
         root.set("key", new TextNode(payload.getKey()));
         root.set("type", new TextNode(payload.getType()));
         if (payload instanceof SendBinaryMessagePayload) {
-            root.set("binary", new TextNode(BrokerChannelMessageListener.BINARY_FLAG_YES));
+            root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_BINARY));
             SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
             root.set("data", new BinaryNode(binaryMessagePayload.getData()));
         } else {
-            root.set("binary", new TextNode(BrokerChannelMessageListener.BINARY_FLAG_NO));
+            root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_TEXT));
             if(payload.getData() instanceof JsonNode){
                 root.set("data", (JsonNode)payload.getData());
             }else{
                 JsonNode data = OBJECT_MAPPER.convertValue(payload.getData(), JsonNode.class);
                 root.set("data", data);
             }
-
         }
         return root.toString();
 

@@ -1,7 +1,5 @@
 package io.choerodon.websocket.send;
 
-import java.lang.reflect.ParameterizedType;
-
 public class SendMessagePayload<T> {
 
     public static final String MSG_TYPE_SESSION = "session";

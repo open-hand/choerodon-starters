@@ -29,6 +29,10 @@ public class WebSocketHelper {
         sender.sendByKey(key, payload);
     }
 
+    public void closeSessionByKey(String key) {
+        sender.closeSessionByKey(key);
+    }
+
     /**
      * 直接使用 Session 发送消息
      * @param session Session
