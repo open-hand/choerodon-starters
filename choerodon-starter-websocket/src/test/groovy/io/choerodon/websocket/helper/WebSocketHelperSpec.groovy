@@ -57,10 +57,6 @@ class WebSocketHelperSpec extends Specification {
         slavePort = Integer.valueOf(secondContext.getBean(Environment).getProperty("local.server.port"))
     }
 
-    def cleanupSpec() {
-
-    }
-
     def "Do Handshake" () {
         when:
         masterCountHandler.afterConnectionEstablishedCount = 0
@@ -148,8 +144,8 @@ class WebSocketHelperSpec extends Specification {
         }
         then:
         noExceptionThrown()
-        masterCountHandler.handleMessageCount == 1 // 只收到 test-key-master
-        slaveCountHandler.handleMessageCount == 1 // 收到 test-key-master 和 test-key-slave
+        masterCountHandler.handleMessageCount == 0 // 收不到
+        slaveCountHandler.handleMessageCount == 2 // 收到 test-key-slave 和 test-key-master
     }
 
     def "Close By Key" () {
@@ -162,8 +158,9 @@ class WebSocketHelperSpec extends Specification {
         }
         then:
         noExceptionThrown()
-        masterCountHandler.afterConnectionClosedCount == 1
+        masterCountHandler.afterConnectionClosedCount == 0 // 因为前面把 master 给取消订阅了
         slaveCountHandler.afterConnectionClosedCount == 1
+        masterSession.close()
     }
 
     def "Broker Shutdown" () {

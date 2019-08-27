@@ -2,7 +2,6 @@ package io.choerodon.websocket.send.relationship;
 
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public interface BrokerKeySessionMapper {
@@ -25,7 +24,7 @@ public interface BrokerKeySessionMapper {
      * @param session
      * @param messageKey
      */
-    void unsubscribe(WebSocketSession session, String messageKey);
+    void unsubscribe(String messageKey, WebSocketSession session);
 
     /**
      *

@@ -1,11 +1,8 @@
 package io.choerodon.websocket.helper;
 
 import io.choerodon.websocket.send.relationship.BrokerKeySessionMapper;
-import io.choerodon.websocket.receive.MessageHandlerAdapter;
 import io.choerodon.websocket.send.MessageSender;
-import io.choerodon.websocket.receive.TextMessageHandler;
 import io.choerodon.websocket.send.SendMessagePayload;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
@@ -53,7 +50,7 @@ public class WebSocketHelper {
      * 解除key,webSocket的关联
      */
     public void unsubscribe(String key, WebSocketSession session){
-        brokerKeySessionMapper.subscribe(key, session);
+        brokerKeySessionMapper.unsubscribe(key, session);
     }
 
 }
