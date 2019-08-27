@@ -40,7 +40,9 @@ public class WebSocketHelper {
     }
 
     /**
-     * 关联key,webSocket
+     * key与 web socket session 关联
+     * @param key 消息 key
+     * @param session web socket session
      */
     public void subscribe(String key, WebSocketSession session){
         brokerKeySessionMapper.subscribe(key, session);
@@ -48,6 +50,8 @@ public class WebSocketHelper {
 
     /**
      * 解除key,webSocket的关联
+     * @param key message key
+     * @param session web socket session
      */
     public void unsubscribe(String key, WebSocketSession session){
         brokerKeySessionMapper.unsubscribe(key, session);
