@@ -8,6 +8,10 @@ public interface MessageSender {
 
     void sendBySession(WebSocketSession session, SendMessagePayload<?> payload);
 
-    void sendToLocalSessionByKey(String messageKey,SendMessagePayload<?> payload);
+    void closeSessionByKey(String messageKey);
+
+    void closeLocalSessionByKey(String messageKey);
+
+    void sendToLocalSessionByKey(String messageKey, SendMessagePayload<?> payload);
 
 }

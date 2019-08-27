@@ -16,8 +16,9 @@ public class BrokerChannelMessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BrokerChannelMessageListener.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    public static final String BINARY_FLAG_YES = "YES";
-    public static final String BINARY_FLAG_NO = "NO";
+    public static final String CONTROL_FLAG_BINARY = "BINARY";
+    public static final String CONTROL_FLAG_TEXT = "TEXT";
+    public static final String CONTROL_FLAG_CLOSE = "CLOSE";
     private MessageSender messageSender;
 
     public BrokerChannelMessageListener(MessageSender messageSender) {
@@ -29,24 +30,29 @@ public class BrokerChannelMessageListener {
         if (message instanceof String) {
             try {
                 JsonNode node = OBJECT_MAPPER.readTree((String) message);
-                String binaryFlag = node.get("binary").asText();
+                String control = node.get("control").asText();
                 String key = node.get("key").asText();
                 String type = node.get("type").asText();
-                if(BINARY_FLAG_YES.equals(binaryFlag)){
-                    SendBinaryMessagePayload sendBinaryMessagePayload = new SendBinaryMessagePayload();
-                    sendBinaryMessagePayload.setKey(key);
-                    sendBinaryMessagePayload.setType(type);
-                    byte[] data = node.get("data").binaryValue();
-                    sendBinaryMessagePayload.setData(data);
-                    messageSender.sendToLocalSessionByKey(key,sendBinaryMessagePayload);
-                }else{
-                    SendMessagePayload<JsonNode> sendMessagePayload = new SendMessagePayload<JsonNode>();
-                    sendMessagePayload.setKey(key);
-                    sendMessagePayload.setType(type);
-                    sendMessagePayload.setData(node.get("data"));
-                    messageSender.sendToLocalSessionByKey(key,sendMessagePayload);
+                switch (control){
+                    case CONTROL_FLAG_BINARY:
+                        SendBinaryMessagePayload sendBinaryMessagePayload = new SendBinaryMessagePayload();
+                        sendBinaryMessagePayload.setKey(key);
+                        sendBinaryMessagePayload.setType(type);
+                        byte[] data = node.get("data").binaryValue();
+                        sendBinaryMessagePayload.setData(data);
+                        messageSender.sendToLocalSessionByKey(key,sendBinaryMessagePayload);
+                        break;
+                    case CONTROL_FLAG_TEXT:
+                        SendMessagePayload<JsonNode> sendMessagePayload = new SendMessagePayload<JsonNode>();
+                        sendMessagePayload.setKey(key);
+                        sendMessagePayload.setType(type);
+                        sendMessagePayload.setData(node.get("data"));
+                        messageSender.sendToLocalSessionByKey(key,sendMessagePayload);
+                        break;
+                    case CONTROL_FLAG_CLOSE:
+                        messageSender.closeLocalSessionByKey(key);
+                        break;
                 }
-
             } catch (IOException e) {
                 LOGGER.warn("error.receiveRedisMessageListener.receiveMessage.send", e);
             }

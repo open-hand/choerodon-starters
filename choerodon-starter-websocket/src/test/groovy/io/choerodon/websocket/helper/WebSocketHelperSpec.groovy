@@ -152,19 +152,18 @@ class WebSocketHelperSpec extends Specification {
         slaveCountHandler.handleMessageCount == 1 // 收到 test-key-master 和 test-key-slave
     }
 
-    def "Session Close" () {
+    def "Close By Key" () {
         when:
-        masterCountHandler.afterConnectionClosedCount = 0
-        slaveCountHandler.afterConnectionClosedCount = 0
-
-        masterSession.close()
-        slaveSession.close()
-
+        synchronized (slaveCountHandler){
+            masterCountHandler.afterConnectionClosedCount = 0
+            slaveCountHandler.afterConnectionClosedCount = 0
+            helper.closeSessionByKey("test-key-master")
+            slaveCountHandler.wait(1000) //等待一个消息收取
+        }
         then:
         noExceptionThrown()
         masterCountHandler.afterConnectionClosedCount == 1
         slaveCountHandler.afterConnectionClosedCount == 1
-
     }
 
     def "Broker Shutdown" () {
