@@ -1,0 +1,3 @@
+choerodon:
+  ws:
+    heartBeatIntervalMs: 50

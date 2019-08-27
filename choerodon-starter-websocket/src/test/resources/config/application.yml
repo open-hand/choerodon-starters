@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: test-service
+  profiles:
+    active: test

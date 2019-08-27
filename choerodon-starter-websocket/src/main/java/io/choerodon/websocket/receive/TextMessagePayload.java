@@ -2,17 +2,20 @@ package io.choerodon.websocket.receive;
 
 import java.util.Objects;
 
-public class WebSocketReceivePayload<T> {
+/**
+ * @author hailor
+ */
+public class TextMessagePayload<T> {
 
     private String type;
     private String key;
 
     private T data;
 
-    public WebSocketReceivePayload() {
+    public TextMessagePayload() {
     }
 
-    public WebSocketReceivePayload(String type, T data) {
+    public TextMessagePayload(String type, T data) {
         this.type = type;
         this.data = data;
     }
@@ -52,9 +55,9 @@ public class WebSocketReceivePayload<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WebSocketReceivePayload<?> that = (WebSocketReceivePayload<?>) o;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) { return false; };
+        TextMessagePayload<?> that = (TextMessagePayload<?>) o;
         return Objects.equals(type, that.type) &&
                 Objects.equals(data, that.data);
     }

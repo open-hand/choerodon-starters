@@ -1,6 +1,6 @@
 package io.choerodon.websocket.send;
 
-public class WebSocketSendPayload<T> {
+public class SendMessagePayload<T> {
 
     public static final String MSG_TYPE_SESSION = "session";
 
@@ -10,14 +10,15 @@ public class WebSocketSendPayload<T> {
 
     private T data;
 
-    public WebSocketSendPayload() {
+    public SendMessagePayload() {
     }
 
-    public WebSocketSendPayload(String type, String key, T data) {
+    public SendMessagePayload(String type, String key, T data) {
         this.type = type;
         this.key = key;
         this.data = data;
     }
+
 
     public String getType() {
         return type;
@@ -51,6 +52,5 @@ public class WebSocketSendPayload<T> {
                 ", data=" + data +
                 '}';
     }
-
 
 }
