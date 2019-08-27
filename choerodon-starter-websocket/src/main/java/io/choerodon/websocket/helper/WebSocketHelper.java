@@ -1,35 +1,20 @@
 package io.choerodon.websocket.helper;
 
-import io.choerodon.websocket.relationship.RelationshipDefining;
-import io.choerodon.websocket.receive.WebSocketMessageHandler;
+import io.choerodon.websocket.send.relationship.BrokerKeySessionMapper;
 import io.choerodon.websocket.send.MessageSender;
-import io.choerodon.websocket.receive.MessageHandler;
-import io.choerodon.websocket.send.WebSocketSendPayload;
-import org.springframework.stereotype.Component;
-import org.springframework.web.socket.BinaryMessage;
+import io.choerodon.websocket.send.SendMessagePayload;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
  * Created by hailuo.liu@choerodon.io on 2019/7/2.
  */
-@Component
 public class WebSocketHelper {
-    private WebSocketMessageHandler handler;
     private MessageSender sender;
-    private RelationshipDefining relationshipDefining;
+    private BrokerKeySessionMapper brokerKeySessionMapper;
 
-    public WebSocketHelper(WebSocketMessageHandler handler, MessageSender sender, RelationshipDefining relationshipDefining){
-        this.handler = handler;
+    public WebSocketHelper(MessageSender sender, BrokerKeySessionMapper brokerKeySessionMapper){
         this.sender = sender;
-        this.relationshipDefining = relationshipDefining;
-    }
-
-    /**
-     * 添加消息处理器
-     * @param messageHandler 消息处理器
-     */
-    public void addMessageHandler(MessageHandler messageHandler){
-        handler.addMessageHandler(messageHandler);
+        this.brokerKeySessionMapper = brokerKeySessionMapper;
     }
 
     /**
@@ -37,8 +22,12 @@ public class WebSocketHelper {
      * @param key 消息 Key
      * @param payload 消息体
      */
-    public void sendMessage(String key, WebSocketSendPayload payload){
+    public void sendMessageByKey(String key, SendMessagePayload payload){
         sender.sendByKey(key, payload);
+    }
+
+    public void closeSessionByKey(String key) {
+        sender.closeSessionByKey(key);
     }
 
     /**
@@ -46,26 +35,26 @@ public class WebSocketHelper {
      * @param session Session
      * @param payload 消息体
      */
-    public void sendMessageBySession(WebSocketSession session, WebSocketSendPayload payload){
-        sender.sendWebSocket(session, payload);
-    }
-
-    public void sendBinaryMessageBySession(WebSocketSession session, BinaryMessage message){
-        sender.sendBinaryMessageBySession(session, message);
+    public void sendMessageBySession(WebSocketSession session, SendMessagePayload payload){
+        sender.sendBySession(session, payload);
     }
 
     /**
-     * 关联key,webSocket
+     * key与 web socket session 关联
+     * @param key 消息 key
+     * @param session web socket session
      */
-    public void contact(WebSocketSession session, String key){
-        relationshipDefining.contact(key, session);
+    public void subscribe(String key, WebSocketSession session){
+        brokerKeySessionMapper.subscribe(key, session);
     }
 
     /**
      * 解除key,webSocket的关联
+     * @param key message key
+     * @param session web socket session
      */
-    public void removeKeyContact(WebSocketSession session, String key){
-        relationshipDefining.removeKeyContact(session, key);
+    public void unsubscribe(String key, WebSocketSession session){
+        brokerKeySessionMapper.unsubscribe(key, session);
     }
 
 }

@@ -4,6 +4,11 @@ stages:
   - mvn-package
   - maven-deploy
 
+services:
+  - redis:latest
+variables:
+  SPRING_REDIS_HOST: "redis"
+
 maven-test-branches:
   stage: mvn-package
   script:

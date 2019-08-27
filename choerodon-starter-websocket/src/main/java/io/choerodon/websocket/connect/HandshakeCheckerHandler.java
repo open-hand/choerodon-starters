@@ -1,4 +1,4 @@
-package io.choerodon.websocket.helper;
+package io.choerodon.websocket.connect;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
