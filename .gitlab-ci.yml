@@ -4,6 +4,10 @@ stages:
   - mvn-package
   - maven-deploy
 
+services:
+  - name: redis:latest
+    alias: redis.service
+
 maven-test-branches:
   stage: mvn-package
   script:
@@ -17,15 +21,13 @@ maven-test-branches:
     - /^release-.*$/
     - /^hotfix-.*$/
 
+
 maven-test-build:
   stage: mvn-package
-  services:
-    - name: redis:latest
-      alias: redis.service
   variables:
     SPRING_REDIS_HOST: "redis.service"
   script:
-    - ping -c 1 redis.service
+    - ping -c 1 $SPRING_REDIS_HOST
     - update_pom_version
     - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.serviceGroup=$GROUP_NAME -Dsonar.analysis.commitId=$CI_COMMIT_SHA -Dsonar.projectKey=$GROUP_NAME:$PROJECT_NAME -Dsonar.gitlab.query_max_retry=200 -DskipTests=false -U
   only:
