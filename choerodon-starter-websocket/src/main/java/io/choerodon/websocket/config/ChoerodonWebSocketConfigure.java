@@ -48,6 +48,9 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
     @Autowired
     private MessageHandlerAdapter messageHandlerAdapter;
 
+    //通过SocketHandlerRegistration接口找到所有注册的websocket入口
+    @Autowired
+    private Optional<List<SocketHandlerRegistration>> socketHandlerRegistrations;
 
     // Broker监听Redis channal消息,初始化Redis MessageListenerAdapter
     @Bean
@@ -95,10 +98,8 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
 
     // Websocket消息处理Adapter
     @Bean
-    MessageHandlerAdapter defaultMessageHandlerAdapter(BrokerKeySessionMapper brokerKeySessionMapper){
-        //通过MessageHandler接口找到所有消息处理器
-        Collection<MessageHandler> messageHandlers = applicationContext.getBeansOfType(MessageHandler.class).values();
-        return new MessageHandlerAdapter(messageHandlers, brokerKeySessionMapper);
+    MessageHandlerAdapter defaultMessageHandlerAdapter(Optional<List<MessageHandler>> messageHandlers, BrokerKeySessionMapper brokerKeySessionMapper){
+        return new MessageHandlerAdapter(messageHandlers.orElse(Collections.emptyList()), brokerKeySessionMapper);
     }
 
     @Bean
@@ -114,8 +115,7 @@ public class ChoerodonWebSocketConfigure implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers( WebSocketHandlerRegistry registry) {
         //通过SocketHandlerRegistration接口找到所有注册的websocket入口
-        Collection<SocketHandlerRegistration> registrations = applicationContext.getBeansOfType(SocketHandlerRegistration.class).values();
-        registrations.forEach(registration -> {
+        socketHandlerRegistrations.orElse(Collections.emptyList()).forEach(registration -> {
             messageHandlerAdapter.addSocketHandlerRegistration(registration);
             registry.addHandler(messageHandlerAdapter, registration.path()).addInterceptors(new HandshakeCheckerHandler(registration)).setAllowedOrigins("*");
         });
