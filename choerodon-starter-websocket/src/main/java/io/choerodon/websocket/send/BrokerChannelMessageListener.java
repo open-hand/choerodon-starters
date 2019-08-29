@@ -18,6 +18,7 @@ public class BrokerChannelMessageListener {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     public static final String CONTROL_FLAG_BINARY = "BINARY";
     public static final String CONTROL_FLAG_TEXT = "TEXT";
+    public static final String CONTROL_FLAG_PLAINTEXT = "PLAINTEXT";
     public static final String CONTROL_FLAG_CLOSE = "CLOSE";
     private MessageSender messageSender;
 
@@ -43,14 +44,24 @@ public class BrokerChannelMessageListener {
                         messageSender.sendToLocalSessionByKey(key,sendBinaryMessagePayload);
                         break;
                     case CONTROL_FLAG_TEXT:
-                        SendMessagePayload<JsonNode> sendMessagePayload = new SendMessagePayload<JsonNode>();
+                        SendMessagePayload<JsonNode> sendMessagePayload = new SendMessagePayload<>();
                         sendMessagePayload.setKey(key);
                         sendMessagePayload.setType(type);
                         sendMessagePayload.setData(node.get("data"));
                         messageSender.sendToLocalSessionByKey(key,sendMessagePayload);
                         break;
+                    case CONTROL_FLAG_PLAINTEXT:
+                        SendPlaintextMessagePayload sendPlaintextMessagePayload = new SendPlaintextMessagePayload();
+                        sendPlaintextMessagePayload.setKey(key);
+                        sendPlaintextMessagePayload.setType(type);
+                        sendPlaintextMessagePayload.setData(node.get("data").textValue());
+                        messageSender.sendToLocalSessionByKey(key, sendPlaintextMessagePayload);
+                        break;
                     case CONTROL_FLAG_CLOSE:
                         messageSender.closeLocalSessionByKey(key);
+                        break;
+                    default:
+                        LOGGER.warn("Unsupported message control: {}", control);
                         break;
                 }
             } catch (IOException e) {

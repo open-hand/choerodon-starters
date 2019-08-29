@@ -5,6 +5,7 @@ import io.choerodon.websocket.CountWebSocketHandler
 import io.choerodon.websocket.TestApplication
 import io.choerodon.websocket.send.BrokerManager
 import io.choerodon.websocket.send.SendMessagePayload
+import io.choerodon.websocket.send.SendPlaintextMessagePayload
 import io.choerodon.websocket.send.relationship.BrokerKeySessionMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -122,6 +123,26 @@ class WebSocketHelperSpec extends Specification {
         masterCountHandler.handleBinaryMessageCount == 1 // 只收到 [1, 2, 3, 4]
         slaveCountHandler.handleBinaryMessageCount == 2 // 收到 [1, 2, 3] 和 [1, 2, 3, 4]
     }
+
+    def "Send PlantText Message" () {
+        when:
+        synchronized (masterCountHandler){
+            synchronized (slaveCountHandler){
+                masterCountHandler.handleMessageCount = 0
+                slaveCountHandler.handleMessageCount = 0
+                slaveSession.sendMessage(new TextMessage("test-data-slave"))
+                masterSession.sendMessage(new TextMessage("test-data-master"))
+                slaveCountHandler.wait(1000)
+                slaveCountHandler.wait(1000)
+            }
+            masterCountHandler.wait(1000) //等待一个消息收取
+        }
+        then:
+        noExceptionThrown()
+        masterCountHandler.handleMessageCount == 1 // 只收到 test-key-master
+        slaveCountHandler.handleMessageCount == 2 // 收到 test-key-master 和 test-key-slave
+    }
+
 
     def "Unsubscribe Test" (){
         when:
