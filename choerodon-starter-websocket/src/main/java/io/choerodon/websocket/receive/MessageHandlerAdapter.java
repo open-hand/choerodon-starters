@@ -1,5 +1,6 @@
 package io.choerodon.websocket.receive;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.websocket.connect.SocketHandlerRegistration;
@@ -26,6 +27,7 @@ public class MessageHandlerAdapter extends AbstractWebSocketHandler {
     private final Map<String, Set<HandlerInfo>> pathHandlersMap = new ConcurrentHashMap<>();
     private final Map<String, Set<HandlerInfo>> typeHandlersMap = new ConcurrentHashMap<>();
     private final Map<String, Set<BinaryMessageHandler>> binaryHandlersMap = new ConcurrentHashMap<>();
+    private final Map<String, Set<PlaintextMessageHandler>> plaintextHandlersMap = new ConcurrentHashMap<>();
     private final Map<String, SocketHandlerRegistration> registrationMap = new ConcurrentHashMap<>();
 
     private BrokerKeySessionMapper brokerKeySessionMapper;
@@ -40,9 +42,12 @@ public class MessageHandlerAdapter extends AbstractWebSocketHandler {
             TextMessageHandler textMessageHandler = (TextMessageHandler)handler;
             pathHandlersMap.computeIfAbsent(textMessageHandler.matchPath(), key -> new HashSet<>()).add(new HandlerInfo(textMessageHandler.payloadClass(), textMessageHandler));
             typeHandlersMap.computeIfAbsent(textMessageHandler.matchType(), key -> new HashSet<>()).add(new HandlerInfo(textMessageHandler.payloadClass(), textMessageHandler));
-        }else{
-            BinaryMessageHandler binaryMessageHandler = (BinaryMessageHandler)handler;
-            binaryHandlersMap.computeIfAbsent(binaryMessageHandler.matchPath(), key -> new HashSet<>()).add(binaryMessageHandler);
+        }else if(handler instanceof BinaryMessageHandler){
+            binaryHandlersMap.computeIfAbsent(handler.matchPath(), key -> new HashSet<>()).add((BinaryMessageHandler)handler);
+        } else if (handler instanceof PlaintextMessageHandler){
+            plaintextHandlersMap.computeIfAbsent(handler.matchPath(), key -> new HashSet<>()).add((PlaintextMessageHandler) handler);
+        } else {
+            LOGGER.warn("Message handler type unsupported {}.", handler.getClass());
         }
     }
     // 添加websocket入口
@@ -107,6 +112,16 @@ public class MessageHandlerAdapter extends AbstractWebSocketHandler {
                 }
             } else {
                 LOGGER.warn("abandon message that does't have 'type' field, message {}", receiveMsg);
+            }
+        } catch (JsonParseException e){
+            String path = Optional.ofNullable(session.getUri()).map(URI::getPath).orElse(null);
+            Set<PlaintextMessageHandler> matchHandlers = new HashSet<>(Optional.ofNullable(plaintextHandlersMap.get(path)).orElse(Collections.emptySet()));
+            if (!matchHandlers.isEmpty()) {
+                for (PlaintextMessageHandler binaryMessageHandler : matchHandlers){
+                    binaryMessageHandler.handle(session, message.getPayload());
+                }
+            } else {
+                LOGGER.warn("abandon message that can not find msgHandler, message {}", message);
             }
         } catch (Exception e) {
             LOGGER.warn("abandon message received from client, msgHandler error, message: {}", receiveMsg, e);

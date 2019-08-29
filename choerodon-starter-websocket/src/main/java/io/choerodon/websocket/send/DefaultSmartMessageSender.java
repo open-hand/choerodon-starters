@@ -32,34 +32,19 @@ public class DefaultSmartMessageSender implements MessageSender {
     @Override
     public void sendByKey(String key, SendMessagePayload<?> payload) {
         if (!StringUtils.isEmpty(key) && payload != null) {
+            payload.setKey(key);
             // 从本地找出messageKey对应的session
             Set<WebSocketSession> sessions = brokerKeySessionMapper.getSessionsByKey(key);
+            sessions.forEach(session -> {
+                sendBySession(session, payload);
+            });
             // 从redis存储中找出messageKey对应的broker
             Set<String> brokerChannels = brokerKeySessionMapper.getBrokerChannelsByKey(key);
-            if (payload instanceof SendBinaryMessagePayload) {
-                SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
-                if (!sessions.isEmpty()) {
-                    BinaryMessage binaryMessage = new BinaryMessage(binaryMessagePayload.getData());
-                    sessions.forEach(session -> {
-                        this.sendToSession(session, binaryMessage);
-                    });
-                }
-                if (!brokerChannels.isEmpty()) {
-                    String payloadJson = payloadToJson(payload);
-                    brokerChannels.forEach(channel -> {
-                        this.sendToChannel(channel, payloadJson);
-                    });
-                }
-            } else {
-                if (!sessions.isEmpty() || !brokerChannels.isEmpty()) {
-                    String payloadJson = payloadToJson(payload);
-                    sessions.forEach(session -> {
-                        this.sendToSession(session, new TextMessage(payloadJson));
-                    });
-                    brokerChannels.forEach(channel -> {
-                        this.sendToChannel(channel, payloadJson);
-                    });
-                }
+            if (!brokerChannels.isEmpty()) {
+                String payloadJson = payloadToJson(payload);
+                brokerChannels.forEach(channel -> {
+                    sendToChannel(channel, payloadJson);
+                });
             }
         }
     }
@@ -114,24 +99,9 @@ public class DefaultSmartMessageSender implements MessageSender {
     public void sendToLocalSessionByKey(String messageKey, SendMessagePayload<?> payload) {
         if (!StringUtils.isEmpty(messageKey) && payload != null) {
             Set<WebSocketSession> sessions = brokerKeySessionMapper.getSessionsByKey(messageKey);
-            if (payload instanceof SendBinaryMessagePayload) {
-                SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
-                if (!sessions.isEmpty()) {
-                    BinaryMessage binaryMessage = new BinaryMessage(binaryMessagePayload.getData());
-                    sessions.forEach(session -> {
-                        this.sendToSession(session, binaryMessage);
-                    });
-                }
-
-            } else {
-                if (!sessions.isEmpty() ) {
-                    String payloadJson = payloadToJson(payload);
-                    sessions.forEach(session -> {
-                        this.sendToSession(session, new TextMessage(payloadJson));
-                    });
-                }
-
-            }
+            sessions.forEach(session -> {
+                sendBySession(session, payload);
+            });
         }
     }
 
@@ -174,14 +144,14 @@ public class DefaultSmartMessageSender implements MessageSender {
             root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_BINARY));
             SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
             root.set("data", new BinaryNode(binaryMessagePayload.getData()));
-        } else {
+        } else if(payload instanceof SendPlaintextMessagePayload){
+            root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_PLAINTEXT));
+            SendPlaintextMessagePayload binaryMessagePayload = (SendPlaintextMessagePayload) payload;
+            root.set("data", new TextNode(binaryMessagePayload.getData()));
+        }else {
             root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_TEXT));
-            if(payload.getData() instanceof JsonNode){
-                root.set("data", (JsonNode)payload.getData());
-            }else{
-                JsonNode data = OBJECT_MAPPER.convertValue(payload.getData(), JsonNode.class);
-                root.set("data", data);
-            }
+            JsonNode data = OBJECT_MAPPER.convertValue(payload.getData(), JsonNode.class);
+            root.set("data", data);
         }
         return root.toString();
 
