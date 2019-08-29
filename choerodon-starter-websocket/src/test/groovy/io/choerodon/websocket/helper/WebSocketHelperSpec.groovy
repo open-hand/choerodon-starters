@@ -28,6 +28,7 @@ import spock.lang.Stepwise
 @Stepwise
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebSocketHelperSpec extends Specification {
+    static final int MESSAGE_WAIT_TIME = 3000
     static final ObjectMapper MAPPER = new ObjectMapper()
     @LocalServerPort
     Integer masterPort
@@ -94,10 +95,10 @@ class WebSocketHelperSpec extends Specification {
                 masterSession.sendMessage(new TextMessage(MAPPER.writeValueAsString(messagePayload)))
                 messagePayload.type = "test"
                 masterSession.sendMessage(new TextMessage(MAPPER.writeValueAsString(messagePayload)))
-                slaveCountHandler.wait(1000)
-                slaveCountHandler.wait(1000)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
             }
-            masterCountHandler.wait(1000) //等待一个消息收取
+            masterCountHandler.wait(MESSAGE_WAIT_TIME) //等待一个消息收取
         }
         then:
         noExceptionThrown()
@@ -113,10 +114,10 @@ class WebSocketHelperSpec extends Specification {
                 slaveCountHandler.handleBinaryMessageCount = 0
                 slaveSession.sendMessage(new BinaryMessage([1, 2, 3] as byte[]))
                 masterSession.sendMessage(new BinaryMessage([1, 2, 3, 4] as byte[]))
-                slaveCountHandler.wait(1000)
-                slaveCountHandler.wait(1000)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
             }
-            masterCountHandler.wait(1000) //等待一个消息收取
+            masterCountHandler.wait(MESSAGE_WAIT_TIME) //等待一个消息收取
         }
         then:
         noExceptionThrown()
@@ -132,10 +133,10 @@ class WebSocketHelperSpec extends Specification {
                 slaveCountHandler.handleMessageCount = 0
                 slaveSession.sendMessage(new TextMessage("test-data-slave"))
                 masterSession.sendMessage(new TextMessage("test-data-master"))
-                slaveCountHandler.wait(1000)
-                slaveCountHandler.wait(1000)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
             }
-            masterCountHandler.wait(1000) //等待一个消息收取
+            masterCountHandler.wait(MESSAGE_WAIT_TIME) //等待一个消息收取
         }
         then:
         noExceptionThrown()
@@ -159,9 +160,9 @@ class WebSocketHelperSpec extends Specification {
                 messagePayload.key = "test-key-master"
                 messagePayload.data = "test-data-master"
                 masterSession.sendMessage(new TextMessage(MAPPER.writeValueAsString(messagePayload)))
-                slaveCountHandler.wait(1000)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
             }
-            masterCountHandler.wait(1000) //等待一个消息收取
+            masterCountHandler.wait(MESSAGE_WAIT_TIME) //等待一个消息收取
         }
         then:
         noExceptionThrown()
@@ -175,7 +176,7 @@ class WebSocketHelperSpec extends Specification {
             masterCountHandler.afterConnectionClosedCount = 0
             slaveCountHandler.afterConnectionClosedCount = 0
             helper.closeSessionByKey("test-key-master")
-            slaveCountHandler.wait(1000) //等待一个消息收取
+            slaveCountHandler.wait(MESSAGE_WAIT_TIME) //等待一个消息收取
         }
         then:
         noExceptionThrown()
