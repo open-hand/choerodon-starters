@@ -1,5 +1,6 @@
 package io.choerodon.websocket.send;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
@@ -56,11 +57,15 @@ public class DefaultSmartMessageSender implements MessageSender {
                 SendBinaryMessagePayload binaryMessagePayload = (SendBinaryMessagePayload) payload;
                 BinaryMessage binaryMessage = new BinaryMessage(binaryMessagePayload.getData());
                 this.sendToSession(session, binaryMessage);
+            } else if(payload instanceof SendPlaintextMessagePayload) {
+                this.sendToSession(session, new TextMessage(((SendPlaintextMessagePayload) payload).getData()));
             } else {
-                String payloadJson = payloadToJson(payload);
-                this.sendToSession(session, new TextMessage(payloadJson));
+                try {
+                    this.sendToSession(session, new TextMessage(OBJECT_MAPPER.writeValueAsString(payload)));
+                } catch (JsonProcessingException e) {
+                    LOGGER.warn("payload data json processing exception {}", payload);
+                }
             }
-
         }
     }
 
@@ -148,7 +153,7 @@ public class DefaultSmartMessageSender implements MessageSender {
             root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_PLAINTEXT));
             SendPlaintextMessagePayload binaryMessagePayload = (SendPlaintextMessagePayload) payload;
             root.set("data", new TextNode(binaryMessagePayload.getData()));
-        }else {
+        } else {
             root.set("control", new TextNode(BrokerChannelMessageListener.CONTROL_FLAG_TEXT));
             JsonNode data = OBJECT_MAPPER.convertValue(payload.getData(), JsonNode.class);
             root.set("data", data);
