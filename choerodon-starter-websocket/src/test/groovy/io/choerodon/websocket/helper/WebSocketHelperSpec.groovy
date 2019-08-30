@@ -129,8 +129,8 @@ class WebSocketHelperSpec extends Specification {
         when:
         synchronized (masterCountHandler){
             synchronized (slaveCountHandler){
-                masterCountHandler.handleMessageCount = 0
-                slaveCountHandler.handleMessageCount = 0
+                masterCountHandler.handlePlaintextMessageCount = 0
+                slaveCountHandler.handlePlaintextMessageCount = 0
                 slaveSession.sendMessage(new TextMessage("test-data-slave"))
                 masterSession.sendMessage(new TextMessage("test-data-master"))
                 slaveCountHandler.wait(MESSAGE_WAIT_TIME)
@@ -140,8 +140,8 @@ class WebSocketHelperSpec extends Specification {
         }
         then:
         noExceptionThrown()
-        masterCountHandler.handleMessageCount == 1 // 只收到 test-key-master
-        slaveCountHandler.handleMessageCount == 2 // 收到 test-key-master 和 test-key-slave
+        masterCountHandler.handlePlaintextMessageCount == 1 // 只收到 test-key-master
+        slaveCountHandler.handlePlaintextMessageCount == 2 // 收到 test-key-master 和 test-key-slave
     }
 
 

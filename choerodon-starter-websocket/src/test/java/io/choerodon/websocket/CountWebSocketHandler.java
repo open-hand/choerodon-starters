@@ -1,5 +1,7 @@
 package io.choerodon.websocket;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -12,6 +14,7 @@ public class CountWebSocketHandler implements WebSocketHandler {
     public int afterConnectionEstablishedCount = 0;
     public int handleMessageCount = 0;
     public int handleBinaryMessageCount = 0;
+    public int handlePlaintextMessageCount = 0;
     public int handleTransportErrorCount = 0;
     public int afterConnectionClosedCount = 0;
     public int supportsPartialMessagesCount = 0;
@@ -28,8 +31,13 @@ public class CountWebSocketHandler implements WebSocketHandler {
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         if (message instanceof BinaryMessage){
             handleBinaryMessageCount++;
-        } else {
-            handleMessageCount++;
+        } else if (message instanceof TextMessage){
+            try {
+                new ObjectMapper().readTree(((TextMessage)message).getPayload());
+                handleMessageCount++;
+            }catch (JsonParseException e){
+                handlePlaintextMessageCount++;
+            }
         }
         LoggerFactory.getLogger(this.getClass()).info("handleMessage {}, {}", session.getId(), message.getPayload());
         synchronized (this){
