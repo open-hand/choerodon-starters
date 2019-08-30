@@ -68,10 +68,10 @@
         <module>choerodon-starter-swagger</module>
         <module>choerodon-tool-config</module>
         <module>choerodon-tool-liquibase</module>
-        <module>choerodon-starter-redis</module>
-        <module>choerodon-starter-message</module>
-        <module>choerodon-starter-freemarker</module>
-        <module>choerodon-starter-web</module>
+        <module>choerodon-hap-starter-redis</module>
+        <module>choerodon-hap-starter-message</module>
+        <module>choerodon-hap-starter-freemarker</module>
+        <module>choerodon-hap-starter-web</module>
         <module>choerodon-starter-base</module>
         <module>choerodon-maven-plugin</module>
         <module>choerodon-annotation-processor</module>
