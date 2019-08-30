@@ -22,6 +22,11 @@ This is the toolkit developed by Choerodon and provides some basic dependencies 
 ```
 git clone https://github.com/choerodon/choerodon-starters.git
 ```
+
+## Indicate
+
+Modules starting with 'choerodon-hap' are only dependent on the HAP framework, such as choerodon-hap-starter-message, etc.
+
 ## Links
 
 * [Change Log](./CHANGELOG.zh-CN.md)

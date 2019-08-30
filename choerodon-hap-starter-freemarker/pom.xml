@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>choerodon-starter-freemarker</artifactId>
+    <artifactId>choerodon-hap-starter-freemarker</artifactId>
 
     <dependencies>
         <dependency>
