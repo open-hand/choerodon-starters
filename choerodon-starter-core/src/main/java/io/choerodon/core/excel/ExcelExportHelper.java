@@ -1,9 +1,9 @@
 package io.choerodon.core.excel;
 
+import io.choerodon.core.excel.domain.DataSheet;
 import io.choerodon.core.exception.CommonException;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +35,7 @@ public class ExcelExportHelper {
         HSSFWorkbook book = new HSSFWorkbook();
         sheetTitle = ExcelUtil.getSheetTitle(sheetTitle);
         HSSFSheet sheet = book.createSheet(sheetTitle);
-        ExcelUtil.fillInExcel(propertyMap, list, book, sheet, clazz);
+        ExcelUtil.fillInExcel2003(propertyMap, list, book, sheet, clazz);
         return book;
     }
 
@@ -48,13 +48,13 @@ public class ExcelExportHelper {
      */
     public static <T> HSSFWorkbook exportExcel2003(Map<String, String> propertyMap, List<T> list, String sheetTitle, Class<T> clazz)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        if(propertyMap == null || propertyMap.isEmpty()) {
+        if (propertyMap == null || propertyMap.isEmpty()) {
             throw new CommonException("excel headers are empty, please set headers!");
         }
         HSSFWorkbook book = new HSSFWorkbook();
         sheetTitle = ExcelUtil.getSheetTitle(sheetTitle);
         HSSFSheet sheet = book.createSheet(sheetTitle);
-        ExcelUtil.fillInExcel(propertyMap, list, book, sheet, clazz);
+        ExcelUtil.fillInExcel2003(propertyMap, list, book, sheet, clazz);
         return book;
     }
 
@@ -84,21 +84,12 @@ public class ExcelExportHelper {
     /**
      * excel2007一个sheet最多1048576行
      *
-     * @param propertyMap excel头标题栏与javaBean的映射关系,key: javaBean的字段，value: 自定义显示的excel头名称
-     * @param list       写入的对象集合
-     * @param sheetTitle 生成excel工作薄的名字
-     * @param <T>        类型
+     * @param dataSheets 数据封装到Sheet对象，一个Sheet对应一个excel sheet页
      * @return
      */
-    public static <T> XSSFWorkbook exportExcel2007(Map<String, String> propertyMap, List<T> list, String sheetTitle, Class<T> clazz) {
-        //该方法暂时未实现
-        if (propertyMap == null || propertyMap.isEmpty()) {
-            throw new CommonException("excel headers are empty, please set headers!");
-        }
+    public static XSSFWorkbook exportExcel2007(List<DataSheet> dataSheets) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         XSSFWorkbook workbook = new XSSFWorkbook();
-        sheetTitle = ExcelUtil.getSheetTitle(sheetTitle);
-        XSSFSheet sheet = workbook.createSheet(sheetTitle);
-//        ExcelUtil.fillInExcel(propertyMap,list,workbook,sheet,clazz);
+        ExcelUtil.fillInExcel2007(workbook, dataSheets);
         return workbook;
     }
 }

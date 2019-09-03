@@ -1,12 +1,12 @@
 package io.choerodon.core.excel;
 
+import io.choerodon.core.excel.domain.DataSheet;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.NumberToTextConverter;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -303,7 +303,7 @@ public class ExcelUtil {
      * @param sheet
      * @param <T>
      */
-    public static <T> void fillInExcel(Map<String, String> propertyMap, List<T> list, HSSFWorkbook book, HSSFSheet sheet, Class<T> clazz)
+    public static <T> void fillInExcel2003(Map<String, String> propertyMap, List<T> list, HSSFWorkbook book, HSSFSheet sheet, Class<T> clazz)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         //设置列头样式(居中、变粗、蓝色)
         HSSFCellStyle headerStyle = book.createCellStyle();
@@ -313,16 +313,28 @@ public class ExcelUtil {
         setCellStyle(cellStyle, book);
         // 创建头部
         Map<String, Integer> headerRow = createHeader(sheet, headerStyle, propertyMap);
-        // 画图的顶级管理器，一个sheet只能获取一个（一定要注意这点）
-        HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-        processCell(list, book, sheet, clazz, cellStyle, headerRow, patriarch);
+        processCell(list, sheet, clazz, cellStyle, headerRow);
     }
 
-    private static <T> void processCell(List<T> list, HSSFWorkbook book, HSSFSheet sheet, Class<T> clazz, HSSFCellStyle cellStyle, Map<String, Integer> headerRow, HSSFPatriarch patriarch) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static void fillInExcel2007(XSSFWorkbook workbook, List<DataSheet> dataSheets) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        CellStyle headerStyle = workbook.createCellStyle();
+        setHeaderStyle(headerStyle, workbook);
+        CellStyle cellStyle = workbook.createCellStyle();
+        setCellStyle(cellStyle, workbook);
+        for (DataSheet ds : dataSheets) {
+            String title = ds.getSheetTitle();
+            Sheet sheet = workbook.createSheet(title);
+            Map<String, Integer> headerRow = createHeader(sheet, headerStyle, ds.getPropertyMap());
+            processCell(ds.getData(), sheet, ds.getClazz(), cellStyle, headerRow);
+        }
+    }
+
+
+    private static <T> void processCell(List<T> list, Sheet sheet, Class<T> clazz, CellStyle cellStyle, Map<String, Integer> headerRow) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Map<String, Field> fieldMap = getObjectField(clazz);
         //第0行已初始化header，从第一行开始
         int rowNum = 1;
-        HSSFRow row;
+        Row row;
         String title;
         Integer column;
         Field field;
@@ -349,7 +361,7 @@ public class ExcelUtil {
                 try {
                     getterMethod = clazz.getMethod(getterMethodName, new Class[]{});
                     value = getterMethod.invoke(t, new Object[]{});
-                    fillInCell(row, column, value, sheet, patriarch, book, cell);
+                    fillInCell(row, column, value, sheet, cell);
                 } catch (NoSuchMethodException e) {
                     logger.info("can not get the method {} by reflection", getterMethodName);
                     throw e;
@@ -364,7 +376,7 @@ public class ExcelUtil {
         }
     }
 
-    private static void fillInCell(HSSFRow row, Integer column, Object value, HSSFSheet sheet, HSSFPatriarch patriarch, HSSFWorkbook book, Cell cell) {
+    private static void fillInCell(Row row, Integer column, Object value, Sheet sheet, Cell cell) {
         String cellValue = "";
         if (value instanceof Date) {
             //处理日期格式
@@ -421,20 +433,25 @@ public class ExcelUtil {
      * @date 2014年6月17日 上午11:37:28
      * @version 1.0
      */
-    private static Map<String, Integer> createHeader(HSSFSheet sheet, HSSFCellStyle headerStyle,
+    private static Map<String, Integer> createHeader(Sheet sheet, CellStyle headerStyle,
                                                      Map<String, String> propertyMap) {
         Map<String, Integer> headerMap = new HashMap<>();
-        HSSFRow headRow = sheet.createRow(0);
+        Row headRow = sheet.createRow(0);
         headRow.setHeightInPoints((short) (20));   //设置头部高度
         //添加数据
-        HSSFCell cell;
+        Cell cell;
         int i = 0;
         for (Map.Entry<String, String> entry : propertyMap.entrySet()) {
             String column = entry.getKey();
             String title = entry.getValue();
             cell = headRow.createCell(i);
             cell.setCellStyle(headerStyle);
-            HSSFRichTextString text = new HSSFRichTextString(title);
+            RichTextString text;
+            if (cell instanceof HSSFCell) {
+                text = new HSSFRichTextString(title);
+            } else {
+                text = new XSSFRichTextString(title);
+            }
             cell.setCellValue(text);
             headerMap.put(column, i++);
         }
@@ -450,11 +467,11 @@ public class ExcelUtil {
      * @date 2014年6月17日 上午11:00:53
      * @version 1.0
      */
-    private static void setCellStyle(HSSFCellStyle cellStyle, HSSFWorkbook book) {
+    private static void setCellStyle(CellStyle cellStyle, Workbook book) {
         cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);   //水平居中
         cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
 
-        HSSFFont font = book.createFont();
+        Font font = book.createFont();
         font.setFontHeightInPoints((short) 12);
 
         cellStyle.setFont(font);
@@ -469,11 +486,11 @@ public class ExcelUtil {
      * @date 2014年6月16日 下午8:46:49
      * @version 1.0
      */
-    private static void setHeaderStyle(HSSFCellStyle headerStyle, HSSFWorkbook book) {
+    private static void setHeaderStyle(CellStyle headerStyle, Workbook book) {
         headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);   //水平居中
         headerStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
         //设置字体
-        HSSFFont font = book.createFont();
+        Font font = book.createFont();
         font.setFontHeightInPoints((short) 12);     //字号：12号
         font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);   //变粗
         font.setColor(HSSFColor.BLUE.index);   //蓝色
