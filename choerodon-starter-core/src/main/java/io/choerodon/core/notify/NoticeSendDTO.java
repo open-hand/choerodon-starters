@@ -21,6 +21,11 @@ public class NoticeSendDTO {
     public static final String SMS = "sms";
 
     /**
+     * 发送WebHook消息
+     */
+    public static final String WEB_HOOK = "WebHook";
+
+    /**
      * 发送的业务类型code
      */
     private String code;
@@ -140,6 +145,13 @@ public class NoticeSendDTO {
             return false;
         }
         return customizedSendingTypes.contains(SMS);
+    }
+
+    public boolean isSendingWebHook() {
+        if (this.customizedSendingTypes == null){
+            return false;
+        }
+        return customizedSendingTypes.contains(WEB_HOOK);
     }
 
 }
