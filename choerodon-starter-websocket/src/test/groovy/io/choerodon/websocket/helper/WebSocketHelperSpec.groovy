@@ -28,7 +28,7 @@ import spock.lang.Stepwise
 @Stepwise
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebSocketHelperSpec extends Specification {
-    static final int MESSAGE_WAIT_TIME = 3000
+    static final int MESSAGE_WAIT_TIME = 10000
     static final ObjectMapper MAPPER = new ObjectMapper()
     @LocalServerPort
     Integer masterPort
@@ -192,7 +192,7 @@ class WebSocketHelperSpec extends Specification {
         activeBrokers.size() > 1
         when:
         secondContext.close()
-        Thread.sleep(150)
+        Thread.sleep(300)
         activeBrokers = brokerManager.getActiveBrokers()
         then:
         activeBrokers.size() == 1
