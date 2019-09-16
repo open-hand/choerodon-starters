@@ -161,8 +161,8 @@ class WebSocketHelperSpec extends Specification {
                 messagePayload.data = "test-data-master"
                 masterSession.sendMessage(new TextMessage(MAPPER.writeValueAsString(messagePayload)))
                 slaveCountHandler.wait(MESSAGE_WAIT_TIME)
+                slaveCountHandler.wait(MESSAGE_WAIT_TIME)
             }
-            masterCountHandler.wait(MESSAGE_WAIT_TIME) //等待一个消息收取
         }
         then:
         noExceptionThrown()
