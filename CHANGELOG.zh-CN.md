@@ -2,6 +2,25 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+# [0.12.0]
+### 新增
+- 数据初始化工具实现删除标记 $DEL 和只插入标记 $XXX
+- Excel 工具类添加导出 excel 2007 的方法
+- 更新消息通知 DTO 添加 WebHook 相关参数
+
+### 修改
+- 修复表元数据提取没有REMARK的问题
+- 重构 websocket 模块新的设计参考文档 choerodon-starter-websocket/Design.md
+- SagaTask返回值为简单类型时直接使用类名生成Demo数据提高体验
+- Mybatis模块修复无法从BaseDTO获取排序数据的问题
+- 跨服务初始化数据Excel名改为 script/meta/micro-service-init-data.xlsx
+- JWT Token 检查依赖 Spring Security 实现，不再使用自定义 Filter
+- 修复 Excel 转化 Json 出现大量空字符串问题
+- 修复 CustomUserDetails hashCode 方法可能出现空指针异常
+
+### 移除
+- 移除 choerodon-starter-statemachine 模块
+
 # [0.11.0]
 
 ### 新增
