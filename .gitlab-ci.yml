@@ -10,7 +10,6 @@ services:
 maven-test-branches:
   stage: mvn-package
   script:
-    - git_merge master
     - mvn package source:jar-no-fork javadoc:jar -DskipTests=true
   only:
     - branches
@@ -23,42 +22,31 @@ maven-test-branches:
 maven-test-build:
   stage: mvn-package
   script:
-    - update_pom_version
     - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.analysis.serviceGroup=$GROUP_NAME -Dsonar.analysis.commitId=$CI_COMMIT_SHA -Dsonar.projectKey=$GROUP_NAME:$PROJECT_NAME -Dsonar.gitlab.query_max_retry=200 -DskipTests=false -U
   only:
     - master
-    - tags
     - /^release-.*$/
     - /^hotfix-.*$/
 
-
-maven-deploy-choerodon:
+maven-deploy-snapshot:
   stage: maven-deploy
   script:
-    - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_REPOSITORY_URL}
+    - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_SNAPSHOT_URL}
   only:
     - master
-    - tags
-    - /^release-.*$/
 
-maven-deploy-ossrh:
+maven-deploy-release:
   stage: maven-deploy
   script:
-    - mvn clean source:jar-no-fork javadoc:jar install -DskipTests=true gpg:sign deploy -DaltDeploymentRepository=${OSS_REPOSITORY_ID}::default::${OSS_REPOSITORY_URL} -DpomFile=pom.xml
+    - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_RELEASE_URL}
   only:
     - tags
+    - /^release-.*$/
 
 .auto_devops: &auto_devops |
     curl -o .auto_devops.sh \
         "${CHOERODON_URL}/devops/ci?token=${Token}&type=lib"
     source .auto_devops.sh
-
-    function git_merge(){
-        git config user.name ${GITLAB_USER_NAME}
-        git config user.email ${GITLAB_USER_EMAIL}
-        git checkout origin/${1:-"master"}
-        git merge ${CI_COMMIT_SHA} --no-commit --no-ff
-    }
 
 before_script:
   - *auto_devops
