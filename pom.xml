@@ -64,7 +64,6 @@
         <module>choerodon-starter-mybatis-mapper</module>
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-starter-oauth-resource</module>
-        <module>choerodon-starter-statemachine</module>
         <module>choerodon-starter-swagger</module>
         <module>choerodon-tool-config</module>
         <module>choerodon-tool-liquibase</module>
