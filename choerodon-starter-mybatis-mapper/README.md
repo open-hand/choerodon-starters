@@ -1,5 +1,7 @@
 # Choerodon Starter Mybatis Mapper
 
+### *This module has been deprecated, please use choerodon-starter-mybatis instead.*
+
 The mybatis basic toolkit integrates two open source projects [Generic Mapper](https://github.com/abel533/Mapper) and [PageHelper](https://github.com/pagehelper/Mybatis-PageHelper). Based on the requirements of business logical, streamlining and modification of source code, extending audit fields, multilingual functions, and modifying paging plugins, adding functionality such as inserting or updating specified columns.
 
 The toolkit is used if there is a database operation in the Choerodon microservice.
