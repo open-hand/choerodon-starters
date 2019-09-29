@@ -1,21 +1,23 @@
 # Choerodon Starter Parent
 
 This is the toolkit developed by Choerodon and provides some basic dependencies for use in the development process. 
-
-* [choerodon-starter-bus](choerodon-starter-bus/README.md)
+* [choerodon-maven-plugin](choerodon-maven-plugin/README_ZH.md)
+* [choerodon-starter-actuator](choerodon-starter-actuator/README_ZH.md)
+* [choerodon-starter-actuator-processor](choerodon-starter-actuator-processor/README_ZH.md)
+* [choerodon-starter-asgard](choerodon-starter-asgard/README_ZH.md)
+* [choerodon-starter-base](choerodon-starter-base/README_ZH.md)
 * [choerodon-starter-config-client](choerodon-starter-config-client/README.md)
-* [choerodon-starter-config-monitor](choerodon-starter-config-monitor/README.md)
 * [choerodon-starter-core](choerodon-starter-core/README.md)
-* [choerodon-starter-event-consumer](choerodon-starter-event-consumer/README.md)
-* [choerodon-starter-event-producer](choerodon-starter-event-producer/README.md)
+* [choerodon-starter-eureka-event](choerodon-starter-eureka-event/README.md)
 * [choerodon-starter-feign-replay](choerodon-starter-feign-replay/README.md)
 * [choerodon-starter-metric](choerodon-starter-metric/README.md)
-* [choerodon-starter-mybatis-mapper](choerodon-starter-mybatis-mapper/README.md)
+* [choerodon-starter-mybatis](choerodon-starter-mybatis/README_ZH.md)
 * [choerodon-starter-oauth-core](choerodon-starter-oauth-core/README.md)
 * [choerodon-starter-oauth-resource](choerodon-starter-oauth-resource/README.md)
 * [choerodon-starter-swagger](choerodon-starter-swagger/README.md)
+* [choerodon-starter-websocket](choerodon-starter-websocket/README.md)
 * [choerodon-tool-config](choerodon-tool-config/README.md)
-* [choerodon-tool-liquibase](choerodon-tool-liquibase/README.md)
+* [choerodon-tool-liquibase](choerodon-tool-liquibase/README_ZH.md)
 
 ## To get the code
 

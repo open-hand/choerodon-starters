@@ -13,8 +13,9 @@ public class MicroServiceInitData {
     /**
      * 将微服务初始化数据的Json执行到数据库
      *
-     * @param data       actuator json 的 init-data 块
+     * @param data actuator json 的 init-data 块
      * @param connection 数据库连接
+     * @param tables 指定要处理的表名称
      */
     public static void processInitData(JsonNode data, Connection connection, Set<String> tables) throws SQLException {
         Iterator<String> tableNames = data.fieldNames();
