@@ -3,7 +3,6 @@ package io.choerodon.mybatis;
 import io.choerodon.mybatis.autoconfigure.MapperOverrideProperties;
 import io.choerodon.base.provider.CustomProvider;
 import io.choerodon.mybatis.util.OGNL;
-import io.choerodon.mybatis.web.MethodArgParamResolverConfig;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration;
@@ -20,7 +19,6 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan
-@Import(MethodArgParamResolverConfig.class)
 @AutoConfigureBefore(MybatisAutoConfiguration.class)
 @MapperScan(basePackages = "io.choerodon.**.mapper")
 @PropertySource("classpath:default-choerodon-mybatis-config.properties")
