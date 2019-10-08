@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 配置ribbon client rule
@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @RibbonClients(defaultConfiguration = CustomMetadataRule.class)
 @EnableConfigurationProperties({CommonProperties.class})
 @Import(PageRequestQueryConfig.class)
-public class HystrixInterceptorAutoConfiguration extends WebMvcConfigurerAdapter {
+public class HystrixInterceptorAutoConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

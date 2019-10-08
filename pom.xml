@@ -64,6 +64,7 @@
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-starter-oauth-resource</module>
         <module>choerodon-starter-swagger</module>
+        <module>choerodon-starter-web</module>
         <module>choerodon-tool-config</module>
         <module>choerodon-tool-liquibase</module>
         <module>choerodon-hap-starter-redis</module>
