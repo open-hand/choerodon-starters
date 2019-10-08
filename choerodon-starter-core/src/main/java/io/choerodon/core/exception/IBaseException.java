@@ -1,4 +1,4 @@
-package io.choerodon.base.exception;
+package io.choerodon.core.exception;
 
 /**
  * @author xiangyu.qi@hand-china.com

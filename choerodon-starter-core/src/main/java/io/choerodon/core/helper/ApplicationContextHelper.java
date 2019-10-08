@@ -1,4 +1,4 @@
-package io.choerodon.base.helper;
+package io.choerodon.core.helper;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
