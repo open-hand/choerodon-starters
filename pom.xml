@@ -61,7 +61,6 @@
         <module>choerodon-starter-feign-replay</module>
         <module>choerodon-starter-metric</module>
         <module>choerodon-starter-mybatis</module>
-        <module>choerodon-starter-mybatis-mapper</module>
         <module>choerodon-starter-oauth-core</module>
         <module>choerodon-starter-oauth-resource</module>
         <module>choerodon-starter-swagger</module>
