@@ -1,4 +1,4 @@
-package io.choerodon.base.enums;
+package io.choerodon.core.enums;
 
 /**
  * 项目分类，agile/program/analytical

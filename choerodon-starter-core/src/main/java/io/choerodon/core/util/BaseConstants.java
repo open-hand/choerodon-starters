@@ -1,4 +1,4 @@
-package io.choerodon.base.util;
+package io.choerodon.core.util;
 
 /**
  * 常量基类.

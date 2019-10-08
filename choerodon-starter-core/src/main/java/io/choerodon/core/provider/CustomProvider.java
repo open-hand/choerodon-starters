@@ -1,4 +1,4 @@
-package io.choerodon.base.provider;
+package io.choerodon.core.provider;
 
 import java.util.Set;
 

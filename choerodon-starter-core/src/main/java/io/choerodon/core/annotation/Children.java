@@ -1,4 +1,4 @@
-package io.choerodon.base.annotation;
+package io.choerodon.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

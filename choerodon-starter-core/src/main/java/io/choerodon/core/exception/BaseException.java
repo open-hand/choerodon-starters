@@ -1,24 +1,22 @@
-package io.choerodon.base.exception;
+package io.choerodon.core.exception;
+
 
 /**
- * @author xiangyu.qi@hand-china.com
- * @since 2018/3/27
+ * 基础异常类.
+ *
+ * @author njq.niu@hand-china.com
+ * @since 2016年1月28日
  */
-public class BaseRuntimeException extends RuntimeException implements IBaseException {
+public abstract class BaseException extends Exception implements IBaseException {
 
-    private static final long serialVersionUID = 3225600638068413457L;
+    private static final long serialVersionUID = 1L;
+
+    // e.g. ORDER_FROZEN
     private String code;
 
     private String descriptionKey;
 
     private Object[] parameters;
-
-    public BaseRuntimeException(String code, Object... parameters) {
-        super(code);
-        this.code = code;
-        this.descriptionKey = code;
-        this.parameters = parameters;
-    }
 
     /**
      * 不应该直接实例化,应该定义子类.
@@ -27,7 +25,7 @@ public class BaseRuntimeException extends RuntimeException implements IBaseExcep
      * @param descriptionKey 异常消息代码,系统描述中定义
      * @param parameters     如果没有参数,可以传 null
      */
-    public BaseRuntimeException(String code, String descriptionKey, Object... parameters) {
+    public BaseException(String code, String descriptionKey, Object... parameters) {
         super(descriptionKey);
         this.code = code;
         this.descriptionKey = descriptionKey;
@@ -63,4 +61,5 @@ public class BaseRuntimeException extends RuntimeException implements IBaseExcep
     public void setParameters(Object[] parameters) {
         this.parameters = parameters;
     }
+
 }

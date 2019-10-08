@@ -1,4 +1,4 @@
-package io.choerodon.base.enums;
+package io.choerodon.core.enums;
 
 /**
  * 资源类型，site/organization/project

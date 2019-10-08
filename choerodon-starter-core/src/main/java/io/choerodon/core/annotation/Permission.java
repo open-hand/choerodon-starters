@@ -1,6 +1,6 @@
-package io.choerodon.base.annotation;
+package io.choerodon.core.annotation;
 
-import io.choerodon.base.enums.ResourceType;
+import io.choerodon.core.enums.ResourceType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
