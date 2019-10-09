@@ -16,6 +16,8 @@ This is the toolkit developed by Choerodon and provides some basic dependencies 
 * [choerodon-starter-oauth-resource](choerodon-starter-oauth-resource/README.md)
 * [choerodon-starter-swagger](choerodon-starter-swagger/README.md)
 * [choerodon-starter-websocket](choerodon-starter-websocket/README.md)
+* [choerodon-starter-webmvc](choerodon-starter-webmvc/README_ZH.md)
+* [choerodon-framework-parent](choerodon-framework-parent/README_ZH.md)
 * [choerodon-tool-config](choerodon-tool-config/README.md)
 * [choerodon-tool-liquibase](choerodon-tool-liquibase/README_ZH.md)
 
