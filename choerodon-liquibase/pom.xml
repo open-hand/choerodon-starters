@@ -118,18 +118,15 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <version>1.5</version>
-                <configuration>
-                    <providerSelection>2.0</providerSelection>
-                    <source/>
-                </configuration>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>${gmavenplus.plugin.version}</version>
+
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.gmaven.runtime</groupId>
                         <artifactId>gmaven-runtime-2.0</artifactId>
-                        <version>1.5</version>
+                        <version>${gmavenplus.plugin.version}</version>
                         <exclusions>
                             <exclusion>
                                 <groupId>org.codehaus.groovy</groupId>
@@ -146,9 +143,9 @@
                 <executions>
                     <execution>
                         <goals>
+                            <goal>addTestSources</goal>
                             <goal>generateStubs</goal>
                             <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
                             <goal>testCompile</goal>
                         </goals>
                     </execution>
