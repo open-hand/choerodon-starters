@@ -13,29 +13,11 @@
     <artifactId>choerodon-framework-parent</artifactId>
     <packaging>pom</packaging>
 
-
     <properties>
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <choerodon.mainClass>io.choerodon.boot.ChoerodonApplication</choerodon.mainClass>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-liquibase</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.197</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
     <dependencyManagement>
         <dependencies>
             <dependency>

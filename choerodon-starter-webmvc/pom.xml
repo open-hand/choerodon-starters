@@ -10,21 +10,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-webmvc</artifactId>
-    <build>
-        <finalName>choerodon-starter-webmvc</finalName>
-    </build>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-base</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
         </dependency>
     </dependencies>
 
