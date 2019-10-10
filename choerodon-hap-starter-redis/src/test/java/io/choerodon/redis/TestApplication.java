@@ -1,5 +1,6 @@
 package io.choerodon.redis;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.message.IMessagePublisher;
 import io.choerodon.base.provider.CustomProvider;
 import org.springframework.boot.SpringApplication;
@@ -54,5 +55,10 @@ public class TestApplication {
 
             }
         };
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }
