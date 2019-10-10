@@ -12,6 +12,7 @@
         <version>0.13.0-SNAPSHOT</version>
     </parent>
     <properties>
+        <skipTests>true</skipTests>
         <java.version>1.8</java.version>
     </properties>
 
