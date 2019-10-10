@@ -4,9 +4,6 @@ stages:
   - mvn-package
   - maven-deploy
 
-services:
-  - redis:latest
-
 maven-test-branches:
   stage: mvn-package
   script:
