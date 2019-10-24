@@ -1,6 +1,5 @@
 package io.choerodon.config;
 
-import io.choerodon.base.provider.CustomProvider;
 import io.choerodon.config.execute.ConfigServerExecutor;
 import io.choerodon.config.execute.Executor;
 import io.choerodon.config.execute.RegisterServerExecutor;
@@ -10,6 +9,7 @@ import io.choerodon.config.mapper.ZuulRouteMapper;
 import io.choerodon.config.utils.InitConfigProperties;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.core.provider.CustomProvider;
 import io.choerodon.mybatis.ChoerodonMybatisAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
