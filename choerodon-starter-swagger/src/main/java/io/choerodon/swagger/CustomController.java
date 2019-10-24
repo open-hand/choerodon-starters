@@ -2,7 +2,7 @@ package io.choerodon.swagger;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import io.choerodon.base.annotation.Permission;
+import io.choerodon.core.annotation.Permission;
 import io.choerodon.swagger.notify.NotifyScanData;
 import io.choerodon.swagger.notify.NotifyTemplateProcessor;
 import io.choerodon.swagger.swagger.CustomSwagger;

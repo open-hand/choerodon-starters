@@ -1,7 +1,7 @@
 package io.choerodon.resource.permission
 
 import com.google.common.base.Optional
-import io.choerodon.base.annotation.Permission
+import io.choerodon.core.annotation.Permission
 import io.choerodon.resource.IntegrationTestConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import

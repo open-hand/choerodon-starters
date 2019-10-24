@@ -2,9 +2,9 @@ package io.choerodon.annotation;
 
 import io.choerodon.annotation.entity.PermissionDescription;
 import io.choerodon.annotation.entity.PermissionEntity;
-import io.choerodon.base.annotation.Dataset;
-import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.enums.ResourceType;
+import io.choerodon.core.annotation.Dataset;
+import io.choerodon.core.annotation.Permission;
+import io.choerodon.core.enums.ResourceType;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -17,21 +17,21 @@ import java.util.Map;
 
 public class PermissionProcessor {
 
-    private PermissionProcessor(){
+    private PermissionProcessor() {
     }
 
-    public static void resolve(Map<String, Object> controllers, Map<String, PermissionDescription> descriptions){
-        for (Object controller: controllers.values()){
+    public static void resolve(Map<String, Object> controllers, Map<String, PermissionDescription> descriptions) {
+        for (Object controller : controllers.values()) {
             resolveClass(controller.getClass(), descriptions);
         }
     }
 
-    public static void resolveClass(Class clazz, Map<String, PermissionDescription> descriptions){
+    public static void resolveClass(Class clazz, Map<String, PermissionDescription> descriptions) {
         Controller controller = AnnotationUtils.findAnnotation(clazz, Controller.class);
-        if (controller != null){
+        if (controller != null) {
             RequestMapping controllerMapping = AnnotatedElementUtils.getMergedAnnotation(clazz, RequestMapping.class);
             String controllerPath = "";
-            if (controllerMapping != null && controllerMapping.value().length > 0){
+            if (controllerMapping != null && controllerMapping.value().length > 0) {
                 controllerPath = controllerMapping.value()[0];
             }
             for (Method method : clazz.getDeclaredMethods()) {
@@ -39,14 +39,14 @@ public class PermissionProcessor {
             }
         }
         Dataset dataset = AnnotationUtils.findAnnotation(clazz, Dataset.class);
-        if (dataset != null){
+        if (dataset != null) {
             resolveDataset(descriptions, dataset.value());
         }
     }
 
-    private static void resolveDataset(Map<String, PermissionDescription> descriptions, String name){
+    private static void resolveDataset(Map<String, PermissionDescription> descriptions, String name) {
         String[] datasetActions = new String[]{"queries", "mutations", "languages", "validate", "export"};
-        for (String action : datasetActions){
+        for (String action : datasetActions) {
             PermissionDescription description = new PermissionDescription();
             PermissionEntity permissionEntity = new PermissionEntity();
             permissionEntity.setType(ResourceType.SITE.value());
@@ -61,17 +61,17 @@ public class PermissionProcessor {
         }
     }
 
-    private static void resolveMethod(Class clazz, Method method, String controllerPath, Map<String, PermissionDescription> descriptions){
+    private static void resolveMethod(Class clazz, Method method, String controllerPath, Map<String, PermissionDescription> descriptions) {
         RequestMapping methodMapping = AnnotatedElementUtils.getMergedAnnotation(method, RequestMapping.class);
-        if (methodMapping != null){
+        if (methodMapping != null) {
             String methodPath = "";
-            if (methodMapping.value().length > 0){
+            if (methodMapping.value().length > 0) {
                 methodPath = methodMapping.value()[0];
             }
             PermissionDescription description = new PermissionDescription();
             description.setPath(processPath(controllerPath + methodPath));
             RequestMethod requestMethod = RequestMethod.GET;
-            if (methodMapping.method().length > 0){
+            if (methodMapping.method().length > 0) {
                 requestMethod = methodMapping.method()[0];
             }
             description.setMethod(requestMethod.name().toLowerCase());
@@ -85,7 +85,7 @@ public class PermissionProcessor {
                 permissionEntity.setPermissionPublic(permission.permissionPublic());
                 permissionEntity.setPermissionWithin(permission.permissionWithin());
                 description.setPermission(permissionEntity);
-                if (operation != null){
+                if (operation != null) {
                     description.setDescription(operation.value());
                 }
             }
@@ -93,8 +93,8 @@ public class PermissionProcessor {
         }
     }
 
-    private static String processPath(String path){
-        if (!path.startsWith("/")){
+    private static String processPath(String path) {
+        if (!path.startsWith("/")) {
             path = "/" + path;
         }
         return path.replace("//", "/");

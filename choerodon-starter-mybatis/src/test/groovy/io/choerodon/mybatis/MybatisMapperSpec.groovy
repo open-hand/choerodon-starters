@@ -1,8 +1,6 @@
 package io.choerodon.mybatis
 
-import io.choerodon.liquibase.LiquibaseConfig
-import io.choerodon.liquibase.LiquibaseExecutor
-import io.choerodon.base.provider.CustomProvider
+import io.choerodon.core.provider.CustomProvider
 import io.choerodon.mybatis.common.query.Comparison
 import io.choerodon.mybatis.common.query.SortType
 import io.choerodon.mybatis.common.query.WhereField
@@ -19,8 +17,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import spock.lang.Specification
-
-import javax.annotation.PostConstruct
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
 
@@ -41,7 +37,7 @@ class MybatisMapperSpec extends Specification {
     static class TestConfig {
         @Bean
         CustomProvider testCustomProvider() {
-            return new CustomProvider(){
+            return new CustomProvider() {
                 @Override
                 String currentLanguage() {
                     return "en_GB";
@@ -100,6 +96,7 @@ class MybatisMapperSpec extends Specification {
         result.roleCode == "ADMIN"
         result.roleName == "管理员"
     }
+
     def "Select One TL Test"() {
         when:
         RoleTL role = new RoleTL()
@@ -133,7 +130,7 @@ class MybatisMapperSpec extends Specification {
         roleMapper.deleteByPrimaryKey(role) > 0
     }
 
-    def "Update Version Test" () {
+    def "Update Version Test"() {
         when:
         RoleTL role = roleTLMapper.selectByPrimaryKey(10001)
         long oldVersionNumber = role.objectVersionNumber;

@@ -1,7 +1,7 @@
 package io.choerodon.web.controller;
 
 import com.google.common.base.Throwables;
-import io.choerodon.base.exception.IBaseException;
+import io.choerodon.core.exception.IBaseException;
 import io.choerodon.web.DefaultConfiguration;
 import io.choerodon.web.core.IRequest;
 import io.choerodon.web.core.impl.RequestHelper;

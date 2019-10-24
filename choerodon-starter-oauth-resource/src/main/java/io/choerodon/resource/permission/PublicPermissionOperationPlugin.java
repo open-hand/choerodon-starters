@@ -1,6 +1,6 @@
 package io.choerodon.resource.permission;
 
-import io.choerodon.base.annotation.Permission;
+import io.choerodon.core.annotation.Permission;
 import org.springframework.core.annotation.Order;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.OperationBuilderPlugin;

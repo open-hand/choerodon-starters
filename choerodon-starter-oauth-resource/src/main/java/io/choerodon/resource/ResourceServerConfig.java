@@ -1,16 +1,14 @@
 package io.choerodon.resource;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.choerodon.base.provider.CustomProvider;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.core.oauth.resource.DateDeserializer;
+import io.choerodon.core.oauth.resource.DateSerializer;
+import io.choerodon.core.provider.CustomProvider;
+import io.choerodon.resource.handler.ControllerExceptionHandler;
 import io.choerodon.resource.permission.PublicPermissionOperationPlugin;
 import io.choerodon.swagger.SwaggerConfig;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -22,12 +20,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-
-import io.choerodon.core.oauth.resource.DateDeserializer;
-import io.choerodon.core.oauth.resource.DateSerializer;
-import io.choerodon.resource.handler.ControllerExceptionHandler;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 配置jwtToken的验证规则

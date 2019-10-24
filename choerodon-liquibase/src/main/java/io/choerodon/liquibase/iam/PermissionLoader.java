@@ -3,7 +3,7 @@ package io.choerodon.liquibase.iam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.annotation.entity.PermissionDescription;
 import io.choerodon.annotation.entity.PermissionEntity;
-import io.choerodon.base.enums.ResourceType;
+import io.choerodon.core.enums.ResourceType;
 import io.choerodon.liquibase.helper.LiquibaseHelper;
 
 import java.io.IOException;
@@ -12,11 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PermissionLoader {
     private String serviceCode;
