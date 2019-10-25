@@ -1,6 +1,6 @@
 package io.choerodon.web.core.impl;
 
-import io.choerodon.base.helper.ApplicationContextHelper;
+import io.choerodon.core.helper.ApplicationContextHelper;
 import io.choerodon.web.NoSecurityConfig;
 import io.choerodon.web.core.IRequest;
 import io.choerodon.web.core.IRequestListener;

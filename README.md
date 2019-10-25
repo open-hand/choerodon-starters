@@ -5,7 +5,6 @@ This is the toolkit developed by Choerodon and provides some basic dependencies 
 * [choerodon-starter-actuator](choerodon-starter-actuator/README_ZH.md)
 * [choerodon-starter-actuator-processor](choerodon-starter-actuator-processor/README_ZH.md)
 * [choerodon-starter-asgard](choerodon-starter-asgard/README_ZH.md)
-* [choerodon-starter-base](choerodon-starter-base/README_ZH.md)
 * [choerodon-starter-config-client](choerodon-starter-config-client/README.md)
 * [choerodon-starter-core](choerodon-starter-core/README.md)
 * [choerodon-starter-eureka-event](choerodon-starter-eureka-event/README.md)

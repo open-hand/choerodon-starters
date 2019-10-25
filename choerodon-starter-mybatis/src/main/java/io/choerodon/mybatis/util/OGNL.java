@@ -1,11 +1,10 @@
 package io.choerodon.mybatis.util;
 
-import io.choerodon.base.provider.CustomProvider;
+import io.choerodon.core.provider.CustomProvider;
 import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.mybatis.entity.CustomEntityColumn;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.EntityColumn;
-import tk.mybatis.mapper.entity.EntityField;
 import tk.mybatis.mapper.mapperhelper.EntityHelper;
 import tk.mybatis.mapper.util.StringUtil;
 
@@ -42,6 +41,7 @@ public class OGNL {
 
     /**
      * 获取参数排序SQL
+     *
      * @param parameter
      * @return
      */
@@ -60,15 +60,15 @@ public class OGNL {
                 }
                 Set<EntityColumn> columns = EntityHelper.getColumns(parameter.getClass());
                 EntityColumn sortColumn = null;
-                for (EntityColumn column: columns){
-                    if(sortName.equals(column.getEntityField().getName())){
+                for (EntityColumn column : columns) {
+                    if (sortName.equals(column.getEntityField().getName())) {
                         sortColumn = column;
                     }
                 }
-                if (sortColumn == null){
+                if (sortColumn == null) {
                     throw new RuntimeException("Invalid sortName:" + sortName);
                 }
-                if (((CustomEntityColumn) sortColumn).isMultiLanguage()){
+                if (((CustomEntityColumn) sortColumn).isMultiLanguage()) {
                     sb.append("t.");
                 } else {
                     sb.append("b.");
@@ -84,6 +84,7 @@ public class OGNL {
 
     /**
      * 获取参数排序SQL
+     *
      * @param parameter
      * @return
      */
@@ -102,12 +103,12 @@ public class OGNL {
                 }
                 Set<EntityColumn> columns = EntityHelper.getColumns(parameter.getClass());
                 EntityColumn sortColumn = null;
-                for (EntityColumn column: columns){
-                    if(sortName.equals(column.getEntityField().getName())){
+                for (EntityColumn column : columns) {
+                    if (sortName.equals(column.getEntityField().getName())) {
                         sortColumn = column;
                     }
                 }
-                if (sortColumn == null){
+                if (sortColumn == null) {
                     throw new RuntimeException("Invalid sortName:" + sortName);
                 }
                 sb.append(sortColumn.getColumn()).append(" ");
@@ -119,7 +120,7 @@ public class OGNL {
         return trimToNull(sb.toString());
     }
 
-    private static String trimToNull(String s){
-        return StringUtils.isEmpty(s) ? null: s;
+    private static String trimToNull(String s) {
+        return StringUtils.isEmpty(s) ? null : s;
     }
 }

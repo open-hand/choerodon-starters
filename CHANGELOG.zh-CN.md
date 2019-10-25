@@ -2,6 +2,20 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+# [0.13.0]
+
+### 新增
+添加`choerodon-starter-webmvc`模块依赖
+
+### 修改
+- 拆分base模块功能至core/mybatis模块中
+- 更新web模块为webmac模块
+
+### 移除
+移除`choerodon-starter-base`模块依赖
+移除`choerodon-starter-web`模块依赖
+移除`choerodon-starter-mybatis-mapper`模块依赖
+
 # [0.12.0]
 ### 新增
 - 数据初始化工具实现删除标记 $DEL 和只插入标记 $XXX

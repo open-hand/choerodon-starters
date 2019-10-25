@@ -1,8 +1,8 @@
 package io.choerodon.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.core.provider.CustomProvider;
 import io.choerodon.message.IMessagePublisher;
-import io.choerodon.base.provider.CustomProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ public class TestApplication {
 
     @Bean
     public CustomProvider testCustomProvider() {
-        return new CustomProvider(){
+        return new CustomProvider() {
             @Override
             public String currentLanguage() {
                 return "en_GB";
@@ -37,8 +37,8 @@ public class TestApplication {
     }
 
     @Bean
-    public IMessagePublisher iMessagePublisher(){
-        return new IMessagePublisher(){
+    public IMessagePublisher iMessagePublisher() {
+        return new IMessagePublisher() {
 
             @Override
             public void publish(String channel, Object message) {
