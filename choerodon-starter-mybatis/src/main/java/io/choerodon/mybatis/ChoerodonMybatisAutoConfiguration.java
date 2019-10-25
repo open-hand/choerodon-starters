@@ -1,7 +1,7 @@
 package io.choerodon.mybatis;
 
+import io.choerodon.core.provider.CustomProvider;
 import io.choerodon.mybatis.autoconfigure.MapperOverrideProperties;
-import io.choerodon.base.provider.CustomProvider;
 import io.choerodon.mybatis.util.OGNL;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
