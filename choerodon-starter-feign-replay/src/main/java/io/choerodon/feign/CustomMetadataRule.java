@@ -1,28 +1,45 @@
 package io.choerodon.feign;
 
-import java.util.*;
-
+import com.google.gson.Gson;
 import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
 import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
+import io.choerodon.core.oauth.CustomUserDetails;
+import org.springframework.security.jwt.JwtHelper;
+import org.springframework.security.jwt.crypto.sign.MacSigner;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.*;
 
 
 /**
  * 根据标签和权重选择目标server
+ *
  * @author crock
  */
 public class CustomMetadataRule extends ZoneAvoidanceRule {
     private static final String META_DATA_KEY_LABEL = "GROUP";
     private static final String META_DATA_KEY_WEIGHT = "WEIGHT";
     private static final String LABEL_SPLIT = ",";
-
+    private static final String JWT_SPLIT = ".";
+    private static final String HEADER_BEARER = "Bearer";
+    private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final String HEADER_TOKEN = "token";
+    private static final Gson GSON = new Gson();
+    private CommonProperties commonProperties;
     private Random random = new Random();
+
+    public void setCommonProperties(CommonProperties commonProperties) {
+        this.commonProperties = commonProperties;
+    }
 
     @Override
     public Server choose(Object key) {
+        CustomUserDetails customUserDetails = getCustomUserDetails();
+
         List<String> labels = getSourceLabel();
         ILoadBalancer balancer = getLoadBalancer();
         List<Server> servers = this.getPredicate().getEligibleServers(balancer.getAllServers(), key);
@@ -61,6 +78,30 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
             }
         }
         return null;
+    }
+
+    private CustomUserDetails getCustomUserDetails() {
+        if (RequestContextHolder.getRequestAttributes() == null) {
+            return null;
+        }
+        Object token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getAttribute(HEADER_TOKEN);
+        String jwtToken = null;
+        if (token != null) {
+            jwtToken = token.toString().substring(HEADER_BEARER.length()).trim();
+        } else {
+            String authorization = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(HEADER_AUTHORIZATION);
+            if (authorization == null) {
+                return null;
+            }
+            jwtToken = authorization.substring(HEADER_BEARER.length()).trim();
+        }
+        MacSigner macSigner = new MacSigner(commonProperties.getOauthJwtKey());
+        if (jwtToken.indexOf(JWT_SPLIT) < 0) {
+            return null;
+        }
+        String userInfo = JwtHelper.decodeAndVerify(jwtToken, macSigner).getClaims();
+        CustomUserDetails customUserDetails = GSON.fromJson(userInfo, CustomUserDetails.class);
+        return customUserDetails;
     }
 
     private List<String> getSourceLabel() {

@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 @Configuration
 @ComponentScan
-@RibbonClients(defaultConfiguration = CustomMetadataRule.class)
+@RibbonClients(defaultConfiguration = CustomRibbonConfiguration.class)
 @EnableConfigurationProperties({CommonProperties.class})
 @Import(PageRequestQueryConfig.class)
 public class HystrixInterceptorAutoConfiguration implements WebMvcConfigurer {
