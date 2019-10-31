@@ -1,10 +1,12 @@
 package io.choerodon.feign;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by WUGUOKAI on 2018/3/12.
  */
+@Component
 @ConfigurationProperties(prefix = "choerodon")
 public class CommonProperties {
 
