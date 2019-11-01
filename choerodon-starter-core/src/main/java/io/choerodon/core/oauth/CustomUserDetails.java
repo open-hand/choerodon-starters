@@ -13,6 +13,7 @@ import java.util.*;
  *
  * @author wuguokai
  * @author Eugen
+ * @author zongw.lee@gmail.com
  */
 public class CustomUserDetails extends User implements Serializable {
     private static final long serialVersionUID = -3762281463683847665L;
@@ -48,6 +49,8 @@ public class CustomUserDetails extends User implements Serializable {
     private Set<String> clientAutoApproveScopes;
 
     private transient Map<String, Object> additionInfo;
+
+    private String routeRuleCode;
 
     public CustomUserDetails(String username,
                              String password,
@@ -192,6 +195,14 @@ public class CustomUserDetails extends User implements Serializable {
     public void setClientAutoApproveScopes(Collection<String> clientAutoApproveScopes) {
         this.clientAutoApproveScopes = clientAutoApproveScopes == null ? null
                 : new LinkedHashSet<String>(clientAutoApproveScopes);
+    }
+
+    public String getRouteRuleCode() {
+        return routeRuleCode;
+    }
+
+    public void setRouteRuleCode(String routeRuleCode) {
+        this.routeRuleCode = routeRuleCode;
     }
 
     @Override
