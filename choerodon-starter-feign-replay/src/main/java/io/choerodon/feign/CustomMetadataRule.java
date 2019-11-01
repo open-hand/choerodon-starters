@@ -34,7 +34,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
     private CommonProperties commonProperties;
     private Random random = new Random();
 
-    public CustomMetadataRule(CommonProperties commonProperties) {
+    public void setCommonProperties(CommonProperties commonProperties) {
         this.commonProperties = commonProperties;
     }
 
