@@ -25,7 +25,8 @@ public class CustomRibbonConfiguration {
      */
     @Bean
     public IRule ribbonRule() {
-        CustomMetadataRule rule = new CustomMetadataRule(commonProperties);
+        CustomMetadataRule rule = new CustomMetadataRule();
+        rule.setCommonProperties(commonProperties);
         rule.initWithNiwsConfig(config);
         return rule;
     }
