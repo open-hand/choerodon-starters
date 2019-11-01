@@ -25,19 +25,19 @@ maven-test-build:
     - /^release-.*$/
     - /^hotfix-.*$/
 
-#maven-deploy-snapshot:
-#  stage: maven-deploy
-#  script:
-#    - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_SNAPSHOT_URL}
-#  only:
-#    - master
+maven-deploy-snapshot:
+  stage: maven-deploy
+  script:
+    - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_SNAPSHOT_URL}
+  only:
+    - master
 
 maven-deploy-release:
   stage: maven-deploy
   script:
     - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_RELEASE_URL}
   only:
-    - master
+#    - master
     - tags
     - /^release-.*$/
 
