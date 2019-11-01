@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Bean;
 
 
 /**
- *{@inheritDoc}
+ * {@inheritDoc}
+ *
  * @author crock
  */
 @Configurable
@@ -24,9 +25,8 @@ public class CustomRibbonConfiguration {
      */
     @Bean
     public IRule ribbonRule() {
-        CustomMetadataRule rule = new CustomMetadataRule();
+        CustomMetadataRule rule = new CustomMetadataRule(commonProperties);
         rule.initWithNiwsConfig(config);
-        rule.setCommonProperties(commonProperties);
         return rule;
     }
 
