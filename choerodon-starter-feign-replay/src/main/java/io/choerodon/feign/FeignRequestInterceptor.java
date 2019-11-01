@@ -1,10 +1,8 @@
 package io.choerodon.feign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import io.choerodon.core.oauth.CustomUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
+
+import static io.choerodon.core.variable.RequestVariableHolder.HEADER_TOKEN;
+import io.choerodon.core.oauth.CustomUserDetails;
 
 
 /**
@@ -66,21 +67,10 @@ public class FeignRequestInterceptor implements RequestInterceptor {
             if (token == null) {
                 token = OAUTH_TOKEN_PREFIX + JwtHelper.encode(OBJECT_MAPPER.writeValueAsString(defaultUserDetails), signer).getEncoded();
             }
-            template.header(RequestVariableHolder.HEADER_TOKEN, token);
-            setLabel(template);
+            template.header(HEADER_TOKEN, token);
         } catch (Exception e) {
             LOGGER.error("generate jwt token failed {}", e);
         }
-    }
-
-    private void setLabel(RequestTemplate template) {
-        if (HystrixRequestContext.isCurrentThreadInitialized()) {
-            String label = RequestVariableHolder.LABEL.get();
-            if (label != null) {
-                template.header(RequestVariableHolder.HEADER_LABEL, label);
-            }
-        }
-
     }
 
 }
