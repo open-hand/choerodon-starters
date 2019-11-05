@@ -7,8 +7,6 @@ import java.util.Objects;
  **/
 public class NotifyTemplateScanData {
     private String businessType;
-    private String code;
-    private String name;
     private String title;
     private String content;
     private String type;
@@ -16,10 +14,8 @@ public class NotifyTemplateScanData {
     public NotifyTemplateScanData() {
     }
 
-    public NotifyTemplateScanData(String businessType, String code, String name, String title, String content, String type) {
+    public NotifyTemplateScanData(String businessType, String title, String content, String type) {
         this.businessType = businessType;
-        this.code = code;
-        this.name = name;
         this.title = title;
         this.content = content;
         this.type = type;
@@ -31,22 +27,6 @@ public class NotifyTemplateScanData {
 
     public void setBusinessType(String businessType) {
         this.businessType = businessType;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getTitle() {
@@ -77,8 +57,6 @@ public class NotifyTemplateScanData {
     public String toString() {
         return "NotifyTemplateScanData{" +
                 "businessType='" + businessType + '\'' +
-                ", code='" + code + '\'' +
-                ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", type='" + type + '\'' +
@@ -90,12 +68,11 @@ public class NotifyTemplateScanData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NotifyTemplateScanData that = (NotifyTemplateScanData) o;
-        return Objects.equals(getCode(), that.getCode()) &&
-                Objects.equals(getType(), that.getType());
+        return Objects.equals(getType(), that.getType());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCode(), getType());
+        return Objects.hash(getType());
     }
 }
