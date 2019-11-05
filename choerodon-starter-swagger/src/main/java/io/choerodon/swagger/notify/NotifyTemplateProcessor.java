@@ -32,8 +32,7 @@ public class NotifyTemplateProcessor implements BeanPostProcessor {
     public Object postProcessAfterInitialization(Object bean, String beanName) {
         if (bean instanceof NotifyTemplate) {
             NotifyTemplate template = (NotifyTemplate) bean;
-            NotifyTemplateScanData scanData = new NotifyTemplateScanData(template.businessTypeCode(),
-                    template.code(), template.name(), template.title(), template.content(), template.type());
+            NotifyTemplateScanData scanData = new NotifyTemplateScanData(template.businessTypeCode(), template.title(), template.content(), template.type());
             if (validNotifyTemplate(scanData)) {
                 templateScanData.add(scanData);
             }
@@ -59,14 +58,7 @@ public class NotifyTemplateProcessor implements BeanPostProcessor {
             LOGGER.error("error.notifyTemplate.businessTypeCodeEmpty {}", template);
             return false;
         }
-        if (StringUtils.isEmpty(template.getCode())) {
-            LOGGER.error("error.notifyTemplate.codeEmpty {}", template);
-            return false;
-        }
-        if (StringUtils.isEmpty(template.getName())) {
-            LOGGER.error("error.notifyTemplate.nameEmpty {}", template);
-            return false;
-        }
+
         if (StringUtils.isEmpty(template.getTitle())) {
             LOGGER.error("error.notifyTemplate.titleEmpty {}", template);
             return false;
