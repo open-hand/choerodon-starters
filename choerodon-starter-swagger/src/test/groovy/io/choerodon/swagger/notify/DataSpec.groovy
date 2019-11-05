@@ -11,7 +11,7 @@ class DataSpec extends Specification {
         def businessTypeScanData = new HashSet<NotifyBusinessTypeScanData>()
         def data1 = new NotifyBusinessTypeScanData("code", "name", "description",
                 "level", 1,
-                false, false, true)
+                false, false, true,"categoryCode")
         def data2 = new NotifyBusinessTypeScanData()
         data2.setName(data1.getName())
         data2.setCode(data1.getCode())
@@ -20,14 +20,13 @@ class DataSpec extends Specification {
         data2.setManualRetry(data1.getManualRetry())
         data2.setRetryCount(data1.getRetryCount())
         data2.setSendInstantly(data1.getSendInstantly())
+        data2.setCategoryCode(data1.getCategoryCode())
         businessTypeScanData.add(data1)
         businessTypeScanData.add(data2)
 
         and: "准备NotifyTemplateProcessor"
         def templateScanData = new HashSet<NotifyTemplateScanData>()
         def data3 = new NotifyTemplateScanData()
-        data3.setCode("code")
-        data3.setName("name")
         data3.setType("type")
         data3.setContent("content")
         data3.setBusinessType("bussinessType")

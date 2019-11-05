@@ -7,10 +7,6 @@ public interface NotifyTemplate {
 
     String businessTypeCode();
 
-    String code();
-
-    String name();
-
     String title();
 
     String content();

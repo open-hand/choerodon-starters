@@ -1,7 +1,11 @@
 package io.choerodon.core.notify;
 
 public interface EmailTemplate extends NotifyTemplate {
-    default String type(){
+    String code();
+
+    String name();
+
+    default String type() {
         return "email";
     }
 }
