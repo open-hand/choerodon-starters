@@ -20,6 +20,11 @@ public @interface NotifyBusinessType {
     String name();
 
     /**
+     * 消息类型编码
+     */
+    String categoryCode() default "default";
+
+    /**
      * 业务描述
      */
     String description() default "";
