@@ -6,6 +6,8 @@ public class NotifyBusinessTypeScanData {
 
     private String name;
 
+    private String categoryCode;
+
     private String description;
 
     private String level;
@@ -23,7 +25,8 @@ public class NotifyBusinessTypeScanData {
 
     public NotifyBusinessTypeScanData(String code, String name, String description,
                                       String level, Integer retryCount,
-                                      Boolean isSendInstantly, Boolean isManualRetry, Boolean isAllowConfig) {
+                                      Boolean isSendInstantly, Boolean isManualRetry, Boolean isAllowConfig,
+                                      String categoryCode) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -32,6 +35,7 @@ public class NotifyBusinessTypeScanData {
         this.isSendInstantly = isSendInstantly;
         this.isManualRetry = isManualRetry;
         this.isAllowConfig = isAllowConfig;
+        this.categoryCode = categoryCode;
     }
 
     public String getCode() {
@@ -96,5 +100,13 @@ public class NotifyBusinessTypeScanData {
 
     public void setAllowConfig(Boolean allowConfig) {
         isAllowConfig = allowConfig;
+    }
+
+    public String getCategoryCode() {
+        return categoryCode;
+    }
+
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
     }
 }
