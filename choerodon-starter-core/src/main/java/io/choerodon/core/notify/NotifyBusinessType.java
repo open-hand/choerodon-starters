@@ -53,4 +53,25 @@ public @interface NotifyBusinessType {
      * 是否允许用户配置接收通知
      */
     boolean isAllowConfig() default true;
+
+    /**
+     * 是否启用邮件方式发送消息。0：不启用（默认）；1：启用
+     */
+    boolean emailEnabledFlag() default false;
+
+    /**
+     * 是否启用站内信方式发送消息。0：不启用（默认）；1：启用
+     */
+    boolean pmEnabledFlag() default false;
+
+    /**
+     * 是否启用短信方式发送消息。0：不启用（默认）；1：启用
+     */
+    boolean smsEnabledFlag() default false;
+
+    /**
+     * 是否启用WEBHOOK方式发送消息。0：不启用（默认）；1：启用
+     */
+    boolean webhookEnabledFlag() default false;
+
 }
