@@ -20,13 +20,21 @@ public class NotifyBusinessTypeScanData {
 
     private Boolean isAllowConfig;
 
+    private Boolean emailEnabledFlag;
+
+    private Boolean pmEnabledFlag;
+
+    private Boolean smsEnabledFlag;
+
+    private Boolean webhookEnabledFlag;
+
     public NotifyBusinessTypeScanData() {
     }
 
     public NotifyBusinessTypeScanData(String code, String name, String description,
                                       String level, Integer retryCount,
                                       Boolean isSendInstantly, Boolean isManualRetry, Boolean isAllowConfig,
-                                      String categoryCode) {
+                                      String categoryCode,Boolean emailEnabledFlag,Boolean pmEnabledFlag, Boolean smsEnabledFlag,Boolean webhookEnabledFlag) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -36,6 +44,10 @@ public class NotifyBusinessTypeScanData {
         this.isManualRetry = isManualRetry;
         this.isAllowConfig = isAllowConfig;
         this.categoryCode = categoryCode;
+        this.emailEnabledFlag=emailEnabledFlag;
+        this.pmEnabledFlag=pmEnabledFlag;
+        this.smsEnabledFlag=smsEnabledFlag;
+        this.webhookEnabledFlag=webhookEnabledFlag;
     }
 
     public String getCode() {
@@ -108,5 +120,37 @@ public class NotifyBusinessTypeScanData {
 
     public void setCategoryCode(String categoryCode) {
         this.categoryCode = categoryCode;
+    }
+
+    public Boolean getEmailEnabledFlag() {
+        return emailEnabledFlag;
+    }
+
+    public void setEmailEnabledFlag(Boolean emailEnabledFlag) {
+        this.emailEnabledFlag = emailEnabledFlag;
+    }
+
+    public Boolean getPmEnabledFlag() {
+        return pmEnabledFlag;
+    }
+
+    public void setPmEnabledFlag(Boolean pmEnabledFlag) {
+        this.pmEnabledFlag = pmEnabledFlag;
+    }
+
+    public Boolean getSmsEnabledFlag() {
+        return smsEnabledFlag;
+    }
+
+    public void setSmsEnabledFlag(Boolean smsEnabledFlag) {
+        this.smsEnabledFlag = smsEnabledFlag;
+    }
+
+    public Boolean getWebhookEnabledFlag() {
+        return webhookEnabledFlag;
+    }
+
+    public void setWebhookEnabledFlag(Boolean webhookEnabledFlag) {
+        this.webhookEnabledFlag = webhookEnabledFlag;
     }
 }
