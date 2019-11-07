@@ -79,12 +79,14 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
         Object token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getAttribute(HEADER_TOKEN);
         String jwtToken = null;
         if (token != null) {
+            LOGGER.info("Get CustomUserDetails: start to prase jwtToken. Token:{}", token);
             jwtToken = token.toString().substring(HEADER_BEARER.length()).trim();
         } else {
             String authorization = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(HEADER_AUTHORIZATION);
             if (authorization == null) {
                 return null;
             }
+            LOGGER.info("Get CustomUserDetails: start to prase jwtToken. Token:{}", token);
             jwtToken = authorization.substring(HEADER_BEARER.length()).trim();
         }
         MacSigner macSigner = new MacSigner(commonProperties.getOauthJwtKey());
@@ -92,6 +94,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
             return null;
         }
         String userInfo = JwtHelper.decodeAndVerify(jwtToken, macSigner).getClaims();
+        LOGGER.info("CustomUserDetails info, userInfo: {}", userInfo);
         return GSON.fromJson(userInfo, CustomUserDetails.class);
     }
 
@@ -101,9 +104,11 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
                 .collect(Collectors.toList());
         if (noRuleServers.isEmpty()) {
             // 随机所有路由
+            LOGGER.info("Route to one of all servers");
             return servers.get(random.nextInt(servers.size()));
         } else {
             // 无规则路由
+            LOGGER.info("Route to one of no rule's servers");
             return noRuleServers.get(random.nextInt(noRuleServers.size()));
         }
     }
