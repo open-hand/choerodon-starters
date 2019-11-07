@@ -44,6 +44,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
 
     @Override
     public Server choose(Object key) {
+        LOGGER.info("Start to choose server to route");
         List<Server> servers = this.getPredicate().getEligibleServers(getLoadBalancer().getAllServers(), key);
         if (servers.isEmpty()) {
             return null;
@@ -52,6 +53,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
         CustomUserDetails customUserDetails = getCustomUserDetails();
         // 如果当前是oauth请求用户认证，则不需要做灰度发布策略
         if (customUserDetails == null) {
+            LOGGER.info("CustomUserDetails is Empty");
             return servers.get(random.nextInt(servers.size()));
         }
         if (!StringUtils.isEmpty(customUserDetails.getRouteRuleCode())) {
@@ -70,6 +72,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
     }
 
     private CustomUserDetails getCustomUserDetails() {
+        LOGGER.info("Start to get CustomUserDetails");
         if (RequestContextHolder.getRequestAttributes() == null) {
             return null;
         }
