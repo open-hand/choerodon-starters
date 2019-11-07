@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
 import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.MacSigner;
 import org.springframework.util.StringUtils;
@@ -31,6 +33,8 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String HEADER_TOKEN = "token";
     private static final Gson GSON = new Gson();
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomMetadataRule.class);
+
     private CommonProperties commonProperties;
     private Random random = new Random();
 
@@ -51,10 +55,12 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
             return servers.get(random.nextInt(servers.size()));
         }
         if (!StringUtils.isEmpty(customUserDetails.getRouteRuleCode())) {
+            LOGGER.info("Start to handle grayscale launching strategy, Route_Rule: {}", customUserDetails.getRouteRuleCode());
             List<Server> ruleServers = servers.stream()
                     .filter(server -> judgeRouteRuleEnable(extractMetadata(server), customUserDetails.getRouteRuleCode()))
                     .collect(Collectors.toList());
             if (!ruleServers.isEmpty()) {
+                LOGGER.info("Route to specific server ····");
                 // 包含规则路由
                 return ruleServers.get(random.nextInt(ruleServers.size()));
             }
