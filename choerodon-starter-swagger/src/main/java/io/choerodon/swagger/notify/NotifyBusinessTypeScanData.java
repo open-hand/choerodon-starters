@@ -12,6 +12,8 @@ public class NotifyBusinessTypeScanData {
 
     private String level;
 
+    private Boolean isEnabled;
+
     private Integer retryCount;
 
     private Boolean isSendInstantly;
@@ -34,7 +36,8 @@ public class NotifyBusinessTypeScanData {
     public NotifyBusinessTypeScanData(String code, String name, String description,
                                       String level, Integer retryCount,
                                       Boolean isSendInstantly, Boolean isManualRetry, Boolean isAllowConfig,
-                                      String categoryCode,Boolean emailEnabledFlag,Boolean pmEnabledFlag, Boolean smsEnabledFlag,Boolean webhookEnabledFlag) {
+                                      String categoryCode, Boolean emailEnabledFlag, Boolean pmEnabledFlag, Boolean smsEnabledFlag, Boolean webhookEnabledFlag,
+                                      Boolean isEnabled) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -44,10 +47,11 @@ public class NotifyBusinessTypeScanData {
         this.isManualRetry = isManualRetry;
         this.isAllowConfig = isAllowConfig;
         this.categoryCode = categoryCode;
-        this.emailEnabledFlag=emailEnabledFlag;
-        this.pmEnabledFlag=pmEnabledFlag;
-        this.smsEnabledFlag=smsEnabledFlag;
-        this.webhookEnabledFlag=webhookEnabledFlag;
+        this.emailEnabledFlag = emailEnabledFlag;
+        this.pmEnabledFlag = pmEnabledFlag;
+        this.smsEnabledFlag = smsEnabledFlag;
+        this.webhookEnabledFlag = webhookEnabledFlag;
+        this.isEnabled = isEnabled;
     }
 
     public String getCode() {
@@ -152,5 +156,13 @@ public class NotifyBusinessTypeScanData {
 
     public void setWebhookEnabledFlag(Boolean webhookEnabledFlag) {
         this.webhookEnabledFlag = webhookEnabledFlag;
+    }
+
+    public Boolean getEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        isEnabled = enabled;
     }
 }
