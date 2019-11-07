@@ -107,7 +107,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
 
     private boolean judgeRouteRuleEnable(Map<String, String> metadata, String routeRuleCode) {
         String sourceRouteRuleCode = metadata.get(HEADER_ROUTE_RULE);
-        return sourceRouteRuleCode.equals(routeRuleCode);
+        return sourceRouteRuleCode != null && sourceRouteRuleCode.equals(routeRuleCode);
     }
 
     private Map<String, String> extractMetadata(Server server) {
