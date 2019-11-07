@@ -68,7 +68,8 @@ public class NotifyTemplateScanData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NotifyTemplateScanData that = (NotifyTemplateScanData) o;
-        return Objects.equals(getType(), that.getType());
+        return Objects.equals(getBusinessType(), that.getBusinessType()) &&
+                Objects.equals(getType(), that.getType());
     }
 
     @Override
