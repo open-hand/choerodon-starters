@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.jwt.crypto.sign.MacSigner;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -78,15 +79,15 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
         }
         Object token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getAttribute(HEADER_TOKEN);
         String jwtToken = null;
-        if (token != null) {
+        if (!ObjectUtils.isEmpty(token)) {
             LOGGER.info("Get CustomUserDetails: start to prase jwtToken. Token:{}", token);
             jwtToken = token.toString().substring(HEADER_BEARER.length()).trim();
         } else {
             String authorization = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(HEADER_AUTHORIZATION);
-            if (authorization == null) {
+            if (ObjectUtils.isEmpty(authorization)) {
                 return null;
             }
-            LOGGER.info("Get CustomUserDetails: start to prase jwtToken. Token:{}", token);
+            LOGGER.info("Get CustomUserDetails: start to prase jwtToken. Authorization:{}", authorization);
             jwtToken = authorization.substring(HEADER_BEARER.length()).trim();
         }
         MacSigner macSigner = new MacSigner(commonProperties.getOauthJwtKey());
