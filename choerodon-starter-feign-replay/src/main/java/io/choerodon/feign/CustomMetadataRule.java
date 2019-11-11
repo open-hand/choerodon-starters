@@ -58,7 +58,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
         // 如果当前是oauth请求用户认证，则不需要做灰度发布策略
         if (customUserDetails == null) {
             LOGGER.info("CustomUserDetails is Empty");
-            return servers.get(random.nextInt(servers.size()));
+            return getDefaultRouteServer(servers);
         }
         if (!StringUtils.isEmpty(customUserDetails.getRouteRuleCode())) {
             LOGGER.info("Start to handle grayscale launching strategy, Route_Rule: {}", customUserDetails.getRouteRuleCode());
@@ -85,7 +85,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
             if (rule == null) {
                 return null;
             }
-            CustomUserDetails customUserDetails = new CustomUserDetails("default","unknown", Collections.emptyList());
+            CustomUserDetails customUserDetails = new CustomUserDetails("default", "unknown", Collections.emptyList());
             customUserDetails.setRouteRuleCode(rule);
             return customUserDetails;
         }
