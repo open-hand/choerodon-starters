@@ -55,11 +55,6 @@ public @interface NotifyBusinessType {
     boolean isAllowConfig() default true;
 
     /**
-     * 是否启用
-     */
-    boolean isEnabled() default true;
-
-    /**
      * 是否启用邮件方式发送消息。0：不启用（默认）；1：启用
      */
     boolean emailEnabledFlag() default false;
