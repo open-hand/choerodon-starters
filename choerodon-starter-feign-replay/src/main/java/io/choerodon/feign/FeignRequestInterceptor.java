@@ -1,6 +1,7 @@
 package io.choerodon.feign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 
+import static io.choerodon.core.variable.RequestVariableHolder.HEADER_ROUTE_RULE;
 import static io.choerodon.core.variable.RequestVariableHolder.HEADER_TOKEN;
 import io.choerodon.core.oauth.CustomUserDetails;
 
@@ -68,9 +70,20 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                 token = OAUTH_TOKEN_PREFIX + JwtHelper.encode(OBJECT_MAPPER.writeValueAsString(defaultUserDetails), signer).getEncoded();
             }
             template.header(HEADER_TOKEN, token);
+            setRouteRule(template);
         } catch (Exception e) {
             LOGGER.error("generate jwt token failed {}", e);
         }
+    }
+
+    private void setRouteRule(RequestTemplate template) {
+        if (HystrixRequestContext.isCurrentThreadInitialized()) {
+            String rule = RequestVariableHolder.ROUTE_RULE.get();
+            if (rule != null) {
+                template.header(HEADER_ROUTE_RULE, rule);
+            }
+        }
+
     }
 
 }

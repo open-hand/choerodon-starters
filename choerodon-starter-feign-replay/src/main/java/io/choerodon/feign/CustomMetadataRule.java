@@ -1,6 +1,7 @@
 package io.choerodon.feign;
 
 import com.google.gson.Gson;
+import com.netflix.hystrix.strategy.concurrency.HystrixRequestContext;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ZoneAvoidanceRule;
 import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
@@ -13,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -76,7 +78,16 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
     private CustomUserDetails getCustomUserDetails() {
         LOGGER.info("Start to get CustomUserDetails");
         if (RequestContextHolder.getRequestAttributes() == null) {
-            return null;
+            if (!HystrixRequestContext.isCurrentThreadInitialized()) {
+                return null;
+            }
+            String rule = RequestVariableHolder.ROUTE_RULE.get();
+            if (rule == null) {
+                return null;
+            }
+            CustomUserDetails customUserDetails = new CustomUserDetails("default","unknown", Collections.emptyList());
+            customUserDetails.setRouteRuleCode(rule);
+            return customUserDetails;
         }
         Object token = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getAttribute(HEADER_TOKEN);
         String jwtToken = null;
