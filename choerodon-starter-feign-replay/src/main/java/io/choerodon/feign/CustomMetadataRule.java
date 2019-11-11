@@ -47,6 +47,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
     public Server choose(Object key) {
         LOGGER.info("Start to choose server to route");
         List<Server> servers = this.getPredicate().getEligibleServers(getLoadBalancer().getAllServers(), key);
+        servers.forEach(v -> LOGGER.info("One of all servers: HOST => {}, IP => {}, Scheme => {}", v.getHost(), v.getPort(), v.getScheme()));
         if (servers.isEmpty()) {
             return null;
         }
@@ -103,6 +104,7 @@ public class CustomMetadataRule extends ZoneAvoidanceRule {
         List<Server> noRuleServers = servers.stream()
                 .filter(server -> extractMetadata(server).get(HEADER_ROUTE_RULE) == null)
                 .collect(Collectors.toList());
+        noRuleServers.forEach(v -> LOGGER.info("No rule's servers: Host => {}, IP => {}, Scheme => {}", v.getHost(), v.getPort(), v.getScheme()));
         if (noRuleServers.isEmpty()) {
             // 随机所有路由
             LOGGER.info("Route to one of all servers");
