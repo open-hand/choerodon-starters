@@ -13,9 +13,10 @@ import static io.choerodon.core.variable.RequestVariableHolder.HEADER_ROUTE_RULE
 
 
 /**
- * 初始化HystrixRequestContext，并存请求的label
+ * 初始化HystrixRequestContext，存储请求的routeRuleCode
+ * 与RequestVariableHolder结合使用
  *
- * @author crock
+ * @author zongw.lee@gmail.com
  */
 public class HystrixHeaderInterceptor extends HandlerInterceptorAdapter {
 
