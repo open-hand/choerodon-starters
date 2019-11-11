@@ -22,7 +22,7 @@ import io.choerodon.core.oauth.CustomUserDetails;
 
 
 /**
- * 拦截feign请求，为requestTemplate加上oauth token请求头
+ * 拦截feign请求，为requestTemplate加上oauth token与routeRule 请求头
  *
  * @author jiatong.li
  */
