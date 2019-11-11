@@ -41,7 +41,7 @@ public class NotifyTemplateProcessor implements BeanPostProcessor {
         if (business != null) {
             businessTypeScanData.add(new NotifyBusinessTypeScanData(business.code(), business.name(), business.description(),
                     business.level().getValue(), business.retryCount(), business.isSendInstantly(), business.isManualRetry(), business.isAllowConfig(), business.categoryCode(), business.emailEnabledFlag(),
-                    business.pmEnabledFlag(), business.smsEnabledFlag(), business.webhookEnabledFlag(), business.isEnabled()));
+                    business.pmEnabledFlag(), business.smsEnabledFlag(), business.webhookEnabledFlag()));
         }
         return bean;
     }
