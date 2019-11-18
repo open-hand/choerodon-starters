@@ -2,6 +2,14 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+# [0.14.0]
+
+### 修改
+- 更新消息通知 DTO 适应新的表结构
+
+### 新增
+- 添加自定义的`PageableArgumentResolver`使`Pageable`可接受`size=0`以实现size为0的时候返回全部数据
+
 # [0.13.0]
 
 ### 新增
@@ -9,7 +17,7 @@
 
 ### 修改
 - 拆分base模块功能至core/mybatis模块中
-- 更新web模块为webmac模块
+- 更新web模块为webmvc模块
 
 ### 移除
 移除`choerodon-starter-base`模块依赖

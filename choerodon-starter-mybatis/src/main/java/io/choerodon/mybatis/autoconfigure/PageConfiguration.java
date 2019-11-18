@@ -4,20 +4,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-@EnableWebMvc
 @Configuration
-public class PageConfiguration extends WebMvcConfigurerAdapter {
+public class PageConfiguration implements WebMvcConfigurer {
     @Override
-    public void addArgumentResolvers(
-            final List<HandlerMethodArgumentResolver> argumentResolvers) {
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         PageableArgumentResolver pageableArgumentResolver = pageable();
-        argumentResolvers.add(pageableArgumentResolver);
-        super.addArgumentResolvers(argumentResolvers);
+        resolvers.add(pageableArgumentResolver);
     }
 
     @Bean
