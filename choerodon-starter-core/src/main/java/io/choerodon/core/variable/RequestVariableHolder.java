@@ -10,6 +10,8 @@ public class RequestVariableHolder {
 
     public static final String HEADER_ROUTE_RULE = "Route_Rule";
 
+    public static final String HEADER_LABEL = "X-Eureka-Label";
+
     public static final String HEADER_JWT = "Jwt_Token";
 
     public static final String HEADER_TOKEN = "Authorization";
