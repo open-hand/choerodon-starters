@@ -12,8 +12,6 @@ public class RequestVariableHolder {
 
     public static final HystrixRequestVariableDefault<String> ROUTE_RULE = new HystrixRequestVariableDefault<>();
 
-    public static final HystrixRequestVariableDefault<String> LABEL = new HystrixRequestVariableDefault<>();
-
     private RequestVariableHolder() {
     }
 }
