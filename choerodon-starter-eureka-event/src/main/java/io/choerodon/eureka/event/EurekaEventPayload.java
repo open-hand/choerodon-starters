@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class EurekaEventPayload {
 
-    private static final String VERSION_STR = "VERSION";
+    private static final String VERSION_STR = "version";
 
     private static final String DEFAULT_VERSION_NAME = "unknown";
 

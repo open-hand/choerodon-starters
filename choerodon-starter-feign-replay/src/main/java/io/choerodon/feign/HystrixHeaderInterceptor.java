@@ -9,7 +9,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static io.choerodon.core.variable.RequestVariableHolder.HEADER_LABEL;
 import static io.choerodon.core.variable.RequestVariableHolder.HEADER_ROUTE_RULE;
 
 
@@ -30,10 +29,8 @@ public class HystrixHeaderInterceptor extends HandlerInterceptorAdapter {
             HystrixRequestContext.initializeContext();
         }
         String routeRule = request.getHeader(HEADER_ROUTE_RULE);
-        String label = request.getHeader(HEADER_LABEL);
-        logger.debug("Route-Rule:{} X-Eureka-Label: {}", routeRule, label);
+        logger.debug("Route-Rule:{}", routeRule);
         RequestVariableHolder.ROUTE_RULE.set(routeRule);
-        RequestVariableHolder.LABEL.set(label);
         return true;
     }
 
