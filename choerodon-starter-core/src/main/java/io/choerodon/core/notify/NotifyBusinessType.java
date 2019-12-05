@@ -4,6 +4,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.List;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -73,5 +75,15 @@ public @interface NotifyBusinessType {
      * 是否启用WEBHOOK方式发送消息。0：不启用（默认）；1：启用
      */
     boolean webhookEnabledFlag() default false;
+
+    /**
+     * 用于项目层通知设置触发人员
+     */
+    String[] targetUserType() default {};
+
+    /**
+     * 用于项目层通知设置 区分tab页
+     */
+    ServiceNotifyType notifyType() default ServiceNotifyType.DEFAULT_NOTIFY;
 
 }
