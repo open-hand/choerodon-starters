@@ -6,12 +6,12 @@ class DataSpec extends Specification {
     def "NotifyScanData"() {
         given: "空构造器"
         def notifyScanData = new NotifyScanData()
-
+        def String[] arr1 = []
         and: "准备NotifyBusinessTypeScanData"
         def businessTypeScanData = new HashSet<NotifyBusinessTypeScanData>()
         def data1 = new NotifyBusinessTypeScanData("code", "name", "description",
                 "level", 1,
-                false, false, true, "categoryCode", false, false, false, false)
+                false, false, true, "categoryCode", false, false, false, false, arr1, "")
         def data2 = new NotifyBusinessTypeScanData()
         data2.setName(data1.getName())
         data2.setCode(data1.getCode())
