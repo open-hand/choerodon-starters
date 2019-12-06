@@ -11,7 +11,7 @@ class DataSpec extends Specification {
         def businessTypeScanData = new HashSet<NotifyBusinessTypeScanData>()
         def data1 = new NotifyBusinessTypeScanData("code", "name", "description",
                 "level", 1,
-                false, false, true, "categoryCode", false, false, false, false, arr1, "")
+                false, false, true, "categoryCode", false, false, false, false, arr1, "", false, false)
         def data2 = new NotifyBusinessTypeScanData()
         data2.setName(data1.getName())
         data2.setCode(data1.getCode())
