@@ -86,4 +86,14 @@ public @interface NotifyBusinessType {
      */
     ServiceNotifyType notifyType() default ServiceNotifyType.DEFAULT_NOTIFY;
 
+    /**
+     * 项目层：是否启用邮件方式发送消息。0：不启用（默认）；1：启用
+     */
+    boolean proEmailEnabledFlag() default false;
+
+    /**
+     * 项目层：是否启用站内信方式发送消息。0：不启用（默认）；1：启用
+     */
+    boolean proPmEnabledFlag() default false;
+
 }
