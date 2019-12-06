@@ -9,6 +9,7 @@
 
 ### 新增
 - 添加自定义的`PageableArgumentResolver`使`Pageable`可接受`size=0`以实现size为0的时候返回全部数据
+- `choerodon-starter-feign-replay`新增灰度发布功能
 
 # [0.13.0]
 
