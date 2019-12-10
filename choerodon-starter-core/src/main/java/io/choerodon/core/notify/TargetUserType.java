@@ -76,7 +76,7 @@ public enum TargetUserType {
         return this.typeName;
     }
 
-    public static Map<String, String> nameMapping = new HashMap<>(7);
+    public static Map<String, String> nameMapping = new HashMap<>(8);
 
     static {
         nameMapping.put(TargetUserType.APPLICATION_SERVICE_PERMISSION_OWNER.getTypeName(), "应用服务权限拥有者");
