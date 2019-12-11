@@ -20,6 +20,12 @@ public enum TargetUserType {
      * 指定用户
      */
     SELECTED_USERS("selectedUser"),
+
+    /**
+     * 指定用户
+     */
+    PROJECT_OWNER("projectOwner"),
+
     /**
      * 创建者
      */
@@ -44,14 +50,19 @@ public enum TargetUserType {
     /**
      * 操作者
      */
-    HANDLER("handler"),
-
-    /**
-     * 项目所有者
-     */
-    PROJECT_OWNER("projectOwner");
+    HANDLER("handler");
 
 
+    public static final String TARGET_HANDLER = "handler";
+    public static final String TARGET_USER_REPORTER = "reporter";
+    public static final String TARGET_USER_ASSIGNEE = "assignee";
+    public static final String TARGET_USER_SELECTED_USERS = "selectedUser";
+    public static final String TARGET_PROJECT_OWNER = "projectOwner";
+    public static final String TARGET_USER_CREATOR = "creator";
+    public static final String TARGET_USER_APPLICATION_SERVICE_PERMISSION_OWNER = "applicationServicePermissionOwner";
+    public static final String TARGET_USER_CODE_SUBMITTER = "codeSubmitter";
+    public static final String TARGET_USER_INSTANCE_DEPLOYER = "instanceDeployer";
+    public static final String TARGET_USER_PIPELINE_TRIGGERSS = "pipelineTriggers";
     private String typeName;
 
     TargetUserType(String typeName) {
@@ -76,7 +87,7 @@ public enum TargetUserType {
         return this.typeName;
     }
 
-    public static Map<String, String> nameMapping = new HashMap<>(7);
+    public static Map<String, String> nameMapping = new HashMap<>(8);
 
     static {
         nameMapping.put(TargetUserType.APPLICATION_SERVICE_PERMISSION_OWNER.getTypeName(), "应用服务权限拥有者");
