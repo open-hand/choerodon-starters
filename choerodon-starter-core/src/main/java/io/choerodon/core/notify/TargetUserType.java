@@ -39,16 +39,19 @@ public enum TargetUserType {
     /**
      * 流水线触发者
      */
-    PIPELINE_TRIGGERS("pipelineTriggers");
+    PIPELINE_TRIGGERS("pipelineTriggers"),
 
-    public static final String TARGET_USER_REPORTER = "reporter";
-    public static final String TARGET_USER_ASSIGNEE = "assignee";
-    public static final String TARGET_USER_SELECTED_USERS = "selectedUser";
-    public static final String TARGET_USER_CREATOR = "creator";
-    public static final String TARGET_USER_APPLICATION_SERVICE_PERMISSION_OWNER = "applicationServicePermissionOwner";
-    public static final String TARGET_USER_CODE_SUBMITTER = "codeSubmitter";
-    public static final String TARGET_USER_INSTANCE_DEPLOYER = "instanceDeployer";
-    public static final String TARGET_USER_PIPELINE_TRIGGERSS="pipelineTriggers";
+    /**
+     * 操作者
+     */
+    HANDLER("handler"),
+
+    /**
+     * 项目所有者
+     */
+    PROJECT_OWNER("projectOwner");
+
+
     private String typeName;
 
     TargetUserType(String typeName) {
@@ -84,6 +87,8 @@ public enum TargetUserType {
         nameMapping.put(TargetUserType.INSTANCE_DEPLOYER.getTypeName(), "实例部署者");
         nameMapping.put(TargetUserType.REPORTER.getTypeName(), "报告人");
         nameMapping.put(TargetUserType.SELECTED_USERS.getTypeName(), "指定用户");
+        nameMapping.put(TargetUserType.HANDLER.getTypeName(), "操作者");
+        nameMapping.put(TargetUserType.PROJECT_OWNER.getTypeName(), "项目所有者");
     }
 
 }
