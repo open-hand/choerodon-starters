@@ -1,7 +1,5 @@
 package io.choerodon.core.notify;
 
-import javax.xml.bind.annotation.XmlType;
-
 /**
  * User: Mr.Wang
  * Date: 2019/12/3
@@ -10,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 public enum ServiceNotifyType {
     AGILE_NOTIFY("agile"),
     DEVOPS_NOTIFY("devops"),
+    RESOURCE_DELETE_NOTIFY("resourceDelete"),
     DEFAULT_NOTIFY("default");
 
     private String typeName;
