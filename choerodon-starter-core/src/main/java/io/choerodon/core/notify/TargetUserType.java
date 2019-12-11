@@ -19,13 +19,7 @@ public enum TargetUserType {
     /**
      * 指定用户
      */
-    SELECTED_USERS("selectedUser"),
-
-    /**
-     * 指定用户
-     */
-    PROJECT_OWNER("projectOwner"),
-
+    SPECIFIER("specifier"),
     /**
      * 创建者
      */
@@ -50,8 +44,12 @@ public enum TargetUserType {
     /**
      * 操作者
      */
-    HANDLER("handler");
+    HANDLER("handler"),
 
+    /**
+     * 项目所有者
+     */
+    PROJECT_OWNER("projectOwner");
 
     public static final String TARGET_HANDLER = "handler";
     public static final String TARGET_USER_REPORTER = "reporter";
@@ -97,7 +95,7 @@ public enum TargetUserType {
         nameMapping.put(TargetUserType.CREATOR.getTypeName(), "创建者");
         nameMapping.put(TargetUserType.INSTANCE_DEPLOYER.getTypeName(), "实例部署者");
         nameMapping.put(TargetUserType.REPORTER.getTypeName(), "报告人");
-        nameMapping.put(TargetUserType.SELECTED_USERS.getTypeName(), "指定用户");
+        nameMapping.put(TargetUserType.SPECIFIER.getTypeName(), "指定用户");
         nameMapping.put(TargetUserType.HANDLER.getTypeName(), "操作者");
         nameMapping.put(TargetUserType.PROJECT_OWNER.getTypeName(), "项目所有者");
     }
