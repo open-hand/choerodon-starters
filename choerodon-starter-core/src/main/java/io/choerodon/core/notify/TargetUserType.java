@@ -54,7 +54,7 @@ public enum TargetUserType {
     public static final String TARGET_HANDLER = "handler";
     public static final String TARGET_USER_REPORTER = "reporter";
     public static final String TARGET_USER_ASSIGNEE = "assignee";
-    public static final String TARGET_USER_SELECTED_USERS = "selectedUser";
+    public static final String TARGET_USER_SPECIFIER = "specifier";
     public static final String TARGET_PROJECT_OWNER = "projectOwner";
     public static final String TARGET_USER_CREATOR = "creator";
     public static final String TARGET_USER_APPLICATION_SERVICE_PERMISSION_OWNER = "applicationServicePermissionOwner";
