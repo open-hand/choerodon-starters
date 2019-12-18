@@ -31,6 +31,20 @@ public class NoticeSendDTO {
     private String code;
 
     /**
+     * 事件名
+     */
+    private String eventName;
+
+    /**
+     * 环境ID
+     */
+    private Long envId;
+
+    /**
+     * 通知类型
+     */
+    private String notifyType;
+    /**
      * 触发发送通知的组织或项目id，如果是site层，则不传或传0
      */
     private Long sourceId;
@@ -154,4 +168,27 @@ public class NoticeSendDTO {
         return customizedSendingTypes.contains(WEB_HOOK);
     }
 
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public Long getEnvId() {
+        return envId;
+    }
+
+    public void setEnvId(Long envId) {
+        this.envId = envId;
+    }
+
+    public String getNotifyType() {
+        return notifyType;
+    }
+
+    public void setNotifyType(String notifyType) {
+        this.notifyType = notifyType;
+    }
 }
