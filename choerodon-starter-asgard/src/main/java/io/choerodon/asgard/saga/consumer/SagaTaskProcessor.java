@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import static io.choerodon.asgard.saga.consumer.SagaConsumer.invokeBeanMap;
 
 public class SagaTaskProcessor implements BeanPostProcessor {
-
+    @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
         return bean;
     }
@@ -22,7 +22,7 @@ public class SagaTaskProcessor implements BeanPostProcessor {
         Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
         if (methods != null) {
             for (Method method : methods) {
-                SagaTask sagaTask = AnnotationUtils.findAnnotation(method, SagaTask.class);
+                SagaTask sagaTask = AnnotationUtils.getAnnotation(method, SagaTask.class);
                 if (sagaTask != null) {
                     String key = sagaTask.sagaCode() + sagaTask.code();
                     errorCheck(method, sagaTask, key);
