@@ -9,7 +9,7 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-starter-parent</artifactId>
-        <version>0.14.0-SNAPSHOT</version>
+        <version>0.14.0.RELEASE</version>
     </parent>
     <properties>
         <skipTests>true</skipTests>
