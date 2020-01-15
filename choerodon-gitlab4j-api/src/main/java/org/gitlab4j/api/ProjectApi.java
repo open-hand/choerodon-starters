@@ -46,24 +46,16 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import org.gitlab4j.api.GitLabApi.ApiVersion;
-import org.gitlab4j.api.models.Event;
-import org.gitlab4j.api.models.Issue;
-import org.gitlab4j.api.models.Member;
-import org.gitlab4j.api.models.Project;
-import org.gitlab4j.api.models.ProjectHook;
-import org.gitlab4j.api.models.ProjectUser;
-import org.gitlab4j.api.models.Snippet;
-import org.gitlab4j.api.models.Variable;
-import org.gitlab4j.api.models.Visibility;
-
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
+
+import org.gitlab4j.api.GitLabApi.ApiVersion;
+import org.gitlab4j.api.models.*;
 
 /**
  * This class provides an entry point to all the GitLab API project calls.
@@ -1630,5 +1622,81 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public void deleteBranch(Integer id,String name) throws GitLabApiException {
         delete(Response.Status.NO_CONTENT, null, "projects", id, "protected_branches", name);
+    }
+
+    /**
+     * Get a List of the project access requests viewable by the authenticated user.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/access_requests</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @return a List of project AccessRequest instances accessible by the authenticated user
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<AccessRequest> getAccessRequests(Object projectIdOrPath) throws GitLabApiException {
+        return (getAccessRequests(projectIdOrPath, getDefaultPerPage()).all());
+    }
+
+    /**
+     * Get a Pager of the project access requests viewable by the authenticated user.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/access_requests</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param itemsPerPage the number of AccessRequest instances that will be fetched per page
+     * @return a Pager of project AccessRequest instances accessible by the authenticated user
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<AccessRequest> getAccessRequests(Object projectIdOrPath, int itemsPerPage) throws GitLabApiException {
+        return (new Pager<>(this, AccessRequest.class, itemsPerPage, null, "projects", getProjectIdOrPath(projectIdOrPath), "access_requests"));
+    }
+
+    /**
+     * Returns the project ID or path from the provided Integer, String, or Project instance.
+     *
+     * @param obj the object to determine the ID or path from
+     * @return the project ID or path from the provided Integer, String, or Project instance
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Object getProjectIdOrPath(Object obj) throws GitLabApiException {
+
+        if (obj == null) {
+            throw (new RuntimeException("Cannot determine ID or path from null object"));
+        } else if (obj instanceof Integer) {
+            return (obj);
+        } else if (obj instanceof String) {
+            return (urlEncode(((String) obj).trim()));
+        } else if (obj instanceof Project) {
+
+            Integer id = ((Project) obj).getId();
+            if (id != null && id.intValue() > 0) {
+                return (id);
+            }
+
+            String path = ((Project) obj).getPathWithNamespace();
+            if (path != null && path.trim().length() > 0) {
+                return (urlEncode(path.trim()));
+            }
+
+            throw (new RuntimeException("Cannot determine ID or path from provided Project instance"));
+
+        } else {
+            throw (new RuntimeException("Cannot determine ID or path from provided " + obj.getClass().getSimpleName() +
+                    " instance, must be Integer, String, or a Project instance"));
+        }
+    }
+
+    /**
+     * Deny access for the specified user to the specified project.
+     *
+     * <pre><code>GitLab Endpoint: DELETE /projects/:id/access_requests/:user_id</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param userId the user ID to deny access for
+     * @throws GitLabApiException if any exception occurs
+     */
+    public void denyAccessRequest(Object projectIdOrPath, Integer userId) throws GitLabApiException {
+        delete(Response.Status.NO_CONTENT, null,
+                "projects", getProjectIdOrPath(projectIdOrPath), "access_requests", userId);
     }
 }
