@@ -22,6 +22,7 @@ public class AdditionDataSource {
     private String jar;
     private String mode;
     private boolean drop;
+    private boolean jarInit;
     private DataSource dataSource;
     private LiquibaseHelper liquibaseHelper;
     private Set<String> tables;
@@ -40,15 +41,15 @@ public class AdditionDataSource {
      * @param dir      DataSource dir
      * @param drop     是否删除数据库
      */
-    public AdditionDataSource(String url, String username, String password, String dir, boolean drop) {
-        this(url, username, password, dir, drop, null);
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, boolean jarInit) {
+        this(url, username, password, dir, drop, null, jarInit);
     }
 
-    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource) {
-        this(url, username, password, dir, drop, dataSource, null);
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource,boolean jarInit) {
+        this(url, username, password, dir, drop, dataSource, null,jarInit);
     }
 
-    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource, Set<String> tables) {
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource, Set<String> tables,boolean jarInit) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -57,6 +58,7 @@ public class AdditionDataSource {
         this.dataSource = dataSource;
         this.liquibaseHelper = new LiquibaseHelper(this.url);
         this.tables = tables;
+        this.jarInit = jarInit;
         if (tables != null){
             tables.forEach(t -> tablesMap.put(t, this));
         }
@@ -154,5 +156,13 @@ public class AdditionDataSource {
 
     public LiquibaseHelper getLiquibaseHelper() {
         return liquibaseHelper;
+    }
+
+    public boolean isJarInit() {
+        return jarInit;
+    }
+
+    public void setJarInit(boolean jarInit) {
+        this.jarInit = jarInit;
     }
 }

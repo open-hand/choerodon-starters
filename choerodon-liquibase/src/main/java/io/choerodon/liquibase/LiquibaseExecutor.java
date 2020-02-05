@@ -74,6 +74,9 @@ public class LiquibaseExecutor {
     private boolean defaultNormal;
     @Value("${data.init:true}")
     private boolean defaultInit;
+    // 是否初始化依赖jar中的脚本
+    @Value("${data.jar.init:true}")
+    private boolean defaultJarInit;
 
     @Value("${data.update.exclusion:#{null}}")
     private String updateExclusion;
@@ -159,7 +162,7 @@ public class LiquibaseExecutor {
 
     private List<AdditionDataSource> prepareDataSources() {
         List<AdditionDataSource> additionDataSources = new ArrayList<>();
-        AdditionDataSource defaultAddition = new AdditionDataSource(this.dsUrl, this.dsUserName, this.dsPassword, this.defaultDir, this.defaultDrop, this.defaultDataSource);
+        AdditionDataSource defaultAddition = new AdditionDataSource(this.dsUrl, this.dsUserName, this.dsPassword, this.defaultDir, this.defaultDrop, this.defaultDataSource,this.defaultJarInit);
         defaultAddition.setJar(defaultJar);
         defaultAddition.setMode(defaultMode);
         defaultAddition.setName("default");
@@ -173,12 +176,13 @@ public class LiquibaseExecutor {
                 String dir = profileMap.getAdditionValue(dataSourceName + ".dir");
                 String jar = profileMap.getAdditionValue(dataSourceName + ".jar");
                 String mode = profileMap.getAdditionValue(dataSourceName + ".mode");
+                boolean jarInit = Boolean.parseBoolean(profileMap.getAdditionValue(dataSourceName + ".jar.init"));
                 boolean drop = Boolean.parseBoolean(profileMap.getAdditionValue(dataSourceName + ".drop"));
                 Set<String> tables = null;
                 if (profileMap.getAdditionValue(dataSourceName + ".tables") != null) {
                     tables = Arrays.stream(profileMap.getAdditionValue(dataSourceName + ".tables").split(",")).collect(Collectors.toSet());
                 }
-                AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop, null, tables);
+                AdditionDataSource ads = new AdditionDataSource(url, username, password, dir, drop, null, tables, jarInit);
                 ads.setJar(jar);
                 ads.setMode(mode == null ? "normal" : mode);
                 ads.setName(dataSourceName);
@@ -197,7 +201,7 @@ public class LiquibaseExecutor {
             String dir = addition.getDir();
             if (StringUtils.isEmpty(dir)) {
                 logger.info("Data source name : {} dir is empty, extra jar {}", addition.getName(), addition.getJar());
-                extra(addition.getJar(), TEMP_DIR_NAME);
+                extra(addition.getJar(), TEMP_DIR_NAME,addition.isJarInit());
                 dir = TEMP_DIR_NAME;
             }
             logger.info("Load data source, name : {}, dir : {}", addition.getName(), dir);
@@ -225,7 +229,7 @@ public class LiquibaseExecutor {
      * @param dep         是否是Spring Boot依赖包的解压， 只有为false时
      * @throws IOException 出现IO错误
      */
-    private void extraJarStream(InputStream inputStream, String dir, boolean dep) throws IOException {
+    private void extraJarStream(InputStream inputStream, String dir, boolean dep,boolean jarInit) throws IOException {
         JarEntry entry = null;
         JarInputStream jarInputStream = new JarInputStream(inputStream);
         while ((entry = jarInputStream.getNextJarEntry()) != null) {
@@ -244,13 +248,13 @@ public class LiquibaseExecutor {
                 try (FileOutputStream outputStream = new FileOutputStream(file)) {
                     StreamUtils.copy(jarInputStream, outputStream);
                 }
-            } else if (name.endsWith(SUFFIX_JAR)) {
-                extraJarStream(jarInputStream, dir, true);
+            } else if (name.endsWith(SUFFIX_JAR) && jarInit) {
+                extraJarStream(jarInputStream, dir, true, true);
             }
         }
     }
 
-    private void extra(String jar, String dir) throws IOException {
+    private void extra(String jar, String dir, boolean jarInit) throws IOException {
         boolean isUrl = jar.startsWith("https://") || jar.startsWith("http://") || jar.startsWith("file://");
         try (InputStream inputStream = isUrl ? new URL(jar).openStream() : new FileInputStream(jar)) {
             File temp = new File(dir);
@@ -258,7 +262,7 @@ public class LiquibaseExecutor {
             if (!temp.mkdir()) {
                 throw new IOException("create dir fail.");
             }
-            extraJarStream(inputStream, dir, false);
+            extraJarStream(inputStream, dir, false,jarInit);
         }
         logger.info("Jar extra {} done", jar);
     }
