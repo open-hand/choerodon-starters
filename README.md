@@ -49,6 +49,6 @@ Pull requests are welcome! Follow [this link](https://github.com/choerodon/choer
 |0.10.1|0.6.3||
 |0.11.0|0.6.4||
 |0.11.0|0.6.5||
-|0.12.0|0.6.6||
-|0.12.0|0.6.7|初始化配置添加update策略;修改tool-config mapper|
+|0.12.0|0.6.6|初始化配置添加update策略;修改tool-config mapper|
+|0.15.0|0.6.7|添加是否初始化依赖jar包中的脚本|
 
