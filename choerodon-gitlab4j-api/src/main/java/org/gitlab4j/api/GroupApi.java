@@ -23,6 +23,9 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
@@ -363,14 +366,30 @@ public class GroupApi extends AbstractApi {
      * @throws GitLabApiException if any exception occurs
      */
     public Member addMember(Integer groupId, Integer userId, Integer accessLevel, String expires_at) throws GitLabApiException {
+        return (addMember(groupId, userId, accessLevel, strToDateLong(expires_at)));
+    }
 
-        Form formData = new Form();
-        formData.param("user_id", userId.toString());
-        formData.param("access_level", accessLevel.toString());
-        formData.param("expires_at", expires_at);
-        Response response = post(Response.Status.CREATED, formData, "groups", groupId, "members");
+    /**
+     * Adds a user to the list of group members.
+     *
+     * <pre><code>GitLab Endpoint: POST /groups/:id/members</code></pre>
+     *
+     * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path, required
+     * @param userId the user ID of the member to add, required
+     * @param accessLevel the access level for the new member, required
+     * @param expiresAt the date the membership in the group will expire, optional
+     * @return a Member instance for the added user
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member addMember(Object groupIdOrPath, Integer userId, Integer accessLevel, Date expiresAt) throws GitLabApiException {
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("user_id", userId, true)
+                .withParam("access_level", accessLevel, true)
+                .withParam("expires_at",  expiresAt, false);
+        Response response = post(Response.Status.CREATED, formData, "groups", getGroupIdOrPath(groupIdOrPath), "members");
         return (response.readEntity(Member.class));
     }
+
 
     /**
      * update a specific group members, which is owned by the authentication user.
@@ -385,13 +404,28 @@ public class GroupApi extends AbstractApi {
      * @throws GitLabApiException if any exception occurs
      */
     public Member updateMember(int groupId, int userId, int access_level, String expires_at) throws GitLabApiException {
-        Form formData = new GitLabApiForm()
-                .withParam("access_level", access_level)
-                .withParam("expires_at", expires_at);
-        Response response = put(Response.Status.OK, formData.asMap(), "groups", groupId, "members", userId);
-        return (response.readEntity(Member.class));
+        return (updateMember(groupId, userId, access_level, strToDateLong(expires_at)));
     }
 
+    /**
+     * Updates a member of a group.
+     *
+     * <pre><code>GitLab Endpoint: PUT /groups/:groupId/members/:userId</code></pre>
+     *
+     * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path, required
+     * @param userId the user ID of the member to update, required
+     * @param accessLevel the new access level for the member, required
+     * @param expiresAt the date the membership in the group will expire, optional
+     * @return the updated member
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member updateMember(Object groupIdOrPath, Integer userId, Integer accessLevel, Date expiresAt) throws GitLabApiException {
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("access_level", accessLevel, true)
+                .withParam("expires_at",  expiresAt, false);
+        Response response = put(Response.Status.OK, formData.asMap(), "groups", getGroupIdOrPath(groupIdOrPath), "members", userId);
+        return (response.readEntity(Member.class));
+    }
 
     /**
      * Get a list of group members viewable by the authenticated user in the specified page range.
@@ -533,5 +567,11 @@ public class GroupApi extends AbstractApi {
     public void denyAccessRequest(Object groupIdOrPath, Integer userId) throws GitLabApiException {
         delete(Response.Status.NO_CONTENT, null,
                 "groups", getGroupIdOrPath(groupIdOrPath), "access_requests", userId);
+    }
+
+    public static Date strToDateLong(String strDate) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ParsePosition pos = new ParsePosition(0);
+        return formatter.parse(strDate, pos);
     }
 }
