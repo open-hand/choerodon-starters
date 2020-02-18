@@ -48,6 +48,7 @@ package org.gitlab4j.api;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Form;
@@ -910,17 +911,38 @@ public class ProjectApi extends AbstractApi implements Constants {
      * with the same parameters. Adding team membership to a user that is already a member does not
      * affect the existing membership.
      *
-     * POST /projects/:id/members
+     * <pre><code>GitLab Endpoint: POST /projects/:id/members</code></pre>
      *
-     * @param projectId the project ID to add the team member to
-     * @param userId the user ID of the member to add
-     * @param accessLevel the access level for the new member
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param userId the user ID of the member to add, required
+     * @param accessLevel the access level for the new member, required
      * @return the added member
      * @throws GitLabApiException if any exception occurs
      */
-    public Member addMember(Integer projectId, Integer userId, Integer accessLevel) throws GitLabApiException {
-        GitLabApiForm formData = new GitLabApiForm().withParam("user_id", userId, true).withParam("access_level", accessLevel, true);
-        Response response = post(Response.Status.CREATED, formData, "projects", projectId, "members");
+    public Member addMember(Object projectIdOrPath, Integer userId, Integer accessLevel) throws GitLabApiException {
+        return (addMember(projectIdOrPath, userId, accessLevel, null));
+    }
+
+    /**
+     * Adds a user to a project team. This is an idempotent method and can be called multiple times
+     * with the same parameters. Adding team membership to a user that is already a member does not
+     * affect the existing membership.
+     *
+     * <pre><code>GitLab Endpoint: POST /projects/:id/members</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param userId the user ID of the member to add
+     * @param accessLevel the access level for the new member
+     * @param expiresAt the date the membership in the group will expire
+     * @return the added member
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member addMember(Object projectIdOrPath, Integer userId, Integer accessLevel, Date expiresAt) throws GitLabApiException {
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("user_id", userId, true)
+                .withParam("access_level", accessLevel, true)
+                .withParam("expires_at",  expiresAt, false);
+        Response response = post(Response.Status.CREATED, formData, "projects", getProjectIdOrPath(projectIdOrPath), "members");
         return (response.readEntity(Member.class));
     }
 
@@ -938,11 +960,28 @@ public class ProjectApi extends AbstractApi implements Constants {
      * @throws GitLabApiException if any exception occurs
      */
     public Member updateMember(Integer projectId, Integer userId, Integer accessLevel) throws GitLabApiException {
-        GitLabApiForm formData = new GitLabApiForm().withParam("user_id", userId, true).withParam("access_level", accessLevel, true);
-        Response response = put(Response.Status.OK, formData.asMap(),"projects", projectId, "members",userId);
-        return (response.readEntity(Member.class));
+        return (updateMember(projectId, userId, accessLevel, null));
     }
 
+    /**
+     * Updates a member of a project.
+     *
+     * <pre><code>GitLab Endpoint: PUT /projects/:projectId/members/:userId</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param userId the user ID of the member to update, required
+     * @param accessLevel the new access level for the member, required
+     * @param expiresAt the date the membership in the group will expire, optional
+     * @return the updated member
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member updateMember(Object projectIdOrPath, Integer userId, Integer accessLevel, Date expiresAt) throws GitLabApiException {
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("access_level", accessLevel, true)
+                .withParam("expires_at",  expiresAt, false);
+        Response response = put(Response.Status.OK, formData.asMap(), "projects", getProjectIdOrPath(projectIdOrPath), "members", userId);
+        return (response.readEntity(Member.class));
+    }
     /**
      * Removes user from project team.
      *
