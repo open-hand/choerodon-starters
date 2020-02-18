@@ -26,6 +26,7 @@ package org.gitlab4j.api;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.gitlab4j.api.Constants.TokenType;
 import org.gitlab4j.api.models.AccessToken;
@@ -38,6 +39,7 @@ import org.gitlab4j.api.models.Version;
  * a separate API class for each concern.
  */
 public class GitLabApi {
+    private final static Logger LOGGER = Logger.getLogger(GitLabApi.class.getName());
 
     /**
      * GitLab4J default per page.  GitLab will ignore anything over 100.
@@ -68,6 +70,15 @@ public class GitLabApi {
     private ApplicationApi applicationApi;
     private Session session;
     private AccessToken accessToken;
+
+    /**
+     * Get the GitLab4J shared Logger instance.
+     *
+     * @return the GitLab4J shared Logger instance
+     */
+    public static final Logger getLogger() {
+        return (LOGGER);
+    }
     /**
      * Constructs a GitLabApi instance set up to interact with the GitLab server using the specified GitLab API version.
      *
