@@ -41,6 +41,7 @@ public class Member {
     private String name;
     private String state;
     private String username;
+    private Date expiresAt;
 
     public AccessLevel getAccessLevel() {
         return this.accessLevel;
@@ -96,5 +97,13 @@ public class Member {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Date getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Date expiresAt) {
+        this.expiresAt = expiresAt;
     }
 }
