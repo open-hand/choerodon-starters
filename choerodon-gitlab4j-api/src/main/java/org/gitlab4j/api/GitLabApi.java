@@ -70,6 +70,8 @@ public class GitLabApi {
     private ApplicationApi applicationApi;
     private Session session;
     private AccessToken accessToken;
+    private TagsApi tagsApi;
+    private ProtectedBranchesApi protectedBranchesApi;
 
     /**
      * Get the GitLab4J shared Logger instance.
@@ -270,6 +272,8 @@ public class GitLabApi {
         sessoinApi = new SessionApi(this);
         userApi = new UserApi(this);
         applicationApi = new ApplicationApi(this);
+        tagsApi = new TagsApi(this);
+        protectedBranchesApi = new ProtectedBranchesApi(this);
     }
 
     /**
@@ -588,6 +592,22 @@ public class GitLabApi {
      */
     public JobApi getJobApi() {
         return (jobApi);
+    }
+
+    public TagsApi getTagsApi() {
+        return tagsApi;
+    }
+
+    public void setTagsApi(TagsApi tagsApi) {
+        this.tagsApi = tagsApi;
+    }
+
+    public ProtectedBranchesApi getProtectedBranchesApi() {
+        return protectedBranchesApi;
+    }
+
+    public void setProtectedBranchesApi(ProtectedBranchesApi protectedBranchesApi) {
+        this.protectedBranchesApi = protectedBranchesApi;
     }
 
     public LabelsApi getLabelsApi() {
