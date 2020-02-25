@@ -23,18 +23,16 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Date;
-import java.util.List;
 
-import org.gitlab4j.api.models.Comment;
-import org.gitlab4j.api.models.Commit;
-import org.gitlab4j.api.models.CommitStatuse;
-import org.gitlab4j.api.models.Diff;
+import org.gitlab4j.api.models.*;
 import org.gitlab4j.api.utils.ISO8601;
 
 /**
@@ -314,6 +312,100 @@ public class CommitsApi extends AbstractApi {
                 .withParam("line_type", lineType);
         Response response = post(Response.Status.CREATED, formData, "projects", projectId, "repository", "commits", sha, "comments");
         return (response.readEntity(Comment.class));
+    }
+
+    /**
+     * Create a commit with multiple files and actions.
+     *
+     * <pre><code>GitLab Endpoint: POST /projects/:id/repository/commits</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param payload a CommitPayload instance holding the parameters for the commit
+     * @return the created Commit instance
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Commit createCommit(Object projectIdOrPath, CommitPayload payload) throws GitLabApiException {
+
+        // Validate the actions
+        List<CommitAction> actions = payload.getActions();
+        if (actions == null || actions.isEmpty()) {
+            throw new GitLabApiException("actions cannot be null or empty.");
+        }
+
+        for (CommitAction action : actions) {
+
+            // File content is required for create and update
+            CommitAction.Action actionType = action.getAction();
+            if (actionType == CommitAction.Action.CREATE || actionType == CommitAction.Action.UPDATE) {
+                String content = action.getContent();
+                if (content == null) {
+                    throw new GitLabApiException("Content cannot be null for create or update actions.");
+                }
+            }
+        }
+
+        if (payload.getStartProject() != null) {
+            payload.setStartProject(getProjectIdOrPath(payload.getStartProject()));
+        }
+
+        Response response = post(Response.Status.CREATED, payload,
+                "projects", getProjectIdOrPath(projectIdOrPath), "repository", "commits");
+        return (response.readEntity(Commit.class));
+    }
+
+    /**
+     * Create a commit with single file and action.
+     *
+     * <pre><code>GitLab Endpoint: POST /projects/:id/repository/commits</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param branch tame of the branch to commit into. To create a new branch, also provide startBranch
+     * @param commitMessage the commit message
+     * @param startBranch the name of the branch to start the new commit from
+     * @param authorEmail the commit author's email address
+     * @param authorName the commit author's name
+     * @param action the CommitAction to commit
+     * @return the created Commit instance
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Commit createCommit(Object projectIdOrPath, String branch, String commitMessage, String startBranch,
+                               String authorEmail, String authorName, CommitAction action) throws GitLabApiException {
+
+        // Validate the action
+        if (action == null) {
+            throw new GitLabApiException("action cannot be null or empty.");
+        }
+
+        return (createCommit(projectIdOrPath, branch, commitMessage, startBranch,
+                authorEmail, authorName, Arrays.asList(action)));
+    }
+
+    /**
+     * Create a commit with multiple files and actions.
+     *
+     * <pre><code>GitLab Endpoint: POST /projects/:id/repository/commits</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param branch tame of the branch to commit into. To create a new branch, also provide startBranch
+     * @param commitMessage the commit message
+     * @param startBranch the name of the branch to start the new commit from
+     * @param authorEmail the commit author's email address
+     * @param authorName the commit author's name
+     * @param actions the array of CommitAction to commit as a batch
+     * @return the created Commit instance
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Commit createCommit(Object projectIdOrPath, String branch, String commitMessage, String startBranch,
+                               String authorEmail, String authorName, List<CommitAction> actions) throws GitLabApiException {
+
+        CommitPayload payload = new CommitPayload()
+                .withBranch(branch)
+                .withStartBranch(startBranch)
+                .withCommitMessage(commitMessage)
+                .withAuthorEmail(authorEmail)
+                .withAuthorName(authorName)
+                .withActions(actions);
+        return (createCommit(projectIdOrPath, payload));
     }
 
     /**
