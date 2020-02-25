@@ -59,6 +59,28 @@ public interface Constants {
         ACCESS, PRIVATE;
     }
 
+    /** Enum to specify encoding of file contents. */
+    public enum Encoding {
+        TEXT, BASE64;
+
+        private static JacksonJsonEnumHelper<Encoding> enumHelper = new JacksonJsonEnumHelper<>(Encoding.class);
+
+        @JsonCreator
+        public static Encoding forValue(String value) {
+            return enumHelper.forValue((value != null ? value.toLowerCase() : value));
+        }
+
+        @JsonValue
+        public String toValue() {
+            return (enumHelper.toString(this));
+        }
+
+        @Override
+        public String toString() {
+            return (enumHelper.toString(this));
+        }
+    }
+
     /** Enum to use for ordering the results of various API calls. */
     public enum SortOrder {
 
