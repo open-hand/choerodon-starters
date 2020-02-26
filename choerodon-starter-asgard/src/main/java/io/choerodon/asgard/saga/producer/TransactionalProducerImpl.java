@@ -64,8 +64,9 @@ public class TransactionalProducerImpl implements TransactionalProducer {
         TransactionStatus status = transactionManager.getTransaction(definition);
         builder.withUuid(uuid).withService(service);
         try {
-            sagaClient.preCreateSaga(builder.preBuild());
+            // 解决TransactionalProducer.applyAndReturn() function中设置 sourceId不生效问题
             result = function.apply(builder);
+            sagaClient.preCreateSaga(builder.preBuild());
             consistencyHandler.beforeTransactionCommit(uuid, builder.confirmBuild());
             transactionManager.commit(status);
         } catch (Exception e) {
