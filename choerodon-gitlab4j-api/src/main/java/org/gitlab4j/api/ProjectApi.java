@@ -960,7 +960,11 @@ public class ProjectApi extends AbstractApi implements Constants {
      * @throws GitLabApiException if any exception occurs
      */
     public Member updateMember(Integer projectId, Integer userId, Integer accessLevel) throws GitLabApiException {
-        return (updateMember(projectId, userId, accessLevel, null));
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("access_level", accessLevel, true)
+                .withParam("expires_at", "", false);
+        Response response = put(Response.Status.OK, formData.asMap(), "projects", projectId, "members", userId);
+        return (response.readEntity(Member.class));
     }
 
     /**

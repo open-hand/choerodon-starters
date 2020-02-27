@@ -427,6 +427,13 @@ public class GroupApi extends AbstractApi {
         return (response.readEntity(Member.class));
     }
 
+    public Member updateMember(Object groupIdOrPath, Integer userId, Integer accessLevel) throws GitLabApiException {
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("access_level", accessLevel, true)
+                .withParam("expires_at",  "", false);
+        Response response = put(Response.Status.OK, formData.asMap(), "groups", getGroupIdOrPath(groupIdOrPath), "members", userId);
+        return (response.readEntity(Member.class));
+    }
     /**
      * Get a list of group members viewable by the authenticated user in the specified page range.
      * <p>
