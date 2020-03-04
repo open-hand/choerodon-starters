@@ -91,7 +91,7 @@ public class TagsApi extends AbstractApi {
      */
     public ProtectedTag protectTag(Object projectIdOrPath, String name, AccessLevel createAccessLevel) throws GitLabApiException {
         Form formData = new GitLabApiForm().withParam("name", name, true).withParam("create_access_Level", createAccessLevel);
-        Response response = post(Response.Status.OK, formData, "projects", getProjectIdOrPath(projectIdOrPath), "protected_tags");
+        Response response = post(Response.Status.CREATED, formData, "projects", getProjectIdOrPath(projectIdOrPath), "protected_tags");
         return (response.readEntity(ProtectedTag.class));
     }
 
@@ -105,6 +105,6 @@ public class TagsApi extends AbstractApi {
      * @throws GitLabApiException if any exception occurs
      */
     public void unprotectTag(Object projectIdOrPath, String name) throws GitLabApiException {
-        delete(Response.Status.OK, null, "projects", getProjectIdOrPath(projectIdOrPath), "protected_tags", urlEncode(name));
+        delete(Response.Status.NO_CONTENT, null, "projects", getProjectIdOrPath(projectIdOrPath), "protected_tags", urlEncode(name));
     }
 }
