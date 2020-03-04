@@ -8,15 +8,15 @@ public class ProtectedTag {
 
     public static class CreateAccessLevel {
 
-        private AccessLevel access_level;
+        private AccessLevel accessLevel;
         private String accessLevelDescription;
 
-        public AccessLevel getAccess_level() {
-            return access_level;
+        public AccessLevel getAccessLevel() {
+            return accessLevel;
         }
 
-        public void setAccess_level(AccessLevel access_level) {
-            this.access_level = access_level;
+        public void setAccessLevel(AccessLevel accessLevel) {
+            this.accessLevel = accessLevel;
         }
 
         public String getAccessLevelDescription() {
