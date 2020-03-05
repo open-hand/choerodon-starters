@@ -1,4 +1,4 @@
-image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.5.0
+image: registry.cn-shanghai.aliyuncs.com/c7n/cibase:0.9.1
 
 stages:
   - mvn-package
