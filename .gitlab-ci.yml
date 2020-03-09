@@ -28,6 +28,8 @@ maven-test-build:
 maven-deploy-snapshot:
   stage: maven-deploy
   script:
+    - echo CHOERODON_REPOSITORY_ID=${CHOERODON_REPOSITORY_ID}
+    - echo CHOERODON_SNAPSHOT_URL=${CHOERODON_SNAPSHOT_URL}
     - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_SNAPSHOT_URL}
   only:
     - master
@@ -35,6 +37,8 @@ maven-deploy-snapshot:
 maven-deploy-release:
   stage: maven-deploy
   script:
+    - echo CHOERODON_REPOSITORY_ID=${CHOERODON_REPOSITORY_ID}
+    - echo CHOERODON_RELEASE_URL=${CHOERODON_RELEASE_URL}
     - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_RELEASE_URL}
   only:
 #    - master
