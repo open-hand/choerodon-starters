@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MicroServiceInitData {
     private static final String DEL_COLUMN_NAME = "$DEL";
@@ -38,13 +39,14 @@ public class MicroServiceInitData {
     }
 
     private static void processRowData(JsonNode data, String tableName, Connection connection, TableDescription description) throws SQLException {
-        Object keyData = queryPrimaryKeyByUnique(data, tableName, connection, description);
+        JsonNode cascadeNode = description.cascadeColumn != null ? queryCascadeId(data, connection, description) : null;
+        Object keyData = queryPrimaryKeyByUnique(data, tableName, connection, description, cascadeNode);
         if (data.get(DEL_COLUMN_NAME) == null || data.get(DEL_COLUMN_NAME).asInt() != 1) {
-            if (keyData == null){
-                insertRowData(data, tableName, connection, description);
-                keyData = queryPrimaryKeyByUnique(data, tableName, connection, description);
+            if (keyData == null) {
+                insertRowData(data, tableName, connection, description,cascadeNode);
+                keyData = queryPrimaryKeyByUnique(data, tableName, connection, description,cascadeNode);
             } else {
-                updateRowData(data, tableName, connection, description, keyData);
+                updateRowData(data, tableName, connection, description, keyData,cascadeNode);
             }
             if (!description.multiLanguageColumns.isEmpty()){
                 processRowMultiLanguage(data, tableName, connection, description, keyData);
@@ -57,6 +59,29 @@ public class MicroServiceInitData {
         }
     }
 
+    private static JsonNode queryCascadeId(JsonNode data, Connection connection, TableDescription description) throws SQLException {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ID");
+        sql.append(" FROM ");
+        sql.append(description.cascadeTable);
+        sql.append(" WHERE ");
+        sql.append(description.cascadeTableColumn);
+        sql.append("=? ");
+
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            setNodeValue(data.get(description.rawColumns.get(description.cascadeColumn)), statement, 1);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.first()) {
+                    throw new IllegalStateException("Execute cascade column result not one.");
+                }
+                Map<String, Object> map = new HashMap<>();
+                map.put(description.cascadeColumn, resultSet.getObject("ID"));
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.valueToTree(map);
+            }
+        }
+    }
 
     private static void deleteRowData(String tableName, Connection connection, TableDescription description, Object keyData) throws SQLException {
         StringBuilder sql = new StringBuilder();
@@ -182,7 +207,7 @@ public class MicroServiceInitData {
         }
     }
 
-    private static void updateRowData(JsonNode data, String tableName, Connection connection, TableDescription description, Object keyData) throws SQLException {
+    private static void updateRowData(JsonNode data, String tableName, Connection connection, TableDescription description, Object keyData,JsonNode cascadeNode) throws SQLException {
         List<JsonNode> updateParameters = new ArrayList<>();
         StringJoiner updateColumnsJoiner = new StringJoiner(",");
         for (String uniqueKey: description.uniqueKeys){
@@ -192,6 +217,10 @@ public class MicroServiceInitData {
         for (String column: description.updateColumns){
             updateColumnsJoiner.add(column + "=?");
             updateParameters.add(data.get(description.rawColumns.get(column)));
+        }
+        if(description.cascadeColumn!=null){
+            updateColumnsJoiner.add(description.cascadeColumn + "=?");
+            updateParameters.add(cascadeNode.get(description.cascadeColumn));
         }
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ");
@@ -212,7 +241,7 @@ public class MicroServiceInitData {
         }
     }
 
-    private static void insertRowData(JsonNode data, String tableName, Connection connection, TableDescription description) throws SQLException {
+    private static void insertRowData(JsonNode data, String tableName, Connection connection, TableDescription description,JsonNode cascadeNode) throws SQLException {
         List<JsonNode> insertParameters = new ArrayList<>();
         StringJoiner insertColumnsJoiner = new StringJoiner(",");
         StringJoiner insertParametersJoiner = new StringJoiner(",");
@@ -225,6 +254,12 @@ public class MicroServiceInitData {
             insertColumnsJoiner.add(column);
             insertParametersJoiner.add("?");
             JsonNode param = data.get(description.rawColumns.get(column));
+            insertParameters.add(param);
+        }
+        if(description.cascadeColumn!=null){
+            insertColumnsJoiner.add(description.cascadeColumn);
+            insertParametersJoiner.add("?");
+            JsonNode param = cascadeNode.get(description.cascadeColumn);
             insertParameters.add(param);
         }
         StringBuilder sql = new StringBuilder();
@@ -245,7 +280,7 @@ public class MicroServiceInitData {
         }
     }
 
-    private static Object queryPrimaryKeyByUnique(JsonNode data, String tableName, Connection connection, TableDescription description) throws SQLException {
+    private static Object queryPrimaryKeyByUnique(JsonNode data, String tableName, Connection connection, TableDescription description,JsonNode cascadeNode) throws SQLException {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ");
         sql.append(description.primaryKey);
@@ -256,6 +291,10 @@ public class MicroServiceInitData {
             sql.append(uniqueKey);
             sql.append("=? AND ");
         }
+        if (description.cascadeColumn != null) {
+            sql.append(description.cascadeColumn);
+            sql.append("=? AND ");
+        }
         sql.append("1=1");
         try(PreparedStatement statement = connection.prepareStatement(sql.toString())){
             int uniqueKeyIndex = 0;
@@ -263,8 +302,12 @@ public class MicroServiceInitData {
                 uniqueKeyIndex++;
                 setNodeValue(data.get(description.rawColumns.get(uniqueKey)), statement, uniqueKeyIndex);
             }
-            try(ResultSet resultSet = statement.executeQuery()){
-                if (!resultSet.first()){
+            if (description.cascadeColumn != null) {
+                uniqueKeyIndex++;
+                setNodeValue(cascadeNode.get(description.cascadeColumn), statement, uniqueKeyIndex);
+            }
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.first()) {
                     return null;
                 }
                 return resultSet.getObject(description.primaryKey);
@@ -305,12 +348,16 @@ public class MicroServiceInitData {
                 description.rawColumns.put(description.primaryKey, columnName);
                 continue;
             }
+            if (columnName.startsWith("&")) {
+                getCascadeColumn(columnName, tableName, description);
+                continue;
+            }
             if (columnName.startsWith("#")) {
                 description.uniqueKeys.add(columnName.substring(1));
                 description.rawColumns.put(columnName.substring(1), columnName);
                 continue;
             }
-            if (columnName.contains(":")) {
+            if (!columnName.contains("&") && columnName.contains(":")) {
                 String[] columnSplit = columnName.split(":");
                 if (columnSplit.length != 2) {
                     throw new IllegalStateException("Multi-languages column format error in table: " + tableName);
@@ -337,6 +384,24 @@ public class MicroServiceInitData {
         return description;
     }
 
+    private static void getCascadeColumn(String columnName, String tableName, TableDescription description) {
+        String[] columnSplit = columnName.split("=");
+        if (columnSplit.length != 2) {
+            throw new IllegalStateException("Cascade column format error in table: " + tableName);
+        }
+
+        String[] cascadeColumnSplit = columnSplit[1].split(":");
+        if (cascadeColumnSplit.length != 2) {
+            throw new IllegalStateException("Cascade table and column format error in table: " + tableName);
+        }
+
+        Integer index = columnName.contains("#") ? 2 : 1;
+        description.cascadeTable = cascadeColumnSplit[0];
+        description.cascadeTableColumn = cascadeColumnSplit[1];
+        description.cascadeColumn = columnSplit[0].substring(index);
+        description.rawColumns.put(columnSplit[0].substring(index), columnName);
+    }
+
     private static class TableDescription {
         String primaryKey = null;
         Set<String> uniqueKeys = new TreeSet<>();
@@ -345,6 +410,9 @@ public class MicroServiceInitData {
         Set<String> updateColumns = new TreeSet<>();
         Set<String> multiLanguageColumns = new TreeSet<>();
         Set<String> multiLanguages = new TreeSet<>();
+        String cascadeTable = null;
+        String cascadeTableColumn = null;
+        String cascadeColumn = null;
     }
 
 }
