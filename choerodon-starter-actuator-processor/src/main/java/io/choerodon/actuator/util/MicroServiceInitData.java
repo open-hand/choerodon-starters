@@ -378,7 +378,7 @@ public class MicroServiceInitData {
         if (description.primaryKey == null) {
             throw new IllegalStateException("Must have a primary key in table: " + tableName);
         }
-        if (description.uniqueKeys.isEmpty()) {
+        if (description.uniqueKeys.isEmpty() && description.cascadeColumn == null) {
             throw new IllegalStateException("Must have at least one unique key in table: " + tableName);
         }
         return description;
