@@ -35,7 +35,6 @@ public class Tag {
     private String message;
     private String name;
     private Release release;
-    private Boolean isProtected;
 
     public Commit getCommit() {
         return this.commit;
@@ -67,13 +66,5 @@ public class Tag {
 
     public void setRelease(Release release) {
         this.release = release;
-    }
-
-    public Boolean getProtected() {
-        return isProtected;
-    }
-
-    public void setProtected(Boolean aProtected) {
-        isProtected = aProtected;
     }
 }
