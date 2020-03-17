@@ -26,7 +26,9 @@ public class NotifyBusinessTypeScanData {
 
     private Boolean smsEnabledFlag;
 
-    private Boolean webhookEnabledFlag;
+    private Boolean webhookOtherEnabledFlag;
+
+    private Boolean webhookJsonEnabledFlag;
 
     private String[] targetUserType;
 
@@ -42,7 +44,8 @@ public class NotifyBusinessTypeScanData {
     public NotifyBusinessTypeScanData(String code, String name, String description,
                                       String level, Integer retryCount,
                                       Boolean isSendInstantly, Boolean isManualRetry, Boolean isAllowConfig,
-                                      String categoryCode, Boolean emailEnabledFlag, Boolean pmEnabledFlag, Boolean smsEnabledFlag, Boolean webhookEnabledFlag,
+                                      String categoryCode, Boolean emailEnabledFlag, Boolean pmEnabledFlag, Boolean smsEnabledFlag,
+                                      Boolean webhookOtherEnabledFlag, Boolean webhookJsonEnabledFlag,
                                       String[] targetUserType, String notifyType,
                                       Boolean proEmailEnabledFlag, Boolean proPmEnabledFlag) {
         this.code = code;
@@ -57,7 +60,8 @@ public class NotifyBusinessTypeScanData {
         this.emailEnabledFlag = emailEnabledFlag;
         this.pmEnabledFlag = pmEnabledFlag;
         this.smsEnabledFlag = smsEnabledFlag;
-        this.webhookEnabledFlag = webhookEnabledFlag;
+        this.webhookOtherEnabledFlag = webhookOtherEnabledFlag;
+        this.webhookJsonEnabledFlag = webhookJsonEnabledFlag;
         this.targetUserType = targetUserType;
         this.notifyType = notifyType;
         this.proEmailEnabledFlag = proEmailEnabledFlag;
@@ -160,12 +164,20 @@ public class NotifyBusinessTypeScanData {
         this.smsEnabledFlag = smsEnabledFlag;
     }
 
-    public Boolean getWebhookEnabledFlag() {
-        return webhookEnabledFlag;
+    public Boolean getWebhookOtherEnabledFlag() {
+        return webhookOtherEnabledFlag;
     }
 
-    public void setWebhookEnabledFlag(Boolean webhookEnabledFlag) {
-        this.webhookEnabledFlag = webhookEnabledFlag;
+    public void setWebhookOtherEnabledFlag(Boolean webhookOtherEnabledFlag) {
+        this.webhookOtherEnabledFlag = webhookOtherEnabledFlag;
+    }
+
+    public Boolean getWebhookJsonEnabledFlag() {
+        return webhookJsonEnabledFlag;
+    }
+
+    public void setWebhookJsonEnabledFlag(Boolean webhookJsonEnabledFlag) {
+        this.webhookJsonEnabledFlag = webhookJsonEnabledFlag;
     }
 
     public String[] getTargetUserType() {
