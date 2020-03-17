@@ -72,9 +72,14 @@ public @interface NotifyBusinessType {
     boolean smsEnabledFlag() default false;
 
     /**
-     * 是否启用WEBHOOK方式发送消息。0：不启用（默认）；1：启用
+     * 是否启用WEBHOOK 微信/钉钉 方式发送消息。0：不启用；1：启用（默认）
      */
-    boolean webhookEnabledFlag() default false;
+    boolean webhookOtherEnabledFlag() default true;
+
+    /**
+     * 是否启用WEBHOOKJson 方式发送消息。0：不启用；1：启用（默认）
+     */
+    boolean webhookJsonEnabledFlag() default true;
 
     /**
      * 用于项目层通知设置触发人员
