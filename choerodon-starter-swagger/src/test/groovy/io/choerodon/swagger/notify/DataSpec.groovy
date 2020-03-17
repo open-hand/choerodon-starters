@@ -11,7 +11,7 @@ class DataSpec extends Specification {
         def businessTypeScanData = new HashSet<NotifyBusinessTypeScanData>()
         def data1 = new NotifyBusinessTypeScanData("code", "name", "description",
                 "level", 1,
-                false, false, true, "categoryCode", false, false, false, false, arr1, "", false, false)
+                false, false, true, "categoryCode", false, false, false, false,false, arr1, "", false, false)
         def data2 = new NotifyBusinessTypeScanData()
         data2.setName(data1.getName())
         data2.setCode(data1.getCode())
@@ -24,7 +24,8 @@ class DataSpec extends Specification {
         data2.setEmailEnabledFlag(data1.getEmailEnabledFlag())
         data2.setPmEnabledFlag(data1.getPmEnabledFlag())
         data2.setSmsEnabledFlag(data1.getSmsEnabledFlag())
-        data2.setWebhookEnabledFlag(data1.getWebhookEnabledFlag())
+        data2.setWebhookOtherEnabledFlag(data1.getWebhookOtherEnabledFlag())
+        data2.setWebhookJsonEnabledFlag(data1.getWebhookJsonEnabledFlag())
         businessTypeScanData.add(data1)
         businessTypeScanData.add(data2)
 
