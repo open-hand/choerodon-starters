@@ -21,9 +21,14 @@ public class NoticeSendDTO {
     public static final String SMS = "sms";
 
     /**
-     * 发送WebHook消息
+     * 发送WebHook 微信/钉钉消息
      */
-    public static final String WEB_HOOK = "WebHook";
+    public static final String WEB_HOOK_OTHER = "webHookOther";
+
+    /**
+     * 发送WebHook json消息
+     */
+    public static final String WEB_HOOK_JSON = "webHookJson";
 
     /**
      * 发送的业务类型code
@@ -161,11 +166,18 @@ public class NoticeSendDTO {
         return customizedSendingTypes.contains(SMS);
     }
 
-    public boolean isSendingWebHook() {
+    public boolean isSendingWebHookOther() {
         if (this.customizedSendingTypes == null){
             return false;
         }
-        return customizedSendingTypes.contains(WEB_HOOK);
+        return customizedSendingTypes.contains(WEB_HOOK_OTHER);
+    }
+
+    public boolean isSendingWebHookJson() {
+        if (this.customizedSendingTypes == null){
+            return false;
+        }
+        return customizedSendingTypes.contains(WEB_HOOK_JSON);
     }
 
     public String getEventName() {
