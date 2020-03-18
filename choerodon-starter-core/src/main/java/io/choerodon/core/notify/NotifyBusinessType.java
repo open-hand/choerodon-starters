@@ -72,7 +72,7 @@ public @interface NotifyBusinessType {
     boolean smsEnabledFlag() default false;
 
     /**
-     * 是否启用WEBHOOK 微信/钉钉 方式发送消息。0：不启用；1：启用（默认）
+     * 是否启用WEBHOOK 微信/钉钉 方式发送消息。0：不启用；1：启用(默认)
      */
     boolean webhookOtherEnabledFlag() default true;
 
