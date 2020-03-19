@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
  * @date 2020/3/19
  * @description
  */
-public class WebHookSendDTO {
+public class WebHookJsonSendDTO {
     /**
      * 发送的send_setting的code
      */
