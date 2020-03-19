@@ -76,6 +76,8 @@ public class NoticeSendDTO {
      */
     private Map<String, Object> params;
 
+    private WebHookJsonSendDTO webHookJsonSendDTO;
+
     public static class User {
         private Long id;
         private String email;
@@ -202,5 +204,13 @@ public class NoticeSendDTO {
 
     public void setNotifyType(String notifyType) {
         this.notifyType = notifyType;
+    }
+
+    public WebHookJsonSendDTO getWebHookJsonSendDTO() {
+        return webHookJsonSendDTO;
+    }
+
+    public void setWebHookJsonSendDTO(WebHookJsonSendDTO webHookJsonSendDTO) {
+        this.webHookJsonSendDTO = webHookJsonSendDTO;
     }
 }
