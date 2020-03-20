@@ -36,9 +36,22 @@ public class WebHookJsonSendDTO {
      */
     private User user;
 
+    public WebHookJsonSendDTO(String objectKind, String eventName, JsonObject objectAttributes, Date createdAt, User user) {
+        this.objectKind = objectKind;
+        this.eventName = eventName;
+        this.objectAttributes = objectAttributes;
+        this.createdAt = createdAt;
+        this.user = user;
+    }
+
     public static class User {
         private String loginName;
         private String userName;
+
+        public User(String loginName, String userName) {
+            this.loginName = loginName;
+            this.userName = userName;
+        }
 
         public String getLoginName() {
             return loginName;
