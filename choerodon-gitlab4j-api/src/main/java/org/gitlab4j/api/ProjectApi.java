@@ -1797,4 +1797,24 @@ public class ProjectApi extends AbstractApi implements Constants {
         return (new Pager<Member>(this, Member.class, itemsPerPage, null,
                 "projects", getProjectIdOrPath(projectIdOrPath), "members", "all"));
     }
+
+
+    /**
+     * Gets a member of a group or project, including members inherited through ancestor groups.
+     * See the corresponding endpoint to list all inherited members for details.
+     *
+     * <pre><code>GitLab Endpoint: GET  /projects/:id/members/all/:user_id</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param userId The user ID of the member
+     *
+     * @return Gets a member of a group or project.
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member getAllMember(Object projectIdOrPath, int userId) throws GitLabApiException {
+        Response response = get(Response.Status.OK, null,
+                "projects", getProjectIdOrPath(projectIdOrPath), "members", "all", userId);
+        return (response.readEntity(Member.class));
+    }
+
 }
