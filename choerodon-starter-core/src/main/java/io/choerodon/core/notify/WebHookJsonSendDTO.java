@@ -1,8 +1,10 @@
 package io.choerodon.core.notify;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.Date;
 
-import com.google.gson.JsonObject;
+
 
 
 /**
@@ -24,7 +26,7 @@ public class WebHookJsonSendDTO {
     /**
      * 发送消息json对象
      */
-    private JsonObject objectAttributes;
+    private JSONObject objectAttributes;
 
     /**
      * 执行时间
@@ -36,7 +38,7 @@ public class WebHookJsonSendDTO {
      */
     private User user;
 
-    public WebHookJsonSendDTO(String objectKind, String eventName, JsonObject objectAttributes, Date createdAt, User user) {
+    public WebHookJsonSendDTO(String objectKind, String eventName, JSONObject objectAttributes, Date createdAt, User user) {
         this.objectKind = objectKind;
         this.eventName = eventName;
         this.objectAttributes = objectAttributes;
@@ -44,9 +46,15 @@ public class WebHookJsonSendDTO {
         this.user = user;
     }
 
+    public WebHookJsonSendDTO() {
+    }
+
     public static class User {
         private String loginName;
         private String userName;
+
+        public User() {
+        }
 
         public User(String loginName, String userName) {
             this.loginName = loginName;
@@ -94,11 +102,11 @@ public class WebHookJsonSendDTO {
         this.eventName = eventName;
     }
 
-    public JsonObject getObjectAttributes() {
+    public JSONObject getObjectAttributes() {
         return objectAttributes;
     }
 
-    public void setObjectAttributes(JsonObject objectAttributes) {
+    public void setObjectAttributes(JSONObject objectAttributes) {
         this.objectAttributes = objectAttributes;
     }
 
