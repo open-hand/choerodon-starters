@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.gitlab4j.api.GitLabApi.ApiVersion;
@@ -1755,8 +1756,8 @@ public class ProjectApi extends AbstractApi implements Constants {
      * @return the project members viewable by the authenticated user, including inherited members through ancestor groups
      * @throws GitLabApiException if any exception occurs
      */
-    public List<Member> getAllMembers(Object projectIdOrPath) throws GitLabApiException {
-        return (getAllMembers(projectIdOrPath, getDefaultPerPage()).all());
+    public List<Member> getAllMembers(Object projectIdOrPath, String query) throws GitLabApiException {
+        return (getAllMembers(projectIdOrPath, getDefaultPerPage(), query).all());
     }
 
     /**
@@ -1793,8 +1794,9 @@ public class ProjectApi extends AbstractApi implements Constants {
      * including inherited members through ancestor groups
      * @throws GitLabApiException if any exception occurs
      */
-    public Pager<Member> getAllMembers(Object projectIdOrPath, int itemsPerPage) throws GitLabApiException {
-        return (new Pager<Member>(this, Member.class, itemsPerPage, null,
+    public Pager<Member> getAllMembers(Object projectIdOrPath, int itemsPerPage, String query) throws GitLabApiException {
+        MultivaluedMap<String, String> map = new GitLabApiForm().withParam(QUERY, query).asMap();
+        return (new Pager<Member>(this, Member.class, itemsPerPage, map,
                 "projects", getProjectIdOrPath(projectIdOrPath), "members", "all"));
     }
 
@@ -1811,10 +1813,10 @@ public class ProjectApi extends AbstractApi implements Constants {
      * @return Gets a member of a group or project.
      * @throws GitLabApiException if any exception occurs
      */
-    public Member getAllMember(Object projectIdOrPath, int userId) throws GitLabApiException {
-        Response response = get(Response.Status.OK, null,
-                "projects", getProjectIdOrPath(projectIdOrPath), "members", "all", userId);
-        return (response.readEntity(Member.class));
-    }
+//    public Member getAllMember(Object projectIdOrPath, int userId) throws GitLabApiException {
+//        Response response = get(Response.Status.OK, null,
+//                "projects", getProjectIdOrPath(projectIdOrPath), "members", "all", userId);
+//        return (response.readEntity(Member.class));
+//    }
 
 }

@@ -54,6 +54,8 @@ public interface Constants {
     /** Page param HTTP header key. */
     public static final String PAGE_PARAM = "page";
 
+    public static final String QUERY = "query";
+
     /** Used to specify the type of authentication token. */
     public enum TokenType {
         ACCESS, PRIVATE;
