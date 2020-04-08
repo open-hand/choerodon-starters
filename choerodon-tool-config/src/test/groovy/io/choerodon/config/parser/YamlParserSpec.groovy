@@ -7,6 +7,6 @@ import spock.lang.Specification
  * */
 class YamlParserSpec extends Specification {
     def "Parse"() {
-        
+
     }
 }

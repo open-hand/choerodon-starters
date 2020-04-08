@@ -2,8 +2,8 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'script/db/fd_organization.groovy') {
     changeSet(author: 'jcalaz@163.com', id: '2018-03-21-fd-organization') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'FD_ORGANIZATION_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'FD_ORGANIZATION_S', startValue: "1")
         }
         createTable(tableName: "FD_ORGANIZATION") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: '表ID，主键，供其他表做外键，unsigned bigint、单表时自增、步长为 1') {

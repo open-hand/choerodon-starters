@@ -1,6 +1,7 @@
 package io.choerodon.liquibase.helper;
 
 import io.choerodon.liquibase.LiquibaseExecutor;
+
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -45,7 +46,7 @@ public class LiquibaseHelper {
         return this.url.startsWith("jdbc:h2");
     }
 
-    public boolean isOracle(){
+    public boolean isOracle() {
         return this.url.startsWith("jdbc:oracle");
     }
 
@@ -72,11 +73,11 @@ public class LiquibaseHelper {
     public enum DbType {
         MYSQL("mysql", true, false),
         ORACLE("oracle", false, true),
-        HANA("hana",false, true),
-        SQLSERVER("sqlserver",true, false),
-        H2("h2",true, false),
-        DB2("db2",false, true),
-        POSTGRESQL("postgresql",false, true);
+        HANA("hana", false, true),
+        SQLSERVER("sqlserver", true, false),
+        H2("h2", true, false),
+        DB2("db2", false, true),
+        POSTGRESQL("postgresql", false, true);
 
         private boolean supportAutoIncrement;
 

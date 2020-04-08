@@ -2,8 +2,8 @@ package resources.script.db
 
 databaseChangeLog(logicalFilePath: 'script/db/oauth_ldap.groovy') {
     changeSet(author: 'guokai.wu.work@gmail.com', id: '2018-04-17-oauth-ldap') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'OAUTH_LDAP_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'OAUTH_LDAP_S', startValue: "1")
         }
         createTable(tableName: "OAUTH_LDAP") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: '表ID，主键，供其他表做外键，unsigned bigint、单表时自增、步长为 1') {
@@ -93,7 +93,7 @@ databaseChangeLog(logicalFilePath: 'script/db/oauth_ldap.groovy') {
     }
 
     changeSet(author: 'superleader8@gmail.com', id: '2018-10-12-oauth-ldap-add-notnull') {
-        addNotNullConstraint(tableName: 'OAUTH_LDAP', defaultNullValue: 'OpenLDAP', columnName: 'DIRECTORY_TYPE', columnDataType:'VARCHAR(64)')
+        addNotNullConstraint(tableName: 'OAUTH_LDAP', defaultNullValue: 'OpenLDAP', columnName: 'DIRECTORY_TYPE', columnDataType: 'VARCHAR(64)')
     }
 
 }

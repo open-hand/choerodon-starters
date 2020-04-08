@@ -6,19 +6,18 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>0.16.0.RELEASE</version>
+    <version>0.16.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.6.RELEASE</version>
+        <groupId>org.hzero</groupId>
+        <artifactId>hzero-parent</artifactId>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
 
+
     <properties>
-        <choerodon.starter.version>0.16.0.RELEASE</choerodon.starter.version>
-        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
-        <spring.cloud.version>Greenwich.SR2</spring.cloud.version>
+        <hzero.starter.version>1.4.0-SNAPSHOT</hzero.starter.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <spring-security-jwt.version>1.0.10.RELEASE</spring-security-jwt.version>
@@ -30,93 +29,26 @@
     </properties>
 
 
-
     <url>https://github.com/choerodon/choerodon-starters</url>
-    <developers>
-        <developer>
-            <name>dongfan</name>
-            <email>fan@choerodon.io</email>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-        <developer>
-            <name>flyleft</name>
-            <email>jcalaz@163.com</email>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-        <developer>
-            <name>superlee</name>
-            <email>superleader8@gmail.com</email>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-        <developer>
-            <name>wuguokai</name>
-            <email>guokai.wu.work@gmail.com</email>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-        <developer>
-            <name>longhe1996</name>
-            <email>longhe1996@foxmail.com</email>
-            <roles>
-                <role>developer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-    </developers>
     <modules>
         <module>choerodon-gitlab4j-api</module>
         <module>choerodon-liquibase</module>
-        <module>choerodon-starter-asgard</module>
-        <module>choerodon-starter-config-client</module>
-        <module>choerodon-starter-core</module>
-        <module>choerodon-starter-eureka-event</module>
-        <module>choerodon-starter-feign-replay</module>
-        <module>choerodon-starter-metric</module>
-        <module>choerodon-starter-mybatis</module>
-        <module>choerodon-starter-oauth-core</module>
-        <module>choerodon-starter-oauth-resource</module>
-        <module>choerodon-starter-swagger</module>
         <module>choerodon-tool-config</module>
         <module>choerodon-tool-liquibase</module>
-        <module>choerodon-hap-starter-redis</module>
-        <module>choerodon-hap-starter-message</module>
-        <module>choerodon-hap-starter-freemarker</module>
-        <module>choerodon-hap-starter-web</module>
         <module>choerodon-maven-plugin</module>
-        <module>choerodon-annotation-processor</module>
         <module>choerodon-starter-actuator</module>
-        <module>choerodon-starter-actuator-processor</module>
-        <module>choerodon-starter-websocket</module>
-        <module>choerodon-framework-parent</module>
-        <module>choerodon-starter-webmvc</module>
     </modules>
 
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring.cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <groupId>org.hzero.starter</groupId>
+                <artifactId>hzero-starter-core</artifactId>
+                <version>${hzero.starter.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -147,33 +79,19 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <version>${gmavenplus.plugin.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>addTestSources</goal>
-                            <goal>testCompile</goal>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
-                <configuration>
-                    <includes>
-                        <include>**/*Test.java</include>
-                        <include>**/*Spec.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/Abstract*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-
 </project>

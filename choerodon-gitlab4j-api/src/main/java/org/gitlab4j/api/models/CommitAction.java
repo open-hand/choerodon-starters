@@ -141,7 +141,7 @@ public class CommitAction {
 
     public CommitAction withFileContent(File file, String filePath, Encoding encoding) throws GitLabApiException {
 
-        this.encoding = (encoding != null ? encoding : Encoding.TEXT); 
+        this.encoding = (encoding != null ? encoding : Encoding.TEXT);
         this.filePath = filePath;
 
         try {

@@ -1,6 +1,7 @@
 package io.choerodon.liquibase;
 
 import io.choerodon.liquibase.addition.ProfileMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 

@@ -43,6 +43,7 @@ public enum ConfigFileFormat {
 
     /**
      * {@inheritDoc}
+     *
      * @param value 属性值
      * @return boolean
      */

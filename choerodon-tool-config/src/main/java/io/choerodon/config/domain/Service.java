@@ -5,7 +5,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import io.choerodon.mybatis.entity.BaseDTO;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 /**
  * 数据库service表实体对象
@@ -13,7 +13,7 @@ import io.choerodon.mybatis.entity.BaseDTO;
  * @author wuguokai
  */
 @Table(name = "mgmt_service")
-public class Service extends BaseDTO {
+public class Service extends AuditDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

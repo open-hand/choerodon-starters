@@ -24,12 +24,14 @@ public class CellDataConverter {
 
     private static final String DECIMAL_POINT = ".";
 
-    private CellDataConverter() {}
+    private CellDataConverter() {
+    }
 
     /**
      * 根据jdbc type转为对应的java类型数据
+     *
      * @param value
-     * @param type jdbc type
+     * @param type  jdbc type
      * @return
      */
     public static Object covert(String value, String type) {
@@ -40,7 +42,7 @@ public class CellDataConverter {
             if (value.length() <= ISO_DATE_FORMATTER_LENGTH) {
                 try {
                     return LocalDate.parse(value);
-                }catch (DateTimeParseException e){
+                } catch (DateTimeParseException e) {
                     try {
                         return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);
                     } catch (ParseException e1) {
@@ -50,7 +52,7 @@ public class CellDataConverter {
             }
             try {
                 return LocalDateTime.parse(value);
-            }catch (DateTimeParseException e){
+            } catch (DateTimeParseException e) {
                 try {
                     return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(value);
                 } catch (ParseException e1) {

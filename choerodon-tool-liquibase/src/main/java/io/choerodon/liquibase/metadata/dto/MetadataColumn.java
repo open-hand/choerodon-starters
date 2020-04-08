@@ -127,8 +127,8 @@ public class MetadataColumn {
         return String.format("%s[%s(%d)]", columnName, typeName, columnSize);
     }
 
-    public void solveDisplayType(){
-        if("CHAR".equals(getTypeName()) || "VARCHAR".equals(getTypeName())){
+    public void solveDisplayType() {
+        if ("CHAR".equals(getTypeName()) || "VARCHAR".equals(getTypeName())) {
             setDisplayType(String.format("%s(%d)", getTypeName(), getColumnSize()));
         } else {
             setDisplayType(getTypeName());

@@ -21,18 +21,18 @@ public class CopyMojo extends AbstractMojo {
         String outputPath = project.getBuild().getOutputDirectory();
         try {
             File packageJson = new File(basePath + "/package.json");
-            if(packageJson.exists()){
+            if (packageJson.exists()) {
                 File outputDirectory = new File(outputPath + ExtractMojo.FORWARD_SLASH + ExtractMojo.CHOERODON_FOLDER_IN_JAR);
-                if(!outputDirectory.exists()){
+                if (!outputDirectory.exists()) {
                     FileUtils.forceMkdir(outputDirectory);
                 }
                 getLog().info("Copy File: " + packageJson.getName());
                 FileUtils.copyFileToDirectory(packageJson, outputDirectory);
             }
             File uiDir = new File(basePath + "/react");
-            if(uiDir.exists() && uiDir.isDirectory()){
+            if (uiDir.exists() && uiDir.isDirectory()) {
                 File outputDirectory = new File(outputPath + ExtractMojo.FORWARD_SLASH + ExtractMojo.CHOERODON_FOLDER_IN_JAR + "/react");
-                if(!outputDirectory.exists()){
+                if (!outputDirectory.exists()) {
                     FileUtils.forceMkdir(outputDirectory);
                 }
                 getLog().info("Copy Directory: " + uiDir.getName());

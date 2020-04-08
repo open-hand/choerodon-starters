@@ -42,7 +42,7 @@ public class ExtractMojo extends AbstractMojo {
                     String namespace = artifact.getArtifactId();
                     saveFolderPath.append(baseSaveFolderPath).append(REACT_COPY_FOLDER).append(FORWARD_SLASH).append(namespace);
                     try {
-                        if (file.isDirectory()){
+                        if (file.isDirectory()) {
                             copyResourceFromDirectory(file.getAbsolutePath(), saveFolderPath.toString().replace(BACK_SLASH, FORWARD_SLASH));
                         } else {
                             copyResourceFromJar(file.getAbsolutePath(), saveFolderPath.toString().replace(BACK_SLASH, FORWARD_SLASH));
@@ -57,16 +57,16 @@ public class ExtractMojo extends AbstractMojo {
 
     private void copyResourceFromDirectory(String target, String baseSaveFolderPath) throws IOException {
         File customFile = new File(target + FORWARD_SLASH + CHOERODON_FOLDER_IN_JAR);
-        if (customFile.isDirectory()){
+        if (customFile.isDirectory()) {
             getLog().info("Extract: " + target);
             FileUtils.copyDirectory(customFile, new File(baseSaveFolderPath));
         }
     }
 
     private void copyResourceFromJar(String jarPath, String baseSaveFolderPath) throws IOException {
-        try(JarFile jarFile = new JarFile(jarPath)) {
+        try (JarFile jarFile = new JarFile(jarPath)) {
             Enumeration<JarEntry> jarEntries = jarFile.entries();
-            if(jarFile.getEntry(CHOERODON_FOLDER_IN_JAR) == null){
+            if (jarFile.getEntry(CHOERODON_FOLDER_IN_JAR) == null) {
                 return;
             }
             getLog().info("Extract: " + jarFile.getName());
@@ -75,7 +75,7 @@ public class ExtractMojo extends AbstractMojo {
                 String resourcePath = jarEntry.getName();
                 if (!jarEntry.isDirectory() &&
                         (resourcePath.startsWith(CHOERODON_FOLDER_IN_JAR + "/package.json")
-                        ||resourcePath.startsWith(CHOERODON_FOLDER_IN_JAR + "/react"))) {
+                                || resourcePath.startsWith(CHOERODON_FOLDER_IN_JAR + "/react"))) {
                     copyResourceToCommonFolder(resourcePath.replace(CHOERODON_FOLDER_IN_JAR, ""), baseSaveFolderPath, jarFile.getInputStream(jarEntry));
                 }
             }
@@ -109,7 +109,7 @@ public class ExtractMojo extends AbstractMojo {
             getLog().error(String.format("create file :%s failed", filename));
             return;
         }
-        try(OutputStream os = new FileOutputStream(file)) {
+        try (OutputStream os = new FileOutputStream(file)) {
             IOUtils.copy(is, os);
         }
     }

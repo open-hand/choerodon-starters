@@ -25,19 +25,19 @@ package org.gitlab4j.api;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -70,7 +70,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of projects accessible by the authenticated user.
-     *
+     * <p>
      * GET /projects
      *
      * @return a list of projects accessible by the authenticated user
@@ -78,27 +78,29 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public List<Project> getProjects() throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects accessible by the authenticated user and in the specified page range.
-     *
+     * <p>
      * GET /projects
      *
-     * @param page the page to get
+     * @param page    the page to get
      * @param perPage the number of projects per page
      * @return a list of projects accessible by the authenticated user
      * @throws GitLabApiException if any exception occurs
      */
     public List<Project> getProjects(int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() { }));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a Pager instance of projects accessible by the authenticated user.
-     *
+     * <p>
      * GET /projects
      *
      * @param itemsPerPage the number of Project instances that will be fetched per page
@@ -112,23 +114,23 @@ public class ProjectApi extends AbstractApi implements Constants {
     /**
      * Get a list of projects accessible by the authenticated user and matching the supplied filter parameters.
      * All filter parameters are optional.
-     *
+     * <p>
      * GET /projects
      *
-     * @param archived limit by archived status
+     * @param archived   limit by archived status
      * @param visibility limit by visibility public, internal, or private
-     * @param orderBy return projects ordered by id, name, path, created_at, updated_at, or last_activity_at fields, default is created_at
-     * @param sort return projects sorted in asc or desc order. Default is desc
-     * @param search return list of projects matching the search criteria
-     * @param simple return only the ID, URL, name, and path of each project
-     * @param owned limit by projects owned by the current user
+     * @param orderBy    return projects ordered by id, name, path, created_at, updated_at, or last_activity_at fields, default is created_at
+     * @param sort       return projects sorted in asc or desc order. Default is desc
+     * @param search     return list of projects matching the search criteria
+     * @param simple     return only the ID, URL, name, and path of each project
+     * @param owned      limit by projects owned by the current user
      * @param membership limit by projects that the current user is a member of
-     * @param starred limit by projects starred by the current user
+     * @param starred    limit by projects starred by the current user
      * @param statistics include project statistics
      * @return a list of projects accessible by the authenticated user and matching the supplied parameters
      * @throws GitLabApiException if any exception occurs
-     * @deprecated  Will be removed in version 5.0, replaced by {@link #getProjects(Boolean, Visibility,
-     *      ProjectOrderBy, SortOrder, String, Boolean, Boolean, Boolean, Boolean, Boolean)}
+     * @deprecated Will be removed in version 5.0, replaced by {@link #getProjects(Boolean, Visibility,
+     * ProjectOrderBy, SortOrder, String, Boolean, Boolean, Boolean, Boolean, Boolean)}
      */
     public List<Project> getProjects(Boolean archived, Visibility visibility, String orderBy,
                                      String sort, String search, Boolean simple, Boolean owned, Boolean membership,
@@ -148,32 +150,33 @@ public class ProjectApi extends AbstractApi implements Constants {
                 .withParam(PER_PAGE_PARAM, getDefaultPerPage());
 
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects accessible by the authenticated user and matching the supplied filter parameters.
      * All filter parameters are optional.
-     *
+     * <p>
      * GET /projects
      *
-     * @param archived limit by archived status
+     * @param archived   limit by archived status
      * @param visibility limit by visibility public, internal, or private
-     * @param orderBy return projects ordered by ID, NAME, PATH, CREATED_AT, UPDATED_AT, or
-     *          LAST_ACTIVITY_AT fields, default is CREATED_AT
-     * @param sort return projects sorted in asc or desc order. Default is desc
-     * @param search return list of projects matching the search criteria
-     * @param simple return only the ID, URL, name, and path of each project
-     * @param owned limit by projects owned by the current user
+     * @param orderBy    return projects ordered by ID, NAME, PATH, CREATED_AT, UPDATED_AT, or
+     *                   LAST_ACTIVITY_AT fields, default is CREATED_AT
+     * @param sort       return projects sorted in asc or desc order. Default is desc
+     * @param search     return list of projects matching the search criteria
+     * @param simple     return only the ID, URL, name, and path of each project
+     * @param owned      limit by projects owned by the current user
      * @param membership limit by projects that the current user is a member of
-     * @param starred limit by projects starred by the current user
+     * @param starred    limit by projects starred by the current user
      * @param statistics include project statistics
      * @return a list of projects accessible by the authenticated user and matching the supplied parameters
      * @throws GitLabApiException if any exception occurs
      */
     public List<Project> getProjects(Boolean archived, Visibility visibility, ProjectOrderBy orderBy,
-            SortOrder sort, String search, Boolean simple, Boolean owned, Boolean membership,
-            Boolean starred, Boolean statistics) throws GitLabApiException {
+                                     SortOrder sort, String search, Boolean simple, Boolean owned, Boolean membership,
+                                     Boolean starred, Boolean statistics) throws GitLabApiException {
 
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("archived", archived)
@@ -189,34 +192,35 @@ public class ProjectApi extends AbstractApi implements Constants {
                 .withParam(PER_PAGE_PARAM, getDefaultPerPage());
 
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects accessible by the authenticated user and matching the supplied filter parameters.
      * All filter parameters are optional.
-     *
+     * <p>
      * GET /projects
      *
-     * @param archived limit by archived status
+     * @param archived   limit by archived status
      * @param visibility limit by visibility public, internal, or private
-     * @param orderBy return projects ordered by ID, NAME, PATH, CREATED_AT, UPDATED_AT, or
-     *          LAST_ACTIVITY_AT fields, default is CREATED_AT
-     * @param sort return projects sorted in asc or desc order. Default is desc
-     * @param search return list of projects matching the search criteria
-     * @param simple return only the ID, URL, name, and path of each project
-     * @param owned limit by projects owned by the current user
+     * @param orderBy    return projects ordered by ID, NAME, PATH, CREATED_AT, UPDATED_AT, or
+     *                   LAST_ACTIVITY_AT fields, default is CREATED_AT
+     * @param sort       return projects sorted in asc or desc order. Default is desc
+     * @param search     return list of projects matching the search criteria
+     * @param simple     return only the ID, URL, name, and path of each project
+     * @param owned      limit by projects owned by the current user
      * @param membership limit by projects that the current user is a member of
-     * @param starred limit by projects starred by the current user
+     * @param starred    limit by projects starred by the current user
      * @param statistics include project statistics
-     * @param page the page to get
-     * @param perPage the number of projects per page
+     * @param page       the page to get
+     * @param perPage    the number of projects per page
      * @return a list of projects accessible by the authenticated user and matching the supplied parameters
      * @throws GitLabApiException if any exception occurs
      */
     public List<Project> getProjects(Boolean archived, Visibility visibility, ProjectOrderBy orderBy,
-            SortOrder sort, String search, Boolean simple, Boolean owned, Boolean membership,
-            Boolean starred, Boolean statistics, int page, int perPage) throws GitLabApiException {
+                                     SortOrder sort, String search, Boolean simple, Boolean owned, Boolean membership,
+                                     Boolean starred, Boolean statistics, int page, int perPage) throws GitLabApiException {
 
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("archived", archived)
@@ -229,37 +233,38 @@ public class ProjectApi extends AbstractApi implements Constants {
                 .withParam("membership", membership)
                 .withParam("starred", starred)
                 .withParam("statistics", statistics)
-                .withParam(PAGE_PARAM,  page)
+                .withParam(PAGE_PARAM, page)
                 .withParam(PER_PAGE_PARAM, perPage);
 
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a Pager of projects accessible by the authenticated user and matching the supplied filter parameters.
      * All filter parameters are optional.
-     *
+     * <p>
      * GET /projects
      *
-     * @param archived limit by archived status
-     * @param visibility limit by visibility public, internal, or private
-     * @param orderBy return projects ordered by ID, NAME, PATH, CREATED_AT, UPDATED_AT, or
-     *          LAST_ACTIVITY_AT fields, default is CREATED_AT
-     * @param sort return projects sorted in asc or desc order. Default is desc
-     * @param search return list of projects matching the search criteria
-     * @param simple return only the ID, URL, name, and path of each project
-     * @param owned limit by projects owned by the current user
-     * @param membership limit by projects that the current user is a member of
-     * @param starred limit by projects starred by the current user
-     * @param statistics include project statistics
+     * @param archived     limit by archived status
+     * @param visibility   limit by visibility public, internal, or private
+     * @param orderBy      return projects ordered by ID, NAME, PATH, CREATED_AT, UPDATED_AT, or
+     *                     LAST_ACTIVITY_AT fields, default is CREATED_AT
+     * @param sort         return projects sorted in asc or desc order. Default is desc
+     * @param search       return list of projects matching the search criteria
+     * @param simple       return only the ID, URL, name, and path of each project
+     * @param owned        limit by projects owned by the current user
+     * @param membership   limit by projects that the current user is a member of
+     * @param starred      limit by projects starred by the current user
+     * @param statistics   include project statistics
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return a Pager of projects accessible by the authenticated user and matching the supplied parameters
      * @throws GitLabApiException if any exception occurs
      */
     public Pager<Project> getProjects(Boolean archived, Visibility visibility, ProjectOrderBy orderBy,
-            SortOrder sort, String search, Boolean simple, Boolean owned, Boolean membership,
-            Boolean starred, Boolean statistics, int itemsPerPage) throws GitLabApiException {
+                                      SortOrder sort, String search, Boolean simple, Boolean owned, Boolean membership,
+                                      Boolean starred, Boolean statistics, int itemsPerPage) throws GitLabApiException {
 
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("archived", archived)
@@ -278,7 +283,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of projects accessible by the authenticated user that match the provided search string.
-     *
+     * <p>
      * GET /projects?search=search
      *
      * @param search the project name search criteria
@@ -288,32 +293,34 @@ public class ProjectApi extends AbstractApi implements Constants {
     public List<Project> getProjects(String search) throws GitLabApiException {
         Form formData = new GitLabApiForm().withParam("search", search).withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects accessible by the authenticated user that match the provided search string.
-     *
+     * <p>
      * GET /projects?search=search
      *
-     * @param search the project name search criteria
-     * @param page the page to get
+     * @param search  the project name search criteria
+     * @param page    the page to get
      * @param perPage the number of projects per page
      * @return a list of projects accessible by the authenticated user that match the provided search string
      * @throws GitLabApiException if any exception occurs
      */
     public List<Project> getProjects(String search, int page, int perPage) throws GitLabApiException {
-        Form formData = new GitLabApiForm().withParam("search", search).withParam(PAGE_PARAM,  page).withParam(PER_PAGE_PARAM, perPage);
+        Form formData = new GitLabApiForm().withParam("search", search).withParam(PAGE_PARAM, page).withParam(PER_PAGE_PARAM, perPage);
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a Pager of projects accessible by the authenticated user that match the provided search string.
-     *
+     * <p>
      * GET /projects?search=search
      *
-     * @param search the project name search criteria
+     * @param search       the project name search criteria
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return a Pager of projects accessible by the authenticated user that match the provided search string
      * @throws GitLabApiException if any exception occurs
@@ -325,7 +332,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of projects that the authenticated user is a member of.
-     *
+     * <p>
      * GET /projects
      *
      * @return a list of projects that the authenticated user is a member of
@@ -334,28 +341,30 @@ public class ProjectApi extends AbstractApi implements Constants {
     public List<Project> getMemberProjects() throws GitLabApiException {
         Form formData = new GitLabApiForm().withParam("membership", true).withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects that the authenticated user is a member of in the specified page range.
-     *
+     * <p>
      * GET /projects
      *
-     * @param page the page to get
+     * @param page    the page to get
      * @param perPage the number of projects per page
      * @return a list of projects that the authenticated user is a member of
      * @throws GitLabApiException if any exception occurs
      */
     public List<Project> getMemberProjects(int page, int perPage) throws GitLabApiException {
-        Form formData = new GitLabApiForm().withParam("membership", true).withParam(PAGE_PARAM,  page).withParam(PER_PAGE_PARAM, perPage);
+        Form formData = new GitLabApiForm().withParam("membership", true).withParam(PAGE_PARAM, page).withParam(PER_PAGE_PARAM, perPage);
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a Pager of projects that the authenticated user is a member of.
-     *
+     * <p>
      * GET /projects
      *
      * @param itemsPerPage the number of Project instances that will be fetched per page
@@ -369,12 +378,12 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of all GitLab projects (admin only).
-     *
+     * <p>
      * GET /projects/all
      *
      * @return a list of all GitLab projects
      * @throws GitLabApiException if any exception occurs
-     * @deprecated  Will be removed, no longer supported by the GitLab API
+     * @deprecated Will be removed, no longer supported by the GitLab API
      */
     public List<Project> getAllProjects() throws GitLabApiException {
 
@@ -384,12 +393,13 @@ public class ProjectApi extends AbstractApi implements Constants {
 
         Form formData = new GitLabApiForm().withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects", "all");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects owned by the authenticated user.
-     *
+     * <p>
      * GET /projects
      *
      * @return a list of projects owned by the authenticated user
@@ -398,28 +408,30 @@ public class ProjectApi extends AbstractApi implements Constants {
     public List<Project> getOwnedProjects() throws GitLabApiException {
         Form formData = new GitLabApiForm().withParam("owned", true).withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() { }));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects owned by the authenticated user in the specified page range.
-     *
+     * <p>
      * GET /projects
      *
-     * @param page the page to get
+     * @param page    the page to get
      * @param perPage the number of projects per page
      * @return a list of projects owned by the authenticated user
      * @throws GitLabApiException if any exception occurs
      */
     public List<Project> getOwnedProjects(int page, int perPage) throws GitLabApiException {
-        Form formData = new GitLabApiForm().withParam("owned", true).withParam(PAGE_PARAM,  page).withParam(PER_PAGE_PARAM, perPage);
+        Form formData = new GitLabApiForm().withParam("owned", true).withParam(PAGE_PARAM, page).withParam(PER_PAGE_PARAM, perPage);
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a Pager of projects owned by the authenticated user.
-     *
+     * <p>
      * GET /projects
      *
      * @param itemsPerPage the number of Project instances that will be fetched per page
@@ -433,7 +445,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of projects starred by the authenticated user.
-     *
+     * <p>
      * GET /projects
      *
      * @return a list of projects starred by the authenticated user
@@ -442,15 +454,16 @@ public class ProjectApi extends AbstractApi implements Constants {
     public List<Project> getStarredProjects() throws GitLabApiException {
         Form formData = new GitLabApiForm().withParam("starred", true).withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a list of projects starred by the authenticated user in the specified page range.
-     *
+     * <p>
      * GET /projects
      *
-     * @param page the page to get
+     * @param page    the page to get
      * @param perPage the number of projects per page
      * @return a list of projects starred by the authenticated user
      * @throws GitLabApiException if any exception occurs
@@ -458,12 +471,13 @@ public class ProjectApi extends AbstractApi implements Constants {
     public List<Project> getStarredProjects(int page, int perPage) throws GitLabApiException {
         Form formData = new GitLabApiForm().withParam("starred", true).withParam(PAGE_PARAM, page).withParam(PER_PAGE_PARAM, perPage);
         Response response = get(Response.Status.OK, formData.asMap(), "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
      * Get a Pager of projects starred by the authenticated user.
-     *
+     * <p>
      * GET /projects
      *
      * @param itemsPerPage the number of Project instances that will be fetched per page
@@ -477,7 +491,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a specific project, which is owned by the authentication user.
-     *
+     * <p>
      * GET /projects/:id
      *
      * @param projectId the ID of the project to get
@@ -491,11 +505,11 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a specific project, which is owned by the authentication user.
-     *
+     * <p>
      * GET /projects/:id
      *
      * @param namespace the name of the project namespace or group
-     * @param project the name of the project to get
+     * @param project   the name of the project to get
      * @return the specified project
      * @throws GitLabApiException if any exception occurs
      */
@@ -523,7 +537,7 @@ public class ProjectApi extends AbstractApi implements Constants {
     /**
      * Create a new project in the specified group.
      *
-     * @param groupId the group ID to create the project under
+     * @param groupId     the group ID to create the project under
      * @param projectName the name of the project top create
      * @return the created project
      * @throws GitLabApiException if any exception occurs
@@ -562,7 +576,7 @@ public class ProjectApi extends AbstractApi implements Constants {
     /**
      * Creates new project owned by the current user. The following properties on the Project instance
      * are utilized in the creation of the project:
-     *
+     * <p>
      * name (name or path are required) - new project name
      * path (name or path are required) - new project path
      * defaultBranch (optional) - master by default
@@ -584,7 +598,7 @@ public class ProjectApi extends AbstractApi implements Constants {
      * repositoryStorage (optional) - Which storage shard the repository is on. Available only to admins
      * approvalsBeforeMerge (optional) - How many approvers should approve merge request by default
      *
-     * @param project the Project instance with the configuration for the new project
+     * @param project   the Project instance with the configuration for the new project
      * @param importUrl the URL to import the repository from
      * @return a Project instance with the newly created project info
      * @throws GitLabApiException if any exception occurs
@@ -603,33 +617,33 @@ public class ProjectApi extends AbstractApi implements Constants {
         }
 
         GitLabApiForm formData = new GitLabApiForm()
-            .withParam("name", name)
-            .withParam("path", path)
-            .withParam("default_branch", project.getDefaultBranch())
-            .withParam("description", project.getDescription())
-            .withParam("issues_enabled", project.getIssuesEnabled())
-            .withParam("merge_requests_enabled", project.getMergeRequestsEnabled())
-            .withParam("jobs_enabled", project.getJobsEnabled())
-            .withParam("wiki_enabled", project.getWikiEnabled())
-            .withParam("container_registry_enabled", project.getContainerRegistryEnabled())
-            .withParam("snippets_enabled", project.getSnippetsEnabled())
-            .withParam("shared_runners_enabled", project.getSharedRunnersEnabled())
-            .withParam("public_jobs", project.getPublicJobs())
-            .withParam("visibility_level", project.getVisibilityLevel())
-            .withParam("only_allow_merge_if_pipeline_succeeds", project.getOnlyAllowMergeIfPipelineSucceeds())
-            .withParam("only_allow_merge_if_all_discussions_are_resolved", project.getOnlyAllowMergeIfAllDiscussionsAreResolved())
-            .withParam("lfs_enabled", project.getLfsEnabled())
-            .withParam("request_access_enabled", project.getRequestAccessEnabled())
-            .withParam("repository_storage", project.getRepositoryStorage())
-            .withParam("approvals_before_merge", project.getApprovalsBeforeMerge())
-            .withParam("import_url", importUrl);
+                .withParam("name", name)
+                .withParam("path", path)
+                .withParam("default_branch", project.getDefaultBranch())
+                .withParam("description", project.getDescription())
+                .withParam("issues_enabled", project.getIssuesEnabled())
+                .withParam("merge_requests_enabled", project.getMergeRequestsEnabled())
+                .withParam("jobs_enabled", project.getJobsEnabled())
+                .withParam("wiki_enabled", project.getWikiEnabled())
+                .withParam("container_registry_enabled", project.getContainerRegistryEnabled())
+                .withParam("snippets_enabled", project.getSnippetsEnabled())
+                .withParam("shared_runners_enabled", project.getSharedRunnersEnabled())
+                .withParam("public_jobs", project.getPublicJobs())
+                .withParam("visibility_level", project.getVisibilityLevel())
+                .withParam("only_allow_merge_if_pipeline_succeeds", project.getOnlyAllowMergeIfPipelineSucceeds())
+                .withParam("only_allow_merge_if_all_discussions_are_resolved", project.getOnlyAllowMergeIfAllDiscussionsAreResolved())
+                .withParam("lfs_enabled", project.getLfsEnabled())
+                .withParam("request_access_enabled", project.getRequestAccessEnabled())
+                .withParam("repository_storage", project.getRepositoryStorage())
+                .withParam("approvals_before_merge", project.getApprovalsBeforeMerge())
+                .withParam("import_url", importUrl);
 
         if (isApiVersion(ApiVersion.V3)) {
             boolean isPublic = (project.getPublic() != null ? project.getPublic() : project.getVisibility() == Visibility.PUBLIC);
             formData.withParam("public", isPublic);
         } else {
             Visibility visibility = (project.getVisibility() != null ? project.getVisibility() :
-                project.getPublic() == Boolean.TRUE ? Visibility.PUBLIC : null);
+                    project.getPublic() == Boolean.TRUE ? Visibility.PUBLIC : null);
             formData.withParam("visibility", visibility);
         }
 
@@ -644,21 +658,21 @@ public class ProjectApi extends AbstractApi implements Constants {
     /**
      * Creates a Project
      *
-     * @param name The name of the project
-     * @param namespaceId The Namespace for the new project, otherwise null indicates to use the GitLab default (user)
-     * @param description A description for the project, null otherwise
-     * @param issuesEnabled Whether Issues should be enabled, otherwise null indicates to use GitLab default
+     * @param name                 The name of the project
+     * @param namespaceId          The Namespace for the new project, otherwise null indicates to use the GitLab default (user)
+     * @param description          A description for the project, null otherwise
+     * @param issuesEnabled        Whether Issues should be enabled, otherwise null indicates to use GitLab default
      * @param mergeRequestsEnabled Whether Merge Requests should be enabled, otherwise null indicates to use GitLab default
-     * @param wikiEnabled Whether a Wiki should be enabled, otherwise null indicates to use GitLab default
-     * @param snippetsEnabled Whether Snippets should be enabled, otherwise null indicates to use GitLab default
-     * @param visibility The visibility of the project, otherwise null indicates to use GitLab default
-     * @param visibilityLevel The visibility level of the project, otherwise null indicates to use GitLab default
-     * @param importUrl The Import URL for the project, otherwise null
+     * @param wikiEnabled          Whether a Wiki should be enabled, otherwise null indicates to use GitLab default
+     * @param snippetsEnabled      Whether Snippets should be enabled, otherwise null indicates to use GitLab default
+     * @param visibility           The visibility of the project, otherwise null indicates to use GitLab default
+     * @param visibilityLevel      The visibility level of the project, otherwise null indicates to use GitLab default
+     * @param importUrl            The Import URL for the project, otherwise null
      * @return the GitLab Project
      * @throws GitLabApiException if any exception occurs
      */
     public Project createProject(String name, Integer namespaceId, String description, Boolean issuesEnabled, Boolean mergeRequestsEnabled,
-            Boolean wikiEnabled, Boolean snippetsEnabled, Visibility visibility, Integer visibilityLevel, String importUrl) throws GitLabApiException {
+                                 Boolean wikiEnabled, Boolean snippetsEnabled, Visibility visibility, Integer visibilityLevel, String importUrl) throws GitLabApiException {
 
         if (isApiVersion(ApiVersion.V3)) {
             Boolean isPublic = Visibility.PUBLIC == visibility;
@@ -689,24 +703,24 @@ public class ProjectApi extends AbstractApi implements Constants {
     /**
      * Creates a Project
      *
-     * @param name The name of the project
-     * @param namespaceId The Namespace for the new project, otherwise null indicates to use the GitLab default (user)
-     * @param description A description for the project, null otherwise
-     * @param issuesEnabled Whether Issues should be enabled, otherwise null indicates to use GitLab default
+     * @param name                 The name of the project
+     * @param namespaceId          The Namespace for the new project, otherwise null indicates to use the GitLab default (user)
+     * @param description          A description for the project, null otherwise
+     * @param issuesEnabled        Whether Issues should be enabled, otherwise null indicates to use GitLab default
      * @param mergeRequestsEnabled Whether Merge Requests should be enabled, otherwise null indicates to use GitLab default
-     * @param wikiEnabled Whether a Wiki should be enabled, otherwise null indicates to use GitLab default
-     * @param snippetsEnabled Whether Snippets should be enabled, otherwise null indicates to use GitLab default
-     * @param isPublic Whether the project is public or private, if true same as setting visibilityLevel = 20, otherwise null indicates to use GitLab default
-     * @param visibilityLevel The visibility level of the project, otherwise null indicates to use GitLab default
-     * @param importUrl The Import URL for the project, otherwise null
+     * @param wikiEnabled          Whether a Wiki should be enabled, otherwise null indicates to use GitLab default
+     * @param snippetsEnabled      Whether Snippets should be enabled, otherwise null indicates to use GitLab default
+     * @param isPublic             Whether the project is public or private, if true same as setting visibilityLevel = 20, otherwise null indicates to use GitLab default
+     * @param visibilityLevel      The visibility level of the project, otherwise null indicates to use GitLab default
+     * @param importUrl            The Import URL for the project, otherwise null
      * @return the GitLab Project
      * @throws GitLabApiException if any exception occurs
      * @deprecated As of release 4.2.0, replaced by {@link #createProject(String, Integer, String, Boolean, Boolean,
-     *      Boolean, Boolean, Visibility, Integer, String)}
+     * Boolean, Boolean, Visibility, Integer, String)}
      */
     @Deprecated
     public Project createProject(String name, Integer namespaceId, String description, Boolean issuesEnabled, Boolean mergeRequestsEnabled,
-            Boolean wikiEnabled, Boolean snippetsEnabled, Boolean isPublic, Integer visibilityLevel, String importUrl) throws GitLabApiException {
+                                 Boolean wikiEnabled, Boolean snippetsEnabled, Boolean isPublic, Integer visibilityLevel, String importUrl) throws GitLabApiException {
 
         if (name == null || name.trim().length() == 0) {
             return (null);
@@ -736,7 +750,7 @@ public class ProjectApi extends AbstractApi implements Constants {
     /**
      * Updates a project. The following properties on the Project instance
      * are utilized in the edit of the project, null values are not updated:
-     *
+     * <p>
      * id (required) - existing project id
      * name (required) - project name
      * path (optional) - project path
@@ -757,12 +771,12 @@ public class ProjectApi extends AbstractApi implements Constants {
      * requestAccessEnabled (optional) - Allow users to request member access
      * repositoryStorage (optional) - Which storage shard the repository is on. Available only to admins
      * approvalsBeforeMerge (optional) - How many approvers should approve merge request by default
-     *
+     * <p>
      * NOTE: The following parameters specified by the GitLab API edit project are not supported:
-     *     import_url
-     *     tag_list array
-     *     avatar
-     *     ci_config_path
+     * import_url
+     * tag_list array
+     * avatar
+     * ci_config_path
      *
      * @param project the Project instance with the configuration for the new project
      * @return a Project instance with the newly updated project info
@@ -785,24 +799,24 @@ public class ProjectApi extends AbstractApi implements Constants {
         }
 
         GitLabApiForm formData = new GitLabApiForm()
-            .withParam("name", name, true)
-            .withParam("path", project.getPath())
-            .withParam("default_branch", project.getDefaultBranch())
-            .withParam("description", project.getDescription())
-            .withParam("issues_enabled", project.getIssuesEnabled())
-            .withParam("merge_requests_enabled", project.getMergeRequestsEnabled())
-            .withParam("jobs_enabled", project.getJobsEnabled())
-            .withParam("wiki_enabled", project.getWikiEnabled())
-            .withParam("snippets_enabled", project.getSnippetsEnabled())
-            .withParam("container_registry_enabled", project.getContainerRegistryEnabled())
-            .withParam("shared_runners_enabled", project.getSharedRunnersEnabled())
-            .withParam("public_jobs", project.getPublicJobs())
-            .withParam("only_allow_merge_if_pipeline_succeeds", project.getOnlyAllowMergeIfPipelineSucceeds())
-            .withParam("only_allow_merge_if_all_discussions_are_resolved", project.getOnlyAllowMergeIfAllDiscussionsAreResolved())
-            .withParam("lfs_enabled", project.getLfsEnabled())
-            .withParam("request_access_enabled", project.getRequestAccessEnabled())
-            .withParam("repository_storage", project.getRepositoryStorage())
-            .withParam("approvals_before_merge", project.getApprovalsBeforeMerge());
+                .withParam("name", name, true)
+                .withParam("path", project.getPath())
+                .withParam("default_branch", project.getDefaultBranch())
+                .withParam("description", project.getDescription())
+                .withParam("issues_enabled", project.getIssuesEnabled())
+                .withParam("merge_requests_enabled", project.getMergeRequestsEnabled())
+                .withParam("jobs_enabled", project.getJobsEnabled())
+                .withParam("wiki_enabled", project.getWikiEnabled())
+                .withParam("snippets_enabled", project.getSnippetsEnabled())
+                .withParam("container_registry_enabled", project.getContainerRegistryEnabled())
+                .withParam("shared_runners_enabled", project.getSharedRunnersEnabled())
+                .withParam("public_jobs", project.getPublicJobs())
+                .withParam("only_allow_merge_if_pipeline_succeeds", project.getOnlyAllowMergeIfPipelineSucceeds())
+                .withParam("only_allow_merge_if_all_discussions_are_resolved", project.getOnlyAllowMergeIfAllDiscussionsAreResolved())
+                .withParam("lfs_enabled", project.getLfsEnabled())
+                .withParam("request_access_enabled", project.getRequestAccessEnabled())
+                .withParam("repository_storage", project.getRepositoryStorage())
+                .withParam("approvals_before_merge", project.getApprovalsBeforeMerge());
 
         if (isApiVersion(ApiVersion.V3)) {
             formData.withParam("visibility_level", project.getVisibilityLevel());
@@ -810,7 +824,7 @@ public class ProjectApi extends AbstractApi implements Constants {
             formData.withParam("public", isPublic);
         } else {
             Visibility visibility = (project.getVisibility() != null ? project.getVisibility() :
-                project.getPublic() == Boolean.TRUE ? Visibility.PUBLIC : null);
+                    project.getPublic() == Boolean.TRUE ? Visibility.PUBLIC : null);
             formData.withParam("visibility", visibility);
         }
 
@@ -820,7 +834,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Removes project with all resources(issues, merge requests etc).
-     *
+     * <p>
      * DELETE /projects/:id
      *
      * @param projectId the project ID to remove
@@ -838,7 +852,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Removes project with all resources(issues, merge requests etc).
-     *
+     * <p>
      * DELETE /projects/:id
      *
      * @param project the Project instance to remove
@@ -850,7 +864,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project team members.
-     *
+     * <p>
      * GET /projects/:id/members
      *
      * @param projectId the project ID to get team members for
@@ -859,31 +873,33 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public List<Member> getMembers(Integer projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, this.getDefaultPerPageParam(), "projects", projectId, "members");
-        return (response.readEntity(new GenericType<List<Member>>() {}));
+        return (response.readEntity(new GenericType<List<Member>>() {
+        }));
     }
 
     /**
      * Get a list of project team members in the specified page range.
-     *
+     * <p>
      * GET /projects/:id/members
      *
      * @param projectId the project ID to get team members for
-     * @param page the page to get
-     * @param perPage the number of Member instances per page
+     * @param page      the page to get
+     * @param perPage   the number of Member instances per page
      * @return the members belonging to the specified project
      * @throws GitLabApiException if any exception occurs
      */
     public List<Member> getMembers(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "members");
-        return (response.readEntity(new GenericType<List<Member>>() {}));
+        return (response.readEntity(new GenericType<List<Member>>() {
+        }));
     }
 
     /**
      * Get a Pager of project team members.
-     *
+     * <p>
      * GET /projects/:id/members
      *
-     * @param projectId the project ID to get team members for
+     * @param projectId    the project ID to get team members for
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return the members belonging to the specified project
      * @throws GitLabApiException if any exception occurs
@@ -894,11 +910,11 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Gets a project team member.
-     *
+     * <p>
      * GET /projects/:id/members/:user_id
      *
      * @param projectId the project ID to get team member for
-     * @param userId the user ID of the member
+     * @param userId    the user ID of the member
      * @return the member specified by the project ID/user ID pair
      * @throws GitLabApiException if any exception occurs
      */
@@ -915,8 +931,8 @@ public class ProjectApi extends AbstractApi implements Constants {
      * <pre><code>GitLab Endpoint: POST /projects/:id/members</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param userId the user ID of the member to add, required
-     * @param accessLevel the access level for the new member, required
+     * @param userId          the user ID of the member to add, required
+     * @param accessLevel     the access level for the new member, required
      * @return the added member
      * @throws GitLabApiException if any exception occurs
      */
@@ -932,9 +948,9 @@ public class ProjectApi extends AbstractApi implements Constants {
      * <pre><code>GitLab Endpoint: POST /projects/:id/members</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param userId the user ID of the member to add
-     * @param accessLevel the access level for the new member
-     * @param expiresAt the date the membership in the group will expire
+     * @param userId          the user ID of the member to add
+     * @param accessLevel     the access level for the new member
+     * @param expiresAt       the date the membership in the group will expire
      * @return the added member
      * @throws GitLabApiException if any exception occurs
      */
@@ -942,7 +958,7 @@ public class ProjectApi extends AbstractApi implements Constants {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("user_id", userId, true)
                 .withParam("access_level", accessLevel, true)
-                .withParam("expires_at",  expiresAt, false);
+                .withParam("expires_at", expiresAt, false);
         Response response = post(Response.Status.CREATED, formData, "projects", getProjectIdOrPath(projectIdOrPath), "members");
         return (response.readEntity(Member.class));
     }
@@ -951,11 +967,11 @@ public class ProjectApi extends AbstractApi implements Constants {
      * Adds a user to a project team. This is an idempotent method and can be called multiple times
      * with the same parameters. Adding team membership to a user that is already a member does not
      * affect the existing membership.
-     *
+     * <p>
      * POST /projects/:id/members
      *
-     * @param projectId the project ID to add the team member to
-     * @param userId the user ID of the member to add
+     * @param projectId   the project ID to add the team member to
+     * @param userId      the user ID of the member to add
      * @param accessLevel the access level for the new member
      * @return the added member
      * @throws GitLabApiException if any exception occurs
@@ -974,26 +990,27 @@ public class ProjectApi extends AbstractApi implements Constants {
      * <pre><code>GitLab Endpoint: PUT /projects/:projectId/members/:userId</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
-     * @param userId the user ID of the member to update, required
-     * @param accessLevel the new access level for the member, required
-     * @param expiresAt the date the membership in the group will expire, optional
+     * @param userId          the user ID of the member to update, required
+     * @param accessLevel     the new access level for the member, required
+     * @param expiresAt       the date the membership in the group will expire, optional
      * @return the updated member
      * @throws GitLabApiException if any exception occurs
      */
     public Member updateMember(Object projectIdOrPath, Integer userId, Integer accessLevel, Date expiresAt) throws GitLabApiException {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("access_level", accessLevel, true)
-                .withParam("expires_at",  expiresAt, false);
+                .withParam("expires_at", expiresAt, false);
         Response response = put(Response.Status.OK, formData.asMap(), "projects", getProjectIdOrPath(projectIdOrPath), "members", userId);
         return (response.readEntity(Member.class));
     }
+
     /**
      * Removes user from project team.
-     *
+     * <p>
      * DELETE /projects/:id/members/:user_id
      *
      * @param projectId the project ID to remove the team member from
-     * @param userId the user ID of the member to remove
+     * @param userId    the user ID of the member to remove
      * @throws GitLabApiException if any exception occurs
      */
     public void removeMember(Integer projectId, Integer userId) throws GitLabApiException {
@@ -1003,7 +1020,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project users. This list includes all project members and all users assigned to project parent groups.
-     *
+     * <p>
      * GET /projects/:id/users
      *
      * @param projectId the project ID to get users for
@@ -1012,16 +1029,17 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public List<ProjectUser> getProjectUsers(Integer projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "users");
-        return (response.readEntity(new GenericType<List<ProjectUser>>() {}));
+        return (response.readEntity(new GenericType<List<ProjectUser>>() {
+        }));
     }
 
     /**
      * Get a list of project users matching the specified search string. This list includes all project members and all users assigned to project parent groups.
-     *
+     * <p>
      * GET /projects/:id/users
      *
      * @param projectId the project ID to get users for
-     * @param search the string to match specific users
+     * @param search    the string to match specific users
      * @return the users matching the search string and belonging to the specified project and its parent groups
      * @throws GitLabApiException if any exception occurs
      */
@@ -1030,12 +1048,13 @@ public class ProjectApi extends AbstractApi implements Constants {
                 .withParam("search", search)
                 .withParam(PER_PAGE_PARAM, getDefaultPerPage());
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "users");
-        return (response.readEntity(new GenericType<List<ProjectUser>>() {}));
+        return (response.readEntity(new GenericType<List<ProjectUser>>() {
+        }));
     }
 
     /**
      * Get the project events for specific project. Sorted from newest to latest.
-     *
+     * <p>
      * GET /projects/:id/events
      *
      * @param projectId the project ID to get events for
@@ -1044,31 +1063,33 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public List<Event> getProjectEvents(Integer projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "events");
-        return (response.readEntity(new GenericType<List<Event>>() {}));
+        return (response.readEntity(new GenericType<List<Event>>() {
+        }));
     }
 
     /**
      * Get the project events for specific project. Sorted from newest to latest in the specified page range.
-     *
+     * <p>
      * GET /projects/:id/events
      *
      * @param projectId the project ID to get events for
-     * @param page the page to get
-     * @param perPage the number of Event instances per page
+     * @param page      the page to get
+     * @param perPage   the number of Event instances per page
      * @return the project events for the specified project
      * @throws GitLabApiException if any exception occurs
      */
     public List<Event> getProjectEvents(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "events");
-        return (response.readEntity(new GenericType<List<Event>>() {}));
+        return (response.readEntity(new GenericType<List<Event>>() {
+        }));
     }
 
     /**
      * Get a Pager of project events for specific project. Sorted from newest to latest.
-     *
+     * <p>
      * GET /projects/:id/events
      *
-     * @param projectId the project ID to get events for
+     * @param projectId    the project ID to get events for
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return a Pager of project events for the specified project
      * @throws GitLabApiException if any exception occurs
@@ -1079,7 +1100,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get list of project hooks.
-     *
+     * <p>
      * GET /projects/:id/hooks
      *
      * @param projectId the project ID to get project hooks for
@@ -1088,31 +1109,33 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public List<ProjectHook> getHooks(Integer projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "hooks");
-        return (response.readEntity(new GenericType<List<ProjectHook>>() {}));
+        return (response.readEntity(new GenericType<List<ProjectHook>>() {
+        }));
     }
 
     /**
      * Get list of project hooks in the specified page range.
-     *
+     * <p>
      * GET /projects/:id/hooks
      *
      * @param projectId the project ID to get project hooks for
-     * @param page the page to get
-     * @param perPage the number of ProjectHook instances per page
+     * @param page      the page to get
+     * @param perPage   the number of ProjectHook instances per page
      * @return a list of project hooks for the specified project in the specified page range
      * @throws GitLabApiException if any exception occurs
      */
     public List<ProjectHook> getHooks(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "hooks");
-        return (response.readEntity(new GenericType<List<ProjectHook>>() {}));
+        return (response.readEntity(new GenericType<List<ProjectHook>>() {
+        }));
     }
 
     /**
      * Get Pager of project hooks.
-     *
+     * <p>
      * GET /projects/:id/hooks
      *
-     * @param projectId the project ID to get project hooks for
+     * @param projectId    the project ID to get project hooks for
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return a Pager of project hooks for the specified project
      * @throws GitLabApiException if any exception occurs
@@ -1123,11 +1146,11 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a specific hook for project.
-     *
+     * <p>
      * GET /projects/:id/hooks/:hook_id
      *
      * @param projectId the project ID to get the hook for
-     * @param hookId the ID of the hook to get
+     * @param hookId    the ID of the hook to get
      * @return the project hook for the specified project ID/hook ID pair
      * @throws GitLabApiException if any exception occurs
      */
@@ -1138,14 +1161,14 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Adds a hook to project.
-     *
+     * <p>
      * POST /projects/:id/hooks
      *
-     * @param projectName the name of the project
-     * @param url the callback URL for the hook
-     * @param enabledHooks a ProjectHook instance specifying which hooks to enable
+     * @param projectName           the name of the project
+     * @param url                   the callback URL for the hook
+     * @param enabledHooks          a ProjectHook instance specifying which hooks to enable
      * @param enableSslVerification enable SSL verification
-     * @param secretToken the secret token to pass back to the hook
+     * @param secretToken           the secret token to pass back to the hook
      * @return the added ProjectHook instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -1173,14 +1196,14 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Adds a hook to project.
-     *
+     * <p>
      * POST /projects/:id/hooks
      *
-     * @param projectId the project ID to add the project hook to
-     * @param url the callback URL for the hook
-     * @param enabledHooks a ProjectHook instance specifying which hooks to enable
+     * @param projectId             the project ID to add the project hook to
+     * @param url                   the callback URL for the hook
+     * @param enabledHooks          a ProjectHook instance specifying which hooks to enable
      * @param enableSslVerification enable SSL verification
-     * @param secretToken the secret token to pass back to the hook
+     * @param secretToken           the secret token to pass back to the hook
      * @return the added ProjectHook instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -1208,14 +1231,14 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Adds a hook to project.
-     *
+     * <p>
      * POST /projects/:id/hooks
      *
-     * @param project the Project instance to add the project hook to
-     * @param url the callback URL for the hook
-     * @param enabledHooks a ProjectHook instance specifying which hooks to enable
+     * @param project               the Project instance to add the project hook to
+     * @param url                   the callback URL for the hook
+     * @param enabledHooks          a ProjectHook instance specifying which hooks to enable
      * @param enableSslVerification enable SSL verification
-     * @param secretToken the secret token to pass back to the hook
+     * @param secretToken           the secret token to pass back to the hook
      * @return the added ProjectHook instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -1230,13 +1253,13 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Adds a hook to project.
-     *
+     * <p>
      * POST /projects/:id/hooks
      *
-     * @param project the Project instance to add the project hook to
-     * @param url the callback URL for the hook
-     * @param doPushEvents flag specifying whether to do push events
-     * @param doIssuesEvents flag specifying whether to do issues events
+     * @param project               the Project instance to add the project hook to
+     * @param url                   the callback URL for the hook
+     * @param doPushEvents          flag specifying whether to do push events
+     * @param doIssuesEvents        flag specifying whether to do issues events
      * @param doMergeRequestsEvents flag specifying whether to do merge requests events
      * @return the added ProjectHook instance
      * @throws GitLabApiException if any exception occurs
@@ -1252,13 +1275,13 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Adds a hook to project.
-     *
+     * <p>
      * POST /projects/:id/hooks
      *
-     * @param projectId the project ID to add the project hook to
-     * @param url the callback URL for the hook
-     * @param doPushEvents flag specifying whether to do push events
-     * @param doIssuesEvents flag specifying whether to do issues events
+     * @param projectId             the project ID to add the project hook to
+     * @param url                   the callback URL for the hook
+     * @param doPushEvents          flag specifying whether to do push events
+     * @param doIssuesEvents        flag specifying whether to do issues events
      * @param doMergeRequestsEvents flag specifying whether to do merge requests events
      * @return the added ProjectHook instance
      * @throws GitLabApiException if any exception occurs
@@ -1277,11 +1300,11 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Deletes a hook from the project.
-     *
+     * <p>
      * DELETE /projects/:id/hooks/:hook_id
      *
      * @param projectId the project ID to delete the project hook from
-     * @param hookId the project hook ID to delete
+     * @param hookId    the project hook ID to delete
      * @throws GitLabApiException if any exception occurs
      */
     public void deleteHook(Integer projectId, Integer hookId) throws GitLabApiException {
@@ -1291,7 +1314,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Deletes a hook from the project.
-     *
+     * <p>
      * DELETE /projects/:id/hooks/:hook_id
      *
      * @param hook the ProjectHook instance to remove
@@ -1303,7 +1326,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Modifies a hook for project.
-     *
+     * <p>
      * PUT /projects/:id/hooks/:hook_id
      *
      * @param hook the ProjectHook instance that contains the project hook info to modify
@@ -1313,17 +1336,17 @@ public class ProjectApi extends AbstractApi implements Constants {
     public ProjectHook modifyHook(ProjectHook hook) throws GitLabApiException {
 
         GitLabApiForm formData = new GitLabApiForm()
-            .withParam("url", hook.getUrl(), true)
-            .withParam("push_events", hook.getPushEvents(), false)
-            .withParam("issues_events", hook.getIssuesEvents(), false)
-            .withParam("merge_requests_events", hook.getMergeRequestsEvents(), false)
-            .withParam("tag_push_events", hook.getTagPushEvents(), false)
-            .withParam("note_events", hook.getNoteEvents(), false)
-            .withParam("job_events", hook.getJobEvents(), false)
-            .withParam("pipeline_events", hook.getPipelineEvents(), false)
-            .withParam("wiki_events", hook.getWikiPageEvents(), false)
-            .withParam("enable_ssl_verification", hook.getEnableSslVerification(), false)
-            .withParam("token", hook.getToken(), false);
+                .withParam("url", hook.getUrl(), true)
+                .withParam("push_events", hook.getPushEvents(), false)
+                .withParam("issues_events", hook.getIssuesEvents(), false)
+                .withParam("merge_requests_events", hook.getMergeRequestsEvents(), false)
+                .withParam("tag_push_events", hook.getTagPushEvents(), false)
+                .withParam("note_events", hook.getNoteEvents(), false)
+                .withParam("job_events", hook.getJobEvents(), false)
+                .withParam("pipeline_events", hook.getPipelineEvents(), false)
+                .withParam("wiki_events", hook.getWikiPageEvents(), false)
+                .withParam("enable_ssl_verification", hook.getEnableSslVerification(), false)
+                .withParam("token", hook.getToken(), false);
 
         Response response = put(Response.Status.OK, formData.asMap(), "projects", hook.getProjectId(), "hooks", hook.getId());
         return (response.readEntity(ProjectHook.class));
@@ -1331,7 +1354,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project's issues. Only returns the first page
-     *
+     * <p>
      * GET /projects/:id/issues
      *
      * @param projectId the project ID to get the issues for
@@ -1341,32 +1364,34 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public List<Issue> getIssues(Integer projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "issues");
-        return (response.readEntity(new GenericType<List<Issue>>() {}));
+        return (response.readEntity(new GenericType<List<Issue>>() {
+        }));
     }
 
     /**
      * Get a list of project's issues using the specified page and per page settings.
-     *
+     * <p>
      * GET /projects/:id/issues
      *
      * @param projectId the project ID to get the issues for
-     * @param page the page to get
-     * @param perPage the number of issues per page
+     * @param page      the page to get
+     * @param perPage   the number of issues per page
      * @return the list of issues in the specified range
      * @throws GitLabApiException if any exception occurs
      * @deprecated Will be removed in version 5.0, replaced by {@link IssuesApi#getIssues(Integer, int, int)}
      */
     public List<Issue> getIssues(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "issues");
-        return (response.readEntity(new GenericType<List<Issue>>() {}));
+        return (response.readEntity(new GenericType<List<Issue>>() {
+        }));
     }
 
     /**
      * Get a Pager of project's issues.
-     *
+     * <p>
      * GET /projects/:id/issues
      *
-     * @param projectId the project ID to get the issues for
+     * @param projectId    the project ID to get the issues for
      * @param itemsPerPage the number of issues per page
      * @return the list of issues in the specified range
      * @throws GitLabApiException if any exception occurs
@@ -1378,14 +1403,14 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a single project issues.
-     *
+     * <p>
      * GET /projects/:id/issues/:issue_iid
      *
      * @param projectId the project ID to get the issue for
-     * @param issueId the internal ID of a project's issue
+     * @param issueId   the internal ID of a project's issue
      * @return the specified Issue instance
      * @throws GitLabApiException if any exception occurs
-     * @deprecated  Will be removed in version 5.0, replaced by {@link IssuesApi#getIssue(Integer, Integer)}
+     * @deprecated Will be removed in version 5.0, replaced by {@link IssuesApi#getIssue(Integer, Integer)}
      */
     public Issue getIssue(Integer projectId, Integer issueId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "issues", issueId);
@@ -1394,13 +1419,13 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Delete a project issue.
-     *
+     * <p>
      * DELETE /projects/:id/issues/:issue_iid
      *
      * @param projectId the project ID to delete the issue from
-     * @param issueId the internal ID of a project's issue
+     * @param issueId   the internal ID of a project's issue
      * @throws GitLabApiException if any exception occurs
-     * @deprecated  Will be removed in version 5.0, replaced by {@link IssuesApi#deleteIssue(Integer, Integer)}
+     * @deprecated Will be removed in version 5.0, replaced by {@link IssuesApi#deleteIssue(Integer, Integer)}
      */
     public void deleteIssue(Integer projectId, Integer issueId) throws GitLabApiException {
         Response.Status expectedStatus = (isApiVersion(ApiVersion.V3) ? Response.Status.OK : Response.Status.NO_CONTENT);
@@ -1409,7 +1434,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project snippets.  This only returns the first page of snippets.
-     *
+     * <p>
      * GET /projects/:id/snippets
      *
      * @param projectId the project ID to get the snippets for
@@ -1422,26 +1447,27 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project snippets.  This only returns the first page of snippets.
-     *
+     * <p>
      * GET /projects/:id/snippets
      *
      * @param projectId the project ID to get the snippets for
-     * @param page the page to get
-     * @param perPage the number of snippets per page
+     * @param page      the page to get
+     * @param perPage   the number of snippets per page
      * @return a list of project's snippets for the specified range
      * @throws GitLabApiException if any exception occurs
      */
     public List<Snippet> getSnippets(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "snippets");
-        return (response.readEntity(new GenericType<List<Snippet>>() {}));
+        return (response.readEntity(new GenericType<List<Snippet>>() {
+        }));
     }
 
     /**
      * Get a Pager of project's snippets.
-     *
+     * <p>
      * GET /projects/:id/snippets
      *
-     * @param projectId the project ID to get the issues for
+     * @param projectId    the project ID to get the issues for
      * @param itemsPerPage the number of snippets per page
      * @return the Pager of snippets
      * @throws GitLabApiException if any exception occurs
@@ -1452,7 +1478,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a single of project snippet.
-     *
+     * <p>
      * GET /projects/:id/snippets/:snippet_id
      *
      * @param projectId the project ID to get the snippet for
@@ -1467,20 +1493,20 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Creates a new project snippet. The user must have permission to create new snippets.
-     *
+     * <p>
      * POST /projects/:id/snippets
      *
-     * @param projectId the ID of the project owned by the authenticated user, required
-     * @param title the title of a snippet, required
-     * @param filename the name of a snippet file, required
+     * @param projectId   the ID of the project owned by the authenticated user, required
+     * @param title       the title of a snippet, required
+     * @param filename    the name of a snippet file, required
      * @param description the description of a snippet, optional
-     * @param code the content of a snippet, required
-     * @param visibility the snippet's visibility, required
+     * @param code        the content of a snippet, required
+     * @param visibility  the snippet's visibility, required
      * @return a Snippet instance with info on the created snippet
      * @throws GitLabApiException if any exception occurs
      */
     public Snippet createSnippet(Integer projectId, String title, String filename, String description,
-            String code, Visibility visibility) throws GitLabApiException {
+                                 String code, Visibility visibility) throws GitLabApiException {
 
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("title", title, true)
@@ -1495,21 +1521,21 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Updates an existing project snippet. The user must have permission to change an existing snippet.
-     *
+     * <p>
      * PUT /projects/:id/snippets/:snippet_id
      *
-     * @param projectId the ID of the project owned by the authenticated user, required
-     * @param snippetId the ID of a project's snippet, required
-     * @param title the title of a snippet, optional
-     * @param filename the name of a snippet file, optional
+     * @param projectId   the ID of the project owned by the authenticated user, required
+     * @param snippetId   the ID of a project's snippet, required
+     * @param title       the title of a snippet, optional
+     * @param filename    the name of a snippet file, optional
      * @param description the description of a snippet, optioptionalonal
-     * @param code the content of a snippet, optional
-     * @param visibility the snippet's visibility, reqoptionaluired
+     * @param code        the content of a snippet, optional
+     * @param visibility  the snippet's visibility, reqoptionaluired
      * @return a Snippet instance with info on the updated snippet
      * @throws GitLabApiException if any exception occurs
      */
     public Snippet updateSnippet(Integer projectId, Integer snippetId, String title, String filename, String description,
-            String code, Visibility visibility) throws GitLabApiException {
+                                 String code, Visibility visibility) throws GitLabApiException {
 
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("title", title)
@@ -1552,17 +1578,17 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Create a new project variable
-     *
+     * <p>
      * POST /projects/:id/variables
      *
-     * @param id The ID of a project or urlencoded NAMESPACE/PROJECT_NAME of the project owned by the authenticated user
-     * @param key The key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed
-     * @param value The value of a variable
+     * @param id         The ID of a project or urlencoded NAMESPACE/PROJECT_NAME of the project owned by the authenticated user
+     * @param key        The key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed
+     * @param value      The value of a variable
      * @param protecteds the access level for the new member
      * @return Create a new project variable.
      * @throws GitLabApiException if any exception occurs
      */
-    public Map<String,Object> addVariable(Integer id, String key, String value, boolean protecteds) throws GitLabApiException {
+    public Map<String, Object> addVariable(Integer id, String key, String value, boolean protecteds) throws GitLabApiException {
 
         Form formData = new Form();
         formData.param("key", key);
@@ -1582,7 +1608,7 @@ public class ProjectApi extends AbstractApi implements Constants {
      * @return get project variable.
      * @throws GitLabApiException if any exception occurs
      */
-    public  Map<String,Object> updateVariable(Integer id, String key, String value, boolean protecteds) throws GitLabApiException {
+    public Map<String, Object> updateVariable(Integer id, String key, String value, boolean protecteds) throws GitLabApiException {
         Form formData = new Form();
         formData.param("key", key);
         formData.param("value", value);
@@ -1593,7 +1619,7 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Create a new project variable
-     *
+     * <p>
      * POST /projects/:id/variables
      *
      * @param id The ID of a project or urlencoded NAMESPACE/PROJECT_NAME of the project owned by the authenticated user
@@ -1602,22 +1628,23 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public List<Variable> getVariable(Integer id) throws GitLabApiException {
         Response response = get(Response.Status.OK, null, "projects", id, "variables");
-        return (response.readEntity(new GenericType<List<Variable>>() {}));
+        return (response.readEntity(new GenericType<List<Variable>>() {
+        }));
     }
 
     /**
      * Protects a single repository branch or several project repository branches using a wildcard protected branch.
-     *
+     * <p>
      * POST /projects/:id/protected_branches
      *
-     * @param id The ID or URL-encoded path of the project owned by the authenticated user
-     * @param name The name of the branch or wildcard
-     * @param push_access_level Access levels allowed to push (defaults: 40, master access level)
+     * @param id                 The ID or URL-encoded path of the project owned by the authenticated user
+     * @param name               The name of the branch or wildcard
+     * @param push_access_level  Access levels allowed to push (defaults: 40, master access level)
      * @param merge_access_level Access levels allowed to merge (defaults: 40, master access level)
      * @return Create a  project protected branches.
      * @throws GitLabApiException if any exception occurs
      */
-    public Map<String,Object> protectedBranches(Integer id,String name,String merge_access_level,String push_access_level) throws GitLabApiException {
+    public Map<String, Object> protectedBranches(Integer id, String name, String merge_access_level, String push_access_level) throws GitLabApiException {
         Form formData = new Form();
         formData.param("name", name);
         formData.param("merge_access_level", merge_access_level);
@@ -1628,43 +1655,43 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Gets a single protected branch or wildcard protected branch.
-     *
+     * <p>
      * GET /projects/:id/protected_branches/:name
      *
-     * @param id The ID or URL-encoded path of the project owned by the authenticated user
+     * @param id   The ID or URL-encoded path of the project owned by the authenticated user
      * @param name The name of the branch or wildcard
      * @return Get a project protected branches.
      * @throws GitLabApiException if any exception occurs
      */
-    public Map<String,Object> getBranch(Integer id,String name) throws GitLabApiException {
-        Response response = get(Response.Status.OK, null, "projects", id, "protected_branches",name);
+    public Map<String, Object> getBranch(Integer id, String name) throws GitLabApiException {
+        Response response = get(Response.Status.OK, null, "projects", id, "protected_branches", name);
         return (response.readEntity(Map.class));
     }
 
     /**
      * Gets a list of protected branches from a project.
-     *
+     * <p>
      * GET /projects/:id/protected_branches
      *
      * @param id The ID or URL-encoded path of the project owned by the authenticated user
      * @return Get a list project protected branches.
      * @throws GitLabApiException if any exception occurs
      */
-    public List<Map<String,Object>> getBranchs(Integer id) throws GitLabApiException {
-        Response response = get(Response.Status.OK,  getDefaultPerPageParam(), "projects", id, "protected_branches");
+    public List<Map<String, Object>> getBranchs(Integer id) throws GitLabApiException {
+        Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", id, "protected_branches");
         return (response.readEntity(List.class));
     }
 
     /**
      * Unprotects the given protected branch or wildcard protected branch.
-     *
+     * <p>
      * DELETE /projects/:id/protected_branches/:name
      *
-     * @param id The ID or URL-encoded path of the project owned by the authenticated user
+     * @param id   The ID or URL-encoded path of the project owned by the authenticated user
      * @param name The name of the branch or wildcard
      * @throws GitLabApiException if any exception occurs
      */
-    public void deleteBranch(Integer id,String name) throws GitLabApiException {
+    public void deleteBranch(Integer id, String name) throws GitLabApiException {
         delete(Response.Status.NO_CONTENT, null, "projects", id, "protected_branches", name);
     }
 
@@ -1687,7 +1714,7 @@ public class ProjectApi extends AbstractApi implements Constants {
      * <pre><code>GitLab Endpoint: GET /projects/:id/access_requests</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param itemsPerPage the number of AccessRequest instances that will be fetched per page
+     * @param itemsPerPage    the number of AccessRequest instances that will be fetched per page
      * @return a Pager of project AccessRequest instances accessible by the authenticated user
      * @throws GitLabApiException if any exception occurs
      */
@@ -1736,7 +1763,7 @@ public class ProjectApi extends AbstractApi implements Constants {
      * <pre><code>GitLab Endpoint: DELETE /projects/:id/access_requests/:user_id</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param userId the user ID to deny access for
+     * @param userId          the user ID to deny access for
      * @throws GitLabApiException if any exception occurs
      */
     public void denyAccessRequest(Object projectIdOrPath, Integer userId) throws GitLabApiException {
@@ -1769,15 +1796,16 @@ public class ProjectApi extends AbstractApi implements Constants {
      * <pre><code>GitLab Endpoint: GET /projects/:id/members</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param page the page to get
-     * @param perPage the number of Member instances per page
+     * @param page            the page to get
+     * @param perPage         the number of Member instances per page
      * @return the project members viewable by the authenticated user, including inherited members through ancestor groups
      * @throws GitLabApiException if any exception occurs
      */
     public List<Member> getAllMembers(Object projectIdOrPath, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage),
                 "projects", getProjectIdOrPath(projectIdOrPath), "members", "all");
-        return (response.readEntity(new GenericType<List<Member>>() {}));
+        return (response.readEntity(new GenericType<List<Member>>() {
+        }));
     }
 
     /**
@@ -1789,7 +1817,7 @@ public class ProjectApi extends AbstractApi implements Constants {
      * <pre><code>GitLab Endpoint: GET /projects/:id/members/all</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param itemsPerPage the number of Project instances that will be fetched per page
+     * @param itemsPerPage    the number of Project instances that will be fetched per page
      * @return a Pager of the project members viewable by the authenticated user,
      * including inherited members through ancestor groups
      * @throws GitLabApiException if any exception occurs

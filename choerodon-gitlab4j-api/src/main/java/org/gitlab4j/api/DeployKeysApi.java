@@ -2,19 +2,19 @@ package org.gitlab4j.api;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -43,7 +43,7 @@ public class DeployKeysApi extends AbstractApi {
     /**
      * Get a list of all deploy keys across all projects of the GitLab instance. This method requires admin access.
      * Only returns the first page.
-     *
+     * <p>
      * GET /deploy_keys
      *
      * @return a list of DeployKey
@@ -54,24 +54,25 @@ public class DeployKeysApi extends AbstractApi {
     }
 
     /**
-     * Get a list of all deploy keys across all projects of the GitLab instance using the specified page and per page settings. 
+     * Get a list of all deploy keys across all projects of the GitLab instance using the specified page and per page settings.
      * This method requires admin access.
-     *
+     * <p>
      * GET /deploy_keys
      *
-     * @param page the page to get
+     * @param page    the page to get
      * @param perPage the number of deploy keys per page
      * @return the list of DeployKey in the specified range
      * @throws GitLabApiException if any exception occurs
      */
     public List<DeployKey> getDeployKeys(int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "deploy_keys");
-        return (response.readEntity(new GenericType<List<DeployKey>>() {}));
+        return (response.readEntity(new GenericType<List<DeployKey>>() {
+        }));
     }
 
     /**
      * Get a Pager of all deploy keys across all projects of the GitLab instance. This method requires admin access.
-     *
+     * <p>
      * GET /deploy_keys
      *
      * @param itemsPerPage the number of DeployKey instances that will be fetched per page
@@ -81,11 +82,11 @@ public class DeployKeysApi extends AbstractApi {
     public Pager<DeployKey> getDeployKeys(int itemsPerPage) throws GitLabApiException {
         return (new Pager<DeployKey>(this, DeployKey.class, itemsPerPage, null, "deploy_keys"));
     }
-    
+
     /**
      * Get a list of the deploy keys for the specified project. This method requires admin access.
      * Only returns the first page.
-     *
+     * <p>
      * GET /projects/:id/deploy_keys
      *
      * @param projectId the ID of the project
@@ -97,14 +98,14 @@ public class DeployKeysApi extends AbstractApi {
     }
 
     /**
-     * Get a list of the deploy keys for the specified project using the specified page and per page settings. 
+     * Get a list of the deploy keys for the specified project using the specified page and per page settings.
      * This method requires admin access.
-     *
+     * <p>
      * GET /projects/:id/deploy_keys
      *
      * @param projectId the ID of the project
-     * @param page the page to get
-     * @param perPage the number of deploy keys per page
+     * @param page      the page to get
+     * @param perPage   the number of deploy keys per page
      * @return the list of DeployKey in the specified range
      * @throws GitLabApiException if any exception occurs
      */
@@ -115,15 +116,16 @@ public class DeployKeysApi extends AbstractApi {
         }
 
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "deploy_keys");
-        return (response.readEntity(new GenericType<List<DeployKey>>() {}));
+        return (response.readEntity(new GenericType<List<DeployKey>>() {
+        }));
     }
 
     /**
      * Get a Pager of the deploy keys for the specified project. This method requires admin access.
-     *
+     * <p>
      * GET /projects/:id/deploy_keys
      *
-     * @param projectId the ID of the project
+     * @param projectId    the ID of the project
      * @param itemsPerPage the number of DeployKey instances that will be fetched per page
      * @return a Pager of DeployKey
      * @throws GitLabApiException if any exception occurs
@@ -139,11 +141,11 @@ public class DeployKeysApi extends AbstractApi {
 
     /**
      * Get a single deploy key for the specified project.
-     *
+     * <p>
      * GET /projects/:id/deploy_keys/:key_id
      *
      * @param projectId the ID of the project
-     * @param keyId the ID of the deploy key to delete
+     * @param keyId     the ID of the deploy key to delete
      * @return the DeployKey instance for the specified project ID and key ID
      * @throws GitLabApiException if any exception occurs
      */
@@ -163,13 +165,13 @@ public class DeployKeysApi extends AbstractApi {
 
     /**
      * Creates a new deploy key for a project.
-     *
+     * <p>
      * POST /projects/:id/deploy_keys
      *
      * @param projectId the ID of the project owned by the authenticated user, required
-     * @param title the new deploy key's title, required
-     * @param key the new deploy key, required
-     * @param canPush can deploy key push to the project's repository, optional
+     * @param title     the new deploy key's title, required
+     * @param key       the new deploy key, required
+     * @param canPush   can deploy key push to the project's repository, optional
      * @return an DeployKey instance with info on the added deploy key
      * @throws GitLabApiException if any exception occurs
      */
@@ -182,18 +184,18 @@ public class DeployKeysApi extends AbstractApi {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("title", title, true)
                 .withParam("key", key, true)
-                .withParam("can_push",  canPush);
+                .withParam("can_push", canPush);
         Response response = post(Response.Status.CREATED, formData, "projects", projectId, "deploy_keys");
         return (response.readEntity(DeployKey.class));
     }
 
     /**
      * Removes a deploy key from the project. If the deploy key is used only for this project,it will be deleted from the system.
-     *
+     * <p>
      * DELETE /projects/:id/deploy_keys/:key_id
      *
      * @param projectId the ID of the project
-     * @param keyId the ID of the deploy key to delete
+     * @param keyId     the ID of the deploy key to delete
      * @throws GitLabApiException if any exception occurs
      */
     public void deleteDeployKey(Integer projectId, Integer keyId) throws GitLabApiException {
@@ -211,11 +213,11 @@ public class DeployKeysApi extends AbstractApi {
 
     /**
      * Enables a deploy key for a project so this can be used. Returns the enabled key when successful.
-     *
+     * <p>
      * POST /projects/:id/deploy_keys/:key_id/enable
      *
      * @param projectId the ID of the project
-     * @param keyId the ID of the deploy key to enable
+     * @param keyId     the ID of the deploy key to enable
      * @return an DeployKey instance with info on the enabled deploy key
      * @throws GitLabApiException if any exception occurs
      */
@@ -229,7 +231,7 @@ public class DeployKeysApi extends AbstractApi {
             throw new RuntimeException("keyId cannot be null");
         }
 
-        Response response = post(Response.Status.CREATED, (Form)null, "projects", projectId, "deploy_keys", keyId, "enable");
+        Response response = post(Response.Status.CREATED, (Form) null, "projects", projectId, "deploy_keys", keyId, "enable");
         return (response.readEntity(DeployKey.class));
     }
 }

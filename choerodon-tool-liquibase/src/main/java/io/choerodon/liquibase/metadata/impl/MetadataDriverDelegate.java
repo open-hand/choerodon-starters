@@ -3,6 +3,7 @@ package io.choerodon.liquibase.metadata.impl;
 import io.choerodon.liquibase.metadata.IMetadataDriver;
 import io.choerodon.liquibase.metadata.dto.MetadataColumn;
 import io.choerodon.liquibase.metadata.dto.MetadataTable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

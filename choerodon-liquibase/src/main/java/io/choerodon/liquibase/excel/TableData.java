@@ -1,6 +1,7 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.exception.LiquibaseException;
+
 import liquibase.util.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -219,7 +220,7 @@ public class TableData {
 
         private void setName(String originName) {
             this.name = originName;
-            if (DEL_FLAG_COLUMN_NAME.equals(originName)){
+            if (DEL_FLAG_COLUMN_NAME.equals(originName)) {
                 deleteFlag = true;
                 return;
             }
@@ -242,7 +243,7 @@ public class TableData {
                 }
                 this.lang = localLang;
             }
-            if (name.endsWith("_DATE")){
+            if (name.endsWith("_DATE")) {
                 type = "DATE";
             }
             int lb = name.indexOf('(');

@@ -1,8 +1,6 @@
 package io.choerodon.plugin.maven;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.annotation.PermissionProcessor;
-import io.choerodon.annotation.entity.PermissionDescription;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -34,6 +32,8 @@ import java.util.zip.ZipEntry;
 
 import static io.choerodon.plugin.maven.ExtractMojo.CHOERODON_FOLDER_IN_JAR;
 
+import io.choerodon.core.swagger.PermissionData;
+
 @Mojo(name = "permission", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class PermissionMojo extends AbstractMojo {
     private static final String PERMISSION_FILE_NAME = "permission.json";
@@ -45,7 +45,7 @@ public class PermissionMojo extends AbstractMojo {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private Map<String, PermissionDescription> report = new HashMap<>();
+    private Map<String, PermissionData> report = new HashMap<>();
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -57,7 +57,7 @@ public class PermissionMojo extends AbstractMojo {
         try {
             report = new HashMap<>();
             resolveProject();
-            if (serviceBuild){
+            if (serviceBuild) {
                 resolveDependency();
             }
             File permissionFile = new File(target.getAbsolutePath() + File.separator + CHOERODON_FOLDER_IN_JAR + File.separator + PERMISSION_FILE_NAME);
@@ -72,7 +72,7 @@ public class PermissionMojo extends AbstractMojo {
     private void resolveDependency() throws IOException {
         ArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE);
         mavenProject.setArtifactFilter(artifactFilter);
-        for(Artifact artifact : mavenProject.getArtifacts()){
+        for (Artifact artifact : mavenProject.getArtifacts()) {
             File file = artifact.getFile();
             if (file != null) {
                 if (file.isDirectory()) {
@@ -85,11 +85,11 @@ public class PermissionMojo extends AbstractMojo {
     }
 
     private void resolveFormJar(String target) throws IOException {
-        try(JarFile jarFile = new JarFile(target)) {
+        try (JarFile jarFile = new JarFile(target)) {
             ZipEntry entry = jarFile.getEntry(CHOERODON_FOLDER_IN_JAR + "/" + PERMISSION_FILE_NAME);
-            if (entry != null){
+            if (entry != null) {
                 getLog().info("Resolve: " + target);
-                Map <String, PermissionDescription> descriptions = objectMapper.readValue(jarFile.getInputStream(entry), objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, PermissionDescription.class));
+                Map<String, PermissionData> descriptions = objectMapper.readValue(jarFile.getInputStream(entry), objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, PermissionData.class));
                 report.putAll(descriptions);
             }
         }
@@ -97,9 +97,9 @@ public class PermissionMojo extends AbstractMojo {
 
     private void resolveFormDirectory(String target) throws IOException {
         File permissionFile = new File(target + File.separator + CHOERODON_FOLDER_IN_JAR + File.separator + PERMISSION_FILE_NAME);
-        if (permissionFile.isFile()){
+        if (permissionFile.isFile()) {
             getLog().info("Resolve: " + target);
-            Map <String, PermissionDescription> descriptions = objectMapper.readValue(permissionFile, objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, PermissionDescription.class));
+            Map<String, PermissionData> descriptions = objectMapper.readValue(permissionFile, objectMapper.getTypeFactory().constructMapType(HashMap.class, String.class, PermissionData.class));
             report.putAll(descriptions);
         }
     }
@@ -107,7 +107,7 @@ public class PermissionMojo extends AbstractMojo {
     private void resolveProject() throws IOException, URISyntaxException, DependencyResolutionRequiredException {
         List<String> classPaths = mavenProject.getCompileClasspathElements();
         URL[] urls = new URL[classPaths.size()];
-        for (int i = 0; i < classPaths.size(); i++ ){
+        for (int i = 0; i < classPaths.size(); i++) {
             urls[i] = new File(classPaths.get(i)).toURI().toURL();
         }
         try (URLClassLoader classLoader = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader())) {
@@ -142,18 +142,18 @@ public class PermissionMojo extends AbstractMojo {
         if (!directory.exists()) {
             return classes;
         }
-        if (!packageName.isEmpty()){
+        if (!packageName.isEmpty()) {
             packageName += ".";
         }
         File[] files = directory.listFiles();
-        if (files == null){
+        if (files == null) {
             return Collections.emptyList();
         }
         for (File file : files) {
             if (file.isDirectory()) {
                 classes.addAll(findClasses(file, packageName + file.getName(), classLoader));
             } else if (file.getName().endsWith(".class")) {
-                String className =  packageName  + file.getName().substring(0, file.getName().length() - 6);
+                String className = packageName + file.getName().substring(0, file.getName().length() - 6);
                 try {
                     classes.add(classLoader.loadClass(className));
                 } catch (NoClassDefFoundError | ClassNotFoundException e) {

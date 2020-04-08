@@ -10,7 +10,8 @@ import io.choerodon.config.utils.InitConfigProperties;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.core.provider.CustomProvider;
-import io.choerodon.mybatis.ChoerodonMybatisAutoConfiguration;
+import io.choerodon.mybatis.MybatisMapperAutoConfiguration;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,7 @@ import java.util.Set;
 public class ConfigToolAutoConfig {
 
     @ConditionalOnProperty(name = "config.type", havingValue = InitConfigProperties.TYPE_CONFIG_SERVER, matchIfMissing = true)
-    @Import(ChoerodonMybatisAutoConfiguration.class)
+    @Import(MybatisMapperAutoConfiguration.class)
     static class ConfigServer {
 
         @Bean

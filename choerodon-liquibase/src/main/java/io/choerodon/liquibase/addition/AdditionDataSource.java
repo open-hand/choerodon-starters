@@ -1,6 +1,7 @@
 package io.choerodon.liquibase.addition;
 
 import io.choerodon.liquibase.helper.LiquibaseHelper;
+
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -28,7 +29,7 @@ public class AdditionDataSource {
     private Set<String> tables;
     private static Map<String, AdditionDataSource> tablesMap = new HashMap<>();
 
-    public AdditionDataSource(){
+    public AdditionDataSource() {
 
     }
 
@@ -45,11 +46,11 @@ public class AdditionDataSource {
         this(url, username, password, dir, drop, null, jarInit);
     }
 
-    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource,boolean jarInit) {
-        this(url, username, password, dir, drop, dataSource, null,jarInit);
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource, boolean jarInit) {
+        this(url, username, password, dir, drop, dataSource, null, jarInit);
     }
 
-    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource, Set<String> tables,boolean jarInit) {
+    public AdditionDataSource(String url, String username, String password, String dir, boolean drop, DataSource dataSource, Set<String> tables, boolean jarInit) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -59,7 +60,7 @@ public class AdditionDataSource {
         this.liquibaseHelper = new LiquibaseHelper(this.url);
         this.tables = tables;
         this.jarInit = jarInit;
-        if (tables != null){
+        if (tables != null) {
             tables.forEach(t -> tablesMap.put(t, this));
         }
     }
@@ -93,6 +94,7 @@ public class AdditionDataSource {
      * iam 只初始化IAM相关数据
      * normal 只初始化 groovy， excel 数据
      * all 都初始化
+     *
      * @param mode 模式
      */
     public void setMode(String mode) {
