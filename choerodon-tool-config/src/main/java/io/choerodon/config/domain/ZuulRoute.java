@@ -2,7 +2,7 @@ package io.choerodon.config.domain;
 
 import javax.persistence.*;
 
-import io.choerodon.mybatis.entity.BaseDTO;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 /**
  * 数据库zuul_route表实体对象
@@ -10,7 +10,7 @@ import io.choerodon.mybatis.entity.BaseDTO;
  * @author wuguokai
  */
 @Table(name = "mgmt_route")
-public class ZuulRoute extends BaseDTO {
+public class ZuulRoute extends AuditDomain {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,13 +23,13 @@ public class ZuulRoute extends BaseDTO {
 
     private String url;
 
-    private Boolean stripPrefix ;
+    private Boolean stripPrefix;
 
     private Boolean retryable;
 
     private String sensitiveHeaders;
 
-    private Boolean customSensitiveHeaders ;
+    private Boolean customSensitiveHeaders;
 
     private String helperService;
 

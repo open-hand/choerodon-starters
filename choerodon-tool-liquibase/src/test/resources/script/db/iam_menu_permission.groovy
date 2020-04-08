@@ -14,8 +14,8 @@ databaseChangeLog(logicalFilePath: 'script/db/iam_menu_permission.groovy') {
 
     changeSet(author: 'jcalaz@163.com', id: '2018-06-21-iam-menu-permission-code') {
         dropTable(tableName: 'IAM_MENU_PERMISSION')
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'IAM_MENU_PERMISSION_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'IAM_MENU_PERMISSION_S', startValue: "1")
         }
         createTable(tableName: "IAM_MENU_PERMISSION") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: '表ID，主键，供其他表做外键，unsigned bigint、单表时自增、步长为 1') {

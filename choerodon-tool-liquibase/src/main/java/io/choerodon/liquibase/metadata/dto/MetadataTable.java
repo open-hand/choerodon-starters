@@ -66,9 +66,9 @@ public class MetadataTable {
         this.columns = columns;
     }
 
-    public MetadataColumn getColumn(String name){
-        for(MetadataColumn column: getColumns()){
-            if(column.getColumnName().equals(name)){
+    public MetadataColumn getColumn(String name) {
+        for (MetadataColumn column : getColumns()) {
+            if (column.getColumnName().equals(name)) {
                 return column;
             }
         }

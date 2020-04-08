@@ -1,3 +1,0 @@
-# Choerodon Messgae Starter
-
-本模块实现了基于Redis或者RabbitMQ的消息队列和发布订阅模式支持，消息机制的使用与实现解耦

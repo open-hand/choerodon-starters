@@ -1,6 +1,7 @@
 package io.choerodon.liquibase.excel;
 
 import io.choerodon.liquibase.exception.LiquibaseException;
+
 import liquibase.util.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -133,7 +134,7 @@ public class ExcelSeedDataReader {
                 if (isAllEmpty(row, SKIP_COL + 1)) {
                     continue;
                 }
-                if(currentTable != null){
+                if (currentTable != null) {
                     processTableRow(currentTable, row);
                 } else {
                     logger.warn("跳过无法找到表名的数据:{}", row);
@@ -236,7 +237,7 @@ public class ExcelSeedDataReader {
                 //do nothing
             }
         }
-        if (TableData.Column.DEL_FLAG_COLUMN_NAME.equals(currentTitleColumn.getName()) && "1".equals(value)){
+        if (TableData.Column.DEL_FLAG_COLUMN_NAME.equals(currentTitleColumn.getName()) && "1".equals(value)) {
             tableRow.setDeleteFlag(true);
         }
         TableData.TableCellValue tableCellValue = new TableData.TableCellValue(cell, tableRow, currentTitleColumn);

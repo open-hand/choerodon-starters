@@ -2,8 +2,8 @@ package resources.script.db
 
 databaseChangeLog(logicalFilePath: 'script/db/iam_dashboard_role.groovy') {
     changeSet(author: 'fan@choerodon.io', id: '2018-09-04-iam-dashboard-role') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'IAM_DASHBOARD_ROLE_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'IAM_DASHBOARD_ROLE_S', startValue: "1")
         }
 
         createTable(tableName: "IAM_DASHBOARD_ROLE") {

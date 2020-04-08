@@ -1,6 +1,7 @@
 package io.choerodon.liquibase;
 
 import io.choerodon.liquibase.metadata.impl.MetadataDriverDelegate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -26,7 +27,7 @@ public class StartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         boolean success = liquibaseExecutor.execute(args);
-        if (success && metadataInit){
+        if (success && metadataInit) {
             MetadataDriverDelegate.syncMetadata(dataSource);
         }
         if (!h2Console) {

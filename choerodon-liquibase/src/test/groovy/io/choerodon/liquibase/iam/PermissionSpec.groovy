@@ -14,19 +14,20 @@ import java.sql.ResultSet
 import java.sql.Statement
 
 @Import(LiquibaseConfig.class)
-@SpringBootTest(classes = TestLiquibaseApplication, properties="data.drop=false")
+@SpringBootTest(classes = TestLiquibaseApplication, properties = "data.drop=false")
 class PermissionSpec extends Specification {
     @Autowired
     private LiquibaseExecutor liquibaseExecutor
     @Autowired
     private DataSource dataSource;
-    def "Permission Load" () {
+
+    def "Permission Load"() {
         when:
-        if (!liquibaseExecutor.execute()){
+        if (!liquibaseExecutor.execute()) {
             throw new Exception("liquibase failed.")
         }
         //执行两次测试更新
-        if (!liquibaseExecutor.execute()){
+        if (!liquibaseExecutor.execute()) {
             throw new Exception("liquibase failed.")
         }
         then:

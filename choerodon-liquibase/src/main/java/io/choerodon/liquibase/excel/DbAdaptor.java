@@ -4,6 +4,7 @@ import io.choerodon.liquibase.addition.AdditionDataSource;
 import io.choerodon.liquibase.exception.LiquibaseException;
 import io.choerodon.liquibase.helper.LiquibaseHelper;
 import io.choerodon.liquibase.utils.CellDataConverter;
+
 import liquibase.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class DbAdaptor {
     public void initConnection() throws SQLException {
         connection = dataSource.getConnection();
         connection.setAutoCommit(false);
-        for (String table: AdditionDataSource.getTablesMap().keySet()){
+        for (String table : AdditionDataSource.getTablesMap().keySet()) {
             Connection conn = AdditionDataSource.getTablesMap().get(table).getDataSource().getConnection();
             conn.setAutoCommit(false);
             connectionMap.put(table, conn);
@@ -109,8 +110,8 @@ public class DbAdaptor {
                 }
             }
         }
-        for (Connection connection:connectionMap.values()){
-            if(connection != null){
+        for (Connection connection : connectionMap.values()) {
+            if (connection != null) {
                 try (Connection c = connection) {
                     if (commit) {
                         c.commit();
@@ -150,13 +151,13 @@ public class DbAdaptor {
         }
         Long cu = checkExists(tableRow);
         if (cu == null && tableRow.canInsert() && !tableRow.isDeleteFlag()) {
-            if (doInsert(tableRow) > 0){
+            if (doInsert(tableRow) > 0) {
                 doInsertTl(tableRow);
             }
             return 1;
         } else if (cu != null && cu >= 0) {
             tableRow.setProcessFlag(true);
-            if (tableRow.isDeleteFlag()){
+            if (tableRow.isDeleteFlag()) {
                 doDelete(tableRow);
                 doDeleteTL(tableRow);
             } else {
@@ -175,7 +176,7 @@ public class DbAdaptor {
                 break;
             }
         }
-        if (genTableCellValue == null){
+        if (genTableCellValue == null) {
             return 0;
         }
         StringBuilder sql = new StringBuilder();
@@ -184,14 +185,14 @@ public class DbAdaptor {
         sql.append(" WHERE ");
         sql.append(genTableCellValue.getColumn().getName());
         sql.append("=?");
-        try(PreparedStatement statement = connection.prepareStatement(sql.toString())){
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
             setParam(statement, genTableCellValue, 1);
             return statement.executeUpdate();
         }
     }
 
     protected int doDeleteTL(TableData.TableRow tableRow) throws SQLException {
-        if(tableRow.getTable().getLangs().isEmpty()){
+        if (tableRow.getTable().getLangs().isEmpty()) {
             return 0;
         }
         TableCellValue genTableCellValue = null;
@@ -201,7 +202,7 @@ public class DbAdaptor {
                 break;
             }
         }
-        if (genTableCellValue == null){
+        if (genTableCellValue == null) {
             return 0;
         }
         StringBuilder sql = new StringBuilder();
@@ -210,7 +211,7 @@ public class DbAdaptor {
         sql.append(" WHERE ");
         sql.append(genTableCellValue.getColumn().getName());
         sql.append("=?");
-        try(PreparedStatement statement = connection.prepareStatement(sql.toString())){
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
             setParam(statement, genTableCellValue, 1);
             return statement.executeUpdate();
         }
@@ -263,7 +264,7 @@ public class DbAdaptor {
         sb.append(StringUtils.join(list, " AND "));
         Connection connection = this.connection;
         logger.warn("connection map : {}", connectionMap);
-        if(connectionMap.containsKey(tableRow.getTable().getName())){
+        if (connectionMap.containsKey(tableRow.getTable().getName())) {
             connection = connectionMap.get(tableRow.getTable().getName());
         }
         try (PreparedStatement ps = connection.prepareStatement(sb.toString())) {
@@ -314,7 +315,7 @@ public class DbAdaptor {
         List<TableCellValue> uniques = new ArrayList<>();
         List<TableCellValue> normals = new ArrayList<>();
         for (TableData.TableCellValue tableCellValue : tableRow.getTableCellValues()) {
-            if (tableCellValue.getColumn().isDeleteFlag()){
+            if (tableCellValue.getColumn().isDeleteFlag()) {
                 continue;
             }
             if (tableCellValue.isFormula() && !tableCellValue.isValuePresent()) {
@@ -346,7 +347,7 @@ public class DbAdaptor {
         //更新表的sql
         String sql = prepareTableUpdateSql(tableRow, uniques, normals);
         Connection connection = this.connection;
-        if(connectionMap.containsKey(tableRow.getTable().getName())){
+        if (connectionMap.containsKey(tableRow.getTable().getName())) {
             connection = connectionMap.get(tableRow.getTable().getName());
         }
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -472,7 +473,7 @@ public class DbAdaptor {
      */
     protected Long doInsert(TableData.TableRow tableRow) throws SQLException {
         String sql = prepareInsertSql(tableRow);
-        if (sql == null){
+        if (sql == null) {
             tableRow.setProcessFlag(true);
             return 1L;
         }
@@ -483,7 +484,7 @@ public class DbAdaptor {
         String tableName = table.getName();
         long maxId = table.getMaxId();
         Connection connection = this.connection;
-        if(connectionMap.containsKey(tableRow.getTable().getName())){
+        if (connectionMap.containsKey(tableRow.getTable().getName())) {
             connection = connectionMap.get(tableRow.getTable().getName());
         }
         try (PreparedStatement ps = connection.prepareStatement(sql,
@@ -644,7 +645,7 @@ public class DbAdaptor {
             sb.append(genTableCellValue.getColumn().getName()).append("=?");
         }
         Connection connection = this.connection;
-        if(connectionMap.containsKey(tableRow.getTable().getName())){
+        if (connectionMap.containsKey(tableRow.getTable().getName())) {
             connection = connectionMap.get(tableRow.getTable().getName());
         }
         try (PreparedStatement ps = connection.prepareStatement(sb.toString())) {
@@ -675,7 +676,7 @@ public class DbAdaptor {
             ps.setString(nn, (String) object);
         } else if (object instanceof Long) {
             ps.setLong(nn, (Long) object);
-        } else if(object instanceof java.util.Date){
+        } else if (object instanceof java.util.Date) {
             ps.setDate(nn, new Date(((java.util.Date) object).getTime()));
         } else if (object instanceof LocalDate) {
             ps.setDate(nn, Date.valueOf((LocalDate) object));
@@ -707,7 +708,7 @@ public class DbAdaptor {
 
         String sql = sb.toString();
         Connection connection = this.connection;
-        if(connectionMap.containsKey(tableRow.getTable().getName())){
+        if (connectionMap.containsKey(tableRow.getTable().getName())) {
             connection = connectionMap.get(tableRow.getTable().getName());
         }
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -735,12 +736,12 @@ public class DbAdaptor {
             }
         }
         if (allIsUpperCase) {
-            if(tableName.endsWith("_B")){
+            if (tableName.endsWith("_B")) {
                 tableName = tableName.substring(0, tableName.length() - 2);
             }
             return tableName + "_TL";
         } else {
-            if(tableName.endsWith("_b")){
+            if (tableName.endsWith("_b")) {
                 tableName = tableName.substring(0, tableName.length() - 2);
             }
             return tableName + "_tl";
@@ -804,7 +805,7 @@ public class DbAdaptor {
 
         String sql = sb.toString();
         Connection connection = this.connection;
-        if(connectionMap.containsKey(tableRow.getTable().getName())){
+        if (connectionMap.containsKey(tableRow.getTable().getName())) {
             connection = connectionMap.get(tableRow.getTable().getName());
         }
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -837,8 +838,8 @@ public class DbAdaptor {
             sb.append("INSERT INTO ").append(tableName).append("(");
             int count = 0;
             for (TableData.TableCellValue tableCellValue : tableRow.getTableCellValues()) {
-                if (tableCellValue.getColumn().isDeleteFlag()){
-                        continue;
+                if (tableCellValue.getColumn().isDeleteFlag()) {
+                    continue;
                 }
                 boolean isGen = tableCellValue.getColumn().isGen();
                 if (isGen && !isGeneratedColumnInserted && !sequencePk()) {
@@ -875,7 +876,7 @@ public class DbAdaptor {
         StringBuilder builder = new StringBuilder();
         builder.append("select ").append(tableName).append("_s.nextval from dual");
         Connection connection = this.connection;
-        if(connectionMap.containsKey(tableName)){
+        if (connectionMap.containsKey(tableName)) {
             connection = connectionMap.get(tableName);
         }
         try (PreparedStatement ps = connection.prepareStatement(builder.toString())) {
@@ -906,7 +907,7 @@ public class DbAdaptor {
         PreparedStatement statement = null;
         try {
             Connection connection = this.connection;
-            if(connectionMap.containsKey(table)){
+            if (connectionMap.containsKey(table)) {
                 connection = connectionMap.get(table);
             }
             statement = connection.prepareStatement(sql);

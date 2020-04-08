@@ -320,7 +320,7 @@ public class CommitsApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: POST /projects/:id/repository/commits</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param payload a CommitPayload instance holding the parameters for the commit
+     * @param payload         a CommitPayload instance holding the parameters for the commit
      * @return the created Commit instance
      * @throws GitLabApiException if any exception occurs during execution
      */
@@ -359,12 +359,12 @@ public class CommitsApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: POST /projects/:id/repository/commits</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branch tame of the branch to commit into. To create a new branch, also provide startBranch
-     * @param commitMessage the commit message
-     * @param startBranch the name of the branch to start the new commit from
-     * @param authorEmail the commit author's email address
-     * @param authorName the commit author's name
-     * @param action the CommitAction to commit
+     * @param branch          tame of the branch to commit into. To create a new branch, also provide startBranch
+     * @param commitMessage   the commit message
+     * @param startBranch     the name of the branch to start the new commit from
+     * @param authorEmail     the commit author's email address
+     * @param authorName      the commit author's name
+     * @param action          the CommitAction to commit
      * @return the created Commit instance
      * @throws GitLabApiException if any exception occurs during execution
      */
@@ -386,12 +386,12 @@ public class CommitsApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: POST /projects/:id/repository/commits</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branch tame of the branch to commit into. To create a new branch, also provide startBranch
-     * @param commitMessage the commit message
-     * @param startBranch the name of the branch to start the new commit from
-     * @param authorEmail the commit author's email address
-     * @param authorName the commit author's name
-     * @param actions the array of CommitAction to commit as a batch
+     * @param branch          tame of the branch to commit into. To create a new branch, also provide startBranch
+     * @param commitMessage   the commit message
+     * @param startBranch     the name of the branch to start the new commit from
+     * @param authorEmail     the commit author's email address
+     * @param authorName      the commit author's name
+     * @param actions         the array of CommitAction to commit as a batch
      * @return the created Commit instance
      * @throws GitLabApiException if any exception occurs during execution
      */

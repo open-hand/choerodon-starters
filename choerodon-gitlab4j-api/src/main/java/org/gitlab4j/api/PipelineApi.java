@@ -2,19 +2,19 @@ package org.gitlab4j.api;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -42,7 +42,7 @@ public class PipelineApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of pipelines in a project.
-     *
+     * <p>
      * GET /projects/:id/pipelines
      *
      * @param projectId the project ID to get the list of pipelines for
@@ -51,31 +51,33 @@ public class PipelineApi extends AbstractApi implements Constants {
      */
     public List<Pipeline> getPipelines(int projectId) throws GitLabApiException {
         Response response = get(Response.Status.OK, getDefaultPerPageParam(), "projects", projectId, "pipelines");
-        return (response.readEntity(new GenericType<List<Pipeline>>() {}));
+        return (response.readEntity(new GenericType<List<Pipeline>>() {
+        }));
     }
 
     /**
      * Get a list of pipelines in a project in the specified page range.
-     *
+     * <p>
      * GET /projects/:id/pipelines
      *
      * @param projectId the project ID to get the list of pipelines for
-     * @param page the page to get
-     * @param perPage the number of Pipeline instances per page
+     * @param page      the page to get
+     * @param perPage   the number of Pipeline instances per page
      * @return a list containing the pipelines for the specified project ID in the specified page range
      * @throws GitLabApiException if any exception occurs during execution
      */
     public List<Pipeline> getPipelines(int projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "pipelines");
-        return (response.readEntity(new GenericType<List<Pipeline>>() {}));
+        return (response.readEntity(new GenericType<List<Pipeline>>() {
+        }));
     }
 
     /**
      * Get a Pager of pipelines in a project.
-     *
+     * <p>
      * GET /projects/:id/pipelines
      *
-     * @param projectId the project ID to get the list of pipelines for
+     * @param projectId    the project ID to get the list of pipelines for
      * @param itemsPerPage the number of Pipeline instances that will be fetched per page
      * @return a Pager containing the pipelines for the specified project ID
      * @throws GitLabApiException if any exception occurs during execution
@@ -86,23 +88,23 @@ public class PipelineApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of pipelines in a project.
-     *
+     * <p>
      * GET /projects/:id/pipelines
      *
-     * @param projectId the project ID to get the list of pipelines for
-     * @param scope the scope of pipelines, one of: RUNNING, PENDING, FINISHED, BRANCHES, TAGS
-     * @param status the status of pipelines, one of: RUNNING, PENDING, SUCCESS, FAILED, CANCELED, SKIPPED
-     * @param ref the ref of pipelines
+     * @param projectId  the project ID to get the list of pipelines for
+     * @param scope      the scope of pipelines, one of: RUNNING, PENDING, FINISHED, BRANCHES, TAGS
+     * @param status     the status of pipelines, one of: RUNNING, PENDING, SUCCESS, FAILED, CANCELED, SKIPPED
+     * @param ref        the ref of pipelines
      * @param yamlErrors returns pipelines with invalid configurations
-     * @param name the name of the user who triggered pipelines
-     * @param username the username of the user who triggered pipelines
-     * @param orderBy order pipelines by ID, STATUS, REF, USER_ID (default: ID)
-     * @param sort sort pipelines in ASC or DESC order (default: DESC)
+     * @param name       the name of the user who triggered pipelines
+     * @param username   the username of the user who triggered pipelines
+     * @param orderBy    order pipelines by ID, STATUS, REF, USER_ID (default: ID)
+     * @param sort       sort pipelines in ASC or DESC order (default: DESC)
      * @return a list containing the pipelines for the specified project ID
      * @throws GitLabApiException if any exception occurs during execution
      */
     public List<Pipeline> getPipelines(int projectId, PipelineScope scope, PipelineStatus status, String ref, boolean yamlErrors,
-            String name, String username, PipelineOrderBy orderBy, SortOrder sort) throws GitLabApiException {
+                                       String name, String username, PipelineOrderBy orderBy, SortOrder sort) throws GitLabApiException {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("scope", scope)
                 .withParam("status", status)
@@ -112,33 +114,34 @@ public class PipelineApi extends AbstractApi implements Constants {
                 .withParam("username", username)
                 .withParam("order_by", orderBy)
                 .withParam("sort", sort)
-                .withParam(PER_PAGE_PARAM,  getDefaultPerPage());
+                .withParam(PER_PAGE_PARAM, getDefaultPerPage());
 
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "pipelines");
-        return (response.readEntity(new GenericType<List<Pipeline>>() {}));
+        return (response.readEntity(new GenericType<List<Pipeline>>() {
+        }));
     }
 
     /**
      * Get a list of pipelines in a project in the specified page range.
-     *
+     * <p>
      * GET /projects/:id/pipelines
      *
-     * @param projectId the project ID to get the list of pipelines for
-     * @param scope the scope of pipelines, one of: RUNNING, PENDING, FINISHED, BRANCHES, TAGS
-     * @param status the status of pipelines, one of: RUNNING, PENDING, SUCCESS, FAILED, CANCELED, SKIPPED
-     * @param ref the ref of pipelines
+     * @param projectId  the project ID to get the list of pipelines for
+     * @param scope      the scope of pipelines, one of: RUNNING, PENDING, FINISHED, BRANCHES, TAGS
+     * @param status     the status of pipelines, one of: RUNNING, PENDING, SUCCESS, FAILED, CANCELED, SKIPPED
+     * @param ref        the ref of pipelines
      * @param yamlErrors returns pipelines with invalid configurations
-     * @param name the name of the user who triggered pipelines
-     * @param username the username of the user who triggered pipelines
-     * @param orderBy order pipelines by ID, STATUS, REF, USER_ID (default: ID)
-     * @param sort sort pipelines in ASC or DESC order (default: DESC)
-     * @param page the page to get
-     * @param perPage the number of Pipeline instances per page
+     * @param name       the name of the user who triggered pipelines
+     * @param username   the username of the user who triggered pipelines
+     * @param orderBy    order pipelines by ID, STATUS, REF, USER_ID (default: ID)
+     * @param sort       sort pipelines in ASC or DESC order (default: DESC)
+     * @param page       the page to get
+     * @param perPage    the number of Pipeline instances per page
      * @return a list containing the pipelines for the specified project ID
      * @throws GitLabApiException if any exception occurs during execution
      */
     public List<Pipeline> getPipelines(int projectId, PipelineScope scope, PipelineStatus status, String ref, boolean yamlErrors,
-            String name, String username, PipelineOrderBy orderBy, SortOrder sort, int page, int perPage) throws GitLabApiException {
+                                       String name, String username, PipelineOrderBy orderBy, SortOrder sort, int page, int perPage) throws GitLabApiException {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("scope", scope)
                 .withParam("status", status)
@@ -152,29 +155,30 @@ public class PipelineApi extends AbstractApi implements Constants {
                 .withParam(PER_PAGE_PARAM, perPage);
 
         Response response = get(Response.Status.OK, formData.asMap(), "projects", projectId, "pipelines");
-        return (response.readEntity(new GenericType<List<Pipeline>>() {}));
+        return (response.readEntity(new GenericType<List<Pipeline>>() {
+        }));
     }
 
     /**
      * Get a Pager of pipelines in a project.
-     *
+     * <p>
      * GET /projects/:id/pipelines
      *
-     * @param projectId the project ID to get the list of pipelines for
-     * @param scope the scope of pipelines, one of: RUNNING, PENDING, FINISHED, BRANCHES, TAGS
-     * @param status the status of pipelines, one of: RUNNING, PENDING, SUCCESS, FAILED, CANCELED, SKIPPED
-     * @param ref the ref of pipelines
-     * @param yamlErrors returns pipelines with invalid configurations
-     * @param name the name of the user who triggered pipelines
-     * @param username the username of the user who triggered pipelines
-     * @param orderBy order pipelines by ID, STATUS, REF, USER_ID (default: ID)
-     * @param sort sort pipelines in ASC or DESC order (default: DESC)
+     * @param projectId    the project ID to get the list of pipelines for
+     * @param scope        the scope of pipelines, one of: RUNNING, PENDING, FINISHED, BRANCHES, TAGS
+     * @param status       the status of pipelines, one of: RUNNING, PENDING, SUCCESS, FAILED, CANCELED, SKIPPED
+     * @param ref          the ref of pipelines
+     * @param yamlErrors   returns pipelines with invalid configurations
+     * @param name         the name of the user who triggered pipelines
+     * @param username     the username of the user who triggered pipelines
+     * @param orderBy      order pipelines by ID, STATUS, REF, USER_ID (default: ID)
+     * @param sort         sort pipelines in ASC or DESC order (default: DESC)
      * @param itemsPerPage the number of Pipeline instances that will be fetched per page
      * @return a list containing the pipelines for the specified project ID
      * @throws GitLabApiException if any exception occurs during execution
      */
     public Pager<Pipeline> getPipelines(int projectId, PipelineScope scope, PipelineStatus status, String ref, boolean yamlErrors,
-            String name, String username, PipelineOrderBy orderBy, SortOrder sort, int itemsPerPage) throws GitLabApiException {
+                                        String name, String username, PipelineOrderBy orderBy, SortOrder sort, int itemsPerPage) throws GitLabApiException {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("scope", scope)
                 .withParam("status", status)
@@ -190,10 +194,10 @@ public class PipelineApi extends AbstractApi implements Constants {
 
     /**
      * Get single pipelines in a project.
-     *
+     * <p>
      * GET /projects/:id/pipelines/:pipeline_id
      *
-     * @param projectId the project ID to get the specified pipeline for
+     * @param projectId  the project ID to get the specified pipeline for
      * @param pipelineId the pipeline ID to get
      * @return a single pipelines for the specified project ID
      * @throws GitLabApiException if any exception occurs during execution
@@ -205,11 +209,11 @@ public class PipelineApi extends AbstractApi implements Constants {
 
     /**
      * Create a pipelines in a project.
-     *
+     * <p>
      * POST /projects/:id/pipelines
      *
      * @param projectId the project ID to create a pipeline in
-     * @param ref reference to commit
+     * @param ref       reference to commit
      * @return a Pipeline instance with the newly created pipeline info
      * @throws GitLabApiException if any exception occurs during execution
      */
@@ -222,10 +226,10 @@ public class PipelineApi extends AbstractApi implements Constants {
 
     /**
      * Retry a job in specified pipelines in a project.
-     *
+     * <p>
      * POST /projects/:id/pipelines/:pipeline_id/retry
      *
-     * @param projectId the project ID to retry a job for speficied pipeline
+     * @param projectId  the project ID to retry a job for speficied pipeline
      * @param pipelineId the pipeline ID to retry a job from
      * @return pipeline instance which just retried
      * @throws GitLabApiException if any exception occurs during execution
@@ -238,10 +242,10 @@ public class PipelineApi extends AbstractApi implements Constants {
 
     /**
      * Cancel jobs of specified pipelines in a project.
-     *
+     * <p>
      * POST /projects/:id/pipelines/:pipeline_id/cancel
      *
-     * @param projectId the project ID to cancel jobs for speficied pipeline
+     * @param projectId  the project ID to cancel jobs for speficied pipeline
      * @param pipelineId the pipeline ID to cancel jobs
      * @return pipeline instance which just canceled
      * @throws GitLabApiException if any exception occurs during execution

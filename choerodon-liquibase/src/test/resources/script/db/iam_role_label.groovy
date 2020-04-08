@@ -2,8 +2,8 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'script/db/iam_role_label.groovy') {
     changeSet(author: 'jcalaz@163.com', id: '2018-04-13-iam-role-label') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'IAM_ROLE_LABEL_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'IAM_ROLE_LABEL_S', startValue: "1")
         }
         createTable(tableName: "IAM_ROLE_LABEL") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: '表ID，主键，供其他表做外键，unsigned bigint、单表时自增、步长为 1') {

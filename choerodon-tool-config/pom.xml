@@ -5,7 +5,7 @@
     <parent>
         <artifactId>choerodon-starter-parent</artifactId>
         <groupId>io.choerodon</groupId>
-        <version>0.16.0.RELEASE</version>
+        <version>0.16.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,14 +13,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-mybatis</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-mybatis-mapper</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-core</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-core</artifactId>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

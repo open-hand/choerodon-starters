@@ -2,8 +2,8 @@ package resources.script.db
 
 databaseChangeLog(logicalFilePath: 'script/db/iam_menu.groovy') {
     changeSet(author: 'guokai.wu.work@gmail.com', id: '2018-03-29-iam-menu') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'IAM_MENU_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'IAM_MENU_S', startValue: "1")
         }
         createTable(tableName: "IAM_MENU") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: '表ID，主键，供其他表做外键，unsigned bigint、单表时自增、步长为 1') {

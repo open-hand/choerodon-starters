@@ -2,19 +2,19 @@ package org.gitlab4j.api;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -375,9 +375,9 @@ public class GroupApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: POST /groups/:id/members</code></pre>
      *
      * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path, required
-     * @param userId the user ID of the member to add, required
-     * @param accessLevel the access level for the new member, required
-     * @param expiresAt the date the membership in the group will expire, optional
+     * @param userId        the user ID of the member to add, required
+     * @param accessLevel   the access level for the new member, required
+     * @param expiresAt     the date the membership in the group will expire, optional
      * @return a Member instance for the added user
      * @throws GitLabApiException if any exception occurs
      */
@@ -385,7 +385,7 @@ public class GroupApi extends AbstractApi {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("user_id", userId, true)
                 .withParam("access_level", accessLevel, true)
-                .withParam("expires_at",  expiresAt, false);
+                .withParam("expires_at", expiresAt, false);
         Response response = post(Response.Status.CREATED, formData, "groups", getGroupIdOrPath(groupIdOrPath), "members");
         return (response.readEntity(Member.class));
     }
@@ -413,16 +413,16 @@ public class GroupApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: PUT /groups/:groupId/members/:userId</code></pre>
      *
      * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path, required
-     * @param userId the user ID of the member to update, required
-     * @param accessLevel the new access level for the member, required
-     * @param expiresAt the date the membership in the group will expire, optional
+     * @param userId        the user ID of the member to update, required
+     * @param accessLevel   the new access level for the member, required
+     * @param expiresAt     the date the membership in the group will expire, optional
      * @return the updated member
      * @throws GitLabApiException if any exception occurs
      */
     public Member updateMember(Object groupIdOrPath, Integer userId, Integer accessLevel, Date expiresAt) throws GitLabApiException {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("access_level", accessLevel, true)
-                .withParam("expires_at",  expiresAt, false);
+                .withParam("expires_at", expiresAt, false);
         Response response = put(Response.Status.OK, formData.asMap(), "groups", getGroupIdOrPath(groupIdOrPath), "members", userId);
         return (response.readEntity(Member.class));
     }
@@ -430,10 +430,11 @@ public class GroupApi extends AbstractApi {
     public Member updateMember(Object groupIdOrPath, Integer userId, Integer accessLevel) throws GitLabApiException {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("access_level", accessLevel, true)
-                .withParam("expires_at",  "", false);
+                .withParam("expires_at", "", false);
         Response response = put(Response.Status.OK, formData.asMap(), "groups", getGroupIdOrPath(groupIdOrPath), "members", userId);
         return (response.readEntity(Member.class));
     }
+
     /**
      * Get a list of group members viewable by the authenticated user in the specified page range.
      * <p>
@@ -568,7 +569,7 @@ public class GroupApi extends AbstractApi {
      * <pre><code>DELETE /groups/:id/access_requests/:user_id</code></pre>
      *
      * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path
-     * @param userId the user ID to deny access for
+     * @param userId        the user ID to deny access for
      * @throws GitLabApiException if any exception occurs
      */
     public void denyAccessRequest(Object groupIdOrPath, Integer userId) throws GitLabApiException {

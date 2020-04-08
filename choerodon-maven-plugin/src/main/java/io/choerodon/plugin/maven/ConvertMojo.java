@@ -153,7 +153,7 @@ public class ConvertMojo extends AbstractMojo {
                     rowNode.put(columnName, cell.getNumericCellValue());
                 } else {
                     String value = cell.getStringCellValue();
-                    if (value != null && value.length() != 0){
+                    if (value != null && value.length() != 0) {
                         isValida = true;
                     }
                     rowNode.put(columnName, value);

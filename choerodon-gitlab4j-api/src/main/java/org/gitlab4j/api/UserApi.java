@@ -410,7 +410,7 @@ public class UserApi extends AbstractApi {
      * <p>
      * DELETE /users/:id/emails/:email_id
      *
-     * @param userId the user ID to delete
+     * @param userId  the user ID to delete
      * @param emailId the email ID to delete
      * @throws GitLabApiException if any exception occurs
      */

@@ -22,7 +22,7 @@ class AdditionDataSourceSpec extends Specification {
 
     def "constructor with args"() {
         when: "调用方法"
-        def ad = new AdditionDataSource("jdbc:h2:mem:testdb;", "sa", "sa", "ss", false,true)
+        def ad = new AdditionDataSource("jdbc:h2:mem:testdb;", "sa", "sa", "ss", false, true)
 
         then: "校验结果"
         ad != null
@@ -30,7 +30,7 @@ class AdditionDataSourceSpec extends Specification {
 
     def "get null datasource"() {
         given: "设置数据源"
-        def ad = new AdditionDataSource("jdbc:h2:mem:testdb;", "sa", "sa", "ss", false, null,true)
+        def ad = new AdditionDataSource("jdbc:h2:mem:testdb;", "sa", "sa", "ss", false, null, true)
 
         when: "调用方法"
         def ds = ad.getDataSource()

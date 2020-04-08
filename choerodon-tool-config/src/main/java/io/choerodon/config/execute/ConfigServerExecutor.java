@@ -2,6 +2,7 @@ package io.choerodon.config.execute;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 import io.choerodon.config.builder.Builder;
 import io.choerodon.config.builder.BuilderFactory;
 import io.choerodon.config.domain.Service;
@@ -13,6 +14,7 @@ import io.choerodon.config.mapper.ZuulRouteMapper;
 import io.choerodon.config.utils.ConfigFileFormat;
 import io.choerodon.config.utils.InitConfigProperties;
 import io.choerodon.core.exception.CommonException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;

@@ -3,19 +3,19 @@ package org.gitlab4j.api.webhook;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -63,7 +63,7 @@ public class WebHookManager {
     /**
      * Create a WebHookManager to handle GitLab webhook events which will be verified
      * against the specified secretToken.
-     * 
+     *
      * @param secretToken the secret token to verify against
      */
     public WebHookManager(String secretToken) {
@@ -83,7 +83,7 @@ public class WebHookManager {
      * Validate the provided secret token against the reference secret token. Returns true if
      * the secret token is valid or there is no reference secret token to validate against,
      * otherwise returns false.
-     * 
+     *
      * @param secretToken the token to validate
      * @return true if the secret token is valid or there is no reference secret token to validate against
      */
@@ -95,7 +95,7 @@ public class WebHookManager {
      * Validate the provided secret token found in the HTTP header against the reference secret token.
      * Returns true if the secret token is valid or there is no reference secret token to validate
      * against, otherwise returns false.
-     * 
+     *
      * @param request the HTTP request to verify the secret token
      * @return true if the secret token is valid or there is no reference secret token to validate against
      */
@@ -112,7 +112,7 @@ public class WebHookManager {
     /**
      * Parses and verifies an Event instance from the HTTP request and
      * fires it off to the registered listeners.
-     * 
+     *
      * @param request the HttpServletRequest to read the Event instance from
      * @throws GitLabApiException if the parsed event is not supported
      */
@@ -128,20 +128,20 @@ public class WebHookManager {
         LOG.info("handleEvent: X-Gitlab-Event=" + eventName);
         switch (eventName) {
 
-        case BuildEvent.X_GITLAB_EVENT:
-        case IssueEvent.X_GITLAB_EVENT:
-        case MergeRequestEvent.X_GITLAB_EVENT:
-        case NoteEvent.X_GITLAB_EVENT:
-        case PipelineEvent.X_GITLAB_EVENT:
-        case PushEvent.X_GITLAB_EVENT:
-        case TagPushEvent.X_GITLAB_EVENT:
-        case WikiPageEvent.X_GITLAB_EVENT:
-            break;
+            case BuildEvent.X_GITLAB_EVENT:
+            case IssueEvent.X_GITLAB_EVENT:
+            case MergeRequestEvent.X_GITLAB_EVENT:
+            case NoteEvent.X_GITLAB_EVENT:
+            case PipelineEvent.X_GITLAB_EVENT:
+            case PushEvent.X_GITLAB_EVENT:
+            case TagPushEvent.X_GITLAB_EVENT:
+            case WikiPageEvent.X_GITLAB_EVENT:
+                break;
 
-        default:
-            String message = "Unsupported X-Gitlab-Event, event Name=" + eventName;
-            LOG.warning(message);
-            throw new GitLabApiException(message);
+            default:
+                String message = "Unsupported X-Gitlab-Event, event Name=" + eventName;
+                LOG.warning(message);
+                throw new GitLabApiException(message);
         }
 
         String errorMessage = null;
@@ -181,7 +181,7 @@ public class WebHookManager {
 
     /**
      * Verifies the provided Event and fires it off to the registered listeners.
-     * 
+     *
      * @param event the Event instance to handle
      * @throws GitLabApiException if the event is not supported
      */
@@ -190,20 +190,20 @@ public class WebHookManager {
         LOG.info("handleEvent: object_kind=" + event.getObjectKind());
 
         switch (event.getObjectKind()) {
-        case BuildEvent.OBJECT_KIND:
-        case IssueEvent.OBJECT_KIND:
-        case MergeRequestEvent.OBJECT_KIND:
-        case NoteEvent.OBJECT_KIND:
-        case PipelineEvent.OBJECT_KIND:
-        case PushEvent.OBJECT_KIND:
-        case TagPushEvent.OBJECT_KIND:
-        case WikiPageEvent.OBJECT_KIND:
-            break;
+            case BuildEvent.OBJECT_KIND:
+            case IssueEvent.OBJECT_KIND:
+            case MergeRequestEvent.OBJECT_KIND:
+            case NoteEvent.OBJECT_KIND:
+            case PipelineEvent.OBJECT_KIND:
+            case PushEvent.OBJECT_KIND:
+            case TagPushEvent.OBJECT_KIND:
+            case WikiPageEvent.OBJECT_KIND:
+                break;
 
-        default:
-            String message = "Unsupported event object_kind, object_kind=" + event.getObjectKind();
-            LOG.warning(message);
-            throw new GitLabApiException(message);
+            default:
+                String message = "Unsupported event object_kind, object_kind=" + event.getObjectKind();
+                LOG.warning(message);
+                throw new GitLabApiException(message);
         }
 
         fireEvent(event);
@@ -232,49 +232,49 @@ public class WebHookManager {
 
     /**
      * Fire the event to the registered listeners.
-     * 
+     *
      * @param event the Event instance to fire to the registered event listeners
      * @throws GitLabApiException if the event is not supported
      */
     public void fireEvent(Event event) throws GitLabApiException {
 
         switch (event.getObjectKind()) {
-        case BuildEvent.OBJECT_KIND:
-            fireBuildEvent((BuildEvent) event);
-            break;
+            case BuildEvent.OBJECT_KIND:
+                fireBuildEvent((BuildEvent) event);
+                break;
 
-        case IssueEvent.OBJECT_KIND:
-            fireIssueEvent((IssueEvent) event);
-            break;
+            case IssueEvent.OBJECT_KIND:
+                fireIssueEvent((IssueEvent) event);
+                break;
 
-        case MergeRequestEvent.OBJECT_KIND:
-            fireMergeRequestEvent((MergeRequestEvent) event);
-            break;
+            case MergeRequestEvent.OBJECT_KIND:
+                fireMergeRequestEvent((MergeRequestEvent) event);
+                break;
 
-        case NoteEvent.OBJECT_KIND:
-            fireNoteEvent((NoteEvent) event);
-            break;
+            case NoteEvent.OBJECT_KIND:
+                fireNoteEvent((NoteEvent) event);
+                break;
 
-        case PipelineEvent.OBJECT_KIND:
-            firePipelineEvent((PipelineEvent) event);
-            break;
+            case PipelineEvent.OBJECT_KIND:
+                firePipelineEvent((PipelineEvent) event);
+                break;
 
-        case PushEvent.OBJECT_KIND:
-            firePushEvent((PushEvent) event);
-            break;
+            case PushEvent.OBJECT_KIND:
+                firePushEvent((PushEvent) event);
+                break;
 
-        case TagPushEvent.OBJECT_KIND:
-            fireTagPushEvent((TagPushEvent) event);
-            break;
+            case TagPushEvent.OBJECT_KIND:
+                fireTagPushEvent((TagPushEvent) event);
+                break;
 
-        case WikiPageEvent.OBJECT_KIND:
-            fireWikiPageEvent((WikiPageEvent) event);
-            break;
+            case WikiPageEvent.OBJECT_KIND:
+                fireWikiPageEvent((WikiPageEvent) event);
+                break;
 
-        default:
-            String message = "Unsupported event object_kind, object_kind=" + event.getObjectKind();
-            LOG.warning(message);
-            throw new GitLabApiException(message);
+            default:
+                String message = "Unsupported event object_kind, object_kind=" + event.getObjectKind();
+                LOG.warning(message);
+                throw new GitLabApiException(message);
         }
     }
 

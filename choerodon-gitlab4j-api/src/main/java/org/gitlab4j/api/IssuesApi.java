@@ -25,19 +25,19 @@ package org.gitlab4j.api;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -68,7 +68,7 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Get all issues the authenticated user has access to. Only returns issues created by the current user. Only returns the first page
-     *
+     * <p>
      * GET /issues
      *
      * @return a list of user's issues
@@ -80,24 +80,26 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Get all issues the authenticated user has access to using the specified page and per page setting. Only returns issues created by the current user.
-     *
+     * <p>
      * GET /issues
      *
-     * @param page the page to get
+     * @param page    the page to get
      * @param perPage the number of issues per page
      * @return the list of issues in the specified range
      * @throws GitLabApiException if any exception occurs
      */
     public List<Issue> getIssues(int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "issues");
-        return (response.readEntity(new GenericType<List<Issue>>() {}));
+        return (response.readEntity(new GenericType<List<Issue>>() {
+        }));
     }
 
     /**
      * Get a Pager of all issues the authenticated user has access to. Only returns issues created by the current user.
-     *
+     * <p>
      * GET /issues
-     *r
+     * r
+     *
      * @param itemsPerPage the number of issues per page
      * @return the list of issues in the specified range
      * @throws GitLabApiException if any exception occurs
@@ -108,7 +110,7 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project's issues. Only returns the first page
-     *
+     * <p>
      * GET /projects/:id/issues
      *
      * @param projectId the project ID to get the issues for
@@ -121,26 +123,27 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project's issues using the specified page and per page settings.
-     *
+     * <p>
      * GET /projects/:id/issues
      *
      * @param projectId the project ID to get the issues for
-     * @param page the page to get
-     * @param perPage the number of issues per page
+     * @param page      the page to get
+     * @param perPage   the number of issues per page
      * @return the list of issues in the specified range
      * @throws GitLabApiException if any exception occurs
      */
     public List<Issue> getIssues(Integer projectId, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", projectId, "issues");
-        return (response.readEntity(new GenericType<List<Issue>>() {}));
+        return (response.readEntity(new GenericType<List<Issue>>() {
+        }));
     }
 
     /**
      * Get a Pager of project's issues.
-     *
+     * <p>
      * GET /projects/:id/issues
      *
-     * @param projectId the project ID to get the issues for
+     * @param projectId    the project ID to get the issues for
      * @param itemsPerPage the number of issues per page
      * @return the list of issues in the specified range
      * @throws GitLabApiException if any exception occurs
@@ -151,16 +154,16 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Get a single project issue.
-     *
+     * <p>
      * GET /projects/:id/issues/:issue_iid
      *
      * @param projectId the project ID to get the issue for
-     * @param issueId the internal ID of a project's issue
+     * @param issueId   the internal ID of a project's issue
      * @return the specified Issue instance
      * @throws GitLabApiException if any exception occurs
      */
     public Issue getIssue(Integer projectId, Integer issueId) throws GitLabApiException {
-        
+
         if (projectId == null) {
             throw new RuntimeException("projectId cannot be null");
         }
@@ -171,11 +174,11 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Create an issue for the project.
-     *
+     * <p>
      * POST /projects/:id/issues
-     * 
-     * @param projectId the ID of the project owned by the authenticated user, required
-     * @param title the title of an issue, required
+     *
+     * @param projectId   the ID of the project owned by the authenticated user, required
+     * @param title       the title of an issue, required
      * @param description the description of an issue, optional
      * @return an instance of Issue
      * @throws GitLabApiException if any exception occurs
@@ -186,27 +189,27 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Create an issue for the project.
-     *
+     * <p>
      * POST /projects/:id/issues
      *
-     * @param projectId the ID of the project owned by the authenticated user, required
-     * @param title the issue title of an issue, required
-     * @param description the description of an issue, optional
-     * @param confidential set the issue to be confidential, default is false, optional
-     * @param assigneeIds the IDs of the users to assign issue, optional
-     * @param milestoneId the ID of a milestone to assign issue, optional
-     * @param labels comma-separated label names for an issue, optional
-     * @param createdAt the date the issue was created at, optional
-     * @param dueDate the due date, optional
-     * @param mergeRequestToResolveId the IID of a merge request in which to resolve all issues. This will fill the issue with a default 
-     *        description and mark all discussions as resolved. When passing a description or title, these values will take precedence over the default values. Optional
-     * @param discussionToResolveId the ID of a discussion to resolve. This will fill in the issue with a default description and mark the discussion as resolved. 
-     *        Use in combination with merge_request_to_resolve_discussions_of. Optional
+     * @param projectId               the ID of the project owned by the authenticated user, required
+     * @param title                   the issue title of an issue, required
+     * @param description             the description of an issue, optional
+     * @param confidential            set the issue to be confidential, default is false, optional
+     * @param assigneeIds             the IDs of the users to assign issue, optional
+     * @param milestoneId             the ID of a milestone to assign issue, optional
+     * @param labels                  comma-separated label names for an issue, optional
+     * @param createdAt               the date the issue was created at, optional
+     * @param dueDate                 the due date, optional
+     * @param mergeRequestToResolveId the IID of a merge request in which to resolve all issues. This will fill the issue with a default
+     *                                description and mark all discussions as resolved. When passing a description or title, these values will take precedence over the default values. Optional
+     * @param discussionToResolveId   the ID of a discussion to resolve. This will fill in the issue with a default description and mark the discussion as resolved.
+     *                                Use in combination with merge_request_to_resolve_discussions_of. Optional
      * @return an instance of Issue
      * @throws GitLabApiException if any exception occurs
      */
     public Issue createIssue(Integer projectId, String title, String description, Boolean confidential, List<Integer> assigneeIds, Integer milestoneId, String labels,
-            Date createdAt, Date dueDate, Integer mergeRequestToResolveId, Integer discussionToResolveId) throws GitLabApiException {
+                             Date createdAt, Date dueDate, Integer mergeRequestToResolveId, Integer discussionToResolveId) throws GitLabApiException {
 
         if (projectId == null) {
             throw new RuntimeException("projectId cannot be null");
@@ -224,16 +227,16 @@ public class IssuesApi extends AbstractApi implements Constants {
                 .withParam("merge_request_to_resolve_discussions_of", mergeRequestToResolveId)
                 .withParam("discussion_to_resolve", discussionToResolveId);
         Response response = post(Response.Status.CREATED, formData, "projects", projectId, "issues");
-        return (response.readEntity(Issue.class));        
+        return (response.readEntity(Issue.class));
     }
 
     /**
      * Closes an existing project issue.
-     *
+     * <p>
      * PUT /projects/:id/issues/:issue_iid
      *
      * @param projectId the ID of the project owned by the authenticated user, required
-     * @param issueIid the issue IID to update, required
+     * @param issueIid  the issue IID to update, required
      * @return an instance of the updated Issue
      * @throws GitLabApiException if any exception occurs
      */
@@ -247,18 +250,18 @@ public class IssuesApi extends AbstractApi implements Constants {
             throw new RuntimeException("issue IID cannot be null");
         }
 
-        GitLabApiForm formData = new GitLabApiForm().withParam("state_event", StateEvent.CLOSE);          
+        GitLabApiForm formData = new GitLabApiForm().withParam("state_event", StateEvent.CLOSE);
         Response response = put(Response.Status.OK, formData.asMap(), "projects", projectId, "issues", issueIid);
-        return (response.readEntity(Issue.class));        
+        return (response.readEntity(Issue.class));
     }
 
     /**
      * Open an existing project issue.
-     *
+     * <p>
      * PUT /projects/:id/issues/:issue_iid
      *
      * @param projectId the ID of the project owned by the authenticated user, required
-     * @param issueIid the issue IID to update, required
+     * @param issueIid  the issue IID to update, required
      * @return an instance of the updated Issue
      * @throws GitLabApiException if any exception occurs
      */
@@ -279,25 +282,25 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Updates an existing project issue. This call can also be used to mark an issue as closed.
-     *
+     * <p>
      * PUT /projects/:id/issues/:issue_iid
      *
-     * @param projectId the ID of the project owned by the authenticated user, required
-     * @param issueIid the issue IID to update, required
-     * @param title the title of an issue, optional
-     * @param description the description of an issue, optional
+     * @param projectId    the ID of the project owned by the authenticated user, required
+     * @param issueIid     the issue IID to update, required
+     * @param title        the title of an issue, optional
+     * @param description  the description of an issue, optional
      * @param confidential set the issue to be confidential, default is false, optional
-     * @param assigneeIds the IDs of the users to assign issue, optional
-     * @param milestoneId the ID of a milestone to assign issue, optional
-     * @param labels comma-separated label names for an issue, optional
-     * @param stateEvent the state event of an issue. Set close to close the issue and reopen to reopen it, optional
-     * @param updatedAt sets the updated date, requires admin or project owner rights, optional
-     * @param dueDate the due date, optional
+     * @param assigneeIds  the IDs of the users to assign issue, optional
+     * @param milestoneId  the ID of a milestone to assign issue, optional
+     * @param labels       comma-separated label names for an issue, optional
+     * @param stateEvent   the state event of an issue. Set close to close the issue and reopen to reopen it, optional
+     * @param updatedAt    sets the updated date, requires admin or project owner rights, optional
+     * @param dueDate      the due date, optional
      * @return an instance of the updated Issue
      * @throws GitLabApiException if any exception occurs
      */
-    public Issue updateIssue(Integer projectId, Integer issueIid, String title, String description, Boolean confidential, List<Integer> assigneeIds, 
-            Integer milestoneId, String labels, StateEvent stateEvent, Date updatedAt, Date dueDate) throws GitLabApiException {
+    public Issue updateIssue(Integer projectId, Integer issueIid, String title, String description, Boolean confidential, List<Integer> assigneeIds,
+                             Integer milestoneId, String labels, StateEvent stateEvent, Date updatedAt, Date dueDate) throws GitLabApiException {
 
         if (projectId == null) {
             throw new RuntimeException("project ID cannot be null");
@@ -318,20 +321,20 @@ public class IssuesApi extends AbstractApi implements Constants {
                 .withParam("updated_at", updatedAt)
                 .withParam("due_date", dueDate);
         Response response = put(Response.Status.OK, formData.asMap(), "projects", projectId, "issues", issueIid);
-        return (response.readEntity(Issue.class));        
+        return (response.readEntity(Issue.class));
     }
 
     /**
      * Delete an issue.
-     *
+     * <p>
      * DELETE /projects/:id/issues/:issue_iid
      *
      * @param projectId the project ID to delete the issue from
-     * @param issueIid the internal ID of a project's issue
+     * @param issueIid  the internal ID of a project's issue
      * @throws GitLabApiException if any exception occurs
      */
     public void deleteIssue(Integer projectId, Integer issueIid) throws GitLabApiException {
-        
+
         if (projectId == null) {
             throw new RuntimeException("projectId cannot be null");
         }
@@ -346,12 +349,12 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Sets an estimated time of work in this issue
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/time_estimate
-     * 
+     *
      * @param projectId the project ID that owns the issue
-     * @param issueIid the internal ID of a project's issue
-     * @param duration estimated time in seconds
+     * @param issueIid  the internal ID of a project's issue
+     * @param duration  estimated time in seconds
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -361,12 +364,12 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Sets an estimated time of work in this issue
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/time_estimate
-     * 
+     *
      * @param projectId the project ID that owns the issue
-     * @param issueIid the internal ID of a project's issue
-     * @param duration Human readable format, e.g. 3h30m
+     * @param issueIid  the internal ID of a project's issue
+     * @param duration  Human readable format, e.g. 3h30m
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -376,12 +379,12 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Sets an estimated time of work in this issue
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/time_estimate
-     * 
+     *
      * @param projectId the project ID that owns the issue
-     * @param issueIid the internal ID of a project's issue
-     * @param duration set the estimate of time to this duration
+     * @param issueIid  the internal ID of a project's issue
+     * @param duration  set the estimate of time to this duration
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -403,11 +406,11 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Resets the estimated time for this issue to 0 seconds.
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/reset_time_estimate
-     * 
+     *
      * @param projectId the project ID that owns the issue
-     * @param issueIid the internal ID of a project's issue
+     * @param issueIid  the internal ID of a project's issue
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -427,12 +430,12 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Adds spent time for this issue
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/add_spent_time
-     * 
+     *
      * @param projectId the project ID that owns the issue
-     * @param issueIid the internal ID of a project's issue
-     * @param duration the duration in seconds
+     * @param issueIid  the internal ID of a project's issue
+     * @param duration  the duration in seconds
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -442,12 +445,12 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Adds spent time for this issue
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/add_spent_time
-     * 
+     *
      * @param projectId the project ID to delete the issue from
-     * @param issueIid the internal ID of a project's issue
-     * @param duration Human readable format, e.g. 3h30m
+     * @param issueIid  the internal ID of a project's issue
+     * @param duration  Human readable format, e.g. 3h30m
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -457,12 +460,12 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Adds spent time for this issue
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/add_spent_time
-     * 
+     *
      * @param projectId the project ID to delete the issue from
-     * @param issueIid the internal ID of a project's issue
-     * @param duration the duration of time spent
+     * @param issueIid  the internal ID of a project's issue
+     * @param duration  the duration of time spent
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -484,11 +487,11 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Resets the total spent time for this issue to 0 seconds.
-     * 
+     * <p>
      * POST /projects/:id/issues/:issue_iid/reset_spent_time
-     * 
+     *
      * @param projectId the project ID that owns the issue
-     * @param issueIid the internal ID of a project's issue
+     * @param issueIid  the internal ID of a project's issue
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
@@ -508,17 +511,17 @@ public class IssuesApi extends AbstractApi implements Constants {
 
     /**
      * Get time tracking stats
-     * 
+     * <p>
      * GET /projects/:id/issues/:issue_iid/time_stats
-     * 
+     *
      * @param projectId the project ID that owns the issue
-     * @param issueIid the internal ID of a project's issue
+     * @param issueIid  the internal ID of a project's issue
      * @return a TimeSTats instance
      * @throws GitLabApiException if any exception occurs
      */
     public TimeStats getTimeTrackingStats(Integer projectId, Integer issueIid) throws GitLabApiException {
 
-       if (projectId == null) {
+        if (projectId == null) {
             throw new RuntimeException("projectId cannot be null");
         }
 

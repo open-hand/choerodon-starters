@@ -1,7 +1,7 @@
 package io.choerodon.config.mapper;
 
 import io.choerodon.config.domain.Service;
-import io.choerodon.mybatis.common.Mapper;
+import io.choerodon.mybatis.common.BaseMapper;
 
 
 /**
@@ -9,5 +9,5 @@ import io.choerodon.mybatis.common.Mapper;
  *
  * @author wuguokai
  */
-public interface ServiceMapper extends Mapper<Service> {
+public interface ServiceMapper extends BaseMapper<Service> {
 }

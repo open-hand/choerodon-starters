@@ -8,6 +8,7 @@ import org.powermock.modules.junit4.PowerMockRunner
 import org.powermock.modules.junit4.PowerMockRunnerDelegate
 import org.spockframework.runtime.Sputnik
 import spock.lang.Specification
+
 /**
  *
  * @author zmf
