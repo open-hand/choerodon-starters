@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>0.16.1-SNAPSHOT</version>
+    <version>0.16.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -32,11 +32,6 @@
     <url>https://github.com/choerodon/choerodon-starters</url>
     <modules>
         <module>choerodon-gitlab4j-api</module>
-        <module>choerodon-liquibase</module>
-        <module>choerodon-tool-config</module>
-        <module>choerodon-tool-liquibase</module>
-        <module>choerodon-maven-plugin</module>
-        <module>choerodon-starter-actuator</module>
     </modules>
 
 
