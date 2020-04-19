@@ -236,7 +236,7 @@ public class PipelineApi extends AbstractApi implements Constants {
      */
     public Pipeline retryPipelineJob(int projectId, int pipelineId) throws GitLabApiException {
         GitLabApiForm formData = null;
-        Response response = post(Response.Status.OK, formData, "projects", projectId, "pipelines", pipelineId, "retry");
+        Response response = post(Response.Status.CREATED, formData, "projects", projectId, "pipelines", pipelineId, "retry");
         return (response.readEntity(Pipeline.class));
     }
 
