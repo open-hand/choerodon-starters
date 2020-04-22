@@ -62,6 +62,7 @@ public class StartupRunner implements CommandLineRunner {
                     }
                 }
                 logger.info("数据库初始化任务完成！");
+                System.exit(0);
             }
         } catch (Exception e) {
             logger.error("数据库初始化任务失败, message: {}, exception: ", e.getMessage(), e);
