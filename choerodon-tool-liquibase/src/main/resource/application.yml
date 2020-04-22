@@ -18,7 +18,7 @@ spring:
 #    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://172.20.0.203:5432/postgres}
 #    username: ${SPRING_DATASOURCE_USERNAME:postgres}
 #    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
-    driver-class-name: oracle.jdbc.driver.OracleDriver
+    driver-class-name: com.mysql.jdbc.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:oracle:thin:@172.20.0.203:1521:XE}
     username: ${SPRING_DATASOURCE_USERNAME:hzero}
     password: ${SPRING_DATASOURCE_PASSWORD:hzero}
