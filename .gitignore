@@ -26,6 +26,6 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
-
+**/docker/*.jar
 ### VS Code ###
 .vscode/
