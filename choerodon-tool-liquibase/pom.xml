@@ -51,6 +51,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
+                    <skip>false</skip>
                     <!-- spring-boot:run 中文乱码解决 -->
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                 </configuration>
