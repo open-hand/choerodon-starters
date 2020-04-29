@@ -20,12 +20,6 @@
         <hzero.starter.version>1.4.0-SNAPSHOT</hzero.starter.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <spring-security-jwt.version>1.0.10.RELEASE</spring-security-jwt.version>
-        <spring-security-oauth2.version>2.3.5.RELEASE</spring-security-oauth2.version>
-        <spring-session.version>1.3.5.RELEASE</spring-session.version>
-        <maven.plugin.version>3.5.2</maven.plugin.version>
-        <gmavenplus.plugin.version>1.5</gmavenplus.plugin.version>
-        <maven.surefire.plugin.version>2.22.0</maven.surefire.plugin.version>
     </properties>
 
 
@@ -33,6 +27,7 @@
     <modules>
         <module>choerodon-gitlab4j-api</module>
         <module>choerodon-tool-liquibase</module>
+        <module>choerodon-starter-asgard</module>
     </modules>
 
 
@@ -83,4 +78,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

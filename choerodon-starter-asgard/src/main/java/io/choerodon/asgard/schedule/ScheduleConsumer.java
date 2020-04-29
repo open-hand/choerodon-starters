@@ -2,6 +2,7 @@ package io.choerodon.asgard.schedule;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.choerodon.asgard.common.AbstractAsgardConsumer;
 import io.choerodon.asgard.common.ApplicationContextHelper;
 import io.choerodon.asgard.common.UpdateStatusDTO;
@@ -9,6 +10,7 @@ import io.choerodon.asgard.schedule.annotation.JobTask;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
 import io.choerodon.asgard.schedule.feign.ScheduleConsumerClient;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;

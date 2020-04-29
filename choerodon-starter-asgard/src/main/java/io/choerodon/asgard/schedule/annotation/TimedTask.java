@@ -9,6 +9,7 @@ import io.choerodon.asgard.schedule.QuartzDefinition;
 
 /**
  * 服务自定义定时任务
+ *
  * @author Eugen
  * 2018/10/22 17:44
  */

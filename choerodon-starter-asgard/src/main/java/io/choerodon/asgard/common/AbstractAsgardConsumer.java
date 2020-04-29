@@ -1,8 +1,10 @@
 package io.choerodon.asgard.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.choerodon.asgard.saga.consumer.MockHttpServletRequest;
 import io.choerodon.core.oauth.CustomUserDetails;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,7 +60,7 @@ public abstract class AbstractAsgardConsumer {
             try {
                 scheduleRunning(instance);
             } catch (Exception e) {
-               LOGGER.warn("error.asgard.scheduleRunning, msg: {}", e.getMessage());
+                LOGGER.warn("error.asgard.scheduleRunning, msg: {}", e.getMessage());
             }
         }, 20000, pollIntervalMs, TimeUnit.MILLISECONDS);
     }

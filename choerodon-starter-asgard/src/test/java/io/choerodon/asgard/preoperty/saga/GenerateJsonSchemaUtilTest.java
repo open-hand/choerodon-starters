@@ -1,7 +1,9 @@
 package io.choerodon.asgard.preoperty.saga;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.choerodon.asgard.saga.consumer.GenerateJsonSchemaUtil;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,7 +27,7 @@ public class GenerateJsonSchemaUtilTest {
         expectedResult.put("anEnum", "\"Enum\"");
 
         Arrays.asList(Demo.class.getDeclaredMethods()).forEach(method -> {
-            if (expectedResult.containsKey(method.getName())){ //使用JCoco测试覆盖率的时候会添加不存在的方法
+            if (expectedResult.containsKey(method.getName())) { //使用JCoco测试覆盖率的时候会添加不存在的方法
                 String outputSchemaDemo = GenerateJsonSchemaUtil.generate(method.getReturnType(), OBJECT_MAPPER, false);
                 Assert.assertEquals(outputSchemaDemo, expectedResult.get(method.getName()));
             }

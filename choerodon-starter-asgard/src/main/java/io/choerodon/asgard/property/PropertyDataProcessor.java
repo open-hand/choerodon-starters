@@ -1,12 +1,14 @@
 package io.choerodon.asgard.property;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import io.choerodon.asgard.saga.consumer.GenerateJsonSchemaUtil;
 import io.choerodon.asgard.schedule.annotation.JobTask;
 import io.choerodon.asgard.schedule.annotation.TimedTask;
+
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
@@ -41,9 +43,9 @@ public class PropertyDataProcessor implements BeanPostProcessor {
         Method[] methods = ReflectionUtils.getAllDeclaredMethods(bean.getClass());
         if (methods != null) {
             for (Method method : methods) {
-              addMethodSaga(method);
-              addMethodSagaTask(method);
-              addMethodJobTask(bean, method);
+                addMethodSaga(method);
+                addMethodSagaTask(method);
+                addMethodJobTask(bean, method);
             }
         }
         return bean;
