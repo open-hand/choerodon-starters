@@ -152,7 +152,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     @Override
     public void logout() throws ServletException {
-       // do nothing
+        // do nothing
     }
 
     @Override
