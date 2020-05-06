@@ -28,6 +28,7 @@
         <module>choerodon-gitlab4j-api</module>
         <module>choerodon-tool-liquibase</module>
         <module>choerodon-starter-asgard</module>
+        <module>choerodon-starter-core</module>
     </modules>
 
 
