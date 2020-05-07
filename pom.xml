@@ -12,12 +12,12 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
 
 
     <properties>
-        <hzero.starter.version>1.4.0-SNAPSHOT</hzero.starter.version>
+        <hzero.starter.version>1.5.0-SNAPSHOT</hzero.starter.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
     </properties>
