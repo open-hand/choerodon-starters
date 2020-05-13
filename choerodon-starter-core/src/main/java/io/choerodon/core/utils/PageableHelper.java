@@ -2,7 +2,8 @@ package io.choerodon.core.utils;
 
 import java.util.Iterator;
 
-import org.springframework.data.domain.Sort;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
+
 
 public class PageableHelper {
     public static String getSortSql(Sort sort){
