@@ -11,5 +11,12 @@
 
     <artifactId>choerodon-starter-core</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-mybatis-mapper</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>
