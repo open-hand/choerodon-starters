@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 import org.hzero.installer.service.ImportDataService;
 import org.hzero.installer.utils.XmlUtils;
@@ -54,11 +56,14 @@ public class StartupRunner implements CommandLineRunner {
                 List<String> serviceNames = getServiceName(tempPath + GROOVY_PATH);
                 if (!CollectionUtils.isEmpty(serviceNames)) {
                     XmlUtils.resolver(tempPath + MAPPING_PATH);
-                    if (!importDataService.updateGroovy(serviceNames, tempPath + GROOVY_PATH)) {
+                    if (!importDataService.selfGroovy(serviceNames, tempPath + GROOVY_PATH)) {
                         throw new Exception("初始化groovy脚本失败！");
                     }
-                    if (!importDataService.importData(serviceNames, tempPath + INIT_PATH)) {
-                        throw new Exception("初始化excel失败！");
+                    String value = System.getProperties().getProperty("data.init", "true");
+                    if (!Objects.isNull(value) && Boolean.TRUE.equals(Boolean.valueOf(value))) {
+                        if (!importDataService.selfData(serviceNames, tempPath + INIT_PATH)) {
+                            throw new Exception("初始化excel失败！");
+                        }
                     }
                 }
                 logger.info("数据库初始化任务完成！");

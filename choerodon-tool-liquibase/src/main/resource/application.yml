@@ -34,7 +34,7 @@ installer:
   dataDir: D:\workspace\WorkDev\hzero-resource\init-data\saas
   groovyDir: C:\Users\Andy\Desktop\groovy
   jarPath: hhh/app.jar
-     init:false
+  init: false
   mapping: service-mapping.xml
   schema: mysql
   merge: false
