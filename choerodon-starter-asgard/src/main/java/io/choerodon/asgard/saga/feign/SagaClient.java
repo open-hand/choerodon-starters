@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
+@FeignClient(name = "${choerodon.saga.service:hzero-asgard}", fallback = SagaClientCallback.class)
 public interface SagaClient {
 
     /**
