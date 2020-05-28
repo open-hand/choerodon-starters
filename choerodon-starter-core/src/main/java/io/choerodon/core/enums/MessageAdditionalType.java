@@ -7,7 +7,8 @@ package io.choerodon.core.enums;
  */
 public enum MessageAdditionalType {
     PARAM_PROJECT_ID("projectId"),
-    PARAM_ENV_ID("envId");
+    PARAM_ENV_ID("envId"),
+    PARAM_TENANT_ID("tenantId");
 
     private String typeName;
 
