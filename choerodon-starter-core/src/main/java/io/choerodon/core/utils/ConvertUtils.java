@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import org.springframework.beans.BeanUtils;
 
@@ -31,7 +32,8 @@ public class ConvertUtils {
      * @param <D>              the destination type
      * @return destination object
      */
-    public static <S, D> D convertObject(S source, Class<D> destinationClass) {
+    @Nullable
+    public static <S, D> D convertObject(@Nullable S source, Class<D> destinationClass) {
         if (source == null) {
             return null;
         }
@@ -53,7 +55,8 @@ public class ConvertUtils {
      * @param <D>       the destination content type
      * @return destination page
      */
-    public static <S, D> Page<D> convertPage(Page<S> source, Function<S, D> converter) {
+    @Nullable
+    public static <S, D> Page<D> convertPage(@Nullable Page<S> source, Function<S, D> converter) {
         if (source == null) {
             return null;
         }
@@ -75,7 +78,8 @@ public class ConvertUtils {
      * @param <D>    the destination content type
      * @return destination page
      */
-    public static <S, D> Page<D> convertPage(Page<S> source, Class<D> destinationClass) {
+    @Nullable
+    public static <S, D> Page<D> convertPage(@Nullable Page<S> source, Class<D> destinationClass) {
         if (source == null) {
             return null;
         }
@@ -95,7 +99,7 @@ public class ConvertUtils {
      * @param <D>    the destination content type
      * @return destination page
      */
-    public static <S, D> List<D> convertList(Collection<S> source, Class<D> destinationClass) {
+    public static <S, D> List<D> convertList(@Nullable Collection<S> source, Class<D> destinationClass) {
         if (source == null) {
             return new ArrayList<>();
         }
@@ -114,7 +118,7 @@ public class ConvertUtils {
      * @param <D>    the destination content type
      * @return destination page
      */
-    public static <S, D> List<D> convertList(Collection<S> source, Function<S, D> converter) {
+    public static <S, D> List<D> convertList(@Nullable Collection<S> source, Function<S, D> converter) {
         if (source == null) {
             return new ArrayList<>();
         }
