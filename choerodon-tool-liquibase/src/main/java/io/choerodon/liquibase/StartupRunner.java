@@ -70,6 +70,7 @@ public class StartupRunner implements CommandLineRunner {
             }
         } catch (Exception e) {
             logger.error("数据库初始化任务失败, message: {}, exception: ", e.getMessage(), e);
+            System.exit(1);
         }
         System.exit(0);
     }
