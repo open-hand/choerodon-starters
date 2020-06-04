@@ -9,4 +9,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && cp -r -f /usr/share/zoneinfo/Hongkong /etc/localtime \
     && echo -ne "Alpine Linux 3.4 image. (`uname -rsv`)\n" >> /root/.built
 
+USER 33
+
 COPY choerodon-tool-liquibase.jar $WORK_PATH
