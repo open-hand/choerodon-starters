@@ -23,16 +23,16 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import org.gitlab4j.api.GitLabApi.ApiVersion;
+import org.gitlab4j.api.models.*;
+
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
-
-import org.gitlab4j.api.GitLabApi.ApiVersion;
-import org.gitlab4j.api.models.*;
 
 /**
  * This class implements the client side API for the GitLab groups calls.
@@ -581,5 +581,33 @@ public class GroupApi extends AbstractApi {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ParsePosition pos = new ParsePosition(0);
         return formatter.parse(strDate, pos);
+    }
+
+    /**
+     * Get list of a group’s variables.
+     *
+     * <pre><code>GitLab Endpoint: GET /groups/:id/variables</code></pre>
+     *
+     * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path
+     * @return a list of variables belonging to the specified group
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Variable> getVariables(Object groupIdOrPath) throws GitLabApiException {
+        return (getVariables(groupIdOrPath, getDefaultPerPage()).all());
+    }
+
+
+    /**
+     * Get a Pager of variables belonging to the specified group.
+     *
+     * <pre><code>GitLab Endpoint: GET /groups/:id/variables</code></pre>
+     *
+     * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path
+     * @param itemsPerPage  the number of Variable instances that will be fetched per page
+     * @return a Pager of variables belonging to the specified group
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<Variable> getVariables(Object groupIdOrPath, int itemsPerPage) throws GitLabApiException {
+        return (new Pager<Variable>(this, Variable.class, itemsPerPage, null, "groups", getGroupIdOrPath(groupIdOrPath), "variables"));
     }
 }
