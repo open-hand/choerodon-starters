@@ -650,7 +650,7 @@ public class GroupApi extends AbstractApi {
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("value", value, true)
                 .withParam("protected", isProtected);
-        Response response = putWithFormData(Response.Status.CREATED, formData, "groups", getGroupIdOrPath(groupIdOrPath), "variables", key);
+        Response response = putWithFormData(Response.Status.OK, formData, "groups", getGroupIdOrPath(groupIdOrPath), "variables", key);
         return (response.readEntity(Variable.class));
     }
 
