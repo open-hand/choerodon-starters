@@ -627,7 +627,7 @@ public class GroupApi extends AbstractApi {
 
         GitLabApiForm formData = new GitLabApiForm()
                 .withParam("key", key, true)
-                .withParam("value", value, true)
+                .withParam("value", value, false)
                 .withParam("protected", isProtected);
         Response response = post(Response.Status.CREATED, formData, "groups", getGroupIdOrPath(groupIdOrPath), "variables");
         return (response.readEntity(Variable.class));
@@ -648,7 +648,7 @@ public class GroupApi extends AbstractApi {
     public Variable updateVariable(Object groupIdOrPath, String key, String value, Boolean isProtected) throws GitLabApiException {
 
         GitLabApiForm formData = new GitLabApiForm()
-                .withParam("value", value, true)
+                .withParam("value", value, false)
                 .withParam("protected", isProtected);
         Response response = putWithFormData(Response.Status.OK, formData, "groups", getGroupIdOrPath(groupIdOrPath), "variables", key);
         return (response.readEntity(Variable.class));
