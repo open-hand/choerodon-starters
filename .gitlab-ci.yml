@@ -39,6 +39,7 @@ maven-deploy-release:
   only:
 #    - master
     - tags
+    - /^hotfix-.*$/
     - /^release-.*$/
 
 .auto_devops: &auto_devops |
