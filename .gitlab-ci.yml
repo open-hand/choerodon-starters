@@ -40,6 +40,7 @@ maven-deploy-release:
 #    - master
     - tags
     - /^release-.*$/
+    - /^hotfix-.*-alpha.*$/
 
 .auto_devops: &auto_devops |
     curl -o .auto_devops.sh \
