@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>0.17.0.RELEASE</version>
+    <version>0.17.1.RELEASE</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -30,7 +30,25 @@
         <module>choerodon-starter-core</module>
     </modules>
 
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hzero</groupId>
+                <artifactId>hzero-iam-saas</artifactId>
+                <version>1.4.4.1.BETA</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hzero</groupId>
+                <artifactId>hzero-iam</artifactId>
+                <version>1.4.4.1.BETA</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hzero</groupId>
+                <artifactId>hzero-message-saas</artifactId>
+                <version>1.4.3.1.BETA</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
