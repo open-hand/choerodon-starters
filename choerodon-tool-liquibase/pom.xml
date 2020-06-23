@@ -3,38 +3,35 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>choerodon-starter-parent</artifactId>
         <groupId>io.choerodon</groupId>
-        <version>0.16.1.RELEASE</version>
+        <artifactId>choerodon-starter-parent</artifactId>
+        <version>0.17.0.RELEASE</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>choerodon-tool-liquibase</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <mybatis.spring.boot.version>1.3.0</mybatis.spring.boot.version>
+        <mysql.version>8.0.15</mysql.version>
+        <commons.lang.version>2.6</commons.lang.version>
+        <commons.io.version>2.5</commons.io.version>
+        <commons.configuration.version>1.10</commons.configuration.version>
+        <fastjson.version>1.2.31</fastjson.version>
+        <velocity.version>1.7</velocity.version>
+        <poi.version>4.0.0</poi.version>
+        <dynamic.datasource.version>2.2.2</dynamic.datasource.version>
+        <powermock.version>1.7.4</powermock.version>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-liquibase</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.197</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc7</artifactId>
-            <version>12.1.0.1.0</version>
+            <groupId>org.hzero.tool</groupId>
+            <artifactId>hzero-installer</artifactId>
+            <version>0.2.2.RELEASE</version>
         </dependency>
     </dependencies>
 
@@ -52,6 +49,12 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <skip>false</skip>
+                    <!-- spring-boot:run 中文乱码解决 -->
+                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

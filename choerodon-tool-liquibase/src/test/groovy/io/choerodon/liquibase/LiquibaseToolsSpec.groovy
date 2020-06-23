@@ -3,6 +3,7 @@ package io.choerodon.liquibase
 
 import spock.lang.Specification
 import spock.lang.Stepwise
+
 /**
  *
  * @author zmf
@@ -12,7 +13,6 @@ import spock.lang.Stepwise
 @Stepwise
 class LiquibaseToolsSpec extends Specification {
 //    LiquibaseExecutor liquibaseExecutor = Mock(LiquibaseExecutor)
-
 
 //    def main(String... values) {
 //        println("tttttttttttttttttttttttttttttt")

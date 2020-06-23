@@ -98,23 +98,23 @@ public class CommitPayload {
 
     public CommitPayload withAction(CommitAction action) {
 
-	if (actions == null) {
-	    actions = new ArrayList<>();
-	}
+        if (actions == null) {
+            actions = new ArrayList<>();
+        }
 
-	actions.add(action);
+        actions.add(action);
         return (this);
     }
 
     public CommitPayload withAction(CommitAction.Action action, String filePath) {
-	return (withAction(action, null, filePath));
+        return (withAction(action, null, filePath));
     }
 
     public CommitPayload withAction(CommitAction.Action action, String content, String filePath) {
-	CommitAction commitAction = new CommitAction()
-	        .withAction(action)
-	        .withContent(content)
-	        .withFilePath(filePath);
+        CommitAction commitAction = new CommitAction()
+                .withAction(action)
+                .withContent(content)
+                .withFilePath(filePath);
 
         return (withAction(commitAction));
     }

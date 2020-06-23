@@ -9,6 +9,7 @@ import org.gitlab4j.api.models.ProtectedBranch;
 
 /**
  * This class provides an entry point to all the Protected Branches API calls.
+ *
  * @see <a href="https://docs.gitlab.com/ee/api/protected_branches.html">Protected branches API at GitLab</a>
  */
 public class ProtectedBranchesApi extends AbstractApi {
@@ -36,7 +37,7 @@ public class ProtectedBranchesApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: GET /projects/:id/protected_branches</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param itemsPerPage the number of instances that will be fetched per page
+     * @param itemsPerPage    the number of instances that will be fetched per page
      * @return the Pager of protected branches for the project
      * @throws GitLabApiException if any exception occurs
      */
@@ -52,7 +53,7 @@ public class ProtectedBranchesApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: GET /projects/:id/protected_branches/:branch_name</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branchName the name of the branch or wildcard
+     * @param branchName      the name of the branch or wildcard
      * @return a ProtectedBranch instance with info on the protected branch
      * @throws GitLabApiException if any exception occurs
      */
@@ -68,7 +69,7 @@ public class ProtectedBranchesApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: DELETE /projects/:id/protected_branches/:name</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branchName the name of the branch to un-protect, can be a wildcard
+     * @param branchName      the name of the branch to un-protect, can be a wildcard
      * @throws GitLabApiException if any exception occurs
      */
     public void unprotectBranch(Object projectIdOrPath, String branchName) throws GitLabApiException {
@@ -82,7 +83,7 @@ public class ProtectedBranchesApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: POST /projects/:id/protected_branches</code></pre>
      *
      * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branchName the name of the branch to protect, can be a wildcard
+     * @param branchName      the name of the branch to protect, can be a wildcard
      * @return the branch info for the protected branch
      * @throws GitLabApiException if any exception occurs
      */
@@ -95,9 +96,9 @@ public class ProtectedBranchesApi extends AbstractApi {
      *
      * <pre><code>GitLab Endpoint: POST /projects/:id/protected_branches</code></pre>
      *
-     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branchName the name of the branch to protect, can be a wildcard
-     * @param pushAccessLevel Access levels allowed to push (defaults: 40, maintainer access level)
+     * @param projectIdOrPath  the project in the form of an Integer(ID), String(path), or Project instance
+     * @param branchName       the name of the branch to protect, can be a wildcard
+     * @param pushAccessLevel  Access levels allowed to push (defaults: 40, maintainer access level)
      * @param mergeAccessLevel Access levels allowed to merge (defaults: 40, maintainer access level)
      * @return the branch info for the protected branch
      * @throws GitLabApiException if any exception occurs
@@ -111,11 +112,11 @@ public class ProtectedBranchesApi extends AbstractApi {
      *
      * <pre><code>GitLab Endpoint: POST /projects/:id/protected_branches</code></pre>
      *
-     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branchName the name of the branch to protect, can be a wildcard
-     * @param pushAccessLevel access levels allowed to push (defaults: 40, maintainer access level)
-     * @param mergeAccessLevel access levels allowed to merge (defaults: 40, maintainer access level)
-     * @param unprotectAccessLevel access levels allowed to unprotect (defaults: 40, maintainer access level)
+     * @param projectIdOrPath           the project in the form of an Integer(ID), String(path), or Project instance
+     * @param branchName                the name of the branch to protect, can be a wildcard
+     * @param pushAccessLevel           access levels allowed to push (defaults: 40, maintainer access level)
+     * @param mergeAccessLevel          access levels allowed to merge (defaults: 40, maintainer access level)
+     * @param unprotectAccessLevel      access levels allowed to unprotect (defaults: 40, maintainer access level)
      * @param codeOwnerApprovalRequired prevent pushes to this branch if it matches an item in the CODEOWNERS file. (defaults: false)
      * @return the branch info for the protected branch
      * @throws GitLabApiException if any exception occurs
@@ -141,20 +142,20 @@ public class ProtectedBranchesApi extends AbstractApi {
      *
      * <pre><code>GitLab Endpoint: POST /projects/:id/protected_branches</code></pre>
      *
-     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
-     * @param branchName the name of the branch to protect, can be a wildcard
-     * @param allowedToPushUserId user ID allowed to push, can be null
-     * @param allowedToMergeUserId user ID allowed to merge, can be null
-     * @param allowedToUnprotectUserId user ID allowed to unprotect, can be null
+     * @param projectIdOrPath           the project in the form of an Integer(ID), String(path), or Project instance
+     * @param branchName                the name of the branch to protect, can be a wildcard
+     * @param allowedToPushUserId       user ID allowed to push, can be null
+     * @param allowedToMergeUserId      user ID allowed to merge, can be null
+     * @param allowedToUnprotectUserId  user ID allowed to unprotect, can be null
      * @param codeOwnerApprovalRequired prevent pushes to this branch if it matches an item in the CODEOWNERS file. (defaults: false)
      * @return the branch info for the protected branch
      * @throws GitLabApiException if any exception occurs
      */
     public ProtectedBranch protectBranch(Object projectIdOrPath, String branchName,
-	    Integer allowedToPushUserId, Integer allowedToMergeUserId, Integer allowedToUnprotectUserId,
-	    Boolean codeOwnerApprovalRequired) throws GitLabApiException {
+                                         Integer allowedToPushUserId, Integer allowedToMergeUserId, Integer allowedToUnprotectUserId,
+                                         Boolean codeOwnerApprovalRequired) throws GitLabApiException {
 
-	Form formData = new GitLabApiForm()
+        Form formData = new GitLabApiForm()
                 .withParam("name", branchName, true)
                 .withParam("allowed_to_push[][user_id]", allowedToPushUserId)
                 .withParam("allowed_to_merge[][user_id]", allowedToMergeUserId)

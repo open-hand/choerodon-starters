@@ -3,19 +3,19 @@ package org.gitlab4j.api.utils;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -68,6 +68,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResolver<ObjectMapper> {
 
     private static final SimpleDateFormat iso8601UtcFormat;
+
     static {
         iso8601UtcFormat = new SimpleDateFormat(ISO8601.UTC_PATTERN);
         iso8601UtcFormat.setLenient(true);
@@ -101,7 +102,7 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
 
     /**
      * Gets the ObjectMapper contained by this instance.
-     * 
+     *
      * @return the ObjectMapper contained by this instance
      */
     public ObjectMapper getObjectMapper() {
@@ -110,14 +111,14 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
 
     /**
      * Unmarshal the JSON data on the specified Reader instance to an instance of the provided class.
-     * 
-     * @param <T> the generics type for the return value
+     *
+     * @param <T>        the generics type for the return value
      * @param returnType an instance of this type class will be returned
-     * @param reader the Reader instance that contains the JSON data
+     * @param reader     the Reader instance that contains the JSON data
      * @return an instance of the provided class containing the parsed data from the Reader
-     * @throws JsonParseException when an error occurs paresing the provided JSON
+     * @throws JsonParseException   when an error occurs paresing the provided JSON
      * @throws JsonMappingException if a JSON error occurs
-     * @throws IOException if an error occurs reading the JSON data
+     * @throws IOException          if an error occurs reading the JSON data
      */
     public <T> T unmarshal(Class<T> returnType, Reader reader) throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper objectMapper = getContext(returnType);
@@ -126,14 +127,14 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
 
     /**
      * Unmarshal the JSON data contained by the string and populate an instance of the provided returnType class.
-     * 
-     * @param <T> the generics type for the return value
+     *
+     * @param <T>        the generics type for the return value
      * @param returnType an instance of this type class will be returned
-     * @param postData a String holding the POST data
+     * @param postData   a String holding the POST data
      * @return an instance of the provided class containing the parsed data from the string
-     * @throws JsonParseException when an error occurs paresing the provided JSON
+     * @throws JsonParseException   when an error occurs paresing the provided JSON
      * @throws JsonMappingException if a JSON error occurs
-     * @throws IOException if an error occurs reading the JSON data
+     * @throws IOException          if an error occurs reading the JSON data
      */
     public <T> T unmarshal(Class<T> returnType, String postData) throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper objectMapper = getContext(returnType);
@@ -142,8 +143,8 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
 
     /**
      * Marshals the supplied object out as a formatted JSON string.
-     * 
-     * @param <T> the generics type for the provided object
+     *
+     * @param <T>    the generics type for the provided object
      * @param object the object to output as a JSON string
      * @return a String containing the JSON for the specified object
      */
@@ -204,7 +205,7 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
 
         @Override
         public void serialize(List<User> value, JsonGenerator jgen,
-                SerializerProvider provider) throws IOException,
+                              SerializerProvider provider) throws IOException,
                 JsonProcessingException {
 
             jgen.writeStartArray();
@@ -222,7 +223,7 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
      * result in the value of the property being null.  This is meant to be used for
      * toString() implementations of GitLab4J classes.
      *
-     * @param <T> the generics type for the provided object
+     * @param <T>    the generics type for the provided object
      * @param object the object to output as a JSON string
      * @return a String containing the JSON for the specified object
      */
@@ -236,6 +237,7 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
      */
     private static class JacksonJsonSingletonHelper {
         private static final JacksonJson JACKSON_JSON = new JacksonJson();
+
         static {
             JACKSON_JSON.objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
             JACKSON_JSON.objectMapper.setSerializationInclusion(Include.ALWAYS);
@@ -259,7 +261,7 @@ public class JacksonJson extends JacksonJaxbJsonProvider implements ContextResol
             for (int i = 0; i < numUsers; i++) {
                 JsonNode node = tree.get(i);
                 JsonNode userNode = node.get("user");
-                User user = mapper.treeToValue(userNode,  User.class);
+                User user = mapper.treeToValue(userNode, User.class);
                 users.add(user);
             }
 

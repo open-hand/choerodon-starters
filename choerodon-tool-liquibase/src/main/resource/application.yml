@@ -1,0 +1,49 @@
+# Tomcat
+server:
+  tomcat:
+      uri-encoding: UTF-8
+      max-threads: 1000
+      min-spare-threads: 30
+  port: 8099
+  servlet:
+    context-path: /
+# mysql
+spring:
+  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT}
+#    username: ${SPRING_DATASOURCE_USERNAME:root}
+#    password: ${SPRING_DATASOURCE_PASSWORD:root}
+#    driver-class-name: org.postgresql.Driver
+#    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://172.20.0.203:5432/postgres}
+#    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+#    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: com.mysql.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:oracle:thin:@172.20.0.203:1521:XE}
+    username: ${SPRING_DATASOURCE_USERNAME:hzero}
+    password: ${SPRING_DATASOURCE_PASSWORD:hzero}
+  jackson:
+      time-zone: GMT+8
+      date-format: yyyy-MM-dd HH:mm:ss
+  resources:
+          static-locations: classpath:/static/,classpath:/view/
+  liquibase:
+    enabled: false
+
+installer:
+  dataDir: D:\workspace\WorkDev\hzero-resource\init-data\saas
+  groovyDir: C:\Users\Andy\Desktop\groovy
+  jarPath: hhh/app.jar
+  init: false
+  mapping: service-mapping.xml
+  schema: mysql
+  merge: false
+data:
+  version: 1.2.0-RELEASE
+
+# Mybatis配置
+mybatis:
+  mapperLocations: classpath:mapper/**/*.xml
+
+liquibase:
+  exclusion: hpfm_config,iam_role,fd_organization,iam_user,hiam_user_info,iam_member_role,oauth_client,oauth_ldap,oauth_password_policy,hpfm_permission_rule,hpfm_permission_rel,hpfm_config,hpfm_code_rule,hpfm_code_rule,hpfm_code_rule_detail,hpfm_static_text,hpfm_static_text_value,hpfm_tenant,hpfm_group,hmsg_email_server,hmsg_email_property,hmsg_sms_server,hmsg_receive_config,hmsg_receiver_type,hmsg_message_template.template_content,hmsg_message_template.external_code

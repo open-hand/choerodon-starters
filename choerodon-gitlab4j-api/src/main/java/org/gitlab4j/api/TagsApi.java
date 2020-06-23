@@ -10,6 +10,7 @@ import org.gitlab4j.api.models.ProtectedTag;
 
 /**
  * This class provides an entry point to all the GitLab Tags and Protected Tags API calls.
+ *
  * @see <a href="https://docs.gitlab.com/ce/api/tags.html">Tags API at GitLab</a>
  * @see <a href="https://docs.gitlab.com/ce/api/protected_tags.html">Protected Tags API at GitLab</a>
  */
@@ -38,15 +39,16 @@ public class TagsApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: GET /projects/:id/protected_tags</code></pre>
      *
      * @param projectIdOrPath id, path of the project, or a Project instance holding the project ID or path
-     * @param page the page to get
-     * @param perPage the number of Tag instances per page
+     * @param page            the page to get
+     * @param perPage         the number of Tag instances per page
      * @return a List of tags for the specified project ID and page range
      * @throws GitLabApiException if any exception occurs
      */
     public List<ProtectedTag> getProtectedTags(Object projectIdOrPath, int page, int perPage) throws GitLabApiException {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage),
                 "projects", getProjectIdOrPath(projectIdOrPath), "protected_tags");
-        return (response.readEntity(new GenericType<List<ProtectedTag>>() { }));
+        return (response.readEntity(new GenericType<List<ProtectedTag>>() {
+        }));
     }
 
     /**
@@ -55,7 +57,7 @@ public class TagsApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: GET /projects/:id/protected_tags</code></pre>
      *
      * @param projectIdOrPath id, path of the project, or a Project instance holding the project ID or path
-     * @param itemsPerPage the number of Project instances that will be fetched per page
+     * @param itemsPerPage    the number of Project instances that will be fetched per page
      * @return the Pager of protected tags for the specified project ID
      * @throws GitLabApiException if any exception occurs
      */
@@ -69,7 +71,7 @@ public class TagsApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: GET /projects/:id/protected_tags/:name</code></pre>
      *
      * @param projectIdOrPath id, path of the project, or a Project instance holding the project ID or path
-     * @param name the name of the tag or wildcard
+     * @param name            the name of the tag or wildcard
      * @return a ProtectedTag instance with info on the specified protected tag
      * @throws GitLabApiException if any exception occurs
      */
@@ -83,8 +85,8 @@ public class TagsApi extends AbstractApi {
      *
      * <pre><code>GitLab Endpoint: GET /projects/:id/protected_tags</code></pre>
      *
-     * @param projectIdOrPath id, path of the project, or a Project instance holding the project ID or path
-     * @param name the name of the tag or wildcard
+     * @param projectIdOrPath   id, path of the project, or a Project instance holding the project ID or path
+     * @param name              the name of the tag or wildcard
      * @param createAccessLevel the access level allowed to create
      * @return a ProtectedTag instance
      * @throws GitLabApiException if any exception occurs
@@ -101,7 +103,7 @@ public class TagsApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: GET /projects/:id/protected_tags/:name</code></pre>
      *
      * @param projectIdOrPath id, path of the project, or a Project instance holding the project ID or path
-     * @param name the name of the tag or wildcard
+     * @param name            the name of the tag or wildcard
      * @throws GitLabApiException if any exception occurs
      */
     public void unprotectTag(Object projectIdOrPath, String name) throws GitLabApiException {

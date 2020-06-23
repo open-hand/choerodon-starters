@@ -2,13 +2,14 @@ package io.choerodon.asgard.saga.feign;
 
 import io.choerodon.asgard.saga.dto.SagaInstanceDTO;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "${choerodon.saga.service:asgard-service}", fallback = SagaClientCallback.class)
+@FeignClient(name = "${choerodon.saga.service:hzero-asgard}", fallback = SagaClientCallback.class)
 public interface SagaClient {
 
     /**
