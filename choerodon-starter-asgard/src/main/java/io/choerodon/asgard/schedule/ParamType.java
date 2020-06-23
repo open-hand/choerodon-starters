@@ -5,8 +5,7 @@ public enum ParamType {
     INTEGER("Integer"),
     LONG("Long"),
     DOUBLE("Double"),
-    STRING("String"),
-    ;
+    STRING("String"),;
 
     private String value;
 

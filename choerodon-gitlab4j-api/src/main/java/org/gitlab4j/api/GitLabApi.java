@@ -81,6 +81,7 @@ public class GitLabApi {
     public static final Logger getLogger() {
         return (LOGGER);
     }
+
     /**
      * Constructs a GitLabApi instance set up to interact with the GitLab server using the specified GitLab API version.
      *

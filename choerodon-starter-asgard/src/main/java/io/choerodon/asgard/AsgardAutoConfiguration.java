@@ -20,6 +20,7 @@ import io.choerodon.asgard.schedule.JobTaskProcessor;
 import io.choerodon.asgard.schedule.ScheduleConsumer;
 import io.choerodon.asgard.schedule.ScheduleProperties;
 import io.choerodon.asgard.schedule.feign.ScheduleConsumerClient;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

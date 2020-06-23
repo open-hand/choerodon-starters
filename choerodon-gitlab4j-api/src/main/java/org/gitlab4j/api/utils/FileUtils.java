@@ -2,19 +2,19 @@ package org.gitlab4j.api.utils;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -42,9 +42,9 @@ public class FileUtils {
      * Creates a File that is unique in the specified directory. If the specified
      * filename exists in the directory, "-#" will be appended to the filename until
      * a unique filename can be created.
-     * 
+     *
      * @param directory the directory to create the file in
-     * @param filename the base filename with extension
+     * @param filename  the base filename with extension
      * @return a File that is unique in the specified directory
      * @throws IOException if any error occurs during file creation
      */
@@ -74,7 +74,7 @@ public class FileUtils {
 
     /**
      * Get the filename from the "Content-Disposition" header of a JAX-RS response.
-     * 
+     *
      * @param response the JAX-RS Response instance  to get the "Content-Disposition" header filename from
      * @return the filename from the "Content-Disposition" header of a JAX-RS response, or null
      * if the "Content-Disposition" header is not present in the response
@@ -87,10 +87,10 @@ public class FileUtils {
 
         return (disposition.replaceFirst("(?i)^.*filename=\"([^\"]+)\".*$", "$1"));
     }
- 
+
     /**
      * Reads the contents of a File to a String.
-     * 
+     *
      * @param file the File instance to read the contents from
      * @return the contents of file as a String
      * @throws IOException if any errors occur while opening or reading the file
@@ -100,13 +100,13 @@ public class FileUtils {
         try (Scanner in = new Scanner(file)) {
             in.useDelimiter("\\Z");
             return (in.next());
-        }       
+        }
     }
 
     /**
      * Reads the content of a File instance and returns it as a String of either text or base64 encoded text.
      *
-     * @param file the File instance to read from
+     * @param file     the File instance to read from
      * @param encoding whether to encode as Base64 or as Text, defaults to Text if null
      * @return the content of the File as a String
      * @throws IOException if any error occurs
@@ -122,7 +122,7 @@ public class FileUtils {
             }
 
         } else {
-            return(new String (Files.readAllBytes(file.toPath())));
+            return (new String(Files.readAllBytes(file.toPath())));
         }
     }
 }

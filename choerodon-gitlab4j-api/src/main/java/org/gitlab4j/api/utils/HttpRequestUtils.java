@@ -2,19 +2,19 @@ package org.gitlab4j.api.utils;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -35,9 +35,9 @@ public class HttpRequestUtils {
 
     /**
      * Build a String containing a very short multi-line dump of an HTTP request.
-     * 
+     *
      * @param fromMethod the method that this method was called from
-     * @param request the HTTP request build the request dump from
+     * @param request    the HTTP request build the request dump from
      * @return a String containing a very short multi-line dump of the HTTP request
      */
     public static String getShortRequestDump(String fromMethod, HttpServletRequest request) {
@@ -46,9 +46,9 @@ public class HttpRequestUtils {
 
     /**
      * Build a String containing a short multi-line dump of an HTTP request.
-     * 
-     * @param fromMethod the method that this method was called from
-     * @param request the HTTP request build the request dump from
+     *
+     * @param fromMethod     the method that this method was called from
+     * @param request        the HTTP request build the request dump from
      * @param includeHeaders if true will include the HTTP headers in the dump
      * @return a String containing a short multi-line dump of the HTTP request
      */
@@ -81,9 +81,9 @@ public class HttpRequestUtils {
 
     /**
      * Build a String containing a multi-line dump of an HTTP request.
-     * 
-     * @param fromMethod the method that this method was called from
-     * @param request the HTTP request build the request dump from
+     *
+     * @param fromMethod      the method that this method was called from
+     * @param request         the HTTP request build the request dump from
      * @param includePostData if true will include the POST data in the dump
      * @return a String containing a multi-line dump of the HTTP request, If an error occurs,
      * the message from the exception will be returned
@@ -137,7 +137,7 @@ public class HttpRequestUtils {
 
     /**
      * Reads the POST data from a request into a String and returns it.
-     * 
+     *
      * @param request the HTTP request containing the POST data
      * @return the POST data as a String instance
      * @throws IOException if any error occurs while reading the POST data
@@ -151,7 +151,7 @@ public class HttpRequestUtils {
 
     /**
      * Reads the content of a Reader instance and returns it as a String.
-     * 
+     *
      * @param reader the Reader instance to read the data from
      * @return the content of a Reader instance as a String
      * @throws IOException if any error occurs while reading the POST data

@@ -2,6 +2,7 @@ package io.choerodon.asgard.schedule;
 
 import io.choerodon.asgard.schedule.annotation.JobTask;
 import io.choerodon.asgard.schedule.exception.InvalidJobTaskMethodException;
+
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;

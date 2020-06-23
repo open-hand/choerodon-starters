@@ -2,19 +2,19 @@ package org.gitlab4j.api.utils;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -46,6 +46,7 @@ public class ISO8601 {
     private static final SimpleDateFormat iso8601OutputFormat;
     private static final SimpleDateFormat iso8601OutputMsecFormat;
     private static final SimpleDateFormat iso8601UtcFormat;
+
     static {
         iso8601Format = new SimpleDateFormat(PATTERN);
         iso8601Format.setLenient(true);
@@ -85,7 +86,7 @@ public class ISO8601 {
 
     /**
      * Get a ISO8601 formatted string for the provided Calendar instance.
-     * 
+     *
      * @param cal the Calendar instance to get the ISO8601 formatted string for
      * @return a ISO8601 formatted string for the provided Calendar instance, or null if call is null
      */
@@ -100,8 +101,8 @@ public class ISO8601 {
 
     /**
      * Get a ISO8601 formatted string for the provided Date instance.
-     * 
-     * @param date the Date instance to get the ISO8601 formatted string for
+     *
+     * @param date     the Date instance to get the ISO8601 formatted string for
      * @param withMsec flag indicating whether to include milliseconds
      * @return a ISO8601 formatted string for the provided Date instance, or null if date is null
      */
@@ -117,7 +118,7 @@ public class ISO8601 {
 
     /**
      * Get a ISO8601 formatted string for the provided Date instance.
-     * 
+     *
      * @param date the Date instance to get the ISO8601 formatted string for
      * @return a ISO8601 formatted string for the provided Date instance, or null if date is null
      */
@@ -127,7 +128,7 @@ public class ISO8601 {
 
     /**
      * Parses an ISO8601 formatted string a returns a Date instance.
-     * 
+     *
      * @param dateTimeString the ISO8601 formatted string
      * @return a Date instance for the ISO8601 formatted string
      * @throws ParseException if the provided string is not in the proper format
@@ -151,7 +152,7 @@ public class ISO8601 {
 
     /**
      * Parses an ISO8601 formatted string a returns a Calendar instance.
-     * 
+     *
      * @param dateTimeString the ISO8601 formatted string
      * @return a Calendar instance for the ISO8601 formatted string
      * @throws ParseException if the provided string is not in the proper format

@@ -2,6 +2,7 @@ package io.choerodon.asgard.saga.producer.consistency;
 
 import io.choerodon.asgard.saga.dto.SagaStatusQueryDTO;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public abstract class SagaProducerConsistencyHandler {
     public abstract void beforeTransactionCancel(String uuid);
 
     /**
-     * 提供给asgard-service回查使用
+     * 提供给hzero-asgard回查使用
      *
      * @param uuid 回查的id
      * @return SagaStatusQueryDTO

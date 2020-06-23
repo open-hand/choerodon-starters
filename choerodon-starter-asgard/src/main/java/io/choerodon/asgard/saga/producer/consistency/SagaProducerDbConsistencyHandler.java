@@ -3,6 +3,7 @@ package io.choerodon.asgard.saga.producer.consistency;
 import io.choerodon.asgard.saga.dto.SagaStatusQueryDTO;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.exception.SagaProducerException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -61,7 +62,7 @@ public class SagaProducerDbConsistencyHandler extends SagaProducerConsistencyHan
     @Override
     public void clear(long time) {
         int row = jdbcTemplate.update(DELETE_STATEMENT, time, System.currentTimeMillis());
-        if (row >0) {
+        if (row > 0) {
             LOGGER.info("clear asgard_producer_record createTime before: {} , number of deleted rows is: {}", time, row);
         }
     }

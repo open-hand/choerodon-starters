@@ -1,15 +1,16 @@
 package io.choerodon.liquibase;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * Created by xausky on 4/6/17.
  */
-@SpringBootApplication(exclude = LiquibaseAutoConfiguration.class)
-@Import({LiquibaseConfig.class})
+@SpringBootApplication
+@ComponentScan(basePackages = {"org.hzero.installer.*"}, basePackageClasses = io.choerodon.liquibase.StartupRunner.class)
+@MapperScan(basePackages = "org.hzero.installer.mapper")
 public class LiquibaseTools {
 
 

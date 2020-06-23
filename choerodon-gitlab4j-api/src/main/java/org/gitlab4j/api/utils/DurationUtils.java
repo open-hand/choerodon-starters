@@ -2,19 +2,19 @@ package org.gitlab4j.api.utils;
 
 /*
  *   The MIT License (MIT)
- *   
+ *
  *   Copyright (c) 2017 Greg Messner <greg@messners.com>
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy of
  *   this software and associated documentation files (the "Software"), to deal in
  *   the Software without restriction, including without limitation the rights to
  *   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  *   the Software, and to permit persons to whom the Software is furnished to do so,
  *   subject to the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be included in all
  *   copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  *   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 
 public class DurationUtils {
 
-    private static char[] TIME_UNITS = { 'w', 'd', 'h', 'm', 's'};
-    private static int[] TIME_UNIT_MULTIPLIERS = { 60 * 60 * 24 * 7, 60 * 60 * 24, 60 * 60, 60, 1 };
+    private static char[] TIME_UNITS = {'w', 'd', 'h', 'm', 's'};
+    private static int[] TIME_UNIT_MULTIPLIERS = {60 * 60 * 24 * 7, 60 * 60 * 24, 60 * 60, 60, 1};
 
     private static Pattern durationPattern = Pattern.compile("(\\s*(\\d+)([a-z]))");
 
@@ -60,7 +60,7 @@ public class DurationUtils {
                 buf.append(days).append('d').append(hours).append('h');
             }
 
-        } else  if (days > 0) {
+        } else if (days > 0) {
 
             buf.append(days).append('d');
             if (seconds > 0) {
@@ -110,7 +110,7 @@ public class DurationUtils {
         Boolean validDuration = null;
 
         while (matcher.find() && validDuration != Boolean.FALSE) {
-            
+
             validDuration = true;
 
             int numGroups = matcher.groupCount();
