@@ -21,6 +21,10 @@
             <artifactId>hzero-starter-feign-replay</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.hzero.boot</groupId>
+            <artifactId>hzero-boot-admin</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.197</version>
