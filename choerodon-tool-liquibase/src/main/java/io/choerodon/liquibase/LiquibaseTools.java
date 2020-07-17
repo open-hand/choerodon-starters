@@ -15,7 +15,12 @@ public class LiquibaseTools {
 
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(LiquibaseTools.class);
-        app.run(args);
+        try {
+            SpringApplication app = new SpringApplication(LiquibaseTools.class);
+            app.run(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
