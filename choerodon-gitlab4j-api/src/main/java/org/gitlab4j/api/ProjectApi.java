@@ -1618,6 +1618,19 @@ public class ProjectApi extends AbstractApi implements Constants {
     }
 
     /**
+     * Deletes a project variable.
+     *
+     * <pre><code>GitLab Endpoint: DELETE /projects/:id/variables/:key</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param key the key of an existing variable, required
+     * @throws GitLabApiException if any exception occurs
+     */
+    public void deleteVariable(Object projectIdOrPath, String key) throws GitLabApiException {
+        delete(Response.Status.NO_CONTENT, null, "projects", getProjectIdOrPath(projectIdOrPath), "variables", key);
+    }
+
+    /**
      * Create a new project variable
      * <p>
      * POST /projects/:id/variables
