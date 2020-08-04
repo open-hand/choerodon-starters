@@ -52,15 +52,20 @@ public class StartupRunner implements CommandLineRunner {
             if (!StringUtils.isEmpty(defaultJar)) {
                 unpackJar.extra(defaultJar, TEMP_DIR_NAME, defaultJarInit);
                 String tempPath = TEMP_DIR_NAME + PREFIX_SCRIPT_DB;
-                List<String> serviceNames = getServiceName(tempPath + GROOVY_PATH);
-                if (!CollectionUtils.isEmpty(serviceNames)) {
+                List<String> groovyServiceNames = getServiceName(tempPath + GROOVY_PATH);
+                if (!CollectionUtils.isEmpty(groovyServiceNames)) {
                     XmlUtils.resolver(tempPath + MAPPING_PATH);
-                    if (!importDataService.selfGroovy(serviceNames, false, tempPath + GROOVY_PATH)) {
+                    if (!importDataService.selfGroovy(groovyServiceNames, false, tempPath + GROOVY_PATH)) {
                         throw new Exception("初始化groovy脚本失败！");
                     }
+                }
+                List<String> initServiceNames = getServiceName(tempPath + INIT_PATH);
+
+                if (!CollectionUtils.isEmpty(initServiceNames)) {
+                    XmlUtils.resolver(tempPath + MAPPING_PATH);
                     String value = System.getProperties().getProperty("data.init", "true");
                     if (!Objects.isNull(value) && Boolean.TRUE.equals(Boolean.valueOf(value))) {
-                        if (!importDataService.selfData(serviceNames, tempPath + INIT_PATH)) {
+                        if (!importDataService.selfData(initServiceNames, tempPath + INIT_PATH)) {
                             throw new Exception("初始化excel失败！");
                         }
                     }
@@ -77,7 +82,8 @@ public class StartupRunner implements CommandLineRunner {
     private List<String> getServiceName(String path) throws IOException {
         File file = new File(path);
         if (!file.exists() || !file.isDirectory()) {
-            throw new IOException("File does not exist!");
+            logger.warn("File does not exist!");
+            return null;
         } else {
             File[] listFiles = file.listFiles();
             if (listFiles == null || listFiles.length == 0) {
