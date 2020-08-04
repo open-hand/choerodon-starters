@@ -50,4 +50,16 @@ public @interface TimedTask {
      * @return simple-trigger的重复间隔单位：重复间隔形如 '100SECONDS' 则为SECONDS
      */
     QuartzDefinition.SimpleRepeatIntervalUnit repeatIntervalUnit();
+
+    /**
+     * 触发器类型
+     * @return simple_trigger和cron_trigger
+     */
+    String triggerType() default "simple_trigger";
+
+    /**
+     * cron 表达式
+     * @return
+     */
+    String cronExpression();
 }

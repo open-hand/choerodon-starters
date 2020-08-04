@@ -26,17 +26,25 @@ public class PropertyTimedTask {
     private Integer repeatCount;
     private Long repeatInterval;
     private String repeatIntervalUnit;
+    private String triggerType;
+    private String cronExpression;
 
     PropertyTimedTask(final TimedTask timedTask, final JobTask jobTask) {
         this.name = timedTask.name();
         this.description = timedTask.description();
         this.oneExecution = timedTask.oneExecution();
         this.methodCode = jobTask.code();
-        this.repeatCount = timedTask.repeatCount();
-        this.repeatInterval = timedTask.repeatInterval();
-        this.repeatIntervalUnit = timedTask.repeatIntervalUnit().name();
         TaskParam[] taskParams = timedTask.params();
         JobParam[] jobParams = jobTask.params();
+        this.triggerType = timedTask.triggerType();
+        String SIMPLE_TRIGGER = "simple_trigger";
+        if (timedTask.triggerType().equals(SIMPLE_TRIGGER)) {
+            this.repeatCount = timedTask.repeatCount();
+            this.repeatInterval = timedTask.repeatInterval();
+            this.repeatIntervalUnit = timedTask.repeatIntervalUnit().name();
+        } else {
+            this.cronExpression = timedTask.cronExpression();
+        }
         //参数转换至map
         this.params = new HashMap<>();
         for (TaskParam taskParam : taskParams) {
@@ -133,6 +141,22 @@ public class PropertyTimedTask {
 
     public void setRepeatIntervalUnit(String repeatIntervalUnit) {
         this.repeatIntervalUnit = repeatIntervalUnit;
+    }
+
+    public String getTriggerType() {
+        return triggerType;
+    }
+
+    public void setTriggerType(String triggerType) {
+        this.triggerType = triggerType;
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
+
+    public void setCronExpression(String cronExpression) {
+        this.cronExpression = cronExpression;
     }
 
     @Override
