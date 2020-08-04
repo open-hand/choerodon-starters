@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import io.choerodon.asgard.schedule.QuartzDefinition;
+import io.choerodon.asgard.schedule.enums.TriggerTypeEnum;
 
 /**
  * 服务自定义定时任务
@@ -29,7 +30,7 @@ public @interface TimedTask {
     /**
      * @return 是否只执行一次，true：只执行一次；false：每次部署时执行一次
      */
-    boolean oneExecution();
+    boolean oneExecution() default true;
 
     /**
      * @return 方法执行参数
@@ -39,27 +40,29 @@ public @interface TimedTask {
     /**
      * @return simple-trigger的重复次数
      */
-    int repeatCount();
+    int repeatCount() default 0;
 
     /**
      * @return simple-trigger的重复间隔值：重复间隔形如 '100SECONDS' 则为100
      */
-    long repeatInterval();
+    long repeatInterval() default 1;
 
     /**
      * @return simple-trigger的重复间隔单位：重复间隔形如 '100SECONDS' 则为SECONDS
      */
-    QuartzDefinition.SimpleRepeatIntervalUnit repeatIntervalUnit();
+    QuartzDefinition.SimpleRepeatIntervalUnit repeatIntervalUnit() default QuartzDefinition.SimpleRepeatIntervalUnit.HOURS;
 
     /**
      * 触发器类型
+     *
      * @return simple_trigger和cron_trigger
      */
-    String triggerType() default "simple_trigger";
+    TriggerTypeEnum triggerType() default TriggerTypeEnum.simple_trigger;
 
     /**
      * cron 表达式
+     *
      * @return
      */
-    String cronExpression();
+    String cronExpression() default "";
 }
