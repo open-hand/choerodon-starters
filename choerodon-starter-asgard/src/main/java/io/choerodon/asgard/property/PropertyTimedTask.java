@@ -4,6 +4,7 @@ import io.choerodon.asgard.schedule.annotation.JobParam;
 import io.choerodon.asgard.schedule.annotation.JobTask;
 import io.choerodon.asgard.schedule.annotation.TaskParam;
 import io.choerodon.asgard.schedule.annotation.TimedTask;
+import io.choerodon.asgard.schedule.enums.TriggerTypeEnum;
 import io.choerodon.asgard.schedule.exception.JobParamDefaultValueParseException;
 import io.choerodon.core.exception.CommonException;
 
@@ -36,9 +37,8 @@ public class PropertyTimedTask {
         this.methodCode = jobTask.code();
         TaskParam[] taskParams = timedTask.params();
         JobParam[] jobParams = jobTask.params();
-        this.triggerType = timedTask.triggerType();
-        String SIMPLE_TRIGGER = "simple_trigger";
-        if (timedTask.triggerType().equals(SIMPLE_TRIGGER)) {
+        this.triggerType = timedTask.triggerType().getType();
+        if (timedTask.triggerType().getType().equals(TriggerTypeEnum.simple_trigger.getType())) {
             this.repeatCount = timedTask.repeatCount();
             this.repeatInterval = timedTask.repeatInterval();
             this.repeatIntervalUnit = timedTask.repeatIntervalUnit().name();
