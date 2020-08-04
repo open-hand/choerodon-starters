@@ -57,7 +57,7 @@ public @interface TimedTask {
      *
      * @return simple_trigger和cron_trigger
      */
-    TriggerTypeEnum triggerType() default TriggerTypeEnum.simple_trigger;
+    TriggerTypeEnum triggerType() default TriggerTypeEnum.SIMPLE_TRIGGER;
 
     /**
      * cron 表达式

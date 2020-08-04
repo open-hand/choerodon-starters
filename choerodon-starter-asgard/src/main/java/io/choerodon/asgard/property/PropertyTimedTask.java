@@ -38,7 +38,7 @@ public class PropertyTimedTask {
         TaskParam[] taskParams = timedTask.params();
         JobParam[] jobParams = jobTask.params();
         this.triggerType = timedTask.triggerType().getType();
-        if (timedTask.triggerType().getType().equals(TriggerTypeEnum.simple_trigger.getType())) {
+        if (timedTask.triggerType().getType().equals(TriggerTypeEnum.SIMPLE_TRIGGER.getType())) {
             this.repeatCount = timedTask.repeatCount();
             this.repeatInterval = timedTask.repeatInterval();
             this.repeatIntervalUnit = timedTask.repeatIntervalUnit().name();
