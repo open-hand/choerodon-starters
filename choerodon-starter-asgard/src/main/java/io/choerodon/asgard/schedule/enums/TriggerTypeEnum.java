@@ -9,11 +9,11 @@ public enum TriggerTypeEnum {
     /**
      * 简单执行
      */
-    simple_trigger("simple-trigger"),
+    SIMPLE_TRIGGER("simple-trigger"),
     /**
      * cron执行
      */
-    cron_trigger("cron-trigger");
+    CRON_TRIGGER("cron-trigger");
     private String type;
 
     TriggerTypeEnum(String type) {
