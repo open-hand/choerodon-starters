@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>0.17.3.RELEASE</version>
+    <version>0.17.2.RELEASE</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -70,5 +70,33 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>HandPublic</id>
+            <name>Hand-Public Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>HzeroRelease</id>
+            <name>Hzero-Release Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/Hzero-Release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>HzeroSnapshot</id>
+            <name>Hzero-Snapshot Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/Hzero-Snapshot/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>
