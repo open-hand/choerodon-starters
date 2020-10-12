@@ -2,6 +2,30 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+# [0.17.0]
+
+### 修改
+- 更改底层依赖为[hzero-starter-parent](https://github.com/open-hand/hzero-starter-parent)
+- 更改liquibase底层依赖为hzero-installer
+- 更新gitlab4j-api查询用户、group等部分接口
+
+### 删除
+- choerodon-maven-plugin
+- choerodon-starter-actuator
+- choerodon-starter-actuator-processor
+- choerodon-starter-config-client
+- choerodon-starter-eureka-event
+- choerodon-starter-feign-replay
+- choerodon-starter-metric
+- choerodon-starter-mybatis
+- choerodon-starter-oauth-core
+- choerodon-starter-oauth-resource
+- choerodon-starter-swagger
+- choerodon-starter-websocket
+- choerodon-starter-webmvc
+- choerodon-framework-parent
+- choerodon-tool-config
+
 # [0.14.0]
 
 ### 修改
