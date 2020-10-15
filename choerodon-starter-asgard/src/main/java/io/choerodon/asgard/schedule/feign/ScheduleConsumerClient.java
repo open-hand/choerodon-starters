@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "${choerodon.saga.service:hzero-asgard}")
+@FeignClient(name = "${choerodon.saga.service:choerodon-asgard}")
 public interface ScheduleConsumerClient {
 
     @PostMapping("/v1/ext/schedules/tasks/instances/poll")
