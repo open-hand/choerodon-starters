@@ -33,7 +33,7 @@ public abstract class SagaProducerConsistencyHandler {
     public abstract void beforeTransactionCancel(String uuid);
 
     /**
-     * 提供给hzero-asgard回查使用
+     * 提供给choerodon-asgard回查使用
      *
      * @param uuid 回查的id
      * @return SagaStatusQueryDTO
