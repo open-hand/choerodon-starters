@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "${choerodon.saga.service:hzero-asgard}")
+@FeignClient(name = "${choerodon.saga.service:choerodon-asgard}")
 public interface SagaConsumerClient {
 
     @PostMapping("/v1/ext/sagas/tasks/instances/poll")
