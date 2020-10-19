@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.hzero.installer.service.ImportDataService;
-import org.hzero.installer.utils.XmlUtils;
+import org.hzero.helper.generator.core.infra.util.XmlUtils;
+import org.hzero.helper.generator.installer.service.ImportDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

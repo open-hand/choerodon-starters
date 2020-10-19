@@ -29,9 +29,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.hzero.tool</groupId>
-            <artifactId>hzero-installer</artifactId>
-            <version>0.2.6.RELEASE</version>
+            <groupId>org.hzero.helper</groupId>
+            <artifactId>hzero-helper-installer</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
