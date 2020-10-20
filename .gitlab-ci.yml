@@ -28,7 +28,7 @@ maven-test-branches:
 maven-deploy-snapshot:
   stage: maven-deploy
   script:
-    - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_REPOSITORY_ID}::default::${CHOERODON_SNAPSHOT_URL}
+    - mvn clean install -DskipTests=true deploy -DaltDeploymentRepository=${CHOERODON_SNAPSHOT_ID}::default::${CHOERODON_SNAPSHOT_URL}
   only:
     - master
 
