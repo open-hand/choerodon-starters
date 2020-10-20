@@ -61,6 +61,7 @@ public abstract class AbstractAsgardConsumer {
                 scheduleRunning(instance);
             } catch (Exception e) {
                 LOGGER.warn("error.asgard.scheduleRunning, msg: {}", e.getMessage());
+                e.printStackTrace();
             }
         }, 20000, pollIntervalMs, TimeUnit.MILLISECONDS);
     }
