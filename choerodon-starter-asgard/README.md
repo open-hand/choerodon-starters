@@ -1,5 +1,5 @@
 ## Introduction
-本模块为分布式事务模块，需要[choerodon-asgard](https://github.com/open-hand/choerodon-asgard.git)支持，对于需要定义任务（基于 Quartz），定义事务，定义事务任务，执行事务的服务需要依赖本模块。
+本模块为分布式事务模块，需要[hzero-asgard](https://github.com/open-hand/hzero-asgard.git)支持，对于需要定义任务（基于 Quartz），定义事务，定义事务任务，执行事务的服务需要依赖本模块。
 
 ## Dependencies
 
