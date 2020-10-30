@@ -125,5 +125,13 @@ public @interface SagaTask {
      */
     String transactionManager() default "";
 
+    /**
+     * sagaTask执行失败 执行回调方法
+     * 参数格式：calssName.method
+     * 例如：io.choerodon.iam.infra.utils.DateUtil.test
+     * 回调方法参数：必须为saga的input值 test(String input)
+     * 回调类：必须包含公共的无参构造函数
+     * @return
+     */
     String failureCallbackMethod() default "";
 }

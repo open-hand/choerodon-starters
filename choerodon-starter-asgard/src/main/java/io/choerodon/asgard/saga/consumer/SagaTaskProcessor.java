@@ -41,13 +41,14 @@ public class SagaTaskProcessor implements BeanPostProcessor {
                     String strMethod = result.get(result.size() - 1);
                     List<String> list = new ArrayList<>(result);
                     list.remove((list.size() - 1));
-                    String strClass = com.sun.deploy.util.StringUtils.join(list, ".");
+                    String strClass = String.join(".", list);
                     System.out.println(strClass);
-                    Class<?> clazz = null;
+                    Class<?> clazz;
                     try {
                         clazz = Class.forName(strClass);
                         failureCallbackMethod = clazz.getMethod(strMethod, String.class);
-                        failureCallbackObject = clazz.getInterfaces();
+                        failureCallbackMethod.setAccessible(true);
+                        failureCallbackObject = clazz.newInstance();
                     } catch (Exception e) {
                         e.printStackTrace();
                         throw new CommonException("error.get.asgard.failure.callback", e.getMessage());
