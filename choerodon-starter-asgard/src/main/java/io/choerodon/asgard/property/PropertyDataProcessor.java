@@ -69,6 +69,7 @@ public class PropertyDataProcessor implements BeanPostProcessor {
             task.setConcurrentLimitPolicy(sagaTask.concurrentLimitPolicy().name());
             task.setTimeoutPolicy(sagaTask.timeoutPolicy().name());
             task.setTimeoutSeconds(sagaTask.timeoutSeconds());
+            task.setFailureCallbackMethod(sagaTask.failureCallbackMethod());
             addOutputSchema(sagaTask, method, task);
             propertyData.addSagaTask(task);
         }

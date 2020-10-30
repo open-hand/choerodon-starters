@@ -125,4 +125,5 @@ public @interface SagaTask {
      */
     String transactionManager() default "";
 
+    String failureCallbackMethod() default "";
 }
