@@ -24,6 +24,8 @@ public class PropertySagaTask {
 
     private String outputSchemaSource;
 
+    private String failureCallbackMethod;
+
 
     public PropertySagaTask(String code, String description, String sagaCode, Integer seq, Integer maxRetryCount) {
         this.code = code;
@@ -124,6 +126,14 @@ public class PropertySagaTask {
         this.outputSchemaSource = outputSchemaSource;
     }
 
+    public String getFailureCallbackMethod() {
+        return failureCallbackMethod;
+    }
+
+    public void setFailureCallbackMethod(String failureCallbackMethod) {
+        this.failureCallbackMethod = failureCallbackMethod;
+    }
+
     @Override
     public String toString() {
         return "PropertySagaTask{" +
@@ -138,6 +148,7 @@ public class PropertySagaTask {
                 ", concurrentLimitPolicy='" + concurrentLimitPolicy + '\'' +
                 ", outputSchema='" + outputSchema + '\'' +
                 ", outputSchemaSource='" + outputSchemaSource + '\'' +
+                ", failureCallbackMethod='" + failureCallbackMethod + '\'' +
                 '}';
     }
 }

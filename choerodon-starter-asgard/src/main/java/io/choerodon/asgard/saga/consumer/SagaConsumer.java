@@ -12,8 +12,10 @@ import io.choerodon.asgard.saga.feign.SagaConsumerClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,7 +96,7 @@ public class SagaConsumer extends AbstractAsgardConsumer {
         } catch (Exception e) {
             LOGGER.info("@SagaTask method code: {}, id: {} invoke error", data.getTaskCode(), data.getId(), getLoggerException(e));
             String errorMsg = getErrorInfoFromException(e);
-            invokeError(platformTransactionManager, status, data, errorMsg);
+            invokeError(platformTransactionManager, status, data, errorMsg, invokeBean);
         } finally {
             afterInvoke();
         }
@@ -105,22 +107,39 @@ public class SagaConsumer extends AbstractAsgardConsumer {
     private void invokeError(final PlatformTransactionManager platformTransactionManager,
                              final TransactionStatus status,
                              final SagaTaskInstanceDTO data,
-                             final String errorMsg) {
+                             final String errorMsg,
+                             final SagaTaskInvokeBean invokeBean) {
         try {
             platformTransactionManager.rollback(status);
         } catch (Exception e) {
             LOGGER.warn("@SagaTask method code: {}, id: {} transaction rollback error", data.getTaskCode(), data.getId(), e);
         } finally {
             try {
-                consumerClient.updateStatus(data.getId(),
+                ResponseEntity<String> responseEntity = consumerClient.updateStatus(data.getId(),
                         UpdateStatusDTO.UpdateStatusDTOBuilder.newInstance()
                                 .withStatus(SagaDefinition.TaskInstanceStatus.FAILED.name())
                                 .withExceptionMessage(errorMsg)
                                 .withId(data.getId())
                                 .withObjectVersionNumber(data.getObjectVersionNumber()).build());
+                // 执行失败 执行失败回调
+                executeFailureCallbackMethod(responseEntity.getBody(), invokeBean, data);
                 runningTasks.remove(data.getId());
             } catch (Exception ex) {
                 CompletableFuture.supplyAsync(() -> this.retryUpdateStatusFailed(data.getId(), errorMsg), executor);
+            }
+        }
+    }
+
+    private void executeFailureCallbackMethod(String sagaTaskInstanceStatus, SagaTaskInvokeBean invokeBean, SagaTaskInstanceDTO data) {
+        if (!StringUtils.isEmpty(sagaTaskInstanceStatus) && sagaTaskInstanceStatus.equals(SagaDefinition.TaskInstanceStatus.FAILED.name())) {
+            String failureCallbackStatus = SagaDefinition.TaskInstanceStatus.COMPLETED.name();
+            try {
+                invokeBean.failureCallbackMethod.invoke(invokeBean.failureCallbackObject, data.getInput());
+            } catch (Exception e) {
+                failureCallbackStatus = SagaDefinition.TaskInstanceStatus.FAILED.name();
+                e.printStackTrace();
+            } finally {
+                consumerClient.updateStatusFailureCallback(data.getId(), failureCallbackStatus);
             }
         }
     }
