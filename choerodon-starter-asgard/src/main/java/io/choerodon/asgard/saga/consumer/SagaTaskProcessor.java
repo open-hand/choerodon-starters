@@ -46,7 +46,7 @@ public class SagaTaskProcessor implements BeanPostProcessor {
                     Class<?> clazz;
                     try {
                         clazz = Class.forName(strClass);
-                        failureCallbackMethod = clazz.getMethod(strMethod, String.class);
+                        failureCallbackMethod = clazz.getDeclaredMethod(strMethod, String.class);
                         failureCallbackMethod.setAccessible(true);
                         failureCallbackObject = clazz.newInstance();
                     } catch (Exception e) {
