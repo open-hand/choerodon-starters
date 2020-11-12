@@ -15,9 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -53,16 +55,23 @@ public class SagaConsumer extends AbstractAsgardConsumer {
 
     @Override
     public void scheduleRunning(String instance) {
-        consumerClient.pollBatch(getPollDTO()).forEach(t -> {
-            LOGGER.trace("SagaConsumer polled sagaTaskInstances: {}", t);
-            runningTasks.add(t.getId());
-            CompletableFuture.supplyAsync(() -> invoke(t), executor)
-                    .exceptionally(ex -> {
-                        LOGGER.warn("@SagaTask method code: {}, id: {} supplyAsync failed", t.getTaskCode(), t.getId(), ex);
-                        return null;
-                    })
-                    .thenAccept(i -> LOGGER.trace("@SagaTask method code: {}, id: {} supplyAsync completed", t.getTaskCode(), t.getId()));
-        });
+        try {
+            List<SagaTaskInstanceDTO> list = consumerClient.pollBatch(getPollDTO());
+            if (!CollectionUtils.isEmpty(list)) {
+                list.forEach(t -> {
+                    LOGGER.trace("SagaConsumer polled sagaTaskInstances: {}", t);
+                    runningTasks.add(t.getId());
+                    CompletableFuture.supplyAsync(() -> invoke(t), executor)
+                            .exceptionally(ex -> {
+                                LOGGER.warn("@SagaTask method code: {}, id: {} supplyAsync failed", t.getTaskCode(), t.getId(), ex);
+                                return null;
+                            })
+                            .thenAccept(i -> LOGGER.trace("@SagaTask method code: {}, id: {} supplyAsync completed", t.getTaskCode(), t.getId()));
+                });
+            }
+        } catch (Exception e) {
+            LOGGER.error("SagaTask failed to execute", e);
+        }
     }
 
     private PollSagaTaskInstanceDTO getPollDTO() {
