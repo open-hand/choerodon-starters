@@ -28,6 +28,7 @@
         <module>choerodon-tool-liquibase</module>
         <module>choerodon-starter-asgard</module>
         <module>choerodon-starter-core</module>
+        <module>choerodon-starter-fragment</module>
     </modules>
 
 
