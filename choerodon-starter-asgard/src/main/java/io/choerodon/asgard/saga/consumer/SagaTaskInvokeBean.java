@@ -8,17 +8,17 @@ public class SagaTaskInvokeBean {
 
     public final Method method;
     public final Object object;
-    public final Object failureCallbackObject;
+    public final Class<?> clazz;
     public final Method failureCallbackMethod;
     public final SagaTask sagaTask;
     public final String key;
 
-    SagaTaskInvokeBean(Method method, Object object, SagaTask sagaTask, String key, Object failureCallbackObject, Method failureCallbackMethod) {
+    SagaTaskInvokeBean(Method method, Object object, SagaTask sagaTask, String key, Class<?> clazz, Method failureCallbackMethod) {
         this.method = method;
         this.object = object;
         this.sagaTask = sagaTask;
         this.key = key;
-        this.failureCallbackObject = failureCallbackObject;
+        this.clazz = clazz;
         this.failureCallbackMethod = failureCallbackMethod;
     }
 }

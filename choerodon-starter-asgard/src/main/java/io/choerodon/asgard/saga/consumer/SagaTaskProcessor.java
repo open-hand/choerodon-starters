@@ -34,7 +34,7 @@ public class SagaTaskProcessor implements BeanPostProcessor {
 
                 // 添加失败回调
                 Method failureCallbackMethod = null;
-                Object failureCallbackObject = null;
+                Class<?> clazz = null;
                 if (!StringUtils.isEmpty(sagaTask.failureCallbackMethod())) {
                     String str = sagaTask.failureCallbackMethod().replace("()", "");
                     List<String> result = Arrays.asList(str.split("\\."));
@@ -43,18 +43,17 @@ public class SagaTaskProcessor implements BeanPostProcessor {
                     list.remove((list.size() - 1));
                     String strClass = String.join(".", list);
                     System.out.println(strClass);
-                    Class<?> clazz;
                     try {
                         clazz = Class.forName(strClass);
                         failureCallbackMethod = clazz.getDeclaredMethod(strMethod, String.class);
                         failureCallbackMethod.setAccessible(true);
-                        failureCallbackObject = clazz.newInstance();
+//                        failureCallbackObject = clazz.newInstance();
                     } catch (Exception e) {
                         e.printStackTrace();
                         throw new CommonException("error.get.asgard.failure.callback", e.getMessage());
                     }
                 }
-                invokeBeanMap.put(key, new SagaTaskInvokeBean(method, bean, sagaTask, key, failureCallbackObject, failureCallbackMethod));
+                invokeBeanMap.put(key, new SagaTaskInvokeBean(method, bean, sagaTask, key, clazz, failureCallbackMethod));
             }
         }
         return bean;
