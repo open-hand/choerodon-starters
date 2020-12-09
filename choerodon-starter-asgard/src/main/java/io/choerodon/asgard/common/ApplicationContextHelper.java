@@ -9,6 +9,7 @@ import org.springframework.context.support.GenericApplicationContext;
 public class ApplicationContextHelper implements ApplicationContextAware {
 
     private DefaultListableBeanFactory springFactory;
+    private static ApplicationContext context;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -20,10 +21,15 @@ public class ApplicationContextHelper implements ApplicationContextAware {
             GenericApplicationContext springContext = (GenericApplicationContext) applicationContext;
             this.springFactory = springContext.getDefaultListableBeanFactory();
         }
+        this.context = applicationContext;
     }
 
     DefaultListableBeanFactory getSpringFactory() {
         return springFactory;
+    }
+
+    public static <T> T getBean(Class<T> clazz) {
+        return context.getBean(clazz);
     }
 
 }
