@@ -6,6 +6,7 @@ import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.SagaProperties;
 import io.choerodon.asgard.saga.annotation.SagaTask;
+import io.choerodon.asgard.saga.context.ApplicationContextUtil;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaConsumerClient;
@@ -143,7 +144,8 @@ public class SagaConsumer extends AbstractAsgardConsumer {
         if (!StringUtils.isEmpty(sagaTaskInstanceStatus) && sagaTaskInstanceStatus.equals(SagaDefinition.TaskInstanceStatus.FAILED.name())) {
             String failureCallbackStatus = SagaDefinition.TaskInstanceStatus.COMPLETED.name();
             try {
-                invokeBean.failureCallbackMethod.invoke(invokeBean.failureCallbackObject, data.getInput());
+                Object object = ApplicationContextUtil.getBean(invokeBean.clazz);
+                invokeBean.failureCallbackMethod.invoke(object, data.getInput());
             } catch (Exception e) {
                 failureCallbackStatus = SagaDefinition.TaskInstanceStatus.FAILED.name();
                 e.printStackTrace();
