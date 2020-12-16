@@ -6,7 +6,6 @@ import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.SagaProperties;
 import io.choerodon.asgard.saga.annotation.SagaTask;
-import io.choerodon.asgard.saga.context.ApplicationContextUtil;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaConsumerClient;
