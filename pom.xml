@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.2.RELEASE</version>
+        <version>1.5.0.RELEASE</version>
     </parent>
 
 
@@ -28,6 +28,7 @@
         <module>choerodon-tool-liquibase</module>
         <module>choerodon-starter-asgard</module>
         <module>choerodon-starter-core</module>
+        <module>choerodon-starter-fragment</module>
     </modules>
 
 
