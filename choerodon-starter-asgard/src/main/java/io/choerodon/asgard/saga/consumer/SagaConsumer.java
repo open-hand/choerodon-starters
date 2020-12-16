@@ -144,7 +144,7 @@ public class SagaConsumer extends AbstractAsgardConsumer {
         if (!StringUtils.isEmpty(sagaTaskInstanceStatus) && sagaTaskInstanceStatus.equals(SagaDefinition.TaskInstanceStatus.FAILED.name())) {
             String failureCallbackStatus = SagaDefinition.TaskInstanceStatus.COMPLETED.name();
             try {
-                Object object = ApplicationContextUtil.getBean(invokeBean.clazz);
+                Object object = ApplicationContextHelper.getBean(invokeBean.clazz);
                 invokeBean.failureCallbackMethod.invoke(object, data.getInput());
             } catch (Exception e) {
                 failureCallbackStatus = SagaDefinition.TaskInstanceStatus.FAILED.name();
