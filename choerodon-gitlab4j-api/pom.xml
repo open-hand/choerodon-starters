@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-starter-parent</artifactId>
-        <version>0.18.1-SNAPSHOT</version>
+        <version>0.18.1.RELEASE</version>
     </parent>
     <build>
         <defaultGoal>package</defaultGoal>
