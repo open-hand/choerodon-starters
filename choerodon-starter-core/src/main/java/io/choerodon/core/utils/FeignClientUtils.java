@@ -3,6 +3,7 @@ package io.choerodon.core.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.netflix.client.ClientException;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
+import org.hzero.core.message.MessageAccessor;
 import org.hzero.core.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;
 
@@ -13,6 +14,10 @@ import io.choerodon.core.exception.CommonException;
  * feign请求和响应通用处理类
  */
 public class FeignClientUtils {
+    static {
+        MessageAccessor.addBasenames("classpath:messages/message_choerodon_starter_core");
+    }
+
     public static <E> E doRequest(FeignClient feignClient, Class<E> elementType, String exceptionCode, Object... param) {
         try {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
