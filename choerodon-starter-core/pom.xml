@@ -16,6 +16,12 @@
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-mybatis-mapper</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.netflix.ribbon</groupId>
+            <artifactId>ribbon-core</artifactId>
+            <version>2.2.5</version>
+        </dependency>
     </dependencies>
 
 
