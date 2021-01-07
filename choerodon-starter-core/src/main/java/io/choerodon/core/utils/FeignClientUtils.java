@@ -76,6 +76,11 @@ public class FeignClientUtils {
     }
 
     private static String extractServiceName(String message) {
-        return message.split("client:")[1].trim();
+        String[] splitMessage = message.split("client:");
+        if (splitMessage.length != 2) {
+            return "unknown";
+        } else {
+            return splitMessage[1].trim();
+        }
     }
 }
