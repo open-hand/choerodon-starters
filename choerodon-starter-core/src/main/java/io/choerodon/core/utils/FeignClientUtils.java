@@ -18,6 +18,20 @@ public class FeignClientUtils {
         MessageAccessor.addBasenames("classpath:messages/message_choerodon_starter_core");
     }
 
+    public static <E> E doRequest(FeignClient feignClient, Class<E> elementType) {
+        try {
+            ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
+            return ResponseUtils.getResponse(stringResponseEntity, elementType);
+        } catch (HystrixRuntimeException hystrixRuntimeException) {
+            if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
+                String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
+                throw new CommonException("error.service.unavailable", serviceName);
+            } else {
+                throw new CommonException(hystrixRuntimeException.getMessage());
+            }
+        }
+    }
+
     public static <E> E doRequest(FeignClient feignClient, Class<E> elementType, String exceptionCode, Object... param) {
         try {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
@@ -28,6 +42,20 @@ public class FeignClientUtils {
                 throw new CommonException("error.service.unavailable", serviceName);
             } else {
                 throw new CommonException(exceptionCode, param);
+            }
+        }
+    }
+
+    public static <E> E doRequest(FeignClient feignClient, TypeReference<E> elementType) {
+        try {
+            ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
+            return ResponseUtils.getResponse(stringResponseEntity, elementType);
+        } catch (HystrixRuntimeException hystrixRuntimeException) {
+            if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
+                String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
+                throw new CommonException("error.service.unavailable", serviceName);
+            } else {
+                throw new CommonException(hystrixRuntimeException.getMessage());
             }
         }
     }
