@@ -8,6 +8,7 @@ import org.hzero.core.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;
 
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.exception.ServiceUnavailableException;
 
 /**
  * @author lihao
@@ -25,7 +26,7 @@ public class FeignClientUtils {
         } catch (HystrixRuntimeException hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new CommonException("error.service.unavailable", serviceName);
+                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
             } else {
                 throw new CommonException(hystrixRuntimeException.getMessage());
             }
@@ -39,7 +40,7 @@ public class FeignClientUtils {
         } catch (HystrixRuntimeException hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new CommonException("error.service.unavailable", serviceName);
+                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
             } else {
                 throw new CommonException(exceptionCode, param);
             }
@@ -53,7 +54,7 @@ public class FeignClientUtils {
         } catch (HystrixRuntimeException hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new CommonException("error.service.unavailable", serviceName);
+                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
             } else {
                 throw new CommonException(hystrixRuntimeException.getMessage());
             }
@@ -67,7 +68,7 @@ public class FeignClientUtils {
         } catch (HystrixRuntimeException hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new CommonException("error.service.unavailable", serviceName);
+                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
             } else {
                 throw new CommonException(exceptionCode, param);
             }
