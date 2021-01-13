@@ -78,6 +78,7 @@ public class Project {
     private Boolean wallEnabled;
     private String webUrl;
     private Boolean wikiEnabled;
+    private String ciConfigPath;
 
     public Integer getApprovalsBeforeMerge() {
         return approvalsBeforeMerge;
@@ -546,5 +547,13 @@ public class Project {
 
     public static final boolean isValid(Project project) {
         return (project != null && project.getId() != null);
+    }
+
+    public String getCiConfigPath() {
+        return ciConfigPath;
+    }
+
+    public void setCiConfigPath(String ciConfigPath) {
+        this.ciConfigPath = ciConfigPath;
     }
 }
