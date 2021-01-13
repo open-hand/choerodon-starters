@@ -816,6 +816,7 @@ public class ProjectApi extends AbstractApi implements Constants {
                 .withParam("lfs_enabled", project.getLfsEnabled())
                 .withParam("request_access_enabled", project.getRequestAccessEnabled())
                 .withParam("repository_storage", project.getRepositoryStorage())
+                .withParam("ci_config_path", project.getCiConfigPath())
                 .withParam("approvals_before_merge", project.getApprovalsBeforeMerge());
 
         if (isApiVersion(ApiVersion.V3)) {
