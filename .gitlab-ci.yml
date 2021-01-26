@@ -7,7 +7,7 @@ stages:
 maven-test-branches:
   stage: mvn-package
   script:
-    - mvn package source:jar-no-fork javadoc:jar -DskipTests=true
+    - mvn package source:jar-no-fork -DskipTests=true
   only:
     - branches
   except:
