@@ -7,6 +7,7 @@
 * asgard分布式事务组件： [choerodon-starter-asgard](choerodon-starter-asgard/README.md)
 * 辅助核心开发包：[choerodon-starter-core](choerodon-starter-core/README.md)
 * liquibase初始化工具：[choerodon-tool-liquibase](choerodon-tool-liquibase/README.md)
+* 大文件分片上传工具：[choerodon-starter-fragment](choerodon-starter-fragment/README.md)
 
 ## To get the code
 
