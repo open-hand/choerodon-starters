@@ -33,8 +33,10 @@ spring:
 installer:
   dataDir: D:\workspace\WorkDev\hzero-resource\init-data\saas
   groovyDir: C:\Users\Andy\Desktop\groovy
+  fixDir: hhh/
   jarPath: hhh/app.jar
-  init: false
+  #  skipFile: hzero-data-message-template-business.xlsx,fd_project.groovy
+  init: true
   mapping: service-mapping.xml
   schema: mysql
   merge: false

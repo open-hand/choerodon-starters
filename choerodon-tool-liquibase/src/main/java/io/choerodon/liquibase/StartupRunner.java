@@ -28,8 +28,10 @@ public class StartupRunner implements CommandLineRunner {
 
     @Value("${installer.jarPath:#{null}}")
     private String defaultJar;
+    @Value("${installer.skipFile: }")
+    private String skipFile;
     // 是否初始化依赖jar中的脚本
-    @Value("${installer.jarPath.init:false}")
+    @Value("${installer.jarPath.init:true}")
     private boolean defaultJarInit;
 
     private static final String TEMP_DIR_NAME = "temp/";
@@ -50,7 +52,7 @@ public class StartupRunner implements CommandLineRunner {
     public void run(String... args) {
         try {
             if (!StringUtils.isEmpty(defaultJar)) {
-                unpackJar.extra(defaultJar, TEMP_DIR_NAME, defaultJarInit);
+                unpackJar.extra(defaultJar, TEMP_DIR_NAME, defaultJarInit, skipFile);
                 String tempPath = TEMP_DIR_NAME + PREFIX_SCRIPT_DB;
                 List<String> groovyServiceNames = getServiceName(tempPath + GROOVY_PATH);
                 if (!CollectionUtils.isEmpty(groovyServiceNames)) {
