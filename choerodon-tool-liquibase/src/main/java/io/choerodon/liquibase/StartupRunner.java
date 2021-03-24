@@ -65,7 +65,7 @@ public class StartupRunner implements CommandLineRunner {
 
                 if (!CollectionUtils.isEmpty(initServiceNames)) {
                     XmlUtils.resolver(tempPath + MAPPING_PATH);
-                    String value = System.getProperties().getProperty("installer.data.init", "true");
+                    String value = System.getProperties().getProperty("data.init", "true");
                     if (!Objects.isNull(value) && Boolean.TRUE.equals(Boolean.valueOf(value))) {
                         if (!importDataService.selfData(initServiceNames, tempPath + INIT_PATH)) {
                             throw new Exception("初始化excel失败！");
