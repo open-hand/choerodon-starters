@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
  * Created by xausky on 4/6/17.
  */
 @SpringBootApplication
-@ComponentScan(basePackages = {"org.hzero.installer.*"}, basePackageClasses = io.choerodon.liquibase.StartupRunner.class)
+@ComponentScan(basePackages = {"org.hzero.helper.*"}, basePackageClasses = io.choerodon.liquibase.StartupRunner.class)
 @MapperScan(basePackages = "org.hzero.installer.mapper")
 public class LiquibaseTools {
 

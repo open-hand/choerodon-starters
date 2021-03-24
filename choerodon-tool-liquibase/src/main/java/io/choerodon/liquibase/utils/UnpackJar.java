@@ -2,6 +2,8 @@ package io.choerodon.liquibase.utils;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
@@ -9,7 +11,9 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author scp
@@ -22,11 +26,8 @@ public class UnpackJar {
     private static final String SUFFIX_XLSX = ".xlsx";
     private static final String SUFFIX_GROOVY = ".groovy";
     private static final String SUFFIX_XML = ".xml";
-    private static final String FINAL_SUFFIX_GROOVY = "-final.groovy";
     private static final String SUFFIX_SQL = ".sql";
     private static final String SUFFIX_JAR = ".jar";
-    private static final String PERMISSION_FILE_PATH = "CHOERODON-META/permission.json";
-    private static final String BOOTSTRAP_FILE_PATH = "bootstrap.yml";
     private static final String PREFIX_SCRIPT_DB = "script/db/";
     private static final String PREFIX_SPRING_BOOT_CLASSES = "BOOT-INF/classes/";
 
@@ -38,7 +39,7 @@ public class UnpackJar {
      * @param dep         是否是Spring Boot依赖包的解压， 只有为false时
      * @throws IOException 出现IO错误
      */
-    private void extraJarStream(InputStream inputStream, String dir, boolean dep, boolean jarInit) throws IOException {
+    private void extraJarStream(InputStream inputStream, String dir, boolean dep, boolean jarInit, List<String> skipFileList) throws IOException {
         JarEntry entry = null;
         JarInputStream jarInputStream = new JarInputStream(inputStream);
         while ((entry = jarInputStream.getNextJarEntry()) != null) {
@@ -51,6 +52,10 @@ public class UnpackJar {
                     name = name.substring(PREFIX_SPRING_BOOT_CLASSES.length());
                 }
                 File file = new File(dir + name);
+                if (isSkipFile(skipFileList, file.getName())) {
+                    file.deleteOnExit();
+                    continue;
+                }
                 if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
                     throw new IOException("create dir fail: " + file.getParentFile().getAbsolutePath());
                 }
@@ -58,12 +63,12 @@ public class UnpackJar {
                     StreamUtils.copy(jarInputStream, outputStream);
                 }
             } else if (name.endsWith(SUFFIX_JAR) && jarInit) {
-                extraJarStream(jarInputStream, dir, true, true);
+                extraJarStream(jarInputStream, dir, true, true, skipFileList);
             }
         }
     }
 
-    public void extra(String jar, String dir, boolean jarInit) throws IOException {
+    public void extra(String jar, String dir, boolean jarInit, String skipFile) throws IOException {
         boolean isUrl = jar.startsWith("https://") || jar.startsWith("http://") || jar.startsWith("file://");
         try (InputStream inputStream = isUrl ? new URL(jar).openStream() : new FileInputStream(jar)) {
             File temp = new File(dir);
@@ -71,9 +76,26 @@ public class UnpackJar {
             if (!temp.mkdir()) {
                 throw new IOException("create dir fail.");
             }
-            extraJarStream(inputStream, dir, false, jarInit);
+            List<String> skipFileList = null;
+            if (!StringUtils.isEmpty(skipFile)) {
+                skipFileList = Arrays.asList(skipFile.split(",").clone());
+            }
+            extraJarStream(inputStream, dir, false, jarInit, skipFileList);
         }
         logger.info("Jar extra {} done", jar);
+    }
+
+    private Boolean isSkipFile(List<String> skipFileList, String fileName) {
+        boolean index = false;
+        if (!CollectionUtils.isEmpty(skipFileList)) {
+            for (String t : skipFileList) {
+                if (t.equals(fileName)) {
+                    index = true;
+                    break;
+                }
+            }
+        }
+        return index;
     }
 
 }
