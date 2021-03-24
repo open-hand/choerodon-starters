@@ -50,6 +50,19 @@
                     <exclude>**/*.java</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/resource</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.conf</include>
+                </includes>
+                <excludes>
+                    <exclude>**/application-default.yml</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </resource>
         </resources>
         <plugins>
             <plugin>

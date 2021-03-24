@@ -33,8 +33,9 @@ installer:
   jarPath: hhh/app.jar
 #    init: true # 递归初始化jar包
 #  skipFile: hzero-data-message-template-business.xlsx,fd_project.groovy # 指定跳过文件初始化
-#  data:
-#    init: true # 是否初始化excel
+data:
+#  init: true # 是否初始化excel
+  version: 0.25.0 # hzero必填参数 c7n用不上
 
 logging:
   level:
