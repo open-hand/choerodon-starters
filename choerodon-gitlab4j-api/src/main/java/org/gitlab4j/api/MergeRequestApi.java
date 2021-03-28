@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import org.gitlab4j.api.GitLabApi.ApiVersion;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.MergeRequest;
+import org.gitlab4j.api.models.MergeRequestParams;
 
 /**
  * This class implements the client side API for the GitLab merge request calls.
@@ -206,34 +207,19 @@ public class MergeRequestApi extends AbstractApi {
     }
 
     /**
-     * Creates a merge request and optionally assigns a reviewer to it.
-     * <p>
-     * POST /projects/:id/merge_requests
+     * Creates a merge request.
      *
-     * @param projectId    the ID of a project, required
-     * @param sourceBranch the source branch, required
-     * @param targetBranch the target branch, required
-     * @param title        the title for the merge request, required
-     * @param description  the description of the merge request
-     * @param assigneeId   the Assignee user ID, optional
+     * <pre><code>GitLab Endpoint: POST /projects/:id/merge_requests</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param params a MergeRequestParams instance holding the info to create the merge request
      * @return the created MergeRequest instance
      * @throws GitLabApiException if any exception occurs
+     * @since GitLab Starter 8.17, GitLab CE 11.0.
      */
-    public MergeRequest createMergeRequest(Integer projectId, String sourceBranch, String targetBranch, String title, String description, Integer assigneeId)
-            throws GitLabApiException {
-
-        if (projectId == null) {
-            throw new GitLabApiException("projectId cannot be null");
-        }
-
-        Form formData = new Form();
-        addFormParam(formData, "source_branch", sourceBranch, true);
-        addFormParam(formData, "target_branch", targetBranch, true);
-        addFormParam(formData, "title", title, true);
-        addFormParam(formData, "description", description, false);
-        addFormParam(formData, "assignee_id", assigneeId, false);
-
-        Response response = post(Response.Status.CREATED, formData, "projects", projectId, "merge_requests");
+    public MergeRequest createMergeRequest(Object projectIdOrPath, MergeRequestParams params) throws GitLabApiException {
+        GitLabApiForm form = params.getForm(true);
+        Response response = post(Response.Status.CREATED, form, "projects", getProjectIdOrPath(projectIdOrPath), "merge_requests");
         return (response.readEntity(MergeRequest.class));
     }
 

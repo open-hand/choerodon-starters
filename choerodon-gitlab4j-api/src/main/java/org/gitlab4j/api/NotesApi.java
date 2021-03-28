@@ -128,4 +128,42 @@ public class NotesApi extends AbstractApi {
         Response.Status expectedStatus = (isApiVersion(GitLabApi.ApiVersion.V3) ? Response.Status.OK : Response.Status.NO_CONTENT);
         delete(expectedStatus, getDefaultPerPageParam(), "projects", projectId, "issues", issueIid, "notes", noteId);
     }
+
+    /**
+     * Gets a list of all notes for a single merge request
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/merge_requests/:merge_request_iid/notes</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param mergeRequestIid the issue ID to get the notes for
+     * @return a list of the merge request's notes
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Note> getMergeRequestNotes(Object projectIdOrPath, Integer mergeRequestIid) throws GitLabApiException {
+        return (getMergeRequestNotes(projectIdOrPath, mergeRequestIid, null, null, getDefaultPerPage()).all());
+    }
+    /**
+     * Get a Pager of all notes for a single merge request
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/merge_requests/:merge_request_iid/notes</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param mergeRequestIid the merge request IID to get the notes for
+     * @param sortOrder return merge request notes sorted in the specified sort order, default is DESC
+     * @param orderBy return merge request notes ordered by CREATED_AT or UPDATED_AT, default is CREATED_AT
+     * @param itemsPerPage the number of notes per page
+     * @return the list of notes in the specified range
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<Note> getMergeRequestNotes(Object projectIdOrPath, Integer mergeRequestIid,
+                                            SortOrder sortOrder, Note.OrderBy orderBy, int itemsPerPage) throws GitLabApiException {
+
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("sort", sortOrder)
+                .withParam("order_by", orderBy)
+                .withParam(PAGE_PARAM, 1)
+                .withParam(PER_PAGE_PARAM, itemsPerPage);
+        return (new Pager<Note>(this, Note.class, itemsPerPage, formData.asMap(),
+                "projects", getProjectIdOrPath(projectIdOrPath), "merge_requests", mergeRequestIid, "notes"));
+    }
 }
