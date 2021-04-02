@@ -23,6 +23,12 @@
         <dependency>
             <groupId>org.hzero.boot</groupId>
             <artifactId>hzero-boot-admin</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hzero.starter</groupId>
+                    <artifactId>hzero-starter-market</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
