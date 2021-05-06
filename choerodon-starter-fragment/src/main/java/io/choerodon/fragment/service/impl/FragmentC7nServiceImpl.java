@@ -70,11 +70,9 @@ public class FragmentC7nServiceImpl extends FragmentServiceImpl implements Fragm
     @Override
     public void upload(MultipartFile file, Integer chunk, String guid) {
         try (InputStream inputStream = file.getInputStream()) {
-            logger.info("------------------fileName:{},chunk:{}", file.getName(), chunk);
             if (chunk == null) {
                 chunk = 0;
             }
-            logger.info("==================fileName:{},chunk:{}", file.getName(), chunk);
             String filePath = getRootPath() + File.separator + TEMP + File.separator + guid + File.separator + chunk;
             FileUtils.copyInputStreamToFile(inputStream, new File(filePath));
         } catch (Exception e) {

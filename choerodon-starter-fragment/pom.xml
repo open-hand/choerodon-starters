@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>choerodon-starter-fragment</artifactId>
-    <version>0.19.3-SNAPSHOT</version>
+    <version>0.19.3.RELEASE</version>
 
     <dependencies>
         <!--断点续传-->
