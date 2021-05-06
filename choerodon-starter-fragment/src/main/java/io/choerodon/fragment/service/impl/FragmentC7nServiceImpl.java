@@ -60,6 +60,11 @@ public class FragmentC7nServiceImpl extends FragmentServiceImpl implements Fragm
             logger.error("exception:", e);
             deleteFile(new File(filePath));
             return null;
+        } catch (CommonException e) {
+            logger.error("exception:", e);
+            deleteFile(new File(filePath));
+            deleteFile(new File(tempDtr));
+            throw e;
         } catch (Exception e) {
             logger.error("exception:", e);
             deleteFile(new File(filePath));
