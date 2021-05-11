@@ -4,16 +4,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import org.hzero.core.message.Message;
-import org.hzero.core.message.MessageAccessor;
-import org.springframework.util.StringUtils;
-
-import io.choerodon.core.exception.CommonException;
 
 public class InstanceResultUtils {
 
@@ -44,8 +38,8 @@ public class InstanceResultUtils {
             }
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
-            processCommonException(e, pw, String.format("Exception in thread \"%s\" ", Thread.currentThread().getName()));
-            return "\r\n" + sw + "\r\n";
+            e.printStackTrace(pw);
+            return "\r\n" + sw.toString() + "\r\n";
         } catch (Exception e2) {
             return "bad getErrorInfoFromException";
         }
@@ -58,27 +52,4 @@ public class InstanceResultUtils {
         return e;
     }
 
-    private static void processCommonException(Throwable e, PrintWriter pw, String prefix) {
-        if (e == null) {
-            return;
-        }
-        Message message;
-        if (e instanceof CommonException) {
-            message = MessageAccessor.getMessage(((CommonException) e).getCode(), ((CommonException) e).getParameters());
-            if (message == null || StringUtils.isEmpty(message.getDesc())) {
-                e.printStackTrace(pw);
-            } else {
-                pw.println(prefix + e.getClass().getTypeName() + ":" + message.getDesc());
-                StackTraceElement[] trace = e.getStackTrace();
-                for (StackTraceElement traceElement : trace) {
-                    pw.println("\tat " + traceElement);
-                }
-                processCommonException(e.getCause(), pw, "Caused by: ");
-
-                Arrays.stream(e.getSuppressed()).forEach(t -> processCommonException(t, pw, "\tSuppressed:"));
-            }
-        } else {
-            e.printStackTrace(pw);
-        }
-    }
 }
