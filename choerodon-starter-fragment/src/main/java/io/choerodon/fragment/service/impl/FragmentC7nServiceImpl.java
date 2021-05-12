@@ -55,6 +55,7 @@ public class FragmentC7nServiceImpl extends FragmentServiceImpl implements Fragm
             }
             // 删除分片
             deleteFile(new File(tempDtr));
+            deleteFile(new File(filePath));
             return url;
         } catch (IOException e) {
             logger.error("exception:", e);
