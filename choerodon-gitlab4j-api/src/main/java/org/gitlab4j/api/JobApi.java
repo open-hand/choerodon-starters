@@ -292,7 +292,7 @@ public class JobApi extends AbstractApi implements Constants {
      */
     public Job playJob(int projectId, int jobId) throws GitLabApiException {
         GitLabApiForm formData = null;
-        Response response = post(Status.CREATED, formData, "projects", projectId, "jobs", jobId, "play");
+        Response response = post(Status.OK, formData, "projects", projectId, "jobs", jobId, "play");
         return (response.readEntity(Job.class));
     }
 }
