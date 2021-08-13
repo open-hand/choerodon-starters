@@ -30,6 +30,7 @@
         <module>choerodon-starter-asgard</module>
         <module>choerodon-starter-core</module>
         <module>choerodon-starter-fragment</module>
+        <module>choerodon-starter-nacos-client</module>
     </modules>
 
 
