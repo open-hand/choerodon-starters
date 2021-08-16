@@ -19,6 +19,8 @@ package io.choerodon.nacos.api;
 import io.choerodon.nacos.api.config.ConfigFactory;
 import io.choerodon.nacos.api.config.ConfigService;
 import io.choerodon.nacos.api.exception.NacosException;
+import io.choerodon.nacos.api.namespace.NamespaceFactory;
+import io.choerodon.nacos.api.namespace.NamespaceService;
 import io.choerodon.nacos.api.naming.NamingFactory;
 import io.choerodon.nacos.api.naming.NamingMaintainFactory;
 import io.choerodon.nacos.api.naming.NamingMaintainService;
@@ -97,5 +99,16 @@ public class NacosFactory {
      */
     public static NamingMaintainService createMaintainService(Properties properties) throws NacosException {
         return NamingMaintainFactory.createMaintainService(properties);
+    }
+
+    /**
+     * Create namespace.
+     *
+     * @param properties server address
+     * @return NamespaceService
+     * @throws NacosException Exception
+     */
+    public static NamespaceService createNamespaceService(Properties properties) throws NacosException {
+        return NamespaceFactory.createNamespaceService(properties);
     }
 }
