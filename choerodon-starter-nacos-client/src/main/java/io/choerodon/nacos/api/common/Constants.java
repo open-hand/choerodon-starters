@@ -189,5 +189,6 @@ public class Constants {
     public static final String HTTP_PREFIX = "http";
     
     public static final String ALL_PATTERN = "*";
-    
+
+    public static final String NAMESPACE_CONTROLLER_PATH = "/v1/console/namespaces";
 }
