@@ -130,6 +130,34 @@ public class GroupApi extends AbstractApi {
     }
 
     /**
+     * Get a list of visible groups for the authenticated user using the provided filter.
+     *
+     * <pre><code>GitLab Endpoint: GET /groups</code></pre>
+     *
+     * @param filter the GroupFilter to match against
+     * @return a List&lt;Group&gt; of the matching groups
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Group> getGroups(GroupFilter filter) throws GitLabApiException {
+        return (getGroups(filter, getDefaultPerPage()).all());
+    }
+
+    /**
+     * Get a Pager of visible groups for the authenticated user using the provided filter.
+     *
+     * <pre><code>GitLab Endpoint: GET /groups</code></pre>
+     *
+     * @param filter the GroupFilter to match against
+     * @param itemsPerPage the number of Group instances that will be fetched per page
+     * @return a Pager containing matching Group instances
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<Group> getGroups(GroupFilter filter, int itemsPerPage) throws GitLabApiException {
+        GitLabApiForm formData = filter.getQueryParams();
+        return (new Pager<Group>(this, Group.class, itemsPerPage, formData.asMap(), "groups"));
+    }
+
+    /**
      * Get a list of projects belonging to the specified group ID.
      * <p>
      * GET /groups/:id/projects
