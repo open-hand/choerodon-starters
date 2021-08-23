@@ -31,6 +31,15 @@ spring:
 
 installer:
   jarPath: hhh/app.jar
+  dataDir: choerodon/script/db/init-data
+  groovyDir: choerodon/script/db/groovy
+  fixDir: choerodon/script/db/fix-data
+  # c7n
+  mappingFile: choerodon/script/db/service-mapping.xml
+  # hzero
+#  mappingFile: choerodon/script/db/docs/mapping/service-mapping.xml
+#  fix-data-version: 1.4.x
+
 #    init: true # 递归初始化jar包
 #  skipFile: hzero-data-message-template-business.xlsx,fd_project.groovy # 指定跳过文件初始化
 data:
