@@ -14,7 +14,7 @@ spring:
       primary: gen # 默认使用配置
       datasource:
         gen:
-          driver-class-name: com.mysql.jdbc.Driver
+          driver-class-name: ${spring.datasource.driver-class-name:com.mysql.jdbc.Driver}
           url: ${spring.datasource.url:jdbc:mysql://localhost:3306?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT}
           username: ${spring.datasource.username:root}
           password: ${spring.datasource.password:root}
@@ -37,13 +37,15 @@ installer:
   # c7n
   mappingFile: choerodon/script/db/service-mapping.xml
   # hzero
-#  mappingFile: choerodon/script/db/docs/mapping/service-mapping.xml
+  #  mappingFile: choerodon/script/db/docs/mapping/service-mapping.xml
+  # 执行修复数据配置 fix-data为true，fix-data-version有值时
 #  fix-data-version: 1.4.x
+  fix-data: false
 
 #    init: true # 递归初始化jar包
 #  skipFile: hzero-data-message-template-business.xlsx,fd_project.groovy # 指定跳过文件初始化
 data:
-#  init: true # 是否初始化excel
+  #  init: true # 是否初始化excel
   version: 0.25.0 # hzero必填参数 c7n用不上
 
 logging:

@@ -39,6 +39,8 @@ public class StartupRunner implements CommandLineRunner {
     private boolean defaultJarInit;
     @Value("${installer.fix-data-version:#{null}}")
     private String fixDataVersion;
+    @Value("${installer.fix-data:false}")
+    private Boolean fixData;
 
     @Value("${spring.datasource.dynamic.datasource.gen.driver-class-name}")
     private String driver;
@@ -89,7 +91,7 @@ public class StartupRunner implements CommandLineRunner {
                     }
                 }
                 // 执行修复数据
-                if (!StringUtils.isEmpty(fixDataVersion)) {
+                if (fixData && !StringUtils.isEmpty(fixDataVersion)) {
                     XmlUtils.resolver(installerConfigProperties.getMappingFile());
                     String fixVersion = String.format(FIX_DATA_VERSION_FORMAT, fixDataVersion, getDatabaseName());
                     boolean result = updateDataService.dataUpdate(fixVersion);
