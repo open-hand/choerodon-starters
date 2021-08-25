@@ -81,6 +81,8 @@ public class StartupRunner implements CommandLineRunner {
                 }
                 // 执行init-data 数据
                 List<String> initNames = getFileName(installerConfigProperties.getDataDir());
+                // 如果存在插件，则初始化插件
+                addPlugin(initNames, installerConfigProperties.getDataDir());
                 if (!CollectionUtils.isEmpty(initNames)) {
                     XmlUtils.resolver(installerConfigProperties.getMappingFile());
                     String value = System.getProperties().getProperty("data.init", "true");
@@ -108,6 +110,19 @@ public class StartupRunner implements CommandLineRunner {
         System.exit(0);
     }
 
+    private void addPlugin(List<String> initNames, String dataDir) {
+        mappingList.forEach(mapping -> {
+            List<Mapping> plugins = mapping.getPlugins();
+            plugins.forEach(plugin -> {
+                String fileName = dataDir + File.separator + mapping.getName() + File.separator + mapping.getFilename() + File.separator + plugin.getFilename();
+                if (new File(fileName).exists()) {
+                    initNames.add(plugin.getName());
+                }
+            });
+        });
+
+    }
+
     /**
      * 获取文件名
      *
@@ -116,6 +131,32 @@ public class StartupRunner implements CommandLineRunner {
      * @throws IOException
      */
     private List<String> getFileName(String path) {
+        File file = new File(path);
+        if (!file.exists() || !file.isDirectory()) {
+            logger.warn("File does not exist!");
+            return null;
+        } else {
+            File[] listFiles = file.listFiles();
+            if (listFiles == null || listFiles.length == 0) {
+                logger.info("The db directory is empty!");
+                return null;
+            }
+            List<String> list = new ArrayList<>();
+            for (File listFile : listFiles) {
+                list.add(listFile.getName());
+            }
+            return list;
+        }
+    }
+
+    /**
+     * 获取文件名
+     *
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    private List<String> recurveDriectory(String path) {
         File file = new File(path);
         if (!file.exists() || !file.isDirectory()) {
             logger.warn("File does not exist!");
