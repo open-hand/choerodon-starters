@@ -71,7 +71,6 @@ public class StartupRunner implements CommandLineRunner {
                 // 执行groovy脚本
                 List<String> groovyFileNames = getFileName(installerConfigProperties.getGroovyDir());
                 if (!CollectionUtils.isEmpty(groovyFileNames)) {
-                    XmlUtils.resolver(installerConfigProperties.getMappingFile());
                     Map<String, Mapping> mappingMap = new HashMap<>();
                     mappingList.forEach(m -> mappingMap.put(m.getFilename(), m));
                     List<String> groovyNames = groovyFileNames.stream().map(t -> mappingMap.get(t).getName()).collect(Collectors.toList());
