@@ -68,8 +68,13 @@ public class StartupRunner implements CommandLineRunner {
             if (!StringUtils.isEmpty(defaultJar)) {
                 // 解压jar包文件
                 unpackJar.extra(defaultJar, TEMP_DIR_NAME, defaultJarInit, skipFile);
+                // 服务启动时还没有把mapping文件解压出来，需要手动装载
+                if (CollectionUtils.isEmpty(mappingList)) {
+                    XmlUtils.resolver(installerConfigProperties.getMappingFile());
+                }
                 // 执行groovy脚本
                 List<String> groovyFileNames = getFileName(installerConfigProperties.getGroovyDir());
+
                 if (!CollectionUtils.isEmpty(groovyFileNames)) {
                     Map<String, Mapping> mappingMap = new HashMap<>();
                     mappingList.forEach(m -> mappingMap.put(m.getFilename(), m));
@@ -83,7 +88,6 @@ public class StartupRunner implements CommandLineRunner {
                 // 如果存在插件，则初始化插件
                 addPlugin(initNames, installerConfigProperties.getDataDir());
                 if (!CollectionUtils.isEmpty(initNames)) {
-                    XmlUtils.resolver(installerConfigProperties.getMappingFile());
                     String value = System.getProperties().getProperty("data.init", "true");
                     if (!Objects.isNull(value) && Boolean.TRUE.equals(Boolean.valueOf(value))) {
                         if (!importDataService.selfData(initNames, installerConfigProperties.getDataDir())) {
@@ -93,7 +97,6 @@ public class StartupRunner implements CommandLineRunner {
                 }
                 // 执行修复数据
                 if (fixData && !StringUtils.isEmpty(fixDataVersion)) {
-                    XmlUtils.resolver(installerConfigProperties.getMappingFile());
                     String fixVersion = String.format(FIX_DATA_VERSION_FORMAT, fixDataVersion, getDatabaseName());
                     boolean result = updateDataService.dataUpdate(fixVersion);
                     if (!result) {
