@@ -32,14 +32,9 @@
         <dependency>
             <groupId>org.hzero.helper</groupId>
             <artifactId>hzero-helper-installer</artifactId>
-            <version>1.2.4.RELEASE</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hzero-helper-parent</artifactId>
-                    <groupId>org.hzero.helper</groupId>
-                </exclusion>
-            </exclusions>
+            <version>1.2.5.RELEASE</version>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>

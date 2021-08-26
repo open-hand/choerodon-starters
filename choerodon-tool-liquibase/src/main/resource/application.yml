@@ -48,6 +48,10 @@ data:
   #  init: true # 是否初始化excel
   version: 0.25.0 # hzero必填参数 c7n用不上
 
+# Mybatis配置
+mybatis:
+  mapperLocations: classpath*:mapper/**/*.xml
+
 logging:
   level:
     root: info #日志级别 root表示所有包，也可以单独配置具体包 fatal error warn info debug trace off
