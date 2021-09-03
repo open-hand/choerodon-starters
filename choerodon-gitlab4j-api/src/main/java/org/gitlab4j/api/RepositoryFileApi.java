@@ -253,4 +253,51 @@ public class RepositoryFileApi extends AbstractApi {
         addFormParam(form, "commit_message", commitMessage, true);
         return form;
     }
+
+    /**
+     * Get an archive of the complete repository by SHA (optional).
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/repository/archive</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param sha the SHA of the archive to get
+     * @param format The archive format, defaults to "tar.gz" if null
+     * @return an input stream that can be used to save as a file or to read the content of the archive
+     * @throws GitLabApiException if format is not a valid archive format or any exception occurs
+     */
+    public InputStream getRepositoryArchive(Object projectIdOrPath, String sha, String format) throws GitLabApiException {
+        ArchiveFormat archiveFormat = ArchiveFormat.forValue(format);
+        return (getRepositoryArchive(projectIdOrPath, sha, archiveFormat));
+    }
+
+    /**
+     * Get an archive of the complete repository by SHA (optional).
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/repository/archive</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param sha the SHA of the archive to get
+     * @param format The archive format, defaults to TAR_GZ if null
+     * @return an input stream that can be used to save as a file or to read the content of the archive
+     * @throws GitLabApiException if any exception occurs
+     */
+    public InputStream getRepositoryArchive(Object projectIdOrPath, String sha, ArchiveFormat format) throws GitLabApiException {
+
+        if (format == null) {
+            format = ArchiveFormat.TAR_GZ;
+        }
+
+        /*
+         * Gitlab-ce has a bug when you try to download file archives with format by using "&format=zip(or tar... etc.)",
+         * there is a solution to request .../archive.:format instead of .../archive?format=:format.
+         *
+         * Issue:  https://gitlab.com/gitlab-org/gitlab-ce/issues/45992
+         *         https://gitlab.com/gitlab-com/support-forum/issues/3067
+         */
+        Form formData = new GitLabApiForm().withParam("sha", sha);
+        Response response = getWithAccepts(Response.Status.OK, formData.asMap(), MediaType.WILDCARD,
+                "projects", getProjectIdOrPath(projectIdOrPath), "repository", "archive" + "." + format.toString());
+        return (response.readEntity(InputStream.class));
+    }
+
 }
