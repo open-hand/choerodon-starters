@@ -23,7 +23,7 @@ public class MessageClientC7n {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${choerodon.message.service.name:choerodon-message}")
+    @Value("${spring.application.name}")
     private String serviceName;
 
     public MessageClientC7n(
