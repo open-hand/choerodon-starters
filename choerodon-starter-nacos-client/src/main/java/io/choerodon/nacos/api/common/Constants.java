@@ -191,4 +191,10 @@ public class Constants {
     public static final String ALL_PATTERN = "*";
 
     public static final String NAMESPACE_CONTROLLER_PATH = "/v1/console/namespaces";
+
+    public static final String USER_CONTROLLER_PATH = "/v1/auth/users";
+
+    public static final String ROLE_CONTROLLER_PATH = "/v1/auth/roles";
+
+    public static final String PERMISSION_CONTROLLER_PATH = "/v1/auth/permissions";
 }
