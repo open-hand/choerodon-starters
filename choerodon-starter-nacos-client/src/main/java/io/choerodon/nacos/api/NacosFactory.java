@@ -25,6 +25,8 @@ import io.choerodon.nacos.api.naming.NamingFactory;
 import io.choerodon.nacos.api.naming.NamingMaintainFactory;
 import io.choerodon.nacos.api.naming.NamingMaintainService;
 import io.choerodon.nacos.api.naming.NamingService;
+import io.choerodon.nacos.api.user.UserFactory;
+import io.choerodon.nacos.api.user.UserService;
 
 import java.util.Properties;
 
@@ -110,5 +112,16 @@ public class NacosFactory {
      */
     public static NamespaceService createNamespaceService(Properties properties) throws NacosException {
         return NamespaceFactory.createNamespaceService(properties);
+    }
+
+    /**
+     * Create user.
+     *
+     * @param properties server address
+     * @return UserService
+     * @throws NacosException Exception
+     */
+    public static UserService createUserService(Properties properties) throws NacosException {
+        return UserFactory.createUserService(properties);
     }
 }
