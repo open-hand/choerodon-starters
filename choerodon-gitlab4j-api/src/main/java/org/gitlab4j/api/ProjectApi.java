@@ -549,6 +549,42 @@ public class ProjectApi extends AbstractApi implements Constants {
         Response response = get(Response.Status.OK, null, "projects", projectPath);
         return (response.readEntity(Project.class));
     }
+    /**
+     * Get a specific project, which is owned by the authentication user.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param includeStatistics include project statistics
+     * @return the specified project
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Project getProject(Object projectIdOrPath, Boolean includeStatistics) throws GitLabApiException {
+        return (getProject(projectIdOrPath, includeStatistics, null, null));
+    }
+
+    /**
+     * Get a specific project, which is owned by the authentication user.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param includeStatistics include project statistics
+     * @param includeLicense include project license data
+     * @param withCustomAttributes include custom attributes in response (admins only)
+     * @return the specified project
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Project getProject(Object projectIdOrPath, Boolean includeStatistics,
+                              Boolean includeLicense, Boolean withCustomAttributes) throws GitLabApiException {
+        Form formData = new GitLabApiForm()
+                .withParam("statistics", includeStatistics)
+                .withParam("license", includeLicense)
+                .withParam("with_custom_attributes", withCustomAttributes);
+        Response response = get(Response.Status.OK, formData.asMap(),
+                "projects", getProjectIdOrPath(projectIdOrPath));
+        return (response.readEntity(Project.class));
+    }
 
     /**
      * Create a new project in the specified group.
