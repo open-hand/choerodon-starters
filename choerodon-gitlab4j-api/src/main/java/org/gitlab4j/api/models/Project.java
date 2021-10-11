@@ -79,6 +79,15 @@ public class Project {
     private String webUrl;
     private Boolean wikiEnabled;
     private String ciConfigPath;
+    private ProjectStatistics statistics;
+
+    public ProjectStatistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(ProjectStatistics statistics) {
+        this.statistics = statistics;
+    }
 
     public Integer getApprovalsBeforeMerge() {
         return approvalsBeforeMerge;
