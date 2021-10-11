@@ -19,7 +19,7 @@
     <parent>
         <artifactId>choerodon-starter-parent</artifactId>
         <groupId>io.choerodon</groupId>
-        <version>1.1.0.RELEASE</version>
+        <version>1.1.1.RELEASE</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
