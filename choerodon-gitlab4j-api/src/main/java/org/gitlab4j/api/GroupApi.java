@@ -147,7 +147,7 @@ public class GroupApi extends AbstractApi {
      *
      * <pre><code>GitLab Endpoint: GET /groups</code></pre>
      *
-     * @param filter the GroupFilter to match against
+     * @param filter       the GroupFilter to match against
      * @param itemsPerPage the number of Group instances that will be fetched per page
      * @return a Pager containing matching Group instances
      * @throws GitLabApiException if any exception occurs
@@ -195,7 +195,7 @@ public class GroupApi extends AbstractApi {
      * <pre><code>GitLab Endpoint: GET /groups/:id/projects</code></pre>
      *
      * @param groupId the group ID, path of the group, or a Group instance holding the group ID or path
-     * @param filter the GroupProjectsFilter instance holding the filter values for the query
+     * @param filter  the GroupProjectsFilter instance holding the filter values for the query
      * @return a Pager containing Project instances that belong to the group and match the provided filter
      * @throws GitLabApiException if any exception occurs
      */
@@ -203,7 +203,8 @@ public class GroupApi extends AbstractApi {
         GitLabApiForm formData = filter.getQueryParams();
 
         Response response = get(Response.Status.OK, formData.asMap(), "groups", groupId, "projects");
-        return (response.readEntity(new GenericType<List<Project>>() {}));
+        return (response.readEntity(new GenericType<List<Project>>() {
+        }));
     }
 
     /**
@@ -245,6 +246,15 @@ public class GroupApi extends AbstractApi {
     public Group getGroup(String groupPath) throws GitLabApiException {
         Response response = get(Response.Status.OK, null, "groups", urlEncode(groupPath));
         return (response.readEntity(Group.class));
+    }
+
+    public List<Group> getGroup(String groupPath, Boolean statistics) throws GitLabApiException {
+        Form formData = new GitLabApiForm()
+                .withParam("search", groupPath)
+                .withParam("statistics", statistics);
+        Response response = get(Response.Status.OK, formData.asMap(),"groups");
+        return (response.readEntity(new GenericType<List<Group>>() {
+        }));
     }
 
     /**
