@@ -24,12 +24,14 @@ package org.gitlab4j.api;
  */
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.gitlab4j.api.models.Pipeline;
 import org.gitlab4j.api.models.PipelineStatus;
+import org.gitlab4j.api.models.Variable;
 
 /**
  * This class provides an entry point to all the GitLab API pipeline calls.
@@ -221,6 +223,62 @@ public class PipelineApi extends AbstractApi implements Constants {
         GitLabApiForm formData = new GitLabApiForm().withParam("ref", ref);
 
         Response response = post(Response.Status.CREATED, formData.asMap(), "projects", projectId, "pipeline");
+        return (response.readEntity(Pipeline.class));
+    }
+
+    /**
+     * Create a pipelines in a project.
+     *
+     * <pre><code>GitLab Endpoint: POST /projects/:id/pipeline</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param ref reference to commit
+     * @param variables a Map containing the variables available in the pipeline
+     * @return a Pipeline instance with the newly created pipeline info
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Pipeline createPipeline(Object projectIdOrPath, String ref, Map<String, String> variables) throws GitLabApiException {
+        return (createPipeline(projectIdOrPath, ref, Variable.convertMapToList(variables)));
+    }
+
+    /**
+     * Create a pipelines in a project.
+     *
+     * <pre><code>GitLab Endpoint: POST /projects/:id/pipeline</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance
+     * @param ref reference to commit
+     * @param variables a Map containing the variables available in the pipeline
+     * @return a Pipeline instance with the newly created pipeline info
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Pipeline createPipeline(Object projectIdOrPath, String ref, List<Variable> variables) throws GitLabApiException {
+
+        if (ref == null || ref.trim().isEmpty()) {
+            throw new GitLabApiException("ref cannot be null or empty");
+        }
+
+        if (variables == null || variables.isEmpty()) {
+            GitLabApiForm formData = new GitLabApiForm().withParam("ref", ref, true);
+            Response response = post(Response.Status.CREATED, formData, "projects", getProjectIdOrPath(projectIdOrPath), "pipeline");
+            return (response.readEntity(Pipeline.class));
+        }
+
+        // The create pipeline REST API expects the variable data in an unusual format, this
+        // class is used to create the JSON for the POST data.
+        class CreatePipelineForm {
+            @SuppressWarnings("unused")
+            public String ref;
+            @SuppressWarnings("unused")
+            public List<Variable> variables;
+            CreatePipelineForm(String ref, List<Variable> variables) {
+                this.ref = ref;
+                this.variables = variables;
+            }
+        }
+
+        CreatePipelineForm pipelineForm = new CreatePipelineForm(ref, variables);
+        Response response = post(Response.Status.CREATED, pipelineForm, "projects", getProjectIdOrPath(projectIdOrPath), "pipeline");
         return (response.readEntity(Pipeline.class));
     }
 
