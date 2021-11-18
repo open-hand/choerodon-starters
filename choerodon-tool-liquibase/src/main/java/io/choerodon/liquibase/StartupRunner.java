@@ -115,12 +115,15 @@ public class StartupRunner implements CommandLineRunner {
     private void addPlugin(List<String> initNames, String dataDir) {
         mappingList.forEach(mapping -> {
             List<Mapping> plugins = mapping.getPlugins();
-            plugins.forEach(plugin -> {
-                String fileName = dataDir + File.separator + mapping.getName() + File.separator + mapping.getFilename() + File.separator + plugin.getFilename();
-                if (new File(fileName).exists()) {
-                    initNames.add(plugin.getName());
-                }
-            });
+            if (!CollectionUtils.isEmpty(plugins)) {
+                plugins.forEach(plugin -> {
+                    String fileName = dataDir + File.separator + mapping.getName() + File.separator + mapping.getFilename() + File.separator + plugin.getFilename();
+                    if (new File(fileName).exists()) {
+                        initNames.add(plugin.getName());
+                    }
+                });
+            }
+
         });
 
     }
