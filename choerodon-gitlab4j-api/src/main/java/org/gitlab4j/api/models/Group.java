@@ -48,6 +48,15 @@ public class Group {
     private Integer sharedRunnersMinutesLimit;
     private List<Project> projects;
     private List<Project> sharedProjects;
+    private GroupStatistics statistics;
+
+    public GroupStatistics getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(GroupStatistics statistics) {
+        this.statistics = statistics;
+    }
 
     public Integer getId() {
         return this.id;

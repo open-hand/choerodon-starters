@@ -1,10 +1,14 @@
 package io.choerodon.asgard.common;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.choerodon.asgard.saga.consumer.MockHttpServletRequest;
-import io.choerodon.core.oauth.CustomUserDetails;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,13 +23,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import io.choerodon.asgard.saga.consumer.MockHttpServletRequest;
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.core.oauth.DetailsHelper;
 
 public abstract class AbstractAsgardConsumer {
 
@@ -58,6 +58,7 @@ public abstract class AbstractAsgardConsumer {
         this.applicationContextHelper = applicationContextHelper;
         scheduledExecutorService.scheduleWithFixedDelay(() -> {
             try {
+                beforeSchedule();
                 scheduleRunning(instance);
             } catch (Exception e) {
                 LOGGER.warn("error.asgard.scheduleRunning, msg: {}", e.getMessage());
@@ -68,6 +69,14 @@ public abstract class AbstractAsgardConsumer {
 
     protected abstract void scheduleRunning(String instance);
 
+    private void beforeSchedule() {
+        CustomUserDetails customUserDetails = DetailsHelper.getAnonymousDetails();
+        customUserDetails.setUserId(0L);
+        customUserDetails.setOrganizationId(0L);
+        customUserDetails.setLanguage("zh_CN");
+        customUserDetails.setTimeZone("CCT");
+        DetailsHelper.setCustomUserDetails(customUserDetails);
+    }
 
     protected void beforeInvoke(CustomUserDetails customUserDetails) {
         if (customUserDetails == null) {

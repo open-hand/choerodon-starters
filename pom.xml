@@ -31,6 +31,7 @@
         <module>choerodon-starter-core</module>
         <module>choerodon-starter-fragment</module>
         <module>choerodon-starter-nacos-client</module>
+        <module>choerodon-starter-limit</module>
     </modules>
 
 
@@ -71,6 +72,10 @@
             <artifactId>cglib-nodep</artifactId>
             <version>2.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 

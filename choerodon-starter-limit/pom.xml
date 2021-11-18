@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>choerodon-starter-parent</artifactId>
+        <groupId>io.choerodon</groupId>
+        <version>1.1.1.RELEASE</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>choerodon-starter-limit</artifactId>
+
+    <properties>
+        <spring.data.redis.version>2.1.0.RELEASE</spring.data.redis.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-commons</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-redis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>${spring.data.redis.version}</version>
+        </dependency>
+
+    </dependencies>
+</project>
