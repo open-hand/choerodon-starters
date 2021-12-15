@@ -1,21 +1,21 @@
 package io.choerodon.liquibase.service.impl;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
-import org.hzero.helper.generator.core.config.InstallerConfigProperties;
-import org.hzero.helper.generator.core.domain.entity.Config;
-import org.hzero.helper.generator.core.domain.entity.Mapping;
-import org.hzero.helper.generator.core.infra.mapper.InitDataMapper;
-import org.hzero.helper.generator.core.infra.util.XmlUtils;
-import org.hzero.helper.generator.installer.dto.DataSourceDTO;
-import org.hzero.helper.generator.installer.service.impl.ImportDataServiceImpl;
+import org.hzero.helper.core.config.CoreConfigProperties;
+import org.hzero.helper.core.domain.entity.Config;
+import org.hzero.helper.core.domain.entity.Mapping;
+import org.hzero.helper.core.infra.mapper.InitDataMapper;
+import org.hzero.helper.core.infra.util.XmlUtils;
+import org.hzero.helper.installer.dto.DataSourceDTO;
+import org.hzero.helper.installer.service.impl.ImportDataServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * @Author: scp
@@ -36,7 +36,7 @@ public class C7nImportDataServiceImpl extends ImportDataServiceImpl {
     @Autowired
     InitDataMapper initDataMapper;
     @Autowired
-    InstallerConfigProperties configProperties;
+    CoreConfigProperties configProperties;
     @Value("${spring.datasource.dynamic.datasource.gen.url}")
     private String url;
     @Value("${spring.datasource.dynamic.datasource.gen.username}")

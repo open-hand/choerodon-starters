@@ -2,7 +2,6 @@ package io.choerodon.core.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.netflix.client.ClientException;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
 import org.hzero.core.message.MessageAccessor;
 import org.hzero.core.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,8 @@ public class FeignClientUtils {
         try {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
-        } catch (HystrixRuntimeException hystrixRuntimeException) {
+            // todo scp 暂时
+        } catch (Exception hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
                 throw new ServiceUnavailableException("error.service.unavailable", serviceName);
@@ -37,7 +37,7 @@ public class FeignClientUtils {
         try {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
-        } catch (HystrixRuntimeException hystrixRuntimeException) {
+        } catch (Exception hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
                 throw new ServiceUnavailableException("error.service.unavailable", serviceName);
@@ -51,7 +51,7 @@ public class FeignClientUtils {
         try {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
-        } catch (HystrixRuntimeException hystrixRuntimeException) {
+        } catch (Exception hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
                 throw new ServiceUnavailableException("error.service.unavailable", serviceName);
@@ -65,7 +65,7 @@ public class FeignClientUtils {
         try {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
-        } catch (HystrixRuntimeException hystrixRuntimeException) {
+        } catch (Exception hystrixRuntimeException) {
             if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
                 String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
                 throw new ServiceUnavailableException("error.service.unavailable", serviceName);
