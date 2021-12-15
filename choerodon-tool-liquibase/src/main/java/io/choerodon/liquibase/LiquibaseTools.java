@@ -2,6 +2,7 @@ package io.choerodon.liquibase;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * Created by xausky on 4/6/17.
