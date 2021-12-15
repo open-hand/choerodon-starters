@@ -1,15 +1,12 @@
 package io.choerodon.liquibase;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.hzero.helper.generator.core.config.InstallerConfigProperties;
-import org.hzero.helper.generator.core.domain.entity.Mapping;
-import org.hzero.helper.generator.core.infra.util.XmlUtils;
-import org.hzero.helper.generator.installer.service.ImportDataService;
-import org.hzero.helper.generator.installer.service.UpdateDataService;
+import io.choerodon.liquibase.enums.DbTypeEnum;
+import io.choerodon.liquibase.utils.UnpackJar;
+import org.hzero.helper.core.config.CoreConfigProperties;
+import org.hzero.helper.core.domain.entity.Mapping;
+import org.hzero.helper.core.infra.util.XmlUtils;
+import org.hzero.helper.installer.service.ImportDataService;
+import org.hzero.helper.installer.service.UpdateDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
-import io.choerodon.liquibase.enums.DbTypeEnum;
-import io.choerodon.liquibase.utils.UnpackJar;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -47,7 +46,7 @@ public class StartupRunner implements CommandLineRunner {
     private List<Mapping> mappingList = XmlUtils.MAPPING_LIST;
 
     @Autowired
-    private InstallerConfigProperties installerConfigProperties;
+    private CoreConfigProperties installerConfigProperties;
 
     private static final String TEMP_DIR_NAME = "choerodon/";
     private static final String FIX_DATA_VERSION_FORMAT = "%s/%s";
@@ -65,40 +64,41 @@ public class StartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         try {
-            if (!StringUtils.isEmpty(defaultJar)) {
+            if (!ObjectUtils.isEmpty(defaultJar)) {
+                CoreConfigProperties.Upgrade upgrade = installerConfigProperties.getUpgrade();
                 // 解压jar包文件
                 unpackJar.extra(defaultJar, TEMP_DIR_NAME, defaultJarInit, skipFile);
                 // 服务启动时还没有把mapping文件解压出来，需要手动装载
                 if (CollectionUtils.isEmpty(mappingList)) {
-                    XmlUtils.resolver(installerConfigProperties.getMappingFile());
+                    XmlUtils.resolver(installerConfigProperties.getData());
                 }
                 // 执行groovy脚本
-                List<String> groovyFileNames = getFileName(installerConfigProperties.getGroovyDir());
+                List<String> groovyFileNames = getFileName(upgrade.getGroovyDir());
 
                 if (!CollectionUtils.isEmpty(groovyFileNames)) {
                     Map<String, Mapping> mappingMap = new HashMap<>();
                     mappingList.forEach(m -> mappingMap.put(m.getFilename(), m));
                     List<String> groovyNames = groovyFileNames.stream().map(t -> mappingMap.get(t).getName()).collect(Collectors.toList());
-                    if (!importDataService.selfGroovy(groovyNames, false, installerConfigProperties.getGroovyDir())) {
+                    if (!importDataService.selfGroovy(groovyNames, false, upgrade.getGroovyDir())) {
                         throw new Exception("初始化groovy脚本失败！");
                     }
                 }
                 // 执行init-data 数据
-                List<String> initNames = getFileName(installerConfigProperties.getDataDir());
+                List<String> initNames = getFileName(upgrade.getDataDir());
                 // 如果存在插件，则初始化插件
-                addPlugin(initNames, installerConfigProperties.getDataDir());
+                addPlugin(initNames, upgrade.getDataDir());
                 if (!CollectionUtils.isEmpty(initNames)) {
                     String value = System.getProperties().getProperty("data.init", "true");
                     if (!Objects.isNull(value) && Boolean.TRUE.equals(Boolean.valueOf(value))) {
-                        if (!importDataService.selfData(initNames, installerConfigProperties.getDataDir())) {
+                        if (!importDataService.selfData(initNames, upgrade.getDataDir())) {
                             throw new Exception("初始化excel失败！");
                         }
                     }
                 }
                 // 执行修复数据
-                if (fixData && !StringUtils.isEmpty(fixDataVersion)) {
+                if (fixData && !ObjectUtils.isEmpty(fixDataVersion)) {
                     String fixVersion = String.format(FIX_DATA_VERSION_FORMAT, fixDataVersion, getDatabaseName());
-                    boolean result = updateDataService.dataUpdate(fixVersion);
+                    boolean result = updateDataService.dataUpdate(fixVersion, "install");
                     if (!result) {
                         throw new Exception("数据修复完成,中间存在错误,请查看！");
                     }
