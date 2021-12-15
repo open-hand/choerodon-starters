@@ -2,9 +2,9 @@
 server:
   tomcat:
     uri-encoding: UTF-8
-    max-threads: 1000
-    min-spare-threads: 30
-  port: 8099
+    threads:
+      max: 1000
+      min-spare: 30
   servlet:
     context-path: /
 # mysql
@@ -28,22 +28,21 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
   liquibase:
     enabled: false
-
+# c7n 自定义配置
 installer:
   jarPath: hhh/app.jar
-  dataDir: choerodon/script/db/init-data
-  groovyDir: choerodon/script/db/groovy
-  fixDir: choerodon/script/db/fix-data
-  # c7n
-  mappingFile: choerodon/script/db/service-mapping.xml
-  # hzero
-  #  mappingFile: choerodon/script/db/docs/mapping/service-mapping.xml
-  # 执行修复数据配置 fix-data为true，fix-data-version有值时
-#  fix-data-version: 1.4.x
-  fix-data: false
-
 #    init: true # 递归初始化jar包
 #  skipFile: hzero-data-message-template-business.xlsx,fd_project.groovy # 指定跳过文件初始化
+
+# hzero-installer 原生配置
+hzero:
+  upgrade:
+    dataDir: choerodon/script/db/init-data
+    groovyDir: choerodon/script/db/groovy
+    fixDir: choerodon/script/db/fix-data
+  data:
+    mappingFile: ../hzero-resource/docs/mapping/service-mapping.xml # serviceMapping 文件位置
+
 data:
   #  init: true # 是否初始化excel
   version: 0.25.0 # hzero必填参数 c7n用不上
