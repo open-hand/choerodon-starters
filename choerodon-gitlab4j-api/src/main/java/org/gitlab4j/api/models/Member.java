@@ -24,6 +24,7 @@ package org.gitlab4j.api.models;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -32,8 +33,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Member {
+public class Member implements Serializable {
 
+
+    private static final long serialVersionUID = 5929734562248726254L;
     private AccessLevel accessLevel;
     private Date createdAt;
     private String email;
