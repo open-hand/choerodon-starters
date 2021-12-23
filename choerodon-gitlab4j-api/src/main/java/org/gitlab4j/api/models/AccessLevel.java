@@ -23,6 +23,11 @@ package org.gitlab4j.api.models;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.JSONSerializable;
+import com.alibaba.fastjson.serializer.JSONSerializer;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.gitlab4j.api.GitLabApi;
 
-public enum AccessLevel {
+public enum AccessLevel implements JSONSerializable {
 
     INVALID(-1), NONE(0), GUEST(10), REPORTER(20), DEVELOPER(30), @Deprecated MASTER(40), MAINTAINER(40), OWNER(50), ADMIN(60);
 
@@ -70,5 +75,13 @@ public enum AccessLevel {
     @Override
     public String toString() {
         return (value.toString());
+    }
+
+
+    @Override
+    public void write(JSONSerializer jsonSerializer, Object o, Type type, int i) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("value", value);
+        jsonSerializer.write(object);
     }
 }
