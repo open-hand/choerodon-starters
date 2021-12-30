@@ -1,13 +1,11 @@
 package io.choerodon.core.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.netflix.client.ClientException;
 import org.hzero.core.message.MessageAccessor;
 import org.hzero.core.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.exception.ServiceUnavailableException;
 
 /**
  * @author lihao
@@ -22,14 +20,8 @@ public class FeignClientUtils {
         try {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
-            // todo scp 暂时
         } catch (Exception hystrixRuntimeException) {
-            if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
-                String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
-            } else {
-                throw new CommonException(hystrixRuntimeException.getMessage());
-            }
+            throw new CommonException(hystrixRuntimeException.getMessage());
         }
     }
 
@@ -38,12 +30,7 @@ public class FeignClientUtils {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
         } catch (Exception hystrixRuntimeException) {
-            if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
-                String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
-            } else {
-                throw new CommonException(exceptionCode, param);
-            }
+            throw new CommonException(exceptionCode, param);
         }
     }
 
@@ -52,12 +39,8 @@ public class FeignClientUtils {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
         } catch (Exception hystrixRuntimeException) {
-            if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
-                String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
-            } else {
-                throw new CommonException(hystrixRuntimeException.getMessage());
-            }
+
+            throw new CommonException(hystrixRuntimeException.getMessage());
         }
     }
 
@@ -66,12 +49,7 @@ public class FeignClientUtils {
             ResponseEntity<String> stringResponseEntity = feignClient.doRequest();
             return ResponseUtils.getResponse(stringResponseEntity, elementType);
         } catch (Exception hystrixRuntimeException) {
-            if (hystrixRuntimeException.getCause().getCause() instanceof ClientException) {
-                String serviceName = extractServiceName(hystrixRuntimeException.getCause().getCause().getMessage());
-                throw new ServiceUnavailableException("error.service.unavailable", serviceName);
-            } else {
-                throw new CommonException(exceptionCode, param);
-            }
+            throw new CommonException(exceptionCode, param);
         }
     }
 
