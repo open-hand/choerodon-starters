@@ -20,12 +20,6 @@
             <groupId>org.hzero.boot</groupId>
             <artifactId>hzero-boot-message</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.netflix.ribbon</groupId>
-            <artifactId>ribbon-core</artifactId>
-            <version>2.2.5</version>
-        </dependency>
     </dependencies>
 
 
