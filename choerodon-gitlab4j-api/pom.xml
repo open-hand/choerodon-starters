@@ -4,6 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>choerodon-gitlab4j-api</artifactId>
+    <version>1.2.1.RELEASE</version>
     <packaging>jar</packaging>
     <name>choerodon-gitlab4j-api</name>
     <description>GitLab API Java Client</description>
@@ -64,10 +65,6 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
         </dependency>
     </dependencies>
 
