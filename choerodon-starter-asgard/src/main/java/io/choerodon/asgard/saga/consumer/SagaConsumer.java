@@ -1,14 +1,13 @@
 package io.choerodon.asgard.saga.consumer;
 
-import io.choerodon.asgard.common.AbstractAsgardConsumer;
-import io.choerodon.asgard.common.ApplicationContextHelper;
-import io.choerodon.asgard.common.UpdateStatusDTO;
-import io.choerodon.asgard.saga.SagaDefinition;
-import io.choerodon.asgard.saga.SagaProperties;
-import io.choerodon.asgard.saga.annotation.SagaTask;
-import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
-import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.saga.feign.SagaConsumerClient;
+import static io.choerodon.asgard.common.InstanceResultUtils.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +17,15 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledExecutorService;
-
-import static io.choerodon.asgard.common.InstanceResultUtils.*;
+import io.choerodon.asgard.common.AbstractAsgardConsumer;
+import io.choerodon.asgard.common.ApplicationContextHelper;
+import io.choerodon.asgard.common.UpdateStatusDTO;
+import io.choerodon.asgard.saga.SagaDefinition;
+import io.choerodon.asgard.saga.SagaProperties;
+import io.choerodon.asgard.saga.annotation.SagaTask;
+import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
+import io.choerodon.asgard.saga.dto.SagaTaskInstanceDTO;
+import io.choerodon.asgard.saga.feign.SagaConsumerClient;
 
 public class SagaConsumer extends AbstractAsgardConsumer {
 
@@ -70,7 +70,7 @@ public class SagaConsumer extends AbstractAsgardConsumer {
                 });
             }
         } catch (Exception e) {
-            LOGGER.error("SagaTask failed to execute", e);
+            LOGGER.debug("SagaTask failed to execute:{}", e.getMessage());
         }
     }
 
