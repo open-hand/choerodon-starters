@@ -37,7 +37,7 @@ public class Member implements Serializable {
 
 
     private static final long serialVersionUID = 5929734562248726254L;
-    private Integer accessLevel;
+    private AccessLevel accessLevel;
     private Date createdAt;
     private String email;
     private Integer id;
@@ -46,11 +46,11 @@ public class Member implements Serializable {
     private String username;
     private Date expiresAt;
 
-    public Integer getAccessLevel() {
+    public AccessLevel getAccessLevel() {
         return accessLevel;
     }
 
-    public void setAccessLevel(Integer accessLevel) {
+    public void setAccessLevel(AccessLevel accessLevel) {
         this.accessLevel = accessLevel;
     }
 
