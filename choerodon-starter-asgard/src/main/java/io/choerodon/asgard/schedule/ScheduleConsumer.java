@@ -62,7 +62,6 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
     @Override
     protected void scheduleRunning(String instance) {
         scheduleConsumerClient.pollBatch(getPollScheduleInstanceDTO()).forEach(t -> {
-            LOGGER.trace("ScheduleConsumer polled scheduleTaskInstances: {}", t);
             runningTasks.add(t.getId());
             CompletableFuture.supplyAsync(() -> invoke(t), executor)
                     .exceptionally(ex -> {

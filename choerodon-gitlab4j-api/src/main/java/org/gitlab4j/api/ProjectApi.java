@@ -840,18 +840,11 @@ public class ProjectApi extends AbstractApi implements Constants {
             throw new RuntimeException("Project instance cannot be null.");
         }
 
-        Integer id = project.getId();
-        if (id == null) {
-            throw new RuntimeException("Project ID cannot be null.");
-        }
-
-        String name = project.getName();
-        if (name == null || name.trim().length() == 0) {
-            throw new RuntimeException("Project name cannot be null or empty.");
-        }
+        // This will throw an exception if both id and path are not present
+        Object projectIdentifier = getProjectIdOrPath(project);
 
         GitLabApiForm formData = new GitLabApiForm()
-                .withParam("name", name, true)
+                .withParam("name", project.getName())
                 .withParam("path", project.getPath())
                 .withParam("default_branch", project.getDefaultBranch())
                 .withParam("description", project.getDescription())
@@ -868,20 +861,28 @@ public class ProjectApi extends AbstractApi implements Constants {
                 .withParam("lfs_enabled", project.getLfsEnabled())
                 .withParam("request_access_enabled", project.getRequestAccessEnabled())
                 .withParam("repository_storage", project.getRepositoryStorage())
-                .withParam("ci_config_path", project.getCiConfigPath())
-                .withParam("approvals_before_merge", project.getApprovalsBeforeMerge());
+                .withParam("approvals_before_merge", project.getApprovalsBeforeMerge())
+                .withParam("ci_config_path", project.getCiConfigPath());
 
         if (isApiVersion(ApiVersion.V3)) {
             formData.withParam("visibility_level", project.getVisibilityLevel());
             boolean isPublic = (project.getPublic() != null ? project.getPublic() : project.getVisibility() == Visibility.PUBLIC);
             formData.withParam("public", isPublic);
+
+            if (project.getTagList() != null && !project.getTagList().isEmpty()) {
+                throw new IllegalArgumentException("GitLab API v3 does not support tag lists when updating projects");
+            }
         } else {
             Visibility visibility = (project.getVisibility() != null ? project.getVisibility() :
                     project.getPublic() == Boolean.TRUE ? Visibility.PUBLIC : null);
             formData.withParam("visibility", visibility);
+
+            if (project.getTagList() != null && !project.getTagList().isEmpty()) {
+                formData.withParam("tag_list", String.join(",", project.getTagList()));
+            }
         }
 
-        Response response = putWithFormData(Response.Status.OK, formData, "projects", id);
+        Response response = putWithFormData(Response.Status.OK, formData, "projects", projectIdentifier);
         return (response.readEntity(Project.class));
     }
 
