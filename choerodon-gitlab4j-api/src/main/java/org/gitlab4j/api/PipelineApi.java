@@ -25,11 +25,11 @@ package org.gitlab4j.api;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.gitlab4j.api.models.Pipeline;
+import org.gitlab4j.api.models.PipelineSchedule;
 import org.gitlab4j.api.models.PipelineStatus;
 import org.gitlab4j.api.models.Variable;
 
@@ -312,5 +312,200 @@ public class PipelineApi extends AbstractApi implements Constants {
         GitLabApiForm formData = null;
         Response response = post(Response.Status.OK, formData, "projects", projectId, "pipelines", pipelineId, "cancel");
         return (response.readEntity(Pipeline.class));
+    }
+
+    /**
+     * Get a list of the project pipeline_schedules for the specified project.
+     *
+     * <pre><code>GET /projects/:id/pipeline_schedules</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @return a list of pipeline schedules for the specified project
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<PipelineSchedule> getPipelineSchedules(Object projectIdOrPath) throws GitLabApiException {
+        return (getPipelineSchedules(projectIdOrPath, getDefaultPerPage()).all());
+    }
+
+    /**
+     * Get list of project pipeline schedules in the specified page range.
+     *
+     * <pre><code>GET /projects/:id/pipeline_schedules</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param page the page to get
+     * @param perPage the number of PipelineSchedule instances per page
+     * @return a list of project pipeline_schedules for the specified project in the specified page range
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<PipelineSchedule> getPipelineSchedules(Object projectIdOrPath, int page, int perPage) throws GitLabApiException {
+        Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules");
+        return (response.readEntity(new GenericType<List<PipelineSchedule>>() {}));
+    }
+
+    /**
+     * Get Pager of project pipeline schedule.
+     *
+     * <pre><code>GET /projects/:id/pipeline_schedule</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param itemsPerPage the number of PipelineSchedule instances that will be fetched per page
+     * @return a Pager of project pipeline_schedules for the specified project
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<PipelineSchedule> getPipelineSchedules(Object projectIdOrPath, int itemsPerPage) throws GitLabApiException {
+        return (new Pager<PipelineSchedule>(this, PipelineSchedule.class, itemsPerPage, null, "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules"));
+    }
+
+
+    /**
+     * Get a specific pipeline schedule for project.
+     *
+     * <pre><code>GET /projects/:id/pipeline_schedules/:pipeline_schedule_id</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineScheduleId the ID of the pipeline schedule to get
+     * @return the project PipelineSchedule
+     * @throws GitLabApiException if any exception occurs
+     */
+    public PipelineSchedule getPipelineSchedule(Object projectIdOrPath, Integer pipelineScheduleId) throws GitLabApiException {
+        Response response = get(Response.Status.OK, null, "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules", pipelineScheduleId);
+        return (response.readEntity(PipelineSchedule.class));
+    }
+
+    /**
+     * create a pipeline schedule for a project.
+     *
+     * <pre><code>POST /projects/:id/pipeline_schedules</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineSchedule a PipelineSchedule instance to create
+     * @return the added PipelineSchedule instance
+     * @throws GitLabApiException if any exception occurs
+     */
+    public PipelineSchedule createPipelineSchedule(Object projectIdOrPath, PipelineSchedule pipelineSchedule)
+            throws GitLabApiException {
+
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("description", pipelineSchedule.getDescription(), true)
+                .withParam("ref", pipelineSchedule.getRef(), true)
+                .withParam("cron", pipelineSchedule.getCron(), true)
+                .withParam("cron_timezone", pipelineSchedule.getCronTimezone(), false)
+                .withParam("active", pipelineSchedule.getActive(), false);
+        Response response = post(Response.Status.CREATED, formData, "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules");
+        return (response.readEntity(PipelineSchedule.class));
+    }
+
+    /**
+     * Deletes a pipeline schedule from the project.
+     *
+     * <pre><code>DELETE /projects/:id/pipeline_schedules/:pipeline_schedule_id</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineScheduleId the project schedule ID to delete
+     * @throws GitLabApiException if any exception occurs
+     */
+    public void deletePipelineSchedule(Object projectIdOrPath, Integer pipelineScheduleId) throws GitLabApiException {
+        Response.Status expectedStatus = (isApiVersion(GitLabApi.ApiVersion.V3) ? Response.Status.OK : Response.Status.NO_CONTENT);
+        delete(expectedStatus, null, "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules", pipelineScheduleId);
+    }
+
+    /**
+     * Modifies a pipeline schedule for project.
+     *
+     * <pre><code>PUT /projects/:id/pipeline_schedules/:pipeline_schedule_id</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineSchedule the pipelineSchedule instance that contains the pipelineSchedule info to modify
+     * @return the modified project schedule
+     * @throws GitLabApiException if any exception occurs
+     */
+    public PipelineSchedule updatePipelineSchedule(Object projectIdOrPath,PipelineSchedule pipelineSchedule) throws GitLabApiException {
+
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("description", pipelineSchedule.getDescription(), false)
+                .withParam("ref", pipelineSchedule.getRef(), false)
+                .withParam("cron", pipelineSchedule.getCron(), false)
+                .withParam("cron_timezone", pipelineSchedule.getCronTimezone(), false)
+                .withParam("active", pipelineSchedule.getActive(), false);
+
+        Response response = put(Response.Status.OK, formData.asMap(), "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules", pipelineSchedule.getId());
+        return (response.readEntity(PipelineSchedule.class));
+    }
+
+    /**
+     * Update the owner of the pipeline schedule of a project.
+     *
+     * <pre><code>POST /projects/:id/pipeline_schedules/:pipeline_schedule_id/take_ownership</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineScheduleId the pipelineSchedule instance id that ownership has to be taken of
+     * @return the modified project schedule
+     * @throws GitLabApiException if any exception occurs
+     */
+    public PipelineSchedule takeOwnershipPipelineSchedule(Object projectIdOrPath, Integer pipelineScheduleId) throws GitLabApiException {
+
+        Response response = post(Response.Status.OK, "", "projects", getProjectIdOrPath(projectIdOrPath),  "pipeline_schedules", pipelineScheduleId, "take_ownership");
+        return (response.readEntity(PipelineSchedule.class));
+    }
+
+    /**
+     * Create a pipeline schedule variable.
+     *
+     * <pre><code>GitLab Endpoint: POST /projects/:id/pipeline_schedules/:pipeline_schedule_id/variables</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineScheduleId the pipelineSchedule ID
+     * @param key the key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed
+     * @param value the value for the variable
+     * @return a Pipeline instance with the newly created pipeline schedule variable
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Variable createPipelineScheduleVariable(Object projectIdOrPath, Integer pipelineScheduleId,
+                                                   String key, String value) throws GitLabApiException {
+
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("key", key, true)
+                .withParam("value", value, true);
+        Response response = post(Response.Status.CREATED, formData,
+                "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules", pipelineScheduleId, "variables");
+        return (response.readEntity(Variable.class));
+    }
+
+    /**
+     * Update a pipeline schedule variable.
+     *
+     * <pre><code>GitLab Endpoint: PUT /projects/:id/pipeline_schedules/:pipeline_schedule_id/variables/:key</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineScheduleId the pipelineSchedule ID
+     * @param key the key of an existing pipeline schedule variable
+     * @param value the new value for the variable
+     * @return a Pipeline instance with the updated variable
+     * @throws GitLabApiException if any exception occurs during execution
+     */
+    public Variable updatePipelineScheduleVariable(Object projectIdOrPath, Integer pipelineScheduleId,
+                                                   String key, String value) throws GitLabApiException {
+
+        GitLabApiForm formData = new GitLabApiForm().withParam("value", value, true);
+        Response response = this.putWithFormData(Response.Status.CREATED, formData,
+                "projects", getProjectIdOrPath(projectIdOrPath), "pipeline_schedules", pipelineScheduleId, "variables", key);
+        return (response.readEntity(Variable.class));
+    }
+
+    /**
+     * Deletes a pipeline schedule variable.
+     *
+     * <pre><code>DELETE /projects/:id/pipeline_schedules/:pipeline_schedule_id/variables/:key</code></pre>
+     *
+     * @param projectIdOrPath projectIdOrPath the project in the form of an Integer(ID), String(path), or Project instance, required
+     * @param pipelineScheduleId the pipeline schedule ID
+     * @param key the key of an existing pipeline schedule variable
+     * @throws GitLabApiException if any exception occurs
+     */
+    public void deletePipelineScheduleVariable(Object projectIdOrPath, Integer pipelineScheduleId, String key) throws GitLabApiException {
+        Response.Status expectedStatus = (isApiVersion(GitLabApi.ApiVersion.V3) ? Response.Status.OK : Response.Status.NO_CONTENT);
+        delete(expectedStatus, null, "projects", getProjectIdOrPath(projectIdOrPath),
+                "pipeline_schedules", pipelineScheduleId, "variables", key);
     }
 }
