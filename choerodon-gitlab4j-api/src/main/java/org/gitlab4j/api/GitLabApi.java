@@ -72,6 +72,7 @@ public class GitLabApi {
     private AccessToken accessToken;
     private TagsApi tagsApi;
     private ProtectedBranchesApi protectedBranchesApi;
+    private ReleasesApi releasesApi;
 
     /**
      * Get the GitLab4J shared Logger instance.
@@ -725,6 +726,19 @@ public class GitLabApi {
      */
     public UserApi getUserApi() {
         return (userApi);
+    }
+
+    public ReleasesApi getReleasesApi() {
+
+        if (releasesApi == null) {
+            synchronized (this) {
+                if (releasesApi == null) {
+                    releasesApi = new ReleasesApi(this);
+                }
+            }
+        }
+
+        return (releasesApi);
     }
 
     /**
