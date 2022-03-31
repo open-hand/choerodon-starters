@@ -93,4 +93,29 @@ public class ReleasesApi extends AbstractApi {
     public void deleteRelease(Object projectIdOrPath, String tagName) throws GitLabApiException {
         delete(Response.Status.OK, null, "projects", getProjectIdOrPath(projectIdOrPath), "releases", urlEncode(tagName));
     }
+
+    /**
+     * Updates the release notes of a given release.
+     *
+     * <pre><code>GitLab Endpoint: PUT /projects/:id/releases/:tag_name</code></pre>
+     *
+     * @param projectIdOrPath id, path of the project, or a Project instance holding the project ID or path
+     * @param params a ReleaseParams instance holding the parameters for the release
+     * @return a Release instance containing info on the updated Release
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Release updateRelease(Object projectIdOrPath, ReleaseParams params) throws GitLabApiException {
+
+        String tagName = params.getTagName();
+        if (tagName == null || tagName.trim().isEmpty()) {
+            throw new RuntimeException("params.tagName cannot be null or empty");
+        }
+        GitLabApiForm formData = new GitLabApiForm()
+                .withParam("tag_name", tagName, true)
+                .withParam("description", params.getDescription(), false);
+
+        Response response = put(Response.Status.OK, formData.asMap(),
+                "projects", getProjectIdOrPath(projectIdOrPath), "releases", urlEncode(tagName));
+        return (response.readEntity(Release.class));
+    }
  }
