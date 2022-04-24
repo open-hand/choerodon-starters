@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import io.choerodon.liquibase.enums.DbTypeEnum;
@@ -41,6 +42,8 @@ public class StartupRunner implements CommandLineRunner {
     private String fixDataVersion;
     @Value("${installer.fix-data:false}")
     private Boolean fixData;
+    @Value("${installer.exclusion:#{null}}")
+    private String exclusion;
 
     @Value("${spring.datasource.dynamic.datasource.gen.driver-class-name}")
     private String driver;
@@ -72,6 +75,7 @@ public class StartupRunner implements CommandLineRunner {
                 if (CollectionUtils.isEmpty(mappingList)) {
                     XmlUtils.resolver(installerConfigProperties.getMappingFile());
                 }
+                XmlUtils.ENABLE_REPLACE=false;
                 // 执行groovy脚本
                 List<String> groovyFileNames = getFileName(installerConfigProperties.getGroovyDir());
 
@@ -83,6 +87,8 @@ public class StartupRunner implements CommandLineRunner {
                         throw new Exception("初始化groovy脚本失败！");
                     }
                 }
+                // 设置环境变量中的排除更新
+                setUpdateExclusion();
                 // 执行init-data 数据
                 List<String> initNames = getFileName(installerConfigProperties.getDataDir());
                 // 如果存在插件，则初始化插件
@@ -196,5 +202,19 @@ public class StartupRunner implements CommandLineRunner {
             return DbTypeEnum.POSTGRES.type();
         }
         throw new RuntimeException("error.get.db.type");
+    }
+
+
+    /**
+     * 设置环境变量中的排除更新
+     */
+    private void setUpdateExclusion() {
+        if (!ObjectUtils.isEmpty(exclusion)) {
+            if (ObjectUtils.isEmpty(XmlUtils.UPDATE_EXCLUSION)) {
+                XmlUtils.UPDATE_EXCLUSION = exclusion;
+            } else {
+                XmlUtils.UPDATE_EXCLUSION = XmlUtils.UPDATE_EXCLUSION + "," + exclusion;
+            }
+        }
     }
 }
