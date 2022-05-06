@@ -75,7 +75,7 @@ public class StartupRunner implements CommandLineRunner {
                 if (CollectionUtils.isEmpty(mappingList)) {
                     XmlUtils.resolver(installerConfigProperties.getMappingFile());
                 }
-                XmlUtils.ENABLE_REPLACE=false;
+                XmlUtils.ENABLE_REPLACE = false;
                 // 执行groovy脚本
                 List<String> groovyFileNames = getFileName(installerConfigProperties.getGroovyDir());
 
@@ -216,5 +216,45 @@ public class StartupRunner implements CommandLineRunner {
                 XmlUtils.UPDATE_EXCLUSION = XmlUtils.UPDATE_EXCLUSION + "," + exclusion;
             }
         }
+        Map<String, Set<String>> map = processExclusion();
+        XmlUtils.UPDATE_EXCLUSION = processExclusionToStr(map);
+    }
+
+    private Map<String, Set<String>> processExclusion() {
+        Map<String, Set<String>> map = new HashMap<>();
+        String updateExclusion = XmlUtils.UPDATE_EXCLUSION;
+        if (updateExclusion != null) {
+            String[] array = updateExclusion.split(",");
+            for (String str : array) {
+                if (str != null && str.contains(".")) {
+                    String[] strArray = str.split("\\.");
+                    String tableName = (strArray[0] == null ? null : strArray[0].toLowerCase());
+                    String columnName = (strArray[1] == null ? null : strArray[1].toLowerCase());
+                    Set<String> columns = map.get(tableName);
+                    if (columns == null) {
+                        Set<String> set = new HashSet<>();
+                        set.add(columnName);
+                        map.putIfAbsent(tableName, set);
+                    } else {
+                        columns.add(columnName);
+                    }
+                } else {
+                    map.put(str, null);
+                }
+            }
+        }
+        return map;
+    }
+
+    private String processExclusionToStr(Map<String, Set<String>> map) {
+        StringBuilder exclusionBuilder = new StringBuilder();
+        for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
+            if (entry.getValue() == null) {
+                exclusionBuilder.append(entry.getKey()).append(",");
+            } else {
+                entry.getValue().forEach(t -> exclusionBuilder.append(entry.getKey()).append(".").append(t).append(","));
+            }
+        }
+        return exclusionBuilder.substring(0, exclusionBuilder.length() - 1);
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--服务映射-->
+<services>
+    <schema-merge>
+        <oracle merge="false" target-schema="" />
+        <mysql merge="false" target-schema="" />
+        <sqlserver merge="false" target-schema="" />
+        <postgresql merge="false" target-schema="" />
+    </schema-merge>
+    <value-replace flag="false">
+        <data key="${HZERO}" value="SRM"/>
+    </value-replace>
+    <service name="hzero_platform" filename="hzero_platform" schema="hzero_platform" description="平台服务"/>
+    <service name="hzero_admin" filename="hzero_admin" schema="hzero_admin" description="平台治理服务"/>
+    <service name="hzero_file" filename="hzero_file" schema="hzero_file" description="文件服务"/>
+    <service name="hzero_message" filename="hzero_message" schema="hzero_message" description="消息服务"/>
+    <service name="hzero_monitor" filename="hzero_monitor" schema="hzero_monitor" description="监控审计服务"/>
+    <exclusion>
+        hmsg_email_server,hmsg_message_template.external_code,hmsg_sms_server
+    </exclusion>
+</services>
