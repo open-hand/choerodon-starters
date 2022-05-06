@@ -31,6 +31,7 @@
         <module>choerodon-starter-fragment</module>
         <module>choerodon-starter-nacos-client</module>
         <module>choerodon-starter-limit</module>
+        <module>choerodon-starter-only-office</module>
     </modules>
 
 
