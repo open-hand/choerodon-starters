@@ -30,7 +30,9 @@ public class OnlyOfficeCallBackController {
     @Permission(permissionPublic = true)
     @ApiOperation("only_office保存编辑的回调")
     @PostMapping(value = "/save/file")
-    public ResponseEntity<Void> saveFile(@RequestBody JSONObject obj) {
+    public ResponseEntity<Void> saveFile(@RequestBody JSONObject obj,
+                                         @ApiParam(value = "组织Id") @RequestParam(name = "organization_id", required = false) Long organizationId,
+                                         @ApiParam(value = "项目Id") @RequestParam(name = "project_id", required = false) Long projectId) throws Exception {
         LOGGER.info("only_office保存编辑的回调:{}", JSON.toJSONString(obj));
         onlyOfficeService.saveFile(obj);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
