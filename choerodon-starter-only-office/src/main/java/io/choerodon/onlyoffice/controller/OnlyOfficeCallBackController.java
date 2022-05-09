@@ -27,15 +27,28 @@ public class OnlyOfficeCallBackController {
     @Autowired
     private OnlyOfficeService onlyOfficeService;
 
+    /**
+     *
+     * tips:回调接口中要给唯一标识，让程序知道要回写的文件；2.post接口
+     *
+     * @param obj
+     * @param organizationId
+     * @param projectId
+     * @return
+     * @throws Exception
+     */
+
+
     @Permission(permissionPublic = true)
     @ApiOperation("only_office保存编辑的回调")
     @PostMapping(value = "/save/file")
-    public ResponseEntity<Void> saveFile(@RequestBody JSONObject obj,
-                                         @ApiParam(value = "组织Id") @RequestParam(name = "organization_id", required = false) Long organizationId,
-                                         @ApiParam(value = "项目Id") @RequestParam(name = "project_id", required = false) Long projectId) throws Exception {
+    public ResponseEntity<JSONObject> saveFile(@RequestBody JSONObject obj,
+                                               @ApiParam(value = "组织Id") @RequestParam(name = "organization_id", required = false) Long organizationId,
+                                               @ApiParam(value = "项目Id") @RequestParam(name = "project_id", required = false) Long projectId) throws Exception {
+        obj.put("organizationId", organizationId);
+        obj.put("projectId", projectId);
         LOGGER.info("only_office保存编辑的回调:{}", JSON.toJSONString(obj));
-        onlyOfficeService.saveFile(obj);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok(onlyOfficeService.saveFile(obj));
     }
 
 }
