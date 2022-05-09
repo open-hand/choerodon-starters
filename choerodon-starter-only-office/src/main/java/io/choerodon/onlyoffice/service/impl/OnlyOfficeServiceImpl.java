@@ -2,9 +2,6 @@ package io.choerodon.onlyoffice.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,11 +18,33 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OnlyOfficeServiceImpl.class);
 
     @Override
-    public void saveFile(JSONObject obj) throws IOException {
-//        //1.获取文件
-//        DocumentEditCallback documentEditCallback = JSONObject.toJavaObject(obj, DocumentEditCallback.class);
-//        //2.保存到文件服务器
-//        //3.将文件跟新到数据库
+    public JSONObject saveFile(JSONObject obj) throws IOException {
+        //1.文档加载时会调用这个接口，此时status = 1，我们给onlyoffice的服务返回{"error":"0"}的信息，文档才能正常的打开
+        //这样onlyoffice会认为回调接口是没问题的，这样就可以在线编辑文档了，否则的话会弹出窗口说明
+        // The document could not be saved. Please check connection settings or contact your administrator.
+        DocumentEditCallback documentEditCallback = JSONObject.toJavaObject(obj, DocumentEditCallback.class);
+        if (documentEditCallback.getStatus() != null && documentEditCallback.getStatus().equals(1)) {
+
+            JSONObject re = new JSONObject();
+            re.put("error", "0");
+            return re;
+        }
+        //2.当我们关闭编辑窗口后，十秒钟左右onlyoffice会将它存储的我们的编辑后的文件，，此时status = 2，通过request发给我们，我们需要做的就是接收到文件然后回写该文件。
+        // 当状态值仅等于2或3时，存在链路。
+        else if (documentEditCallback.getStatus() != null && (documentEditCallback.getStatus().equals(2) || documentEditCallback.getStatus().equals(3))) {
+            //保存到文件服务器
+            //将文件跟新到数据库
+            LOGGER.info("====文档编辑完成，现在开始保存编辑后的文档，其下载地址为:{}" + documentEditCallback.getUrl());
+            JSONObject re = new JSONObject();
+            re.put("error", "0");
+            return re;
+
+        } else {
+            JSONObject re = new JSONObject();
+            re.put("error", "save file error");
+            return re;
+        }
+
 //        Integer status = (Integer) obj.get("status");
 //        //关闭后保存
 //        if (status == 2 || status == 3) {
@@ -100,7 +119,7 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
 ////                out.flush();
 ////            }
 ////            connection.disconnect();
-////        }
+//        }
     }
 
 }
