@@ -215,9 +215,9 @@ public class StartupRunner implements CommandLineRunner {
             } else {
                 XmlUtils.UPDATE_EXCLUSION = XmlUtils.UPDATE_EXCLUSION + "," + exclusion;
             }
+            Map<String, Set<String>> map = processExclusion();
+            XmlUtils.UPDATE_EXCLUSION = processExclusionToStr(map);
         }
-        Map<String, Set<String>> map = processExclusion();
-        XmlUtils.UPDATE_EXCLUSION = processExclusionToStr(map);
     }
 
     private Map<String, Set<String>> processExclusion() {
