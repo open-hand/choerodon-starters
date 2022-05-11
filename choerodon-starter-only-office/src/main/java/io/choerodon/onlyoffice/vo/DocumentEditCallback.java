@@ -20,6 +20,9 @@ public class DocumentEditCallback {
 
     private Integer status;
 
+    @ApiModelProperty("第三方业务Id")
+    private Long businessId;
+
     public String getFileType() {
         return fileType;
     }
@@ -58,5 +61,13 @@ public class DocumentEditCallback {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Long getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
     }
 }
