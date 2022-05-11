@@ -27,7 +27,7 @@ import io.choerodon.onlyoffice.vo.DocumentEditCallback;
 @Service
 public class OnlyOfficeServiceImpl implements OnlyOfficeService {
 
-    @Autowired
+    @Autowired(required = false)
     private OnlyOfficeFileHandler onlyOfficeFileHandler;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OnlyOfficeServiceImpl.class);
