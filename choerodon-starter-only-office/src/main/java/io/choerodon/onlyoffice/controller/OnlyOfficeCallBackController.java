@@ -28,7 +28,6 @@ public class OnlyOfficeCallBackController {
     private OnlyOfficeService onlyOfficeService;
 
     /**
-     *
      * tips:回调接口中要给唯一标识，让程序知道要回写的文件；2.post接口
      *
      * @param obj
@@ -44,9 +43,13 @@ public class OnlyOfficeCallBackController {
     @PostMapping(value = "/save/file")
     public ResponseEntity<JSONObject> saveFile(@RequestBody JSONObject obj,
                                                @ApiParam(value = "组织Id") @RequestParam(name = "organization_id", required = false) Long organizationId,
-                                               @ApiParam(value = "项目Id") @RequestParam(name = "project_id", required = false) Long projectId) throws Exception {
+                                               @ApiParam(value = "项目Id") @RequestParam(name = "project_id", required = false) Long projectId,
+                                               @ApiParam(value = "业务Id") @RequestParam(name = "business_id", required = false) Long businessId,
+                                               @ApiParam(value = "文件名字") @RequestParam(name = "title", required = false) String title) throws Exception {
         obj.put("organizationId", organizationId);
         obj.put("projectId", projectId);
+        obj.put("title", title);
+        obj.put("businessId", businessId);
         LOGGER.info("only_office保存编辑的回调:{}", JSON.toJSONString(obj));
         return ResponseEntity.ok(onlyOfficeService.saveFile(obj));
     }
