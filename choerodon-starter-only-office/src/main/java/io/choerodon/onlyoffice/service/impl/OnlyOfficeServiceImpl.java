@@ -44,7 +44,9 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
         }
         //2.当我们关闭编辑窗口后，十秒钟左右onlyoffice会将它存储的我们的编辑后的文件，，此时status = 2，通过request发给我们，我们需要做的就是接收到文件然后回写该文件。
         // 当状态值仅等于2或3时，存在链路。
-        else if (documentEditCallback.getStatus() != null && (documentEditCallback.getStatus().equals(2) || documentEditCallback.getStatus().equals(3))) {
+        else if (documentEditCallback.getStatus() != null && (documentEditCallback.getStatus().equals(2)
+                || documentEditCallback.getStatus().equals(3)
+                || documentEditCallback.getStatus().equals(6))) {
             //保存到文件服务器
             //将文件跟新到数据库
             LOGGER.info("====文档编辑完成，现在开始保存编辑后的文档，其下载地址为:{}" + documentEditCallback.getUrl());
