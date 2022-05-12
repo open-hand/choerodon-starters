@@ -68,7 +68,7 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
             return getNOErrorJson("0");
 
         } else {
-            return getNOErrorJson("save file error");
+            return getNOErrorJson("0");
         }
 
 //        }
