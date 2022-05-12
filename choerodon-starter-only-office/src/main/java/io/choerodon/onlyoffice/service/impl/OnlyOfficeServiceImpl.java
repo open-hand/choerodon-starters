@@ -38,7 +38,9 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
         //这样onlyoffice会认为回调接口是没问题的，这样就可以在线编辑文档了，否则的话会弹出窗口说明
         // The document could not be saved. Please check connection settings or contact your administrator.
         DocumentEditCallback documentEditCallback = JSONObject.toJavaObject(obj, DocumentEditCallback.class);
-        if (documentEditCallback.getStatus() != null && documentEditCallback.getStatus().equals(1)) {
+        if (documentEditCallback.getStatus() != null
+                && (documentEditCallback.getStatus().equals(1)
+                || documentEditCallback.getStatus().equals(4))) {
 
             return getNOErrorJson("0");
         }
