@@ -19,6 +19,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import io.choerodon.onlyoffice.service.OnlyOfficeFileHandler;
 import io.choerodon.onlyoffice.service.OnlyOfficeService;
+import io.choerodon.onlyoffice.utils.KeyDecryptHelper;
 import io.choerodon.onlyoffice.vo.DocumentEditCallback;
 
 /**
