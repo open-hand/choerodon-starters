@@ -58,8 +58,8 @@ public class OnlyOfficeCallBackController {
         if (!StringUtils.isEmpty(businessId) && businessId.startsWith("=")) {
             EncryptContext.setEncryptType("encrypt");
         }
-        Long aLong = KeyDecryptHelper.decryptValue(businessId, token, true);
-        obj.put("businessId", aLong);
+        Long businessDecryptId = KeyDecryptHelper.decryptValue(businessId, token, true);
+        obj.put("businessId", businessDecryptId);
         LOGGER.info("only_office保存编辑的回调:{}", JSON.toJSONString(obj));
         return ResponseEntity.ok(onlyOfficeService.saveFile(obj));
     }

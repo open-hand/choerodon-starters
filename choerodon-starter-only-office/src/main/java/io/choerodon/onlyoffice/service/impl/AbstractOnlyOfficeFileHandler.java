@@ -14,5 +14,10 @@ public abstract class AbstractOnlyOfficeFileHandler implements OnlyOfficeFileHan
         fileBusinessProcess(multipartFile, businessId);
     }
 
+    /**
+     * 给业务系统的勾子函数
+     * @param multipartFile
+     * @param businessId
+     */
     protected abstract void fileBusinessProcess(MultipartFile multipartFile, Long businessId);
 }
