@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.hzero.starter.keyencrypt.core.EncryptContext;
@@ -54,7 +56,7 @@ public class OnlyOfficeCallBackController {
                                                @ApiParam(value = "文件名字") @RequestParam(name = "title", required = false) String title) throws Exception {
         obj.put("organizationId", organizationId);
         obj.put("projectId", projectId);
-        obj.put("title", title);
+        obj.put("title", decoderFileKey(title));
         //判断是否businessId是否加密，如果加密则手动解密
         if (!StringUtils.isEmpty(businessId) && businessId.startsWith("=")) {
             EncryptContext.setEncryptType("encrypt");
@@ -65,6 +67,15 @@ public class OnlyOfficeCallBackController {
         obj.put("userId", userDecryptId);
         LOGGER.info("only_office保存编辑的回调:{}", JSON.toJSONString(obj));
         return ResponseEntity.ok(onlyOfficeService.saveFile(obj));
+    }
+
+    public static String decoderFileKey(String title) {
+        try {
+            return URLDecoder.decode(title, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
