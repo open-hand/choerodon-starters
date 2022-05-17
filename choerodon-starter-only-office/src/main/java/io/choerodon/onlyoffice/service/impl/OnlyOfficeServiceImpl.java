@@ -52,7 +52,7 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
                 || documentEditCallback.getStatus().equals(3)
                 || documentEditCallback.getStatus().equals(6))) {
             LOGGER.info("====文档编辑完成，现在开始保存编辑后的文档，其下载地址为:{}" + documentEditCallback.getUrl());
-            if (StringUtils.isEmpty(documentEditCallback.getTitle())) {
+            if (StringUtils.isEmpty(documentEditCallback.getTitle()) || StringUtils.isEmpty(documentEditCallback.getUrl())) {
                 return getNOErrorJson("0");
             }
             URL url = new URL(documentEditCallback.getUrl());
