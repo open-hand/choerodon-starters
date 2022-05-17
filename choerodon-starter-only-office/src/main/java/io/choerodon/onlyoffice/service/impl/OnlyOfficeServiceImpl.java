@@ -61,7 +61,7 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
             //此处获取到的流即是onlyoffice服务下的文件流。
             MultipartFile multipartFile = getMultipartFile(stream, documentEditCallback.getTitle());
             //业务系统根据规则处理文件
-            onlyOfficeFileHandler.fileProcess(multipartFile, documentEditCallback.getBusinessId());
+            onlyOfficeFileHandler.fileProcess(multipartFile, documentEditCallback);
             connection.disconnect();
             return getNOErrorJson("0");
 
