@@ -50,6 +50,7 @@ public class OnlyOfficeCallBackController {
                                                @ApiParam(value = "项目Id") @RequestParam(name = "project_id", required = false) Long projectId,
                                                @ApiParam(value = "业务Id") @RequestParam(name = "business_id", required = false) String businessId,
                                                @ApiParam(value = "用户token") @RequestParam(name = "token", required = false) String token,
+                                               @ApiParam(value = "用户Id") @RequestParam(name = "user_id", required = false) String userId,
                                                @ApiParam(value = "文件名字") @RequestParam(name = "title", required = false) String title) throws Exception {
         obj.put("organizationId", organizationId);
         obj.put("projectId", projectId);
@@ -59,7 +60,9 @@ public class OnlyOfficeCallBackController {
             EncryptContext.setEncryptType("encrypt");
         }
         Long businessDecryptId = KeyDecryptHelper.decryptValue(businessId, token, true);
+        Long userDecryptId = KeyDecryptHelper.decryptValue(userId, token, true);
         obj.put("businessId", businessDecryptId);
+        obj.put("userId", userDecryptId);
         LOGGER.info("only_office保存编辑的回调:{}", JSON.toJSONString(obj));
         return ResponseEntity.ok(onlyOfficeService.saveFile(obj));
     }

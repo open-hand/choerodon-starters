@@ -23,6 +23,9 @@ public class DocumentEditCallback {
     @ApiModelProperty("第三方业务Id")
     private Long businessId;
 
+    @ApiModelProperty("第三方用户Id")
+    private Long userId;
+
     public String getFileType() {
         return fileType;
     }
@@ -69,5 +72,13 @@ public class DocumentEditCallback {
 
     public void setBusinessId(Long businessId) {
         this.businessId = businessId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
