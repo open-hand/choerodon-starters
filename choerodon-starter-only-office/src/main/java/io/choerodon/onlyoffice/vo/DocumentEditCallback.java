@@ -18,6 +18,23 @@ public class DocumentEditCallback {
     @ApiModelProperty("文件的名称")
     private String title;
 
+    //status
+    //
+    //定义文档的状态。可以具有以下值：
+    //
+    //* 0 - 找不到带有密钥标识符的文档，
+    //
+    //* 1 - 正在编辑文档，
+    //
+    //* 2 - 文件已准备好保存，
+    //
+    //* 3 - 发生了文档保存错误，
+    //
+    //* 4 - 文件关闭，没有变化，
+    //
+    //* 6 - 正在编辑文档，但保存当前文档状态，
+    //
+    //* 7 - 强制保存文档时发生错误。
     private Integer status;
 
     @ApiModelProperty("第三方业务Id")
