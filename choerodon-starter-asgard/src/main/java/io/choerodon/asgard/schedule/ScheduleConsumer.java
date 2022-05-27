@@ -71,11 +71,12 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
     private ScheduleInstanceConsumerDTO invoke(final ScheduleInstanceConsumerDTO data) {
         final JobTaskInvokeBean invokeBean = invokeBeanMap.get(data.getMethod());
         final JobTask jobTask = invokeBean.jobTask;
-        if (jobTask.transactionIsolation() == null) {
-            return invokeWithoutTransaction(data);
-        } else {
+        if (jobTask.enableTransaction()) {
             return invokeWithinTransaction(data);
+        } else {
+            return invokeWithoutTransaction(data);
         }
+
     }
 
     private ScheduleInstanceConsumerDTO invokeWithoutTransaction(final ScheduleInstanceConsumerDTO data) {

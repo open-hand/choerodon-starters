@@ -5,9 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.choerodon.core.iam.ResourceLevel;
-
 import org.springframework.transaction.annotation.Isolation;
+
+import io.choerodon.core.iam.ResourceLevel;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -40,6 +40,13 @@ public @interface JobTask {
      * @return 是否为只读事务
      */
     boolean transactionReadOnly() default false;
+
+    /**
+     * 是否开启事务
+     *
+     * @return 是否开启事务
+     */
+    boolean enableTransaction() default true;
 
     /**
      * 事务的隔离级别
