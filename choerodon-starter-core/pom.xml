@@ -12,9 +12,11 @@
     <artifactId>choerodon-starter-core</artifactId>
 
     <dependencies>
+        <!--        后续升级删除版本号-->
         <dependency>
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-mybatis-mapper</artifactId>
+            <version>1.8.1.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.hzero.boot</groupId>
