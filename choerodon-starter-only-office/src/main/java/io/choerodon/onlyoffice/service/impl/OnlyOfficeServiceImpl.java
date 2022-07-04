@@ -47,14 +47,12 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
         }
         //2.当我们关闭编辑窗口后，十秒钟左右onlyoffice会将它存储的我们的编辑后的文件，，此时status = 2，通过request发给我们，我们需要做的就是接收到文件然后回写该文件。
         // 当状态值仅等于2或3时，存在链路。
+        //当点了活动保存时，status=6
         else if (documentEditCallback.getStatus() != null && (documentEditCallback.getStatus().equals(2)
                 || documentEditCallback.getStatus().equals(3)
                 || documentEditCallback.getStatus().equals(6))) {
-            //保存到文件服务器
-            //将文件跟新到数据库
             LOGGER.info("====文档编辑完成，现在开始保存编辑后的文档，其下载地址为:{}" + documentEditCallback.getUrl());
-            LOGGER.info("====文档编辑完成，现在开始保存编辑后的文档，文件名称为:{}" + documentEditCallback.getTitle());
-            if (StringUtils.isEmpty(documentEditCallback.getTitle())) {
+            if (StringUtils.isEmpty(documentEditCallback.getTitle()) || StringUtils.isEmpty(documentEditCallback.getUrl())) {
                 return getNOErrorJson("0");
             }
             URL url = new URL(documentEditCallback.getUrl());
@@ -62,58 +60,14 @@ public class OnlyOfficeServiceImpl implements OnlyOfficeService {
             InputStream stream = connection.getInputStream();
             //此处获取到的流即是onlyoffice服务下的文件流。
             MultipartFile multipartFile = getMultipartFile(stream, documentEditCallback.getTitle());
-
-            onlyOfficeFileHandler.fileProcess(multipartFile, documentEditCallback.getBusinessId());
-            //3、重新上传业务省略
+            //业务系统根据规则处理文件
+            onlyOfficeFileHandler.fileProcess(multipartFile, documentEditCallback);
             connection.disconnect();
             return getNOErrorJson("0");
 
         } else {
             return getNOErrorJson("0");
         }
-
-//        }
-////        //手动保存时
-////        if (status == 6) {
-////            /*
-////             * 当我们关闭编辑窗口后，十秒钟左右onlyoffice会将它存储的我们的编辑后的文件，
-////             * 此时status = 2，通过request发给我们，我们需要做的就是接收到文件然后回写该文件。
-////             * */
-////            /*
-////             * 定义要与文档存储服务保存的编辑文档的链接。
-////             * 当状态值仅等于2或3时，存在链路。
-////             * */
-////            String downloadUri = (String) obj.get("url");
-////            System.out.println("====文档编辑完成，现在开始保存编辑后的文档，其下载地址为:" + downloadUri);
-////            //解析得出文件名
-////            //String fileName = downloadUri.substring(downloadUri.lastIndexOf('/')+1);
-////            String fileId = (String) obj.get("key");
-////            File_Entity fe = fileService.getFileById(fileId);
-////            String fileName = fe.getFileName();
-////            String uuidFileName = fe.getUuidFileName();
-////            String filePath = fe.getFilePath();
-////            System.out.println("====下载的文件名:" + fileName);
-////
-////            URL url = new URL(downloadUri);
-////            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-////            InputStream stream = connection.getInputStream();
-////            //保存到原路径中
-////            File savedFile = new File(BigFileUploadUtil.getBasePath() + "/" + filePath);
-////            //另存为,保存硬盘中,原文件不变
-////            //File savedFile = new File("E:\\onlyoffice\\"+DateTools.getFormatDate("yyyy-MM-dd")+"\\"+fileName);
-////            if (!savedFile.getParentFile().exists()) {
-////                savedFile.getParentFile().mkdirs();
-////            }
-////            try (FileOutputStream out = new FileOutputStream(savedFile)) {
-////                int read;
-////                final byte[] bytes = new byte[1024];
-////                while ((read = stream.read(bytes)) != -1) {
-////                    out.write(bytes, 0, read);
-////                }
-////                out.flush();
-////            }
-////            connection.disconnect();
-//        }
     }
 
     private JSONObject getNOErrorJson(String s) {

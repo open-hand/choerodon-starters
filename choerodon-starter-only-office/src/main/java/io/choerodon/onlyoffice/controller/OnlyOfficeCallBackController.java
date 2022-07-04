@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.hzero.starter.keyencrypt.core.EncryptContext;
@@ -50,18 +52,30 @@ public class OnlyOfficeCallBackController {
                                                @ApiParam(value = "项目Id") @RequestParam(name = "project_id", required = false) Long projectId,
                                                @ApiParam(value = "业务Id") @RequestParam(name = "business_id", required = false) String businessId,
                                                @ApiParam(value = "用户token") @RequestParam(name = "token", required = false) String token,
+                                               @ApiParam(value = "用户Id") @RequestParam(name = "user_id", required = false) String userId,
                                                @ApiParam(value = "文件名字") @RequestParam(name = "title", required = false) String title) throws Exception {
         obj.put("organizationId", organizationId);
         obj.put("projectId", projectId);
-        obj.put("title", title);
+        obj.put("title", decoderFileKey(title));
         //判断是否businessId是否加密，如果加密则手动解密
         if (!StringUtils.isEmpty(businessId) && businessId.startsWith("=")) {
             EncryptContext.setEncryptType("encrypt");
         }
-        Long aLong = KeyDecryptHelper.decryptValue(businessId, token, true);
-        obj.put("businessId", aLong);
+        Long businessDecryptId = KeyDecryptHelper.decryptValue(businessId, token, true);
+        Long userDecryptId = KeyDecryptHelper.decryptValue(userId, token, true);
+        obj.put("businessId", businessDecryptId);
+        obj.put("userId", userDecryptId);
         LOGGER.info("only_office保存编辑的回调:{}", JSON.toJSONString(obj));
         return ResponseEntity.ok(onlyOfficeService.saveFile(obj));
+    }
+
+    public static String decoderFileKey(String title) {
+        try {
+            return URLDecoder.decode(title, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
