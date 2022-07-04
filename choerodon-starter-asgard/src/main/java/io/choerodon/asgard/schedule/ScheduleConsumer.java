@@ -79,12 +79,9 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
 
     }
 
-    private ScheduleInstanceConsumerDTO invokeWithoutTransaction(final ScheduleInstanceConsumerDTO data) {
+    private ScheduleInstanceConsumerDTO invokeWithinTransaction(final ScheduleInstanceConsumerDTO data) {
         final JobTaskInvokeBean invokeBean = invokeBeanMap.get(data.getMethod());
         final JobTask jobTask = invokeBean.jobTask;
-        if (jobTask.transactionIsolation() == null) {
-            return invokeWithoutTransaction(data);
-        }
         PlatformTransactionManager platformTransactionManager = getSagaTaskTransactionManager(jobTask.transactionManager());
         TransactionStatus status = createTransactionStatus(transactionManager, jobTask.transactionIsolation().value());
         beforeInvoke(data.getUserDetails());
@@ -108,7 +105,7 @@ public class ScheduleConsumer extends AbstractAsgardConsumer {
         return data;
     }
 
-    private ScheduleInstanceConsumerDTO invokeWithinTransaction(final ScheduleInstanceConsumerDTO data) {
+    private ScheduleInstanceConsumerDTO invokeWithoutTransaction(final ScheduleInstanceConsumerDTO data) {
         final JobTaskInvokeBean invokeBean = invokeBeanMap.get(data.getMethod());
         beforeInvoke(data.getUserDetails());
         try {
