@@ -24,6 +24,12 @@ public class GroupProjectsFilter {
     private Boolean includeSubGroups;
     private Integer page;
     private Integer perPage;
+    private Integer minAccessLevel;
+
+    public GroupProjectsFilter withMinAccessLevel(Integer minAccessLevel) {
+        this.minAccessLevel = minAccessLevel;
+        return this;
+    }
 
     /**
      * Limit by archived status.
@@ -201,6 +207,8 @@ public class GroupProjectsFilter {
             .withParam("include_subgroups", includeSubGroups)
             .withParam("page", page)
             .withParam("per_page", perPage)
+            .withParam("min_access_level", minAccessLevel)
+
         );
     }
 }
