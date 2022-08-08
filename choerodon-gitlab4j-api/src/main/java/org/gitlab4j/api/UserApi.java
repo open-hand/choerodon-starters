@@ -23,11 +23,11 @@ package org.gitlab4j.api;
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.util.Date;
+import java.util.List;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import java.util.Date;
-import java.util.List;
 
 import org.gitlab4j.api.GitLabApi.ApiVersion;
 import org.gitlab4j.api.models.Email;
@@ -73,6 +73,18 @@ public class UserApi extends AbstractApi {
         Response response = get(Response.Status.OK, getPageQueryParams(page, perPage), "users");
         return (response.readEntity(new GenericType<List<User>>() {
         }));
+    }
+
+    /**
+     * Get all gitlab admin user
+     */
+    public Pager<User> getAdminUsers(int page, int itemPerPage) throws GitLabApiException {
+        Form formData = new GitLabApiForm()
+                .withParam("admins", true)
+                .withParam(PAGE_PARAM, page)
+                .withParam("active", true)
+                .withParam(PER_PAGE_PARAM, itemPerPage);
+        return (new Pager<>(this, User.class, itemPerPage, formData.asMap(), "users"));
     }
 
     /**
