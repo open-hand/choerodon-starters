@@ -918,6 +918,19 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project team members.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/members</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Long(ID), String(path), or Project instance
+     * @return the members belonging to the specified project
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Member> getMembers(Object projectIdOrPath) throws GitLabApiException {
+        return (getMembers(projectIdOrPath, getDefaultPerPage()).all());
+    }
+
+    /**
+     * Get a list of project team members.
      * <p>
      * GET /projects/:id/members
      *
@@ -950,16 +963,16 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a Pager of project team members.
-     * <p>
-     * GET /projects/:id/members
      *
-     * @param projectId    the project ID to get team members for
+     * <pre><code>GitLab Endpoint: GET /projects/:id/members</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Long(ID), String(path), or Project instance
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return the members belonging to the specified project
      * @throws GitLabApiException if any exception occurs
      */
-    public Pager<Member> getMembers(Integer projectId, int itemsPerPage) throws GitLabApiException {
-        return (new Pager<Member>(this, Member.class, itemsPerPage, null, "projects", projectId, "members"));
+    public Pager<Member> getMembers(Object projectIdOrPath, int itemsPerPage) throws GitLabApiException {
+        return (new Pager<Member>(this, Member.class, itemsPerPage, null, "projects", getProjectIdOrPath(projectIdOrPath), "members"));
     }
 
     /**
