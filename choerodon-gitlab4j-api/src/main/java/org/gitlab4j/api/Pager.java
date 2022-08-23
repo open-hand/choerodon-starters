@@ -29,14 +29,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.gitlab4j.api.utils.JacksonJson;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.gitlab4j.api.utils.JacksonJson;
 
 /**
  * This class defines an Iterator implementation that is used as a paging iterator for all API methods that
@@ -158,6 +156,7 @@ public class Pager<T> implements Iterator<List<T>>, Constants {
         this.itemsPerPage = getHeaderValue(response, PER_PAGE);
         totalPages = getHeaderValue(response, TOTAL_PAGES_HEADER);
         totalItems = getHeaderValue(response, TOTAL_HEADER);
+        currentPage = page;
     }
 
     /**
@@ -326,6 +325,14 @@ public class Pager<T> implements Iterator<List<T>>, Constants {
         } catch (GitLabApiException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<T> getCurrentItems() {
+        return currentItems;
+    }
+
+    public void setCurrentItems(List<T> currentItems) {
+        this.currentItems = currentItems;
     }
 
     /**
