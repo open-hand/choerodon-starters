@@ -1041,7 +1041,7 @@ public class ProjectApi extends AbstractApi implements Constants {
      * @return the member specified by the project ID/user ID pair
      * @throws GitLabApiException if any exception occurs
      */
-    public Member getMember(Object projectIdOrPath, Long userId, Boolean includeInherited) throws GitLabApiException {
+    public Member getMember(Object projectIdOrPath, Integer userId, Boolean includeInherited) throws GitLabApiException {
         Response response;
         if (includeInherited) {
             response = get(Response.Status.OK, null, "projects", getProjectIdOrPath(projectIdOrPath), "members", "all", userId);
