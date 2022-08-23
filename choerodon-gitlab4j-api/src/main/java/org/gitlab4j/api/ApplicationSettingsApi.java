@@ -142,8 +142,6 @@ public class ApplicationSettingsApi extends AbstractApi {
                 if (setting != null) {
                     appSettings.addSetting(setting, root.path(fieldName));
                 } else {
-                    GitLabApi.getLogger().warning(String.format("Unknown setting: %s, type: %s",
-                            fieldName, root.path(fieldName).getClass().getSimpleName()));
                     appSettings.addSetting(fieldName, root.path(fieldName));
                 }
 
