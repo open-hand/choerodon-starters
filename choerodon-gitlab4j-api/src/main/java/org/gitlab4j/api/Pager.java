@@ -121,6 +121,46 @@ public class Pager<T> implements Iterator<List<T>>, Constants {
     }
 
     /**
+     * Creates a Pager instance to access the API through the specified path and query parameters.
+     *
+     * @param api          the AbstractApi implementation to communicate through
+     * @param type         the GitLab4J type that will be contained in the List
+     * @param queryParams  HTTP query params
+     * @param pathArgs     HTTP path arguments
+     * @throws GitLabApiException if any error occurs
+     */
+    Pager(AbstractApi api, Class<T> type, int page, int size, MultivaluedMap<String, String> queryParams, Object... pathArgs) throws GitLabApiException {
+
+        javaType = mapper.getTypeFactory().constructCollectionType(List.class, type);
+
+        // Make sure the per_page parameter is present
+        if (queryParams == null) {
+            queryParams = new GitLabApiForm().withParam(PER_PAGE_PARAM, size).asMap();
+        } else {
+            queryParams.remove(PER_PAGE_PARAM);
+            queryParams.add(PER_PAGE_PARAM, Integer.toString(size));
+        }
+
+        pageParam = new ArrayList<>();
+        pageParam.add(Integer.toString(page));
+        queryParams.put(PAGE_PARAM, pageParam);
+        Response response = api.get(Response.Status.OK, queryParams, pathArgs);
+
+        try {
+            currentItems = mapper.readValue((InputStream) response.getEntity(), javaType);
+        } catch (IOException e) {
+            throw new GitLabApiException(e);
+        }
+
+        this.api = api;
+        this.queryParams = queryParams;
+        this.pathArgs = pathArgs;
+        this.itemsPerPage = getHeaderValue(response, PER_PAGE);
+        totalPages = getHeaderValue(response, TOTAL_PAGES_HEADER);
+        totalItems = getHeaderValue(response, TOTAL_HEADER);
+    }
+
+    /**
      * Get the specified integer header value from the Response instance.
      *
      * @param response the Response instance to get the value from

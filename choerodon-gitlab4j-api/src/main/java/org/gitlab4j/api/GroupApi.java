@@ -446,6 +446,27 @@ public class GroupApi extends AbstractApi {
     }
 
     /**
+     * Gets a Pager of group members viewable by the authenticated user, including inherited members
+     * through ancestor groups. Returns multiple times the same user (with different member attributes)
+     * when the user is a member of the group and of one or more ancestor group.
+     *
+     * <pre><code>GitLab Endpoint: GET /groups/:id/members/all</code></pre>
+     *
+     * @param groupIdOrPath the group ID, path of the group, or a Group instance holding the group ID or path
+     * @param query a query string to search for members
+     * @param userIds filter the results on the given user IDs
+     * @param itemsPerPage the number of Project instances that will be fetched per page
+     * @return a Pager of the group members viewable by the authenticated user,
+     * including inherited members through ancestor groups
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<Member> getAllMembers(Object groupIdOrPath, String query, List<Long> userIds, int page, int size) throws GitLabApiException {
+        GitLabApiForm form = new GitLabApiForm().withParam("query", query).withParam("user_ids", userIds);
+        return (new Pager<Member>(this, Member.class, page, size, form.asMap(),
+                "groups", getGroupIdOrPath(groupIdOrPath), "members", "all"));
+    }
+
+    /**
      * Adds a user to the list of group members.
      * <p>
      * POST /groups/:id/members
