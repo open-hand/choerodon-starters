@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>choerodon-gitlab4j-api</artifactId>
-    <version>2.1.2.RELEASE</version>
+    <version>2.2.0-19-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>choerodon-gitlab4j-api</name>
     <description>GitLab API Java Client</description>
@@ -21,7 +21,7 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-starter-parent</artifactId>
-        <version>2.1.2.RELEASE</version>
+        <version>2.2.0-19-SNAPSHOT</version>
     </parent>
     <build>
         <defaultGoal>package</defaultGoal>

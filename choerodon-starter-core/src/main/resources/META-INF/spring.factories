@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.choerodon.core.config.ClientConfigurationC7n
+io.choerodon.core.config.ChoerodonStarterCoreAutoConfiguration

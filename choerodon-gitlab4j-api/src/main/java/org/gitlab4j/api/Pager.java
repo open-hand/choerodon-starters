@@ -161,9 +161,9 @@ public class Pager<T> implements Iterator<List<T>>, Constants {
 
     /**
      * Get the specified integer header value from the Response instance.
-     *
+     * 
      * @param response the Response instance to get the value from
-     * @param key      the HTTP header key to get the value for
+     * @param key the HTTP header key to get the value for
      * @return the specified integer header value from the Response instance
      * @throws GitLabApiException if any error occurs
      */
