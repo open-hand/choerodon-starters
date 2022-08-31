@@ -68,6 +68,7 @@ public class GitLabApi {
     private OauthApi oauthApi;
     private EventsApi eventsApi;
     private ApplicationApi applicationApi;
+    private ApplicationSettingsApi applicationSettingsApi;
     private Session session;
     private AccessToken accessToken;
     private TagsApi tagsApi;
@@ -274,8 +275,10 @@ public class GitLabApi {
         sessoinApi = new SessionApi(this);
         userApi = new UserApi(this);
         applicationApi = new ApplicationApi(this);
+        applicationSettingsApi = new ApplicationSettingsApi(this);
         tagsApi = new TagsApi(this);
         protectedBranchesApi = new ProtectedBranchesApi(this);
+
     }
 
     /**
@@ -749,6 +752,24 @@ public class GitLabApi {
      */
     public ApplicationApi getApplicationApi() {
         return applicationApi;
+    }
+    /**
+     * Gets the ApplicationSettingsApi instance owned by this GitLabApi instance. The ApplicationSettingsApi is used
+     * to perform all application settingsrelated API calls.
+     *
+     * @return the ApplicationsApi instance owned by this GitLabApi instance
+     */
+    public ApplicationSettingsApi getApplicationSettingsApi() {
+
+        if (applicationSettingsApi == null) {
+            synchronized (this) {
+                if (applicationSettingsApi == null) {
+                    applicationSettingsApi = new ApplicationSettingsApi(this);
+                }
+            }
+        }
+
+        return (applicationSettingsApi);
     }
 
     /**

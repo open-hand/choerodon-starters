@@ -29,14 +29,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.gitlab4j.api.utils.JacksonJson;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.gitlab4j.api.utils.JacksonJson;
 
 /**
  * This class defines an Iterator implementation that is used as a paging iterator for all API methods that
@@ -121,10 +119,51 @@ public class Pager<T> implements Iterator<List<T>>, Constants {
     }
 
     /**
-     * Get the specified integer header value from the Response instance.
+     * Creates a Pager instance to access the API through the specified path and query parameters.
      *
+     * @param api          the AbstractApi implementation to communicate through
+     * @param type         the GitLab4J type that will be contained in the List
+     * @param queryParams  HTTP query params
+     * @param pathArgs     HTTP path arguments
+     * @throws GitLabApiException if any error occurs
+     */
+    Pager(AbstractApi api, Class<T> type, int page, int size, MultivaluedMap<String, String> queryParams, Object... pathArgs) throws GitLabApiException {
+
+        javaType = mapper.getTypeFactory().constructCollectionType(List.class, type);
+
+        // Make sure the per_page parameter is present
+        if (queryParams == null) {
+            queryParams = new GitLabApiForm().withParam(PER_PAGE_PARAM, size).asMap();
+        } else {
+            queryParams.remove(PER_PAGE_PARAM);
+            queryParams.add(PER_PAGE_PARAM, Integer.toString(size));
+        }
+
+        pageParam = new ArrayList<>();
+        pageParam.add(Integer.toString(page));
+        queryParams.put(PAGE_PARAM, pageParam);
+        Response response = api.get(Response.Status.OK, queryParams, pathArgs);
+
+        try {
+            currentItems = mapper.readValue((InputStream) response.getEntity(), javaType);
+        } catch (IOException e) {
+            throw new GitLabApiException(e);
+        }
+
+        this.api = api;
+        this.queryParams = queryParams;
+        this.pathArgs = pathArgs;
+        this.itemsPerPage = getHeaderValue(response, PER_PAGE);
+        totalPages = getHeaderValue(response, TOTAL_PAGES_HEADER);
+        totalItems = getHeaderValue(response, TOTAL_HEADER);
+        currentPage = page;
+    }
+
+    /**
+     * Get the specified integer header value from the Response instance.
+     * 
      * @param response the Response instance to get the value from
-     * @param key      the HTTP header key to get the value for
+     * @param key the HTTP header key to get the value for
      * @return the specified integer header value from the Response instance
      * @throws GitLabApiException if any error occurs
      */
@@ -286,6 +325,14 @@ public class Pager<T> implements Iterator<List<T>>, Constants {
         } catch (GitLabApiException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<T> getCurrentItems() {
+        return currentItems;
+    }
+
+    public void setCurrentItems(List<T> currentItems) {
+        this.currentItems = currentItems;
     }
 
     /**

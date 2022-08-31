@@ -918,6 +918,59 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a list of project team members.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/members</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Long(ID), String(path), or Project instance
+     * @return the members belonging to the specified project
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Member> getMembers(Object projectIdOrPath) throws GitLabApiException {
+        return (getMembers(projectIdOrPath, getDefaultPerPage()).all());
+    }
+
+    /**
+     * Gets a list of project members viewable by the authenticated user,
+     * including inherited members through ancestor groups. Returns multiple
+     * times the same user (with different member attributes) when the user is
+     * a member of the project/group and of one or more ancestor group.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/members/all</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Long(ID), String(path), or Project instance
+     * @param query a query string to search for members
+     * @param userIds filter the results on the given user IDs
+     * @return the project members viewable by the authenticated user, including inherited members through ancestor groups
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Member> getAllMembers(Object projectIdOrPath, String query, List<Long> userIds) throws GitLabApiException {
+        return (getAllMembers(projectIdOrPath, query, userIds, getDefaultPerPage()).all());
+    }
+
+    /**
+     * Gets a Pager of project members viewable by the authenticated user,
+     * including inherited members through ancestor groups. Returns multiple
+     * times the same user (with different member attributes) when the user is
+     * a member of the project/group and of one or more ancestor group.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/members/all</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Long(ID), String(path), or Project instance
+     * @param query a query string to search for members
+     * @param userIds filter the results on the given user IDs
+     * @param itemsPerPage the number of Project instances that will be fetched per page
+     * @return a Pager of the project members viewable by the authenticated user,
+     * including inherited members through ancestor groups
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<Member> getAllMembers(Object projectIdOrPath, String query, List<Long> userIds, int itemsPerPage) throws GitLabApiException {
+        GitLabApiForm form = new GitLabApiForm().withParam("query", query).withParam("user_ids", userIds);
+        return (new Pager<Member>(this, Member.class, itemsPerPage, form.asMap(),
+                "projects", getProjectIdOrPath(projectIdOrPath), "members", "all"));
+    }
+
+    /**
+     * Get a list of project team members.
      * <p>
      * GET /projects/:id/members
      *
@@ -950,16 +1003,16 @@ public class ProjectApi extends AbstractApi implements Constants {
 
     /**
      * Get a Pager of project team members.
-     * <p>
-     * GET /projects/:id/members
      *
-     * @param projectId    the project ID to get team members for
+     * <pre><code>GitLab Endpoint: GET /projects/:id/members</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Long(ID), String(path), or Project instance
      * @param itemsPerPage the number of Project instances that will be fetched per page
      * @return the members belonging to the specified project
      * @throws GitLabApiException if any exception occurs
      */
-    public Pager<Member> getMembers(Integer projectId, int itemsPerPage) throws GitLabApiException {
-        return (new Pager<Member>(this, Member.class, itemsPerPage, null, "projects", projectId, "members"));
+    public Pager<Member> getMembers(Object projectIdOrPath, int itemsPerPage) throws GitLabApiException {
+        return (new Pager<Member>(this, Member.class, itemsPerPage, null, "projects", getProjectIdOrPath(projectIdOrPath), "members"));
     }
 
     /**
@@ -974,6 +1027,27 @@ public class ProjectApi extends AbstractApi implements Constants {
      */
     public Member getMember(Integer projectId, Integer userId) throws GitLabApiException {
         Response response = get(Response.Status.OK, null, "projects", projectId, "members", userId);
+        return (response.readEntity(Member.class));
+    }
+
+    /**
+     * Gets a project team member, optionally including inherited member.
+     *
+     * <pre><code>GitLab Endpoint: GET /projects/:id/members/all/:user_id</code></pre>
+     *
+     * @param projectIdOrPath the project in the form of an Long(ID), String(path), or Project instance
+     * @param userId the user ID of the member
+     * @param includeInherited if true will the member even if inherited thru an ancestor group
+     * @return the member specified by the project ID/user ID pair
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Member getMember(Object projectIdOrPath, Integer userId, Boolean includeInherited) throws GitLabApiException {
+        Response response;
+        if (includeInherited) {
+            response = get(Response.Status.OK, null, "projects", getProjectIdOrPath(projectIdOrPath), "members", "all", userId);
+        } else {
+            response = get(Response.Status.OK, null, "projects", getProjectIdOrPath(projectIdOrPath), "members", userId);
+        }
         return (response.readEntity(Member.class));
     }
 
