@@ -6,7 +6,7 @@
 
     <groupId>io.choerodon</groupId>
     <artifactId>choerodon-starter-parent</artifactId>
-    <version>2.2.0-19-SNAPSHOT</version>
+    <version>2.2.0-20-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
