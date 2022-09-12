@@ -1,6 +1,7 @@
 package io.choerodon.core.mybatis;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -84,6 +85,30 @@ public abstract class CacheBaseRepositoryImpl<T> extends BaseRepositoryImpl<T> i
     protected int asyncCacheWithKey(Object key, ToIntFunction<Object> keyOperation, Consumer<T> asyncCache) {
         T record = super.selectByPrimaryKey(key);
         return asyncCache(record, item -> keyOperation.applyAsInt(key), asyncCache);
+    }
+
+    /**
+     * 从缓存中获取实例，若没有则从数据库中获取并缓存
+     *
+     * @param key              传入主键
+     * @param cacheSelector    缓存数据获取函数
+     * @param databaseSelector 数据库数据获取函数
+     * @return INSTANCE
+     */
+    protected T selectFromCache(Object key, Function<Object, T> cacheSelector, Function<Object, T> databaseSelector) {
+        T record = cacheSelector.apply(key);
+        if (Objects.isNull(record)) {
+            record = databaseSelector.apply(key);
+            // 缓存没有则写入
+            mergeCache(record);
+            return record;
+        }
+        return record;
+    }
+
+    @Override
+    public T selectByPrimaryKey(Object key) {
+        return selectFromCache(key, this::getFromCacheByPrimaryKey, super::selectByPrimaryKey);
     }
 
     @Override

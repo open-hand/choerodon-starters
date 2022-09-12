@@ -6,7 +6,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
- * Copyright (c) 2022. Hand Enterprise Solution Company. All right reserved.
+ * Copyright (c) 2022. ZKNOW Enterprise Solution. All right reserved.
  *
  * @author zongqi.hao@zknow.com
  * @since 2022/7/22

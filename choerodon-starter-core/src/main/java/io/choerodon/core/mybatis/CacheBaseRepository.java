@@ -32,6 +32,14 @@ public interface CacheBaseRepository<T> extends BaseRepository<T> {
     void putCache(T record);
 
     /**
+     * 根据主键获取缓存
+     *
+     * @param key 主键或含主键的对象
+     * @return 实体
+     */
+    T getFromCacheByPrimaryKey(Object key);
+
+    /**
      * 批量同步缓存，用于新建时创建缓存
      *
      * @param records 数据对象列表, 具体传入对象取决于原始增删改参数
