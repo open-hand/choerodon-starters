@@ -8,6 +8,17 @@ package io.choerodon.core.excel;
 public class ExceptionConstants {
 
     /**
+     * 公用异常code
+     */
+    public static class CommonErrorCode {
+        private CommonErrorCode() {
+        }
+        public static final String USER_NOT_LOGIN = "user.not.login";
+
+    }
+
+
+    /**
      * excel异常code
      */
     public static class ExcelErrorCode {
