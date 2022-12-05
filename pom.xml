@@ -12,7 +12,7 @@
     <parent>
         <groupId>com.zknow.starter</groupId>
         <artifactId>zknow-starter-parent</artifactId>
-        <version>1.17.0-SNAPSHOT</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <properties>
