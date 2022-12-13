@@ -49,6 +49,16 @@ public class Pipeline {
     private String coverage;
     private Integer duration;
 
+    private String webUrl;
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
+    }
+
     public Integer getId() {
         return id;
     }
