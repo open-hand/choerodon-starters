@@ -10,9 +10,9 @@
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>org.hzero.starter</groupId>
-        <artifactId>hzero-starter-parent</artifactId>
-        <version>1.8.0.RELEASE</version>
+        <groupId>com.zknow.starter</groupId>
+        <artifactId>zknow-starter-parent</artifactId>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <properties>

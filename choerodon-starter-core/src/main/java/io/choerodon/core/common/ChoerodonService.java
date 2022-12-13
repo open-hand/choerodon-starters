@@ -101,4 +101,29 @@ public final class ChoerodonService {
         }
     }
 
+    @Component
+    public static class BaseService {
+        public static final String NAME = "${choerodon.service.base.name:choerodon-base}";
+        public static final String CODE = "cbase";
+        public static final String PATH = "/cbase/**";
+        public static Integer PORT = 8040;
+        public static Integer REDIS_DB = 1;
+        public static String BUCKET_NAME = "choerodon-base";
+
+        @Value("${choerodon.service.agile.port:8040}")
+        public void setPort(Integer port) {
+            PORT = port;
+        }
+
+        @Value("${choerodon.service.agile.redis-db:1}")
+        public void setRedisDb(Integer redisDb) {
+            REDIS_DB = redisDb;
+        }
+
+        @Value("${choerodon.service.bucket-name:choerodon-base}")
+        public void setBucketName(String bucketName) {
+            BUCKET_NAME = bucketName;
+        }
+    }
+
 }

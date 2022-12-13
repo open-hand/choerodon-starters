@@ -12,11 +12,15 @@
     <artifactId>choerodon-starter-core</artifactId>
 
     <dependencies>
-        <!--        后续升级删除版本号-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17</version>
+        </dependency>
         <dependency>
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-mybatis-mapper</artifactId>
-            <version>1.8.1.RELEASE</version>
+            <version>1.9.3.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.hzero.boot</groupId>
