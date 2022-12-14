@@ -44,6 +44,8 @@ public class StartupRunner implements CommandLineRunner {
     private Boolean fixData;
     @Value("${installer.exclusion:#{null}}")
     private String exclusion;
+    @Value("${installer.exclusion.default:iam_role,hmsg_email_server,hmsg_sms_server,iam_sys_setting,oauth_ldap}")
+    private String exclusionDefault;
 
     @Value("${spring.datasource.dynamic.datasource.gen.driver-class-name}")
     private String driver;
@@ -209,6 +211,11 @@ public class StartupRunner implements CommandLineRunner {
      * 设置环境变量中的排除更新
      */
     private void setUpdateExclusion() {
+        if (ObjectUtils.isEmpty(exclusion)) {
+            exclusion = exclusionDefault;
+        } else {
+            exclusion = exclusion + "," + exclusionDefault;
+        }
         if (!ObjectUtils.isEmpty(exclusion)) {
             if (ObjectUtils.isEmpty(XmlUtils.UPDATE_EXCLUSION)) {
                 XmlUtils.UPDATE_EXCLUSION = exclusion;
