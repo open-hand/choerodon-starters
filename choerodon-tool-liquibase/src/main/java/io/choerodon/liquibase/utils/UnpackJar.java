@@ -28,7 +28,7 @@ public class UnpackJar {
     private static final String SUFFIX_XML = ".xml";
     private static final String SUFFIX_SQL = ".sql";
     private static final String SUFFIX_JAR = ".jar";
-    private static final String PREFIX_SCRIPT_DB = "script/db/";
+    private static final String PREFIX_SCRIPT_DB = "script/";
     private static final String PREFIX_SPRING_BOOT_CLASSES = "BOOT-INF/classes/";
 
     /**

@@ -35,7 +35,7 @@ installer:
   groovyDir: choerodon/script/db/groovy
   fixDir: choerodon/script/db/fix-data
   # c7n
-  mappingFile: choerodon/script/db/service-mapping.xml
+  mappingFile: choerodon/script/service-mapping.xml
 #  exclusion: hmsg_message_template,iam_role,fd_organization,iam_user.loginName
   # hzero
   #  mappingFile: choerodon/script/db/docs/mapping/service-mapping.xml
