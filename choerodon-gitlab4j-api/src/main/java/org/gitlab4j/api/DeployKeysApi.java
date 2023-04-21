@@ -24,7 +24,6 @@ package org.gitlab4j.api;
  */
 
 import java.util.List;
-
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -208,7 +207,7 @@ public class DeployKeysApi extends AbstractApi {
             throw new RuntimeException("keyId cannot be null");
         }
 
-        delete(Response.Status.OK, null, "projects", projectId, "deploy_keys", keyId);
+        delete(Response.Status.NO_CONTENT, null, "projects", projectId, "deploy_keys", keyId);
     }
 
     /**
